@@ -1061,7 +1061,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
           loaded = true;
           console.log("webview console listener attached");
           const webvieew = document.querySelector("webview");
-          webvieew.addEventListener("console-message", function(e) {
+          webvieew.addEventListener("console-message", function (e) {
             console.log("Webview: ", e.message);
           });
         }
@@ -1363,299 +1363,305 @@ class ServiceIntegrator extends React.Component<Props, State> {
         />
       );
     }
-    // if (!this.state.editexecute) {
-    //   return (
-    //     <Query query={FETCH_EXECUTIONAPPS}>
-    //       {({ data, loading, error, refetch }) => {
-    //         if (loading) {
-    //           return <div>LOADING</div>;
-    //         }
+    if (!this.state.editexecute) {
+      return (
+        <Query query={FETCH_EXECUTIONAPPS}>
+          {({ data, loading, error, refetch }) => {
+            if (loading) {
+              return <div>LOADING</div>;
+            }
 
-    //         if (error) {
-    //           return <div>ERROR</div>;
-    //         }
-    //         const executionApps: JSX.Element[] = [];
-    //         data.fetchExecutionApps.forEach(e =>
-    //           executionApps.push(
-    //             <div>
-    //               <span>{e.name}</span>
-    //               <UniversalButton
-    //                 type="high"
-    //                 onClick={() => this.setState({ app: e })}
-    //                 label="Edit"
-    //               />
-    //             </div>
-    //           )
-    //         );
-    //         return (
-    //           <div>
-    //             {executionApps}
-    //             <UniversalButton
-    //               label="Create new App"
-    //               type="high"
-    //               onClick={() => this.setState({ newApp: true })}
-    //             />
-    //           </div>
-    //         );
-    //       }}
-    //     </Query>
-    //   );
-    // } else {
-    return (
-      <div style={{ height: "100%" }}>
-        <div
-          style={{
-            float: "left",
-            width: "200px",
-            height: "100%", //calc(100vh - 72px)
-            backgroundColor: "#30475D"
-          }}>
-          <div style={{ height: "15%" }}>
-            <h4 style={{ color: "white" }}>
-              Please enter Url
-              <button onClick={() => this.setState({ editexecute: false })}>Overview</button>
-            </h4>
-            <UniversalTextInput
-              /* autofocus="true" */
-              id="url"
-              livevalue={v => this.setState({ searchurl: v })}
-              style={{ color: "black", borderColor: "white" }}
-              width="100%"
-              onEnter={async () => {
-                await this.setState({
-                  isLogin: true,
-                  end: false,
-                  divList: [],
-                  showDivList: true,
-                  url: "",
-                  urlBevorChange: "",
-                  finalexecutionPlan: [],
-                  processedfinalexecutionPlan: [],
-                  executionPlan: [],
-                  targetpage: "",
-                  test: false
-                });
-                session.fromPartition("followLogin").clearStorageData();
-                this.searchattampts = 0;
-                this.trySiteLoading();
-              }}></UniversalTextInput>
-            <UniversalButton
-              type="high"
-              label="Load Site"
-              onClick={() => {
-                this.loginState.step = 0;
-                this.setState({
-                  end: false,
-                  divList: [],
-                  showDivList: true,
-                  url: "",
-                  urlBevorChange: "",
-                  finalexecutionPlan: [],
-                  executionPlan: [],
-                  targetpage: "",
-                  test: false
-                });
-                session.fromPartition("followLogin").clearStorageData();
-                this.searchattampts = 0;
-                this.trySiteLoading();
-              }}
-            />
-            {this.state.tracking ? (
-              <UniversalButton
-                type="high"
-                onClick={async () => {
-                  this.setState({ tracking: false, test: true });
-                  this.webview!.send("removeTracking", {});
-                }}
-                label="Stop Tracking"
-              />
-            ) : (
-              <UniversalButton
-                type="high"
-                onClick={async () => {
-                  this.setState({ tracking: true, test: false, divList: [] });
-                  this.webview!.send("startTracking", {});
-                }}
-                label="Start Tracking"
-              />
-            )}
-          </div>
-          <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
-            {this.state.executionPlan.map((o, k) => (
-              <div
-                id={o.args.id + "side"}
-                onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-                onMouseLeave={() => this.zeigeElement(false, o.args.id)}
-                style={{ border: "1px solid red", marginTop: "10px" }}>
-                <ClickElement
-                  id={`ce-${k}`}
-                  startvalue={o.operation}
-                  onChange={(operation, value) => {
-                    this.updateSelection(o.args.id, operation, value);
-                    console.log("TEST", operation);
-                    if (value == "select") {
-                      console.log("id", o.args.selector);
-                      this.webview!.send("getSelectOptions", o.args.selector);
-                    }
-                  }}
-                  isLogin={false}
-                />
-                <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
-                <div /* style={{ float: "left" }} */>
-                  {!this.state.isLogin ? (
-                    <span>
-                      <input
-                        type="checkbox"
-                        id={"paralelOption" + o.args.id}
-                        onChange={e => {
-                          o.isParalelOption = e.target.checked;
-                          this.forceUpdate();
-                        }}
-                      />
-                      <div style={{ color: "white" }}>Is Paralel Option</div>
-                    </span>
-                  ) : null}
-                  <input
-                    style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
-                    id={"team" + o.args.id}
-                    onChange={e => {
-                      o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
-                    }}></input>
+            if (error) {
+              return <div>ERROR</div>;
+            }
+            const executionApps: JSX.Element[] = [];
+            data.fetchExecutionApps.sort((a, b) => (a.name > b.name ? 1 : -1));
+            data.fetchExecutionApps.forEach(e =>
+              executionApps.push(
+                <div>
+                  <span>{e.name}</span>
+                  <UniversalButton
+                    type="high"
+                    onClick={() => {
+                      // this.setState({ app: e })
+                      console.log("E", e);
+                      this.props.moveTo(`admin/service-integration/${e.id}`);
+                    }}
+                    label="Edit"
+                  />
                 </div>
+              )
+            );
+            return (
+              <div>
+                {executionApps}
+                <UniversalButton
+                  label="Create new App"
+                  type="high"
+                  onClick={() => this.setState({ newApp: true })}
+                />
               </div>
-            ))}
-            <div style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
-              Everything selected?
-              <UniversalButton
-                type="high"
-                disabled={this.webview == undefined}
-                onClick={async () => {
-                  await this.setState(oldstate => {
-                    return {
-                      ...oldstate,
-                      tracking: false,
-                      executionPlan: [],
-                      divList: [],
-                      test: true,
-                      finalexecutionPlan: oldstate.executionPlan
-                    };
+            );
+          }}
+        </Query>
+      );
+    } else {
+      return (
+        <div style={{ height: "100%" }}>
+          <div
+            style={{
+              float: "left",
+              width: "200px",
+              height: "calc(100vh - 72px)",
+              backgroundColor: "#30475D"
+            }}>
+            <div style={{ height: "15%" }}>
+              <h4 style={{ color: "white" }}>
+                Please enter Url
+                <button onClick={() => this.setState({ editexecute: false })}>Overview</button>
+              </h4>
+              <UniversalTextInput
+                /* autofocus="true" */
+                id="url"
+                livevalue={v => this.setState({ searchurl: v })}
+                style={{ color: "black", borderColor: "white" }}
+                width="100%"
+                onEnter={async () => {
+                  await this.setState({
+                    isLogin: true,
+                    end: false,
+                    divList: [],
+                    showDivList: true,
+                    url: "",
+                    urlBevorChange: "",
+                    finalexecutionPlan: [],
+                    processedfinalexecutionPlan: [],
+                    executionPlan: [],
+                    targetpage: "",
+                    test: false
                   });
-                  this.sendExecute();
-                }}
-                label="EXECUTE Tracked"></UniversalButton>
-            </div>
-          </div>
-          <div style={{ height: "20%" }}>
-            <textarea
-              value={JSON.stringify(this.state.finalexecutionPlan)}
-              style={{ width: "100%", height: "50%" }}
-              onChange={v => {
-                this.setState({ finalexecutionPlan: JSON.parse(v.target.value) });
-              }}
-            />
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  session.fromPartition("followLogin").clearStorageData();
+                  this.searchattampts = 0;
+                  this.trySiteLoading();
+                }}></UniversalTextInput>
               <UniversalButton
                 type="high"
-                label="Extend"
-                onClick={() => this.setState({ showExtend: true })}
-              />
-              <UniversalButton
-                type="high"
-                label="Execute"
-                onClick={async () => {
-                  //set url back to null
-                  console.log("EXECUTE BUTTON");
-                  this.setState({ executing: 1, step: 0, test: true });
-                  console.log(await this.sendExecuteFinal());
+                label="Load Site"
+                onClick={() => {
+                  this.loginState.step = 0;
+                  this.setState({
+                    end: false,
+                    divList: [],
+                    showDivList: true,
+                    url: "",
+                    urlBevorChange: "",
+                    finalexecutionPlan: [],
+                    executionPlan: [],
+                    targetpage: "",
+                    test: false
+                  });
+                  session.fromPartition("followLogin").clearStorageData();
+                  this.searchattampts = 0;
+                  this.trySiteLoading();
                 }}
               />
-            </div>
-            <div style={{ display: "flex", marginTop: "10px", justifyContent: "space-between" }}>
-              <UniversalButton
-                type="high"
-                label="Load"
-                onClick={() => this.setState({ showLoading: true })}
-              />
-              <UniversalButton
-                type="high"
-                label="SAVE"
-                onClick={async () => {
-                  this.setState({ saveExe: true });
-                }}
-              />
-              {this.state.saveExe && (
-                <PopupBase close={() => this.setState({ saveExe: false })}>
-                  <div>
-                    <UniversalTextInput
-                      id="saveKey"
-                      livevalue={v => this.setState({ saveKey: v })}
-                    />
-                    <UniversalButton
-                      label="SAVE"
-                      onClick={async () => {
-                        const appupdate = await this.props.saveExecutionPlan({
-                          variables: {
-                            appid: this.state.app.id,
-                            key: this.state.saveKey,
-                            script: JSON.stringify(this.state.finalexecutionPlan)
-                          }
-                        });
-                        this.setState(oldstate => {
-                          return {
-                            saveExe: false,
-                            saveKey: "",
-                            app: {
-                              ...oldstate.app,
-                              internaldata: appupdate.data.saveExecutionPlan.internaldata
-                            }
-                          };
-                        });
-                      }}
-                    />
-                  </div>
-                </PopupBase>
+              {this.state.tracking ? (
+                <UniversalButton
+                  type="high"
+                  onClick={async () => {
+                    this.setState({ tracking: false, test: true });
+                    this.webview!.send("removeTracking", {});
+                  }}
+                  label="Stop Tracking"
+                />
+              ) : (
+                <UniversalButton
+                  type="high"
+                  onClick={async () => {
+                    this.setState({ tracking: true, test: false, divList: [] });
+                    this.webview!.send("startTracking", {});
+                  }}
+                  label="Start Tracking"
+                />
               )}
             </div>
-          </div>
-          {(this.state.showLoading || this.state.showExtend) && (
-            <PopupBase close={() => this.setState({ showLoading: false, showExtend: false })}>
-              <div>
-                {this.state.app.internaldata.execute.length > 0 ? (
-                  this.state.app.internaldata.execute.map(e => (
-                    <div
-                      onClick={() =>
-                        this.setState(oldstate => {
-                          let finalexecutionPlan: Object[] = [];
-                          if (oldstate.showExtend) {
-                            oldstate.finalexecutionPlan.push({
-                              operation: "function",
-                              args: {
-                                functionname: e.key
+            <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
+              {this.state.executionPlan.map((o, k) => (
+                <div
+                  id={o.args.id + "side"}
+                  onMouseEnter={() => this.zeigeElement(true, o.args.id)}
+                  onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                  style={{ border: "1px solid red", marginTop: "10px" }}>
+                  <ClickElement
+                    id={`ce-${k}`}
+                    startvalue={o.operation}
+                    onChange={(operation, value) => {
+                      this.updateSelection(o.args.id, operation, value);
+                      console.log("TEST", operation);
+                      if (value == "select") {
+                        console.log("id", o.args.selector);
+                        this.webview!.send("getSelectOptions", o.args.selector);
+                      }
+                    }}
+                    isLogin={false}
+                  />
+                  <button onClick={() => this.cancelSelection(o.args.id)}>DELETE</button>
+                  <div /* style={{ float: "left" }} */>
+                    {!this.state.isLogin ? (
+                      <span>
+                        <input
+                          type="checkbox"
+                          id={"paralelOption" + o.args.id}
+                          onChange={e => {
+                            o.isParalelOption = e.target.checked;
+                            this.forceUpdate();
+                          }}
+                        />
+                        <div style={{ color: "white" }}>Is Paralel Option</div>
+                      </span>
+                    ) : null}
+                    <input
+                      style={{ visibility: o.isParalelOption ? "visible" : "collapse" }}
+                      id={"team" + o.args.id}
+                      onChange={e => {
+                        o.paralelTeam = document.getElementById("team" + o.args.id)!.value;
+                      }}></input>
+                  </div>
+                </div>
+              ))}
+              <div
+                style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
+                Everything selected?
+                <UniversalButton
+                  type="high"
+                  disabled={this.webview == undefined}
+                  onClick={async () => {
+                    await this.setState(oldstate => {
+                      return {
+                        ...oldstate,
+                        tracking: false,
+                        executionPlan: [],
+                        divList: [],
+                        test: true,
+                        finalexecutionPlan: oldstate.executionPlan
+                      };
+                    });
+                    this.sendExecute();
+                  }}
+                  label="EXECUTE Tracked"></UniversalButton>
+              </div>
+            </div>
+            <div style={{ height: "20%" }}>
+              <textarea
+                value={JSON.stringify(this.state.finalexecutionPlan)}
+                style={{ width: "100%", height: "50%" }}
+                onChange={v => {
+                  this.setState({ finalexecutionPlan: JSON.parse(v.target.value) });
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <UniversalButton
+                  type="high"
+                  label="Extend"
+                  onClick={() => this.setState({ showExtend: true })}
+                />
+                <UniversalButton
+                  type="high"
+                  label="Execute"
+                  onClick={async () => {
+                    //set url back to null
+                    console.log("EXECUTE BUTTON");
+                    this.setState({ executing: 1, step: 0, test: true });
+                    console.log(await this.sendExecuteFinal());
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", marginTop: "10px", justifyContent: "space-between" }}>
+                <UniversalButton
+                  type="high"
+                  label="Load"
+                  onClick={() => this.setState({ showLoading: true })}
+                />
+                <UniversalButton
+                  type="high"
+                  label="SAVE"
+                  onClick={async () => {
+                    this.setState({ saveExe: true });
+                  }}
+                />
+                {this.state.saveExe && (
+                  <PopupBase close={() => this.setState({ saveExe: false })}>
+                    <div>
+                      <UniversalTextInput
+                        id="saveKey"
+                        livevalue={v => this.setState({ saveKey: v })}
+                      />
+                      <UniversalButton
+                        label="SAVE"
+                        onClick={async () => {
+                          const appupdate = await this.props.saveExecutionPlan({
+                            variables: {
+                              appid: this.state.app.id,
+                              key: this.state.saveKey,
+                              script: JSON.stringify(this.state.finalexecutionPlan)
+                            }
+                          });
+                          this.setState(oldstate => {
+                            return {
+                              saveExe: false,
+                              saveKey: "",
+                              app: {
+                                ...oldstate.app,
+                                internaldata: appupdate.data.saveExecutionPlan.internaldata
                               }
-                            });
-                            finalexecutionPlan = oldstate.finalexecutionPlan;
-                          } else {
-                            finalexecutionPlan = JSON.parse(e.script);
-                            console.log("finalexecutionPlan", finalexecutionPlan, e.script);
-                          }
-                          return {
-                            finalexecutionPlan,
-                            showLoading: false,
-                            showExtend: false
-                          };
-                        })
-                      }>
-                      {e.key}
+                            };
+                          });
+                        }}
+                      />
                     </div>
-                  ))
-                ) : (
-                  <div>No Functions</div>
+                  </PopupBase>
                 )}
               </div>
-            </PopupBase>
-          )}
-        </div>
-        {/* <div
+            </div>
+            {(this.state.showLoading || this.state.showExtend) && (
+              <PopupBase close={() => this.setState({ showLoading: false, showExtend: false })}>
+                <div>
+                  {this.state.app.internaldata.execute.length > 0 ? (
+                    this.state.app.internaldata.execute.map(e => (
+                      <div
+                        onClick={() =>
+                          this.setState(oldstate => {
+                            let finalexecutionPlan: Object[] = [];
+                            if (oldstate.showExtend) {
+                              oldstate.finalexecutionPlan.push({
+                                operation: "function",
+                                args: {
+                                  functionname: e.key
+                                }
+                              });
+                              finalexecutionPlan = oldstate.finalexecutionPlan;
+                            } else {
+                              finalexecutionPlan = JSON.parse(e.script);
+                              console.log("finalexecutionPlan", finalexecutionPlan, e.script);
+                            }
+                            return {
+                              finalexecutionPlan,
+                              showLoading: false,
+                              showExtend: false
+                            };
+                          })
+                        }>
+                        {e.key}
+                      </div>
+                    ))
+                  ) : (
+                    <div>No Functions</div>
+                  )}
+                </div>
+              </PopupBase>
+            )}
+          </div>
+          {/* <div
           style={{
             background: "yellow",
             float: "left",
@@ -1685,43 +1691,44 @@ class ServiceIntegrator extends React.Component<Props, State> {
           </button>
           {this.state.bodyWidget && <BodyWidget engine={engine} />}
         </div> */}
-        <div
-          style={{
-            float: "left",
-            height: "100%", //calc(100vh - 72px)
-            width: "calc(100% - 200px)"
-          }}>
-          {this.state.divList.map(e => e)}
-          <WebView
-            id="Webview-1" //{this.state.webviewid}
-            ref={element => (this.webview = element)}
-            preload={getPreloadScriptPath("integrationTracker.js")}
-            webpreferences="webSecurity=no"
-            className="newMainPosition"
-            useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.123 Safari/537.36"
-            src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
-            partition="followLogin"
-            style={{ width: "100%", height: "100%" }}
-            onIpcMessage={async e => {
-              // osama. if we are searching google dont communicate.
-              //console.log("e channel value" + e.channel);
-              if (!this.shallSearch) {
-                await this.onIpcMessage(e);
-              }
-            }}
-            onNewWindow={e => {
-              this.handleNewWindow(e);
-            }}
-            onClose={e => this.handleClosing(e)}
-            onDidNavigateInPage={e => this.handleSiteChange(e)}
-            onDidNavigate={e => {
-              this.handleSiteChange(e);
-            }}
-            onDidFailLoad={e => this.didFailLoad(e)}
-          />
+          <div
+            style={{
+              float: "left",
+              height: "calc(100vh - 72px)",
+              width: "calc(100% - 200px)"
+            }}>
+            {this.state.divList.map(e => e)}
+            <WebView
+              id="Webview-1" //{this.state.webviewid}
+              ref={element => (this.webview = element)}
+              preload={getPreloadScriptPath("integrationTracker.js")}
+              webpreferences="webSecurity=no"
+              className="newMainPosition"
+              useragent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.123 Safari/537.36"
+              src={this.state.url} //https://asana.com/de/premium?msclkid=332738e6ffa218748fab645e565a6b61&utm_source=bing&utm_medium=cpc&utm_campaign=Brand%7CDACH%7CEN%7CCore%7CDesktop%7CExact&utm_term=asana&utm_content=Asana_Exact"
+              partition="followLogin"
+              style={{ width: "100%", height: "100%" }}
+              onIpcMessage={async e => {
+                // osama. if we are searching google dont communicate.
+                //console.log("e channel value" + e.channel);
+                if (!this.shallSearch) {
+                  await this.onIpcMessage(e);
+                }
+              }}
+              onNewWindow={e => {
+                this.handleNewWindow(e);
+              }}
+              onClose={e => this.handleClosing(e)}
+              onDidNavigateInPage={e => this.handleSiteChange(e)}
+              onDidNavigate={e => {
+                this.handleOutsideSiteChange(e);
+              }}
+              onDidFailLoad={e => this.didFailLoad(e)}
+            />
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 }
 
