@@ -1,6 +1,11 @@
 import * as React from "react";
+import { withApollo } from "react-apollo";
+import gql from "graphql-tag";
+import { shell } from "electron";
 import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import UniversalButton from "../universalButtons/universalButton";
+import PopupBase from "../../popups/universalPopups/popupBase";
+
 interface Props {
   disabled?: boolean;
   service?: any;
@@ -11,9 +16,14 @@ interface Props {
   button?: any;
   close: Function;
   autoclose?: number | boolean;
+  failed: boolean | null;
+  client: any;
 }
-interface State {}
+interface State {
+  popup: JSX.Element | null;
+}
 class FloatingNotification extends React.Component<Props, State> {
+  state = { popup: null };
   closingTimer = null;
 
   componentDidMount() {
@@ -24,6 +34,70 @@ class FloatingNotification extends React.Component<Props, State> {
 
   componentWillUnmount() {
     clearInterval(this.closingTimer);
+  }
+
+  executeNotificationAction(action) {
+    if (!action || !action.action) {
+      return;
+    }
+
+    if (action.action == "selectNumber") {
+      this.setState({
+        popup: (
+          <PopupBase small={true}>
+            <h2>{action.text}</h2>
+            <div style={{ marginTop: "24px" }}>
+              <input type="number" name="numberinput" />
+            </div>
+            <UniversalButton
+              type="high"
+              onClick={async () => {
+                // not a nice way to get the number
+                const number = document.querySelector("input[name=numberinput]").value;
+
+                await this.props.client.mutate({
+                  mutation: gql`
+                    mutation respondToNotification($id: ID!, $data: JSON!) {
+                      respondToNotification(id: $id, data: $data)
+                    }
+                  `,
+                  variables: {
+                    id: action.messageid,
+                    data: { number }
+                  }
+                });
+                this.setState({ popup: null });
+              }}
+              label="Ok"
+            />
+          </PopupBase>
+        )
+      });
+    } else {
+      this.setState({
+        popup: (
+          <PopupBase small={true}>
+            <h2>Action not supported</h2>
+            <div style={{ marginTop: "24px" }}>
+              Sorry, this action is not supported by your current version of VIPFY. Please try
+              downloading the current version at{" "}
+              <div
+                className="fancy-link"
+                style={{ color: "#20baa9" }}
+                onClick={() => shell.openExternal("https://vipfy.store/download")}>
+                https://vipfy.store/download
+              </div>
+              or contact support.
+            </div>
+            <UniversalButton
+              type="high"
+              onClick={() => this.setState({ popup: null })}
+              label="Ok"
+            />
+          </PopupBase>
+        )
+      });
+    }
   }
 
   render() {
@@ -86,14 +160,15 @@ class FloatingNotification extends React.Component<Props, State> {
             <div className="buttonHolder">
               <UniversalButton
                 label={this.props.button.label}
-                onClick={this.props.button.onClick}
+                onClick={() => this.executeNotificationAction(this.props.button.onClick)}
                 type="high"
               />
             </div>
           )}
+          {this.state.popup}
         </div>
       </div>
     );
   }
 }
-export default FloatingNotification;
+export default withApollo(FloatingNotification);
