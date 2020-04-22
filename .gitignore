@@ -11,3 +11,4 @@ debug.log
 .webpack
 src/react/components/admin/sites.tsx
 build-linux.sh
+ssotest*.json
