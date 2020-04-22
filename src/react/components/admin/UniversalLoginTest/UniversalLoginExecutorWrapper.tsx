@@ -22,18 +22,21 @@ const SECOND = 1000;
 class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   state = {
     currentTestIndex: 0,
-    testResults: [],
+    testResults: []
   };
 
   isPassed(test: Test, loginResult: LoginResult) {
-    return test.expectLoginSuccess == loginResult.loggedIn && test.expectError == loginResult.error;
+    return (
+      test.expectLoginSuccess == loginResult.loggedIn &&
+      test.expectLoginSuccess != loginResult.error
+    );
   }
 
   advance() {
     if (this.hasNextTest()) {
-      this.setState((state) => {
+      this.setState(state => {
         return {
-          currentTestIndex: state.currentTestIndex + 1,
+          currentTestIndex: state.currentTestIndex + 1
         };
       });
     }
@@ -44,7 +47,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   }
 
   setResult(currentTestIndex: number, testResult: TestResult) {
-    this.setState((state) => {
+    this.setState(state => {
       let testResults = state.testResults;
       testResults[currentTestIndex] = testResult;
 
@@ -95,7 +98,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
           const testResult = {
             passed: this.isPassed(test, loginResult),
             timedOut: loginResult.timedOut,
-            screenshot,
+            screenshot
           };
           this.setResult(currentTestIndex, testResult);
         }}

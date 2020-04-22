@@ -1,6 +1,6 @@
 export interface Test {
+  setup: string;
   expectLoginSuccess: boolean;
-  expectError: boolean;
   deleteCookies: boolean;
   speedFactor?: number;
   enterCorrectEmail?: boolean;
@@ -14,44 +14,44 @@ export interface SkipCondition {
   skipIfPassedEquals: boolean; // skip if the result success ("passed") of the test dependency equals this value
 }
 
-// don't change test order. it matters when it comes to deciding if a test can be skipped.
+// don't change test order without updating test dependencies
 export const tests: Test[] = [
   {
-    expectLoginSuccess: false,
-    expectError: true,
-    deleteCookies: true,
-    speedFactor: 6,
-    enterCorrectEmail: false,
-  },
-  {
-    expectLoginSuccess: false,
-    expectError: true,
-    deleteCookies: true,
-    speedFactor: 4,
-    enterCorrectEmail: true,
-    enterCorrectPassword: false,
-  },
-  {
+    setup: "Correct Credentials, Fast",
     expectLoginSuccess: true,
-    expectError: false,
     deleteCookies: true,
     speedFactor: 10,
     enterCorrectEmail: true,
-    enterCorrectPassword: true,
+    enterCorrectPassword: true
   },
   {
+    setup: "Correct Credentials, Slow",
     expectLoginSuccess: true,
-    expectError: false,
     deleteCookies: true,
     speedFactor: 2,
     enterCorrectEmail: true,
     enterCorrectPassword: true,
-    skipCondition: { testDependency: 2, skipIfPassedEquals: true },
+    skipCondition: { testDependency: 0, skipIfPassedEquals: true }
   },
   {
+    setup: "Preexisting Session",
     expectLoginSuccess: true,
-    expectError: false,
     deleteCookies: false,
-    skipCondition: { testDependency: 3, skipIfPassedEquals: false },
+    skipCondition: { testDependency: 1, skipIfPassedEquals: false }
   },
+  {
+    setup: "Wrong Email",
+    expectLoginSuccess: false,
+    deleteCookies: true,
+    speedFactor: 6,
+    enterCorrectEmail: false
+  },
+  {
+    setup: "Wrong Password",
+    expectLoginSuccess: false,
+    deleteCookies: true,
+    speedFactor: 4,
+    enterCorrectEmail: true,
+    enterCorrectPassword: false
+  }
 ];

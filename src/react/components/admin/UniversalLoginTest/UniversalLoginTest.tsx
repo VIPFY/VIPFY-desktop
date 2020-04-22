@@ -7,6 +7,7 @@ import { sites, Site } from "./sites";
 import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
+import { tests } from "./tests";
 const { session, dialog } = remote;
 
 interface Props {}
@@ -121,7 +122,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <i className="fal fa-play" />
             </span>
           </td>
-          {Array.from({ length: 5 }, (_, testIndex: number) => (
+          {Array.from({ length: tests.length }, (_, testIndex: number) => (
             <td key={`${site.app}_${siteIndexUnderTest}_${testIndex}`}>
               {this.renderTestStatus(
                 testIndex,
@@ -248,7 +249,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
         <div>
           {this.state.runningInBatchMode ? (
-            <span onClick={() => this.setState({ runningInBatchMode: false })} style={{marginRight: "8px"}}>
+            <span
+              onClick={() => this.setState({ runningInBatchMode: false })}
+              style={{ marginRight: "8px" }}>
               <i className="fal fa-pause fa-2x" />
             </span>
           ) : (
@@ -256,12 +259,15 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               onClick={async () => {
                 await this.setState({ runningInBatchMode: true });
                 this.advance(true);
-              }} style={{marginRight: "8px"}}>
+              }}
+              style={{ marginRight: "8px" }}>
               <i className="fal fa-play fa-2x" />
             </span>
           )}
           {this.state.takeScreenshots ? (
-            <span onClick={() => this.setState({ takeScreenshots: false })} style={{marginRight: "8px"}}>
+            <span
+              onClick={() => this.setState({ takeScreenshots: false })}
+              style={{ marginRight: "8px" }}>
               <span className="fa-stack" style={{ verticalAlign: "top" }}>
                 <i className="fal fa-camera fa-stack-1x"></i>
                 <i className="fal fa-ban fa-stack-2x"></i>
@@ -271,7 +277,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <span
               onClick={async () => {
                 await this.setState({ takeScreenshots: true });
-              }} style={{marginRight: "8px"}}>
+              }}
+              style={{ marginRight: "8px" }}>
               <i className="fal fa-camera fa-2x" />
             </span>
           )}
@@ -289,7 +296,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               const sites = JSON.parse(fs.readFileSync(res.filePaths[0], { encoding: "utf8" }));
               await this.setState({ sites });
             }}
-            title="Load from file" style={{marginRight: "8px"}}>
+            title="Load from file"
+            style={{ marginRight: "8px" }}>
             <i className="fal fa-folder-open fa-2x" />
           </span>
           <span
@@ -314,35 +322,27 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
           <thead>
             <tr>
               <th colSpan={2} />
-              <th>Test 1</th>
-              <th>Test 2</th>
-              <th>Test 3</th>
-              <th>Test 4</th>
-              <th>Test 5</th>
+              {Array.from({ length: tests.length }, (_, testIndex: number) => (
+                <th key={testIndex}>Test {testIndex + 1}</th>
+              ))}
             </tr>
             <tr>
               <th colSpan={2}>Given:</th>
-              <th>Wrong Email</th>
-              <th>Wrong Password</th>
-              <th>Correct Credentials, Fast</th>
-              <th>Correct Credentials, Slow</th>
-              <th>Preexisting Session</th>
+              {Array.from({ length: tests.length }, (_, testIndex: number) => (
+                <th key={testIndex}>{tests[testIndex].setup}</th>
+              ))}
             </tr>
             <tr>
               <th colSpan={2}>Expected:</th>
-              <th>Error</th>
-              <th>Error</th>
-              <th>Login</th>
-              <th>Login</th>
-              <th>Login</th>
+              {Array.from({ length: tests.length }, (_, testIndex: number) => (
+                <th key={testIndex}>{tests[testIndex].expectLoginSuccess ? "Login" : "Error"}</th>
+              ))}
             </tr>
             <tr>
               <th colSpan={2}>Tests Passed:</th>
-              <th>{this.renderProportion(0)}</th>
-              <th>{this.renderProportion(1)}</th>
-              <th>{this.renderProportion(2)}</th>
-              <th>{this.renderProportion(3)}</th>
-              <th>{this.renderProportion(4)}</th>
+              {Array.from({ length: tests.length }, (_, testIndex: number) => (
+                <th key={testIndex}>{this.renderProportion(testIndex)}</th>
+              ))}
             </tr>
             <tr>
               <th>App</th>
