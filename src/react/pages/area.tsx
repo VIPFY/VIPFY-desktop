@@ -547,7 +547,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         </div>
       );
     }
-    //  h3RBzBwcAPe9ZWZf55/AkDth3OhHRqmHXl9SSC8hhr4=
 
     return (
       <AppContext.Consumer>
