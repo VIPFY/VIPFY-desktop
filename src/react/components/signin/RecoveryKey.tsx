@@ -19,19 +19,28 @@ const SAVE_RECOVERY_KEY = gql`
   }
 `;
 
-const RecoveryKey = () => {
+interface Props {
+  continue?: Function;
+}
+
+const RecoveryKey = (props: Props) => {
   const client = useApolloClient();
 
   const [encryptionKey, setKey] = React.useState("");
   const [codeWindow, setWindow] = React.useState(null);
-  const [printError, setError] = React.useState(null);
+  const [printError, setPrintError] = React.useState(null);
+  const [localError, setLocalError] = React.useState(null);
   const [keyPair, setkeyPair] = React.useState(null);
 
   React.useEffect(async () => {
     try {
       const thisWindow = await remote.getCurrentWindow();
       setWindow(thisWindow);
+    } catch (error) {
+      console.error(error);
+    }
 
+    try {
       const recoveryKeys = await generateNewKeypair();
 
       const { data } = await client.query({
@@ -48,7 +57,7 @@ const RecoveryKey = () => {
             }
           }
         `,
-        fetchPolicy: "network-only",
+        fetchPolicy: "network-only"
       });
 
       const { privatekeyDecrypted } = data.fetchCurrentKey;
@@ -60,13 +69,15 @@ const RecoveryKey = () => {
 
       setkeyPair({
         privatekey: encryptedKey.toString("hex"),
-        publickey: recoveryKeys.publicKey.toString("hex"),
+        publickey: recoveryKeys.publicKey.toString("hex")
       });
 
       setKey(recoveryKeys.privateKey.toString("base64"));
     } catch (error) {
       console.error(error);
-      setError("Sorry, something went wrong. Please close and reopen the App.");
+      setLocalError(
+        "Sorry, something went wrong. You can skip this step for now. If it happens again, please contact support."
+      );
     }
   }, []);
 
@@ -115,11 +126,11 @@ const RecoveryKey = () => {
                   {
                     header: "Your VIPFY Recovery Code",
                     // Without the deviceName property, the printer select menu does not show up
-                    deviceName: (printers && printers[0].name) || "",
+                    deviceName: (printers && printers[0].name) || ""
                   },
                   (_success, errorType) => {
                     if (errorType) {
-                      setError(new Error(errorType));
+                      setPrintError(new Error(errorType));
                     }
                   }
                 );
@@ -134,11 +145,15 @@ const RecoveryKey = () => {
               <React.Fragment>
                 <ErrorComp error={error} />
                 <UniversalButton
-                  label="login"
+                  label={localError ? "skip" : "login"}
                   type="high"
                   className="continue-button"
                   onClick={async () => {
-                    mutate({ variables: { keyPair } });
+                    if (localError) {
+                      props.continue();
+                    } else {
+                      mutate({ variables: { keyPair } });
+                    }
                   }}
                 />
               </React.Fragment>
@@ -152,7 +167,7 @@ const RecoveryKey = () => {
 
 // Thou shall never delete this Hack, or the RecoveryKey functional component
 // will call upon the root of all theth evil errors
-export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
+export default class ErrorBoundary extends React.Component<Props, { hasError: boolean }> {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -172,6 +187,6 @@ export default class ErrorBoundary extends React.Component<{}, { hasError: boole
       return <h1>Something went wrong.</h1>;
     }
 
-    return <RecoveryKey />;
+    return <RecoveryKey {...this.props} />;
   }
 }

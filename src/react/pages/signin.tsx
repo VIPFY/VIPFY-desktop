@@ -20,7 +20,7 @@ export default (props: Props) => {
   const [responseData, setResponseData] = React.useState(null);
   const [email, setEmail] = React.useState("");
 
-  const changeProgress = (s) => {
+  const changeProgress = s => {
     props.resetError();
     const store = new Store();
 
@@ -59,7 +59,7 @@ export default (props: Props) => {
         <ChangeAccount
           backFunction={() => changeProgress("login")}
           addMachineUser={() => changeProgress("createUser")}
-          selectAccount={(email) => {
+          selectAccount={email => {
             setEmail(email);
             changeProgress("login");
           }}
@@ -90,7 +90,7 @@ export default (props: Props) => {
     case "passwordRecovery":
       return (
         <PasswordRecovery
-          setResponseData={(data) => setResponseData(data)}
+          setResponseData={data => setResponseData(data)}
           email={email}
           continueFunction={() => changeProgress("setNewPassword")}
           backFunction={() => changeProgress("login")}
@@ -101,20 +101,20 @@ export default (props: Props) => {
       return (
         <NewPassword
           responseData={responseData}
-          setResponseData={(data) => setResponseData(data)}
+          setResponseData={data => setResponseData(data)}
           continueFunction={() => changeProgress("login")}
         />
       );
 
     case "newRecoveryCode":
-      return <RecoveryKey />;
+      return <RecoveryKey continue={() => changeProgress("login")} />;
 
     default:
       return (
         <Login
           type="login"
           backFunction={() => null}
-          continueFunction={(v) => props.login(email, v)}
+          continueFunction={v => props.login(email, v)}
           email={email}
           changeUser={() => changeProgress("selectUser")}
           goToRecovery={() => changeProgress("passwordRecovery")}
