@@ -88,6 +88,7 @@ interface AreaState {
   activeTab: null | object;
   adminOpen: boolean;
   consentPopup: boolean;
+  allowSkip: boolean;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -103,7 +104,8 @@ class Area extends React.Component<AreaProps, AreaState> {
     openInstances: {},
     activeTab: null,
     adminOpen: false,
-    consentPopup: false
+    consentPopup: false,
+    allowSkip: false
   };
 
   componentDidMount = async () => {
@@ -538,13 +540,14 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
 
-    if (!this.props.recoverypublickey && !isImpersonating) {
+    if (!this.state.allowSkip && !this.props.recoverypublickey && !isImpersonating) {
       return (
         <div className="centralize backgroundLogo">
-          <RecoveryKey />
+          <RecoveryKey continue={() => this.setState({ allowSkip: true })} />
         </div>
       );
     }
+    //  h3RBzBwcAPe9ZWZf55/AkDth3OhHRqmHXl9SSC8hhr4=
 
     return (
       <AppContext.Consumer>
