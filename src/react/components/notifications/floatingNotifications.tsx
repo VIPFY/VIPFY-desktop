@@ -68,6 +68,7 @@ class FloatingNotifications extends React.Component<Props, State> {
                 progress={newNot.options && newNot.options.progress}
                 button={newNot.options && newNot.options.button}
                 autoclose={newNot.options && newNot.options.autoclose}
+                failed={newNot.options && newNot.options.failed}
               />
             )
           });
@@ -111,6 +112,12 @@ class FloatingNotifications extends React.Component<Props, State> {
                   autoclose={
                     (updateNot.options && updateNot.options.autoclose) ||
                     (updateElement.data.options && updateElement.data.options.autoclose)
+                  }
+                  failed={
+                    (updateNot.options && updateNot.options.failed) ||
+                    ((!updateNot.options || updateNot.options.failed == null) &&
+                      updateElement.data.options &&
+                      updateElement.data.options.failed)
                   }
                 />
               )
