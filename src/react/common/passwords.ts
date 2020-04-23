@@ -23,8 +23,8 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
           variables: {
             pw: oldPw,
             newPw: newPw,
-            confirmPw: newPw,
-          },
+            confirmPw: newPw
+          }
         });
         return r;
       } catch (error) {
@@ -47,7 +47,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
     const newKey = {
       privatekey: encPrivateKey.toString("hex"),
       publickey: publicKey.toString("hex"),
-      encryptedby: null,
+      encryptedby: null
     };
 
     const [d, { data }] = await Promise.all([
@@ -66,14 +66,14 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
             }
           }
         `,
-        fetchPolicy: "network-only",
+        fetchPolicy: "network-only"
       }),
       // Get the challenge from the cache
       client.query({
         query: FETCH_RECOVERY_CHALLENGE,
         variables: { email },
-        fetchPolicy: "network-only",
-      }),
+        fetchPolicy: "network-only"
+      })
     ]);
 
     if (!d.data || !d.data.fetchCurrentKey || !data) {
@@ -88,7 +88,7 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
       id: k.id,
       publickey: k.publickey,
       privatekey: priv.toString("hex"),
-      encryptedby: "new",
+      encryptedby: "new"
     };
 
     // Generate new RecoverySecret
@@ -130,9 +130,9 @@ export async function updatePassword(client, oldPw: string, newPw: string) {
         replaceKeys: [replaceKey],
         passwordMetrics: {
           passwordlength,
-          passwordstrength,
-        },
-      },
+          passwordstrength
+        }
+      }
     });
     localStorage.setItem("key1", newKeys.encryptionkey1.toString("hex"));
 
@@ -156,7 +156,7 @@ async function fetchEmail(client, userid: string): Promise<string> {
           }
         }
       `,
-      variables: { userid },
+      variables: { userid }
     })
   ).data.fetchSemiPublicUser.emails[0].email;
 }
@@ -172,7 +172,7 @@ async function usesEncryption(client, unitid: string): Promise<boolean> {
           }
         }
       `,
-      variables: { unitid },
+      variables: { unitid }
     })
   ).data.fetchSemiPublicUser.usesencryption;
 }
@@ -198,14 +198,15 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
         variables: {
           unitid,
           password: newPassword,
-          logOut: true,
-        },
+          logOut: true
+        }
       });
       return r;
     }
 
     const email = await fetchEmail(client, unitid);
     const { loginkey, encryptionkey1 } = await hashPassword(client, email, newPassword);
+
     const passwordstrength = computePasswordScore(newPassword);
     const passwordlength = newPassword.length;
 
@@ -217,36 +218,30 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
     const newKey = {
       privatekey: encPrivateKey.toString("hex"),
       publickey: publicKey.toString("hex"),
-      encryptedby: null,
+      encryptedby: null
     };
 
-    const [licences, { data }] = await Promise.all([
-      client.query({
-        query: gql`
-          query licencekeys($unitid: ID!) {
-            fetchUserLicenceAssignments(unitid: $unitid) {
-              id
-              key
-            }
+    const licences = await client.query({
+      query: gql`
+        query licencekeys($unitid: ID!) {
+          fetchUserLicenceAssignments(unitid: $unitid) {
+            id
+            key
           }
-        `,
-        fetchPolicy: "network-only",
-        variables: { unitid },
-      }),
-      client.query({
-        query: FETCH_RECOVERY_CHALLENGE,
-        variables: { email },
-        fetchPolicy: "network-only",
-      }),
-    ]);
+        }
+      `,
+      fetchPolicy: "network-only",
+      variables: { unitid }
+    });
 
     const licenceUpdates = (
       await Promise.all(
         licences.data.fetchUserLicenceAssignments
-          .flatMap((licence) => {
+          .flatMap(licence => {
             if (!licence.key || !licence.key.encrypted) {
               return null;
             }
+
             return licence.key.encrypted.map(
               async (entry: { key: string; data: string; belongsto: string }) => {
                 if (entry.belongsto != unitid) {
@@ -257,20 +252,15 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
                 return {
                   old: entry,
                   new: { key: "new", data, belongsto: "" + unitid },
-                  licence: licence.id,
+                  licence: licence.id
                 };
               }
             );
           })
-          .filter((l) => l !== null)
+          .filter(l => l !== null)
       )
-    ).filter((l) => l !== null);
+    ).filter(l => l !== null);
 
-    // Generate new RecoverySecret
-    const recoveryPrivateKey = await encryptLicence(
-      privateKey,
-      Buffer.from(data.fetchRecoveryChallenge.publicKey, "hex")
-    );
     privateKey.fill(0); // overwrite it for security
 
     const r = await client.mutate({
@@ -281,7 +271,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           $passwordMetrics: PasswordMetricsInput!
           $logOut: Boolean
           $newKey: KeyInput!
-          $recoveryPrivateKey: String
           $deprecateAllExistingKeys: Boolean!
           $licenceUpdates: [licenceKeyUpdateInput!]!
         ) {
@@ -289,7 +278,6 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
             unitid: $unitid
             newPasskey: $newPasskey
             passwordMetrics: $passwordMetrics
-            recoveryPrivateKey: $recoveryPrivateKey
             logOut: $logOut
             newKey: $newKey
             deprecateAllExistingKeys: $deprecateAllExistingKeys
@@ -310,14 +298,13 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
         newPasskey: loginkey.toString("hex"),
         passwordMetrics: {
           passwordlength,
-          passwordstrength,
+          passwordstrength
         },
-        recoveryPrivateKey: recoveryPrivateKey.toString("hex"),
         newKey,
         licenceUpdates,
         deprecateAllExistingKeys: true,
-        logOut: true,
-      },
+        logOut: true
+      }
     });
     return r;
   } catch (error) {
@@ -345,11 +332,11 @@ export async function decryptLicenceKey(client, licence) {
             isadmin
           }
         }
-      `,
+      `
     }).me;
 
     const candidates = licence.key.encrypted.filter(
-      (e) => e.belongsto == id || e.belongsto == "admin"
+      e => e.belongsto == id || e.belongsto == "admin"
     );
 
     for (const candidate of candidates) {
@@ -362,7 +349,7 @@ export async function decryptLicenceKey(client, licence) {
               }
             }
           `,
-          variables: { publickey: candidate.key },
+          variables: { publickey: candidate.key }
         });
 
         if (d.error) {
@@ -384,7 +371,7 @@ export async function decryptLicenceKey(client, licence) {
                   }
                 }
               `,
-              variables: { id: k.id },
+              variables: { id: k.id }
             });
 
             key = JSON.parse(
@@ -446,7 +433,7 @@ export async function decryptAdminKey(
             }
           }
         }
-      `,
+      `
     })
   ).data.me.company.adminkey;
   for (const candidate of candidates) {
@@ -466,7 +453,7 @@ export async function decryptAdminKey(
             }
           }
         `,
-        variables: { id: candidate.id },
+        variables: { id: candidate.id }
       });
       if (d.error) {
         console.log(d.error);

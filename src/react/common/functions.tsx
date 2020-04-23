@@ -89,7 +89,7 @@ export function calculatepartsum(plan, useralready, usercount): number {
   }
 }
 
-export const filterError = (error) => {
+export const filterError = error => {
   if (!error) {
     return "";
   }
@@ -111,7 +111,7 @@ export const filterError = (error) => {
 export const AppContext = React.createContext();
 
 // TODO: [VIP-433] Better logic in case of an undefined error
-export const ErrorComp = (props) => (
+export const ErrorComp = props => (
   <div style={{ opacity: props.error ? 1 : 0 }} className="error-field">
     {props.error && filterError(props.error)}
   </div>
@@ -148,8 +148,8 @@ export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Elemen
   return r;
 };
 
-export const sleep = async (ms) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = async ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
 };
 
 const DUMMY_QUERY = gql`
@@ -161,7 +161,6 @@ const DUMMY_QUERY = gql`
 `;
 
 export const refetchQueries = async (client: ApolloClient<InMemoryCache>, queries: string[]) => {
-  //console.log("refetching", queries);
   // refetchQueries of the mutate functions can refetch observed queries by name,
   // using the variables used by the query observer
   // that's the easiest way to get this functionality
@@ -170,15 +169,15 @@ export const refetchQueries = async (client: ApolloClient<InMemoryCache>, querie
     errorPolicy: "ignore",
     fetchPolicy: "no-cache",
     refetchQueries: queries,
-    awaitRefetchQueries: true,
+    awaitRefetchQueries: true
   });
 };
 
 export const layoutUpdate = (licences, dragItem, dropItem) => {
-  const dragged = licences.find((licence) => licence.id == dragItem);
+  const dragged = licences.find(licence => licence.id == dragItem);
 
-  const filtered = licences.filter((licence) => licence.id != dragItem);
-  const index = filtered.findIndex((licence) => licence.id == dropItem);
+  const filtered = licences.filter(licence => licence.id != dragItem);
+  const index = filtered.findIndex(licence => licence.id == dropItem);
   const newLicences = [...filtered.slice(0, index + 1), dragged, ...filtered.slice(index + 1)];
   newLicences.forEach((licence, key) => {
     licence.sidebar = key;
@@ -187,8 +186,8 @@ export const layoutUpdate = (licences, dragItem, dropItem) => {
   return newLicences;
 };
 
-export const filterLicences = (licences) =>
-  licences.filter((licence) => {
+export const filterLicences = licences =>
+  licences.filter(licence => {
     if (licence.disabled || (licence.endtime && moment().isAfter(licence.endtime))) {
       return false;
     } else {
@@ -226,7 +225,7 @@ export const filterAndSort = (licences, property) =>
 
 export const AppIcon = ({ app }) => (
   <div className="app-icon-wrapper">
-    <PrintServiceSquare service={app} appidFunction={(a) => a} className="app-icon" />
+    <PrintServiceSquare service={app} appidFunction={a => a} className="app-icon" />
     <span className="app-name">{app.name}</span>
   </div>
 );
@@ -238,7 +237,7 @@ export const ConsentText = () => (
     <span
       style={{ color: "#20BAA9" }}
       className="fancy-link"
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
         shell.openExternal("https://vipfy.store/privacy");
       }}>
@@ -248,7 +247,7 @@ export const ConsentText = () => (
     <span
       style={{ color: "#20BAA9" }}
       className="fancy-link"
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
         shell.openExternal("https://vipfy.store/tos");
       }}>
@@ -296,7 +295,7 @@ export function getMyUnitId(client: any): string {
           id
         }
       }
-    `,
+    `
   }).me.id;
 }
 
@@ -314,7 +313,7 @@ export function getMyCompaniesUnitId(client: any): string {
           }
         }
       }
-    `,
+    `
   }).me.company.unitid.id;
 }
 
@@ -330,7 +329,7 @@ export async function getMyEmail(client: any): Promise<string> {
             }
           }
         }
-      `,
+      `
     })
   ).data.me.emails[0].email;
 }
@@ -341,7 +340,7 @@ const currentYear = moment().get("year");
  * Computes the vacation days an employee has in a year
  * @param {object} employee
  */
-export const computeFullDays = (employee) =>
+export const computeFullDays = employee =>
   employee.vacationDaysPerYear[currentYear] + (computeLeftOverDays(employee) || 0);
 
 /**
@@ -354,7 +353,7 @@ export const computeTakenDays = ({ vacationRequests }) => {
   } else {
     let days = 0;
 
-    vacationRequests.forEach((request) => {
+    vacationRequests.forEach(request => {
       if (request.status == "CONFIRMED" && moment(request.requested).get("year") == currentYear) {
         days += request.days;
       }
@@ -382,7 +381,7 @@ export const computeLeftOverDays = ({ vacationDaysPerYear, vacationRequests }) =
   });
 
   return (
-    remainingVacationDays - requestsLastYears.map((t) => t.days).reduce((acc, cV) => acc + cV, 0)
+    remainingVacationDays - requestsLastYears.map(t => t.days).reduce((acc, cV) => acc + cV, 0)
   );
 };
 
@@ -390,7 +389,7 @@ export const computeLeftOverDays = ({ vacationDaysPerYear, vacationRequests }) =
  * Renders an icon for a given status
  * @param {string} status Either PENDING, REJECTED or CONFIRMED
  */
-export const renderIcon = (status) => {
+export const renderIcon = status => {
   switch (status) {
     case "PENDING":
       return "clock";
@@ -419,7 +418,7 @@ export async function getMe(client: any): Promise<string> {
             lastname
           }
         }
-      `,
+      `
     })
   ).data.me.emails[0].email;
 }
