@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import { QUERY_USER } from "../queries/user";
+import { WorkAround } from "../interfaces";
 
 /**
  * Prints a user name. If the person is the current user, it diplays "You"
@@ -31,7 +32,7 @@ export default function UserName(props: {
   }
 
   return (
-    <Query query={QUERY_USER} variables={{ userid: unitid }}>
+    <Query<WorkAround, WorkAround> query={QUERY_USER} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;

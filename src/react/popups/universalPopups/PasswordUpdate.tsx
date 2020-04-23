@@ -20,7 +20,7 @@ interface Password {
 
 interface Props {
   closeFunction: Function;
-  unitid: number;
+  unitid: string;
   client: any; // from withApollo
 }
 
@@ -154,9 +154,10 @@ class PasswordUpdate extends React.Component<Props, State> {
                   )}
                 </div>
 
-                {/* The Popup doesn't like Fragments, so every Button needs it's
-                own check 
-            */}
+                {/*
+                 * The Popup doesn't like Fragments, so every Button needs it's
+                 * own check
+                 */}
 
                 {!data && (
                   <UniversalButton
@@ -184,6 +185,7 @@ class PasswordUpdate extends React.Component<Props, State> {
                         if (password.password !== passwordRepeat.password) {
                           return null;
                         }
+
                         return updatePassword(
                           client,
                           currentPassword?.password,

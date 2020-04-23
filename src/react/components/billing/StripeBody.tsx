@@ -187,8 +187,6 @@ class StripeBody extends React.Component<Props, State> {
       }
     ];
 
-    console.log(this.props.emails);
-
     return (
       <Mutation
         mutation={ADD_PAYMENT}

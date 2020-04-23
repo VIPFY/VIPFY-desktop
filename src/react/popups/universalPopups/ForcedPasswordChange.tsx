@@ -33,7 +33,7 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
   };
 
   private passwordChanged(
-    { _score, password, isValid }: { score: number; password: string; isValid: boolean },
+    { password, isValid }: { score: number; password: string; isValid: boolean },
     _feedback: any
   ): void {
     this.setState({ newPasswordValid: isValid, newPassword: password });

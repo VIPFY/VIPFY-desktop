@@ -43,7 +43,6 @@ class GenericInputField extends Component<Props, State> {
   };
 
   componentDidUpdate() {
-    //console.log("DIDUPDATE", this.props.placeholder, this.props.focus);
     if (this.props.focus) {
       this.nameInput.focus();
     }
@@ -110,7 +109,6 @@ class GenericInputField extends Component<Props, State> {
     }
   }
   handleEnter(e) {
-    //console.log("ENTER");
     if (e.key === "Enter" && this.props.onEnter) {
       this.props.onEnter();
     }
