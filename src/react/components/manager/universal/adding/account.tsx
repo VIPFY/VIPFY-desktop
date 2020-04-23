@@ -16,6 +16,7 @@ interface Props {
   alias: string | null;
   createAccount: Function;
   client: any;
+  checkEmployeeOrbit: Function;
 }
 
 interface State {
@@ -187,7 +188,7 @@ class CreateAccount extends React.Component<Props, State> {
               <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
                 <span
                   style={{ lineHeight: "24px", width: "84px" }}
-                  title="An administator can't edit nor access a private account">
+                  title="An administator can't edit nor access a private account from his account. It is still possible for him to reset your password and than login in into your account directly.">
                   Private:
                 </span>
                 <UniversalCheckbox

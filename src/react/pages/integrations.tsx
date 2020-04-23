@@ -125,6 +125,7 @@ class Integrations extends React.Component<{}, AppPageState> {
                       sso={this.state.ownSSO}
                       //  maxTime={7000}
                       closeFunction={() => this.setState({ showLoading: false, popupSSO: false })}
+                      isEmployee={true}
                     />
                   )}
                 </React.Fragment>
