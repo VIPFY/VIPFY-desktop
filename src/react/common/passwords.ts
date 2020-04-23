@@ -467,20 +467,3 @@ export async function decryptAdminKey(
 
   throw new Error("failed finding decryptable AdminKey");
 }
-
-const test = {
-  encrypted: [
-    {
-      key: "713137ad0819ce2f98c416487b284cdad437a029161301a7312447910a70a710",
-      data:
-        "Yjqh1s5a1ZdVAzenLLKDzi26l475aPSv/DQwSu4zSw79V1bzUA3RiWQLSlk2GAYc+kQ+2fvtuW4ejJILyyh8UJqVFRrKuOPB5YXsqhgjQ72ZcHVZeUWtLV2hVxEcbvCcv+MhBn4O7az9mqwFzEjYwswcxdmL69w9G6R63Cfc54afSjSGlpswVCIliCk7OsRCJrxUTrpVc1JIuUY+VaTqTkUK8Z8yuGz/4hZiIumLbvo=",
-      belongsto: "admin"
-    },
-    {
-      key: "76f98fc6d8e9773927c7b98e594f35b6cd835db8c72d3cb7cd86ed8252697b14",
-      data:
-        "Zf3GAXeOy8o7NbqEWGEAEkkyN3VM1PRo4G886Pk1M0Pxtwy9znjdaL9XWPhHXiRWwrfHCrk/thUoEc9dCPJMTMiNMXXbZgePha6V99ntCs53ShX2OAxL7EhViwAsSMdwYmpxP/SA6SX91ngvYFiIum26x6dkfJBZxnaiPar0m2AHnIDj2Sl3d+GpDrqq2m+jEFJRLt+ZMTj9aYW37fuSoNJp94rwHQvhmdrB/0LkRBM=",
-      belongsto: "4344f72b-bac8-4ba8-b15f-d5b9633ff3ae"
-    }
-  ]
-};
