@@ -358,15 +358,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "lmanager"
       }
     ],
-    "ACCOUNT INTEGRATOR": [
-      {
-        label: "Account Integrator",
-        location: "integrations",
-        icon: "shapes",
-        show: this.props.isadmin,
-        highlight: "integrationselement"
-      }
-    ],
     BILLING: [
       {
         label: "Billing Information",
@@ -512,7 +503,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace", component: Marketplace, admin: true },
       { path: "marketplace/:appid/", component: AppPage, admin: true },
       { path: "marketplace/:appid/:action", component: AppPage, admin: true },
-      { path: "integrations", component: Integrations, admin: true },
+      { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
       { path: "support", component: SupportPage },

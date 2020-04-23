@@ -66,7 +66,7 @@ class Integrations extends React.Component<{}, AppPageState> {
             return element.name.toLowerCase().includes(this.state.searchstring.toLowerCase());
           });
 
-          apps.sort(function(a, b) {
+          apps.sort(function (a, b) {
             let nameA = a.name.toUpperCase(); // ignore upper and lowercase
             let nameB = b.name.toUpperCase(); // ignore upper and lowercase
 
@@ -102,6 +102,7 @@ class Integrations extends React.Component<{}, AppPageState> {
                   {...details}
                   key={details.id}
                   icon={details.icon ? details.icon : details.logo}
+                  isEmployee={true}
                 />
               ))}
 

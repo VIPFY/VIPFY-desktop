@@ -11,6 +11,9 @@ interface Props {
   id: number;
   logo: string;
   name: string;
+  isEmployee?: boolean;
+  needssubdomain?: boolean;
+  options?: any;
 }
 
 interface State {
@@ -53,8 +56,18 @@ class AppCardIntegrations extends React.Component<Props, State> {
                 <AssignNewAccount
                   employee={data.me}
                   close={() => this.setState({ popup: false })}
-                  service={this.props}
+                  service={{ id: this.props.id, logo: this.props.logo, name: this.props.name }}
                   noServiceEdit={true}
+                  isEmployee={this.props.isEmployee}
+                  orbit={{
+                    id: "employeeIntegrated",
+                    appid: this.props.id,
+                    alias: `${this.props.name} (Integrated)`,
+                    licences: [],
+                    needssubdomain:
+                      (this.props.isEmployee && this.props.needssubdomain) || undefined,
+                    options: (this.props.isEmployee && this.props.options) || undefined
+                  }}
                 />
               );
             }}

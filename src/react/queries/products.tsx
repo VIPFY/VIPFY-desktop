@@ -146,6 +146,7 @@ export const fetchCompanyServices = gql`
           alias
           starttime
           endtime
+          options
           assignments {
             assignmentid
             starttime
@@ -202,6 +203,7 @@ export const fetchCompanyService = gql`
           alias
           starttime
           endtime
+          options
           assignments {
             assignmentid
             tags
