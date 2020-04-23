@@ -615,6 +615,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 )*/
                 }
                 viewID={this.props.viewID}
+                impersonation={this.props.impersonation}
               />
 
               {/* Temporary licences */}

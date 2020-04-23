@@ -10,6 +10,7 @@ interface Props {
   header?: string;
   icon?: string;
   setApp: Function;
+  impersonation?: boolean;
 }
 
 interface State {
@@ -193,121 +194,26 @@ class SidebarApps extends React.Component<Props, State> {
         className="sidebar-main sidebarAppsholder"
         onKeyDown={e => this.handleArrowKeys(e.key)}
         onBlur={() => this.setState({ selected: -1 })}>
-        {/* <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
-          <button
-            type="button"
-            onClick={this.toggleApps}
-            className="naked-button itemHolder" sidebar-link-apps
-            style={{ justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", position: "relative" }}>
-              <Tooltip
-                className="sidebar-tooltip"
-                useHover={!sidebarOpen}
-                distance={7}
-                arrowSize={5}
-                direction="right"
-                content={SortComponent}>
-                <div className="naked-button sidebarButton">
-                  <i className={`fal fa-${icon ? icon : "th-large"} sidebar-icon`} />
-                </div>
-              </Tooltip>
-              <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-                {this.props.header ? this.props.header : "My Apps"}
-              </span>
-            </div>
-
-            <div style={{ position: "absolute", left: "187px" }}>
-              <Tooltip
-                className="sidebar-tooltip"
-                arrowSize={5}
-                distance={12}
-                useHover={sidebarOpen}
-                content={`${showApps ? "Hide" : "Show"} Apps`}
-                direction="right">
-                <div className="naked-button sidebarButton showMore">
-                  <i className={`carret fal fa-angle-right ${showApps ? "open" : ""}`} />
-                </div>
-              </Tooltip>
-            </div>
-          </button>
-        </li> */}
-
         <li>
           <ul className="sidebar-apps">
-            {/* {showApps && (
-              <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`} ref={this.wrapper}>
-                <button
-                  type="button"
-                  onClick={() => this.searchInput.focus()}
-                  className={`naked-button itemHolder${
-                    this.state.selected == -1 ? " selected" : ""
-                  }`} /*sidebar-link-apps
-                >
-                  <Tooltip
-                    useHover={!sidebarOpen}
-                    direction="right"
-                    content={input()}
-                    className="sidebar-tooltip">
-                    <div className="naked-button sidebarButton">
-                      <i className="carret fal fa-search" />
-                    </div>
-                  </Tooltip>
-                  {sidebarOpen ? (
-                    input(sidebarOpen ? "" : "-hide")
-                  ) : (
-                    <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
-                      <input
-                        value={this.state.searchString}
-                        onChange={e =>
-                          this.setState({ searchString: e.target.value, selected: -1 })
-                        }
-                        placeholder="Search Apps"
-                        className="sidebar-search-hide"
-                        onContextMenu={e => {
-                          e.preventDefault();
-                          this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
-                        }}
-                      />
-                    </div>
-                  )}
-                  {this.state.context && (
-                    <button
-                      className="cleanup contextButton"
-                      onClick={() => {
-                        let value = clipboard.readText();
-                        this.setState({ searchString: value, context: false });
-                      }}
-                      style={{
-                        position: "fixed",
-                        top: this.state.clientY,
-                        left: this.state.clientX,
-                        right: "auto",
-                        color: "#253647",
-                        zIndex: 10000
-                      }}>
-                      <i className="fal fa-paste" />
-                      <span style={{ marginLeft: "8px", fontSize: "12px" }}>Paste</span>
-                    </button>
-                  )}
-                </button>
-              </li>
-            )} */}
-
             {showApps &&
               licences.length > 0 &&
               licences
                 .filter(licence => {
-                  if (licence.boughtplanid.alias) {
-                    return licence.boughtplanid.alias
-                      .toUpperCase()
-                      .includes(this.state.searchString.toUpperCase());
+                  if (this.props.impersonation && licence.options && licence.options.private) {
+                    return false;
                   } else {
-                    return licence.boughtplanid.planid.appid.name
-                      .toUpperCase()
-                      .includes(this.state.searchString.toUpperCase());
+                    if (licence.boughtplanid.alias) {
+                      return licence.boughtplanid.alias
+                        .toUpperCase()
+                        .includes(this.state.searchString.toUpperCase());
+                    } else {
+                      return licence.boughtplanid.planid.appid.name
+                        .toUpperCase()
+                        .includes(this.state.searchString.toUpperCase());
+                    }
                   }
                 })
-                //.sort((a, b) => a.sidebar - b.sidebar)
                 .sort((a, b) => {
                   let nameA = a.boughtplanid.planid.appid.name.toUpperCase();
                   let nameB = b.boughtplanid.planid.appid.name.toUpperCase();
@@ -331,17 +237,6 @@ class SidebarApps extends React.Component<Props, State> {
 
                   return 0;
                 })
-                /*.filter(
-                  l =>
-                    (!l.disabled &&
-                      !l.boughtplanid.planid.appid.disabled &&
-                      (l.endtime > moment.now() || l.endtime == null) &&
-                      !l.vacationstart) ||
-                    (l.vacationstart &&
-                      l.vacationstart <= moment.now() &&
-                      ((l.vacationend && l.vacationend > moment.now()) || l.vacationend == null))
-                )*/
-                /* .filter((_, index) => (showMoreApps ? true : index < 5)) */
                 .map((licence, index) => {
                   if (!licence) {
                     return;
