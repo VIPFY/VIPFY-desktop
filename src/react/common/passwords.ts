@@ -221,18 +221,31 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
       encryptedby: null
     };
 
-    const licences = await client.query({
-      query: gql`
-        query licencekeys($unitid: ID!) {
-          fetchUserLicenceAssignments(unitid: $unitid) {
-            id
-            key
+    const [licences, { data }] = await Promise.all([
+      client.query({
+        query: gql`
+          query licencekeys($unitid: ID!) {
+            fetchUserLicenceAssignments(unitid: $unitid) {
+              id
+              key
+            }
           }
-        }
-      `,
-      fetchPolicy: "network-only",
-      variables: { unitid }
-    });
+        `,
+        fetchPolicy: "network-only",
+        variables: { unitid }
+      }),
+      client.query({
+        query: gql`
+          query onFetchSemiPublicUser($userid: ID!) {
+            fetchSemiPublicUser(userid: $userid) {
+              id
+              recoverypublickey
+            }
+          }
+        `,
+        variables: { userid: unitid }
+      })
+    ]);
 
     const licenceUpdates = (
       await Promise.all(
@@ -247,8 +260,10 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
                 if (entry.belongsto != unitid) {
                   return null;
                 }
+
                 let key = await decryptLicenceKey(client, licence);
                 let data = (await encryptLicence(key, publicKey)).toString("base64");
+
                 return {
                   old: entry,
                   new: { key: "new", data, belongsto: "" + unitid },
@@ -261,6 +276,17 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
       )
     ).filter(l => l !== null);
 
+    let recoveryPrivateKey = null;
+
+    if (data.fetchSemiPublicUser.recoverypublickey) {
+      //Generate new RecoverySecret
+      recoveryPrivateKey = await encryptLicence(
+        privateKey,
+        Buffer.from(data.fetchSemiPublicUser.recoverypublickey, "hex")
+      );
+      recoveryPrivateKey.toString("hex");
+    }
+
     privateKey.fill(0); // overwrite it for security
 
     const r = await client.mutate({
@@ -271,6 +297,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           $passwordMetrics: PasswordMetricsInput!
           $logOut: Boolean
           $newKey: KeyInput!
+          $recoveryPrivateKey: String
           $deprecateAllExistingKeys: Boolean!
           $licenceUpdates: [licenceKeyUpdateInput!]!
         ) {
@@ -280,6 +307,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
             passwordMetrics: $passwordMetrics
             logOut: $logOut
             newKey: $newKey
+            recoveryPrivateKey: $recoveryPrivateKey
             deprecateAllExistingKeys: $deprecateAllExistingKeys
             licenceUpdates: $licenceUpdates
           ) {
@@ -301,6 +329,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
           passwordstrength
         },
         newKey,
+        recoveryPrivateKey,
         licenceUpdates,
         deprecateAllExistingKeys: true,
         logOut: true
