@@ -51,7 +51,6 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
   render() {
     return (
       <MutationLike
-        client={this.props.client}
         update={cache => {
           const { me } = cache.readQuery({ query: ME });
 

@@ -11,6 +11,7 @@ import { MutationLike } from "../../common/mutationlike";
 import { updatePassword } from "../../common/passwords";
 import { updateEmployeePassword } from "../../common/passwords";
 import IconButton from "../../common/IconButton";
+import { WorkAround } from "../../interfaces";
 
 interface Password {
   score: number;
@@ -43,9 +44,7 @@ class PasswordUpdate extends React.Component<Props, State> {
     return (
       <UserContext.Consumer>
         {({ userid }) => (
-          <MutationLike
-            client={client}
-            mutation={unitid == userid ? updatePassword : updateEmployeePassword}>
+          <MutationLike mutation={unitid == userid ? updatePassword : updateEmployeePassword}>
             {(updatePassword, { loading, error, data }) => (
               <PopupBase
                 buttonStyles={{ justifyContent: "space-between" }}
