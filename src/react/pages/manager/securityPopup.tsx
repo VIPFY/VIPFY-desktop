@@ -84,14 +84,17 @@ export default (props: Props) => {
               securityPage ? "the user is" : "you are"
             } currently logged into the account`,
             state: "showSessions"
-          },
-          {
+          }
+        ];
+
+        if (!localStorage.getItem("impersonator-token")) {
+          links.push({
             header: "Update Password",
             text: "You can update the current password here",
             state: "showPasswordUpdate",
             button: "update"
-          }
-        ];
+          });
+        }
 
         if (securityPage) {
           if (user.twofactormethods.length <= 0) {
