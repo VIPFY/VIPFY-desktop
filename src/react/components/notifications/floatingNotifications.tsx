@@ -46,8 +46,9 @@ class FloatingNotifications extends React.Component<Props, State> {
         ) {
           if (
             subscriptionData.data.newNotification &&
-            subscriptionData.data.newNotification.options &&
-            subscriptionData.data.newNotification.options.type != "update"
+            (!subscriptionData.data.newNotification.options ||
+              (subscriptionData.data.newNotification.options &&
+                subscriptionData.data.newNotification.options.type != "update"))
           ) {
             const newNot = subscriptionData.data.newNotification;
             this.floatingNotifications.push({
@@ -70,7 +71,7 @@ class FloatingNotifications extends React.Component<Props, State> {
                     );
                     this.forceUpdate();
                   }}
-                  {...newNot.options}
+                  {...(newNot.options ? newNot.options : {})}
                 />
               )
             });

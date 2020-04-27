@@ -153,8 +153,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
         }
         if (
           subscriptionData.data.newNotification &&
-          subscriptionData.data.newNotification.options &&
-          subscriptionData.data.newNotification.options.level > 1
+          (!subscriptionData.data.newNotification.options ||
+            (subscriptionData.data.newNotification.options &&
+              subscriptionData.data.newNotification.options.level > 1))
         ) {
           this.setState({ notify: true });
           setTimeout(() => this.setState({ notify: false }), 5000);
