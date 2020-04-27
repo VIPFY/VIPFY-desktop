@@ -3,17 +3,6 @@ import { Query } from "react-apollo";
 import { WorkAround } from "../interfaces";
 import { fetchTeam } from "../queries/departments";
 
-/**
- * Prints a user name. If the person is the current user, it diplays "You"
- *
- * @param userid is the currently logged in user, can be passed through from the app
- * @param unitid is the id of the username to be displayed
- * @param short whether to choose a shorter represenation (e.g. first name only). defaults to false
- *
- * @example <UserName {...props} unitid={22} short={true} />
- *
- * @returns {JSX.Element}
- */
 export default function TeamName(props: {
   teamid: string;
   short?: boolean;

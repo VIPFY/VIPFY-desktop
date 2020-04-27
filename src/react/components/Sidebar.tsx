@@ -162,10 +162,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
         this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
         if (
           subscriptionData.data.newNotification &&
-          (subscriptionData.data.newNotification.options === undefined ||
+          (!subscriptionData.data.newNotification.options ||
             (subscriptionData.data.newNotification.options &&
               subscriptionData.data.newNotification.options.type != "update" &&
-              (subscriptionData.data.newNotification.options.level === undefined ||
+              (!subscriptionData.data.newNotification.options.level ||
                 subscriptionData.data.newNotification.options.level > 1)))
         ) {
           return {

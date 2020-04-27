@@ -40,8 +40,8 @@ class FloatingNotifications extends React.Component<Props, State> {
         }
         if (
           subscriptionData.data.newNotification &&
-          (subscriptionData.data.newNotification.options === undefined ||
-            subscriptionData.data.newNotification.options.level == undefined ||
+          (!subscriptionData.data.newNotification.options ||
+            !subscriptionData.data.newNotification.options.level ||
             subscriptionData.data.newNotification.options.level > 1)
         ) {
           if (
