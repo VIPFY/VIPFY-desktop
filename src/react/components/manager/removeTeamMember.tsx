@@ -98,7 +98,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
                       );
                     }
                   }}
-                  startingvalue={this.state.deleteArray[k].bool}
+                  startingvalue={this.state.deleteArray[k] && this.state.deleteArray[k].bool}
                 />
               </span>
 
@@ -132,7 +132,6 @@ class RemoveTeamMember extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("RTM", this.props, this.state);
     const employee = this.props.employee;
     return (
       <PopupBase
@@ -252,7 +251,6 @@ class RemoveTeamMember extends React.Component<Props, State> {
           type="high"
           label="Save"
           onClick={async () => {
-            console.log("STATE", this.state, this.props);
             try {
               this.setState({ saving: true });
               await this.props.removeMemberFromTeam({

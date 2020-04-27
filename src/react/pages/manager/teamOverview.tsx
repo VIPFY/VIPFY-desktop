@@ -189,7 +189,7 @@ class TeamOverview extends React.Component<Props, State> {
                 //sortselection
                 switch (this.state.sort) {
                   case "Name":
-                    interteams.sort(function(a, b) {
+                    interteams.sort(function (a, b) {
                       let nameA = a.name.toUpperCase();
                       let nameB = b.name.toUpperCase();
                       if (nameA < nameB) {
@@ -206,13 +206,13 @@ class TeamOverview extends React.Component<Props, State> {
                           return -1;
                         }
                       }
-                      // namen müssen gleich sein
+                      // namen mï¿½ssen gleich sein
                       return 0;
                     });
                     break;
 
                   case "Employees":
-                    interteams.sort(function(a, b) {
+                    interteams.sort(function (a, b) {
                       let memberCountA = a.employees.length;
                       let memberCountB = b.employees.length;
                       if (memberCountA > memberCountB) {
@@ -252,7 +252,7 @@ class TeamOverview extends React.Component<Props, State> {
 
                     break;
                   case "Services":
-                    interteams.sort(function(a, b) {
+                    interteams.sort(function (a, b) {
                       let serviceCountA = a.services.length;
                       let serviceCountB = b.services.length;
                       if (serviceCountA > serviceCountB) {
@@ -364,14 +364,14 @@ class TeamOverview extends React.Component<Props, State> {
                             <ColumnServices
                               services={team.services}
                               checkFunction={element =>
-                                !element.disabled && !element.planid.appid.disabled
+                                element && !element.disabled && !element.planid.appid.disabled
                               }
                               appidFunction={element => element.planid.appid}
                             />
                             <ColumnServices
                               services={team.licences}
                               checkFunction={element =>
-                                !element.disabled && !element.planid.appid.disabled
+                                element && !element.disabled && !element.planid.appid.disabled
                               }
                               appidFunction={element => element.planid.appid}
                             />
