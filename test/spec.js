@@ -45,4 +45,11 @@ describe("Application launch", function () {
       .should.eventually.have.property("height")
       .and.be.above(0);
   });
+
+  it("applies the sso login to all apps in list. slow.", function () {
+    return this.app.client
+      .waitUntilWindowLoaded()
+      .getWindowCount()
+      .should.eventually.have.at.least(1);
+  });
 });
