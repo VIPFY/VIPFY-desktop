@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import { QUERY_USER } from "../queries/user";
 import { WorkAround } from "../interfaces";
+import gql from "graphql-tag";
 
 /**
  * Prints a user name. If the person is the current user, it diplays "You"
@@ -33,8 +33,18 @@ export default function UserName(props: {
     return <span> You </span>;
   }
 
+  const fetchPublicUser = gql`
+    query fetchPublicUser($userid: ID!) {
+      fetchPublicUser(userid: $userid, canbedeleted: true) {
+        id
+        firstname
+        lastname
+      }
+    }
+  `;
+
   return (
-    <Query<WorkAround, WorkAround> query={QUERY_USER} variables={{ userid: unitid }}>
+    <Query<WorkAround, WorkAround> query={fetchPublicUser} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;

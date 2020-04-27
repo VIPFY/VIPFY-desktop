@@ -9,7 +9,7 @@ import PrintServiceSquare from "../components/manager/universal/squares/printSer
 import UserName from "../components/UserName";
 import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
-import AccountName from "../components/AcccountName";
+import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
 
 export function getPreloadScriptPath(script: string): string {
