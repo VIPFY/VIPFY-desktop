@@ -11,9 +11,9 @@ export default function ServiceName(props: {
   const { serviceid } = props;
   const short = props.short === undefined ? false : props.short;
 
-  const fetchAppByIdName = gql`
-    query fetchAppByIdName($id: ID!) {
-      fetchAppByIdName(id: $id) {
+  const FETCH_APP_NAME_BY_ID = gql`
+    query onFetchAppNameByID($id: ID!) {
+      fetchAppNameByID(id: $id) {
         id
         name
       }
@@ -21,7 +21,7 @@ export default function ServiceName(props: {
   `;
 
   return (
-    <Query<WorkAround, WorkAround> query={fetchAppByIdName} variables={{ id: serviceid }}>
+    <Query<WorkAround, WorkAround> query={FETCH_APP_NAME_BY_ID} variables={{ id: serviceid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
@@ -31,7 +31,7 @@ export default function ServiceName(props: {
           return <span>(can't fetch service data)</span>;
         }
 
-        const serviceData = data.fetchAppByIdName;
+        const serviceData = data.fetchAppNameByID;
 
         let returnstring = short ? serviceData.name.substring(1) : serviceData.name;
 
