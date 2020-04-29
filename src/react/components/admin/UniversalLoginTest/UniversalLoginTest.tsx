@@ -44,12 +44,14 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         nextSiteIndexUnderTest = state.siteIndexUnderTest + 1;
         let nextSite = state.sites[nextSiteIndexUnderTest];
 
-        while (!this.loginDataAvailable(nextSite)) {
-          nextSiteIndexUnderTest++;
-          nextSite = state.sites[nextSiteIndexUnderTest];
-        }
+        if (nextSite) {
+          while (!this.loginDataAvailable(nextSite)) {
+            nextSiteIndexUnderTest++;
+            nextSite = state.sites[nextSiteIndexUnderTest];
+          }
 
-        sites = this.resetResultsInSites(state, nextSiteIndexUnderTest);
+          sites = this.resetResultsInSite(state, nextSiteIndexUnderTest);
+        }
       }
 
       return { sites, siteIndexUnderTest: nextSiteIndexUnderTest };
@@ -96,7 +98,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     );
   }
 
-  resetResultsInSites(state: State, siteIndex: number) {
+  resetResultsInSite(state: State, siteIndex: number) {
     let sites = state.sites;
 
     sites[siteIndex].testResults = [];
@@ -107,7 +109,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
   async runTestOnSite(siteIndexUnderTest: number) {
     this.setState((state: State) => {
-      const sites = this.resetResultsInSites(state, siteIndexUnderTest);
+      const sites = this.resetResultsInSite(state, siteIndexUnderTest);
       return { sites, siteIndexUnderTest, runningInBatchMode: false };
     });
   }
@@ -255,7 +257,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
           ) : (
             <span
               onClick={async () => {
-                await this.setState({ runningInBatchMode: true });
+                await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
                 this.advance(true);
               }}>
               <i className="fal fa-play fa-2x" style={{ padding: "8px" }} />
@@ -311,6 +313,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <i className="fal fa-save fa-2x" style={{ padding: "8px" }} />
           </span>
         </div>
+
         <table className="simpletable">
           <thead>
             <tr>
