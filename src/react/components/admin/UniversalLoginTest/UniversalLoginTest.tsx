@@ -249,26 +249,21 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
         <div>
           {this.state.runningInBatchMode ? (
-            <span
-              onClick={() => this.setState({ runningInBatchMode: false })}
-              style={{ marginRight: "8px" }}>
-              <i className="fal fa-pause fa-2x" />
+            <span onClick={() => this.setState({ runningInBatchMode: false })}>
+              <i className="fal fa-pause fa-2x" style={{ padding: "8px" }}></i>
             </span>
           ) : (
             <span
               onClick={async () => {
                 await this.setState({ runningInBatchMode: true });
                 this.advance(true);
-              }}
-              style={{ marginRight: "8px" }}>
-              <i className="fal fa-play fa-2x" />
+              }}>
+              <i className="fal fa-play fa-2x" style={{ padding: "8px" }} />
             </span>
           )}
           {this.state.takeScreenshots ? (
-            <span
-              onClick={() => this.setState({ takeScreenshots: false })}
-              style={{ marginRight: "8px" }}>
-              <span className="fa-stack" style={{ verticalAlign: "top" }}>
+            <span onClick={() => this.setState({ takeScreenshots: false })}>
+              <span className="fa-stack" style={{ verticalAlign: "top", padding: "8px" }}>
                 <i className="fal fa-camera fa-stack-1x"></i>
                 <i className="fal fa-ban fa-stack-2x"></i>
               </span>
@@ -277,9 +272,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <span
               onClick={async () => {
                 await this.setState({ takeScreenshots: true });
-              }}
-              style={{ marginRight: "8px" }}>
-              <i className="fal fa-camera fa-2x" />
+              }}>
+              <i className="fal fa-camera fa-2x" style={{ padding: "8px" }} />
             </span>
           )}
           <span
@@ -296,9 +290,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               const sites = JSON.parse(fs.readFileSync(res.filePaths[0], { encoding: "utf8" }));
               await this.setState({ sites });
             }}
-            title="Load from file"
-            style={{ marginRight: "8px" }}>
-            <i className="fal fa-folder-open fa-2x" />
+            title="Load from file">
+            <i className="fal fa-folder-open fa-2x" style={{ padding: "8px" }} />
           </span>
           <span
             onClick={async () => {
@@ -315,7 +308,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               fs.writeFileSync(res.filePath, JSON.stringify(this.state.sites));
             }}
             title="Save results to file">
-            <i className="fal fa-save fa-2x" />
+            <i className="fal fa-save fa-2x" style={{ padding: "8px" }} />
           </span>
         </div>
         <table className="simpletable">
