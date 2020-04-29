@@ -7,49 +7,39 @@ const path = require("path");
 chai.should();
 chai.use(chaiAsPromised);
 
-const SECOND = 1000;
-const timeout = 10 * SECOND;
+const app = new Application({
+  path: electronPath,
+  args: [path.join(__dirname, "..")],
+  webdriverOptions: { deprecationWarnings: false }
+});
+
+async function loadWindow() {
+  await app.client.waitUntilWindowLoaded();
+}
 
 describe("Application launch", function () {
-  this.timeout(this.timeout);
+  this.timeout(30000);
 
-  beforeEach(function () {
-    this.app = new Application({
-      path: electronPath,
-      args: [path.join(__dirname, "..")]
-    });
+  beforeEach(async function () {
+    chaiAsPromised.transferPromiseness = app.transferPromiseness;
 
-    chaiAsPromised.transferPromiseness = this.app.transferPromiseness;
-
-    return this.app.start();
+    return app.start();
   });
 
-  afterEach(function () {
-    if (this.app && this.app.isRunning()) {
-      return this.app.stop();
+  afterEach(async function () {
+    if (app && app.isRunning()) {
+      //return app.stop();
     }
   });
 
-  it("opens a window", function () {
-    return this.app.client
-      .waitUntilWindowLoaded()
-      .getWindowCount()
-      .should.eventually.have.at.least(1)
-      .browserWindow.isMinimized()
-      .should.eventually.be.false.browserWindow.isVisible()
-      .should.eventually.be.true.browserWindow.isFocused()
-      .should.eventually.be.true.browserWindow.getBounds()
-      .should.eventually.have.property("width")
-      .and.be.above(0)
-      .browserWindow.getBounds()
-      .should.eventually.have.property("height")
-      .and.be.above(0);
-  });
+  it("executes an sso login to all apps in list. slow.", async function () {
+    await loadWindow();
+    console.log("windows loaded");
+    await app.client.url("http://localhost:3000/main_window#/universal-login-test");
+    console.log("testsite loaded");
+    await app.client.click("#startBatchRunIcon");
+    console.log("run-button clicked");
 
-  it("applies the sso login to all apps in list. slow.", function () {
-    return this.app.client
-      .waitUntilWindowLoaded()
-      .getWindowCount()
-      .should.eventually.have.at.least(1);
+    return true;
   });
 });

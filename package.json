@@ -16,10 +16,10 @@
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
     "faststart": "electron-forge start",
-    "test": "mocha",
-    "test-fast": "mocha -fgrep 'slow' --invert",
-    "test-slow": "mocha -fgrep 'slow'",
-    "test-sso-login": "mocha -fgrep 'sso login'"
+    "test": "env REACT_APP_TESTING=true mocha",
+    "test-fast": "env REACT_APP_TESTING=true mocha -fgrep 'slow' --invert",
+    "test-slow": "env REACT_APP_TESTING=true mocha -fgrep 'slow'",
+    "test-sso-login": "env REACT_APP_TESTING=true mocha -fgrep 'sso login'"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
