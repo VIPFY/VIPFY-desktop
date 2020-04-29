@@ -16,6 +16,7 @@ import { ErrorComp, AppContext } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
+import { WorkAround } from "../../interfaces";
 
 const SIGN_OUT_EVERYWHERE = gql`
   mutation onSignOutEverywhere($userid: ID!) {
@@ -55,7 +56,9 @@ export default (props: Props) => {
      * the profile page as well as the security page. SemiPublicUser does not have
      * all required properties and this query should be in the cache anyway.
      */
-    <Query query={FETCH_USER_SECURITY_OVERVIEW} variables={userid == props.id ? { userid } : null}>
+    <Query<WorkAround, WorkAround>
+      query={FETCH_USER_SECURITY_OVERVIEW}
+      variables={userid == props.id ? { userid } : null}>
       {({ data, loading, error }) => {
         if (loading) {
           return <LoadingDiv />;

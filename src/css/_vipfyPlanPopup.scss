@@ -1,0 +1,106 @@
+@mixin vipfy-plan-select {
+  transition: all 300ms ease-in-out;
+  transform: translate(10px, 10px);
+  background: $vipfy-primary;
+  color: white;
+}
+
+.vipfy-plans-popup {
+  & > p {
+    margin: 1rem;
+    font-size: 1.3rem;
+  }
+
+  #vipfy-plans {
+    display: flex;
+    justify-content: space-between;
+
+    &:invalid ~ button div {
+      background: gray;
+      cursor: not-allowed;
+      transition: background-color 300ms ease-in-out;
+    }
+
+    input[type="radio"] {
+      display: none;
+
+      &:checked + label {
+        @include vipfy-plan-select;
+      }
+    }
+  }
+
+  button {
+    float: right;
+    margin-bottom: 36px;
+  }
+}
+
+.vipfy-plan {
+  cursor: pointer;
+  padding: 52px 32px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.16);
+  margin-bottom: 56px;
+  min-width: 200px;
+  max-width: 33%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  transition: all 300ms ease-in-out;
+
+  &:hover {
+    @include vipfy-plan-select;
+  }
+
+  h2 {
+    text-align: center;
+    font-family: Roboto Slap;
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 32px;
+  }
+
+  .price-container {
+    min-height: 77px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+
+    p > span {
+      text-transform: capitalize;
+    }
+  }
+
+  .text-container {
+    min-height: 150px;
+
+    p {
+      text-transform: capitalize;
+      text-align: center;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 30px;
+    }
+  }
+
+  b {
+    position: relative;
+    font-size: 36px;
+    width: 6rem;
+    text-align: center;
+
+    &::after {
+      content: "\f153";
+      font-family: "Font Awesome 5 Pro";
+      font-weight: 900;
+      position: absolute;
+      font-size: 21px;
+      top: 9px;
+      right: -15px;
+    }
+  }
+}
