@@ -21,6 +21,7 @@ export const me = gql`
         unit: unitid {
           id
         }
+        legalinformation
         profilepicture
         employees
         name

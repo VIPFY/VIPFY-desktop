@@ -30,6 +30,7 @@ interface PostLoginProps {
   showPlanModal: boolean;
   expiredPlan: Expired_Plan;
   closePlanModal: Function;
+  [moreProps: string]: any;
 }
 
 interface State {
@@ -187,6 +188,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
                     {pureProps.showPlanModal && (
                       <VIPFYPlanPopup
+                        company={pureProps.company}
                         plan={this.props.expiredPlan}
                         close={pureProps.closePlanModal}
                       />

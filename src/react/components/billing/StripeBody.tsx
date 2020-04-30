@@ -9,6 +9,7 @@ import { filterError, ErrorComp } from "../../common/functions";
 import { addressFields } from "../../common/constants";
 import { FETCH_ADDRESSES } from "../../queries/contact";
 import UniversalButton from "../universalButtons/universalButton";
+import { Email } from "../../interfaces";
 
 const ADD_PAYMENT = gql`
   mutation onAddPaymentData($data: JSON, $address: AddressInput, $email: String) {
@@ -36,7 +37,7 @@ interface Props {
   stripe: any;
   departmentid: number;
   addresses: object[];
-  emails: object[];
+  emails: Email[];
   hasCard: boolean;
   firstname: string;
   lastname: string;
@@ -187,18 +188,13 @@ class StripeBody extends React.Component<Props, State> {
       }
     ];
 
-    console.log(this.props.emails);
-
     return (
       <Mutation
         mutation={ADD_PAYMENT}
         onError={error => this.setState({ error: filterError(error), submitting: false })}
         onCompleted={this.handleSuccess}>
         {(addCard, { loading }) => (
-          <form
-            id="stripe-form"
-            style={{ padding: "0 1rem" }}
-            onSubmit={e => this.handleSubmit(e, addCard)}>
+          <form id="stripe-form" onSubmit={e => this.handleSubmit(e, addCard)}>
             <h1>Please enter your card data</h1>
 
             {inputFields.map(({ name, placeholder, value }) => (

@@ -13,6 +13,7 @@ import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";
 import { filterError } from "../../common/functions";
 import config from "../../../configurationManager";
+import { WorkAround } from "../../interfaces";
 
 const FETCH_BILLING_DATA = gql`
   query onFetchBillingData($company: Boolean, $tag: String) {
@@ -42,7 +43,7 @@ interface State {
 }
 
 interface Props {
-  departmentid: number;
+  departmentid: string;
   onClose: Function;
   hasCard: boolean;
 }
@@ -73,7 +74,9 @@ class StripeForm extends React.Component<Props, State> {
       return (
         <StripeProvider stripe={this.state.stripe}>
           <Elements>
-            <Query query={FETCH_BILLING_DATA} variables={{ company: true, tag: "billing" }}>
+            <Query<WorkAround, WorkAround>
+              query={FETCH_BILLING_DATA}
+              variables={{ company: true, tag: "billing" }}>
               {({ data, loading, error }) => {
                 if (loading) {
                   return <LoadingDiv />;

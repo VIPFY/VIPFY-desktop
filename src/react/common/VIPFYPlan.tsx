@@ -3,6 +3,7 @@ import * as React from "react";
 interface Props {
   onClick?: Function;
   htmlFor?: string;
+  preferred?: boolean;
   plan: {
     name: string;
     options: {
@@ -40,6 +41,7 @@ export default (props: Props) => {
           </span>
         </p>
       </div>
+      {props.preferred && <div className="preferred">You save 6 € per User / Year!</div>}
     </label>
   );
 };

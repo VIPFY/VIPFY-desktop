@@ -17,6 +17,7 @@ import { now } from "moment";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
+import { SET_VAT_ID } from "../../mutations/department";
 
 const UPDATE_PIC = gql`
   mutation onUpdateCompanyPic($file: Upload!) {
@@ -51,17 +52,6 @@ const FETCH_COMPANY_SERVICES = gql`
           endtime
         }
       }
-    }
-  }
-`;
-
-const SET_VATID = gql`
-  mutation onSetVatID($vatID: String!) {
-    setVatID(vatID: $vatID) {
-      unit: unitid {
-        id
-      }
-      legalinformation
     }
   }
 `;
@@ -446,5 +436,5 @@ class CompanyDetails extends React.Component<Props, State> {
 export default compose(
   graphql(UPDATE_PIC, { name: "updatePic" }),
   graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
-  graphql(SET_VATID, { name: "setVatID" })
+  graphql(SET_VAT_ID, { name: "setVatID" })
 )(withApollo(CompanyDetails));

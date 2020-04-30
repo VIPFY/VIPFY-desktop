@@ -3,6 +3,10 @@
   transform: translate(10px, 10px);
   background: $vipfy-primary;
   color: white;
+
+  .preferred {
+    color: white;
+  }
 }
 
 .vipfy-plans-popup {
@@ -30,9 +34,18 @@
     }
   }
 
-  button {
+  button:last-of-type {
     float: right;
     margin-bottom: 36px;
+  }
+
+  #stripe-form {
+    margin-top: 16px;
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 400;
+    }
   }
 }
 
@@ -43,8 +56,7 @@
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.16);
   margin-bottom: 56px;
-  min-width: 200px;
-  max-width: 33%;
+  width: 250px;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -101,6 +113,45 @@
       font-size: 21px;
       top: 9px;
       right: -15px;
+    }
+  }
+
+  .preferred {
+    font-style: italic;
+    color: $vipfy-primary-color;
+  }
+}
+
+.vipfy-plan-confirmation {
+  .vipfy-plan:hover {
+    background: unset;
+    transform: unset;
+    color: unset;
+    cursor: unset;
+  }
+
+  .legal-notice {
+    margin-top: 12px;
+    font-size: 10px;
+  }
+}
+
+#vat-form {
+  input {
+    border: 0;
+    border-bottom: 1px solid $vipfy-darktext;
+    outline: none;
+
+    &:invalid ~ button .cleanup {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    &:invalid {
+      border-bottom: 0;
+      color: $vipfy-cancel-color;
+      border-radius: 4px;
+      box-shadow: 0 0 4px $vipfy-cancel-color;
     }
   }
 }
