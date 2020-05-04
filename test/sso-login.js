@@ -1,3 +1,4 @@
+const fs = require("fs");
 const hooks = require("./hooks");
 const SsoLoginPage = require("./pageObject/sso-login.page");
 const sendEmail = require("./helpers/email.js").sendEmail;
@@ -42,6 +43,9 @@ describe("Application launch", function () {
       .url(SsoLoginPage.url)
       .click(SsoLoginPage.startBatchRunIcon)
       .waitForVisible(SsoLoginPage.startBatchRunIcon, batchRunTimeout);
+
+    const sites = JSON.parse(fs.readFileSync("ssotest.json", { encoding: "utf8" }));
+    console.log(sites);
 
     await sendEmail({
       templateId: "d-0bc1db6347c840729375e85e5682ae6d",
