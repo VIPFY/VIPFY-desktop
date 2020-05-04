@@ -6,6 +6,11 @@ import { shell } from "electron";
 import path from "path";
 import moment from "moment";
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
+import UserName from "../components/UserName";
+import TeamName from "../components/TeamName";
+import OrbitName from "../components/OrbitName";
+import AccountName from "../components/AccountName";
+import ServiceName from "../components/ServiceName";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -435,9 +440,68 @@ export function base64ToArrayBuffer(base64) {
   const binaryString = window.atob(base64);
 
   const bytes = new Uint8Array(binaryString.length);
-  for (var i = 0; i < binaryString.length; i++) {
+  for (let i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
 
   return bytes.buffer;
+}
+
+export function renderNotificatonMessage(message, client) {
+  const ure = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const usermatch = message.match(ure);
+  if (usermatch) {
+    return (
+      <>
+        {renderNotificatonMessage(usermatch[1], client)}
+        <UserName unitid={usermatch[2].substring(5)} userid={getMyUnitId(client)} youplus={true} />
+        {renderNotificatonMessage(usermatch[3], client)}
+      </>
+    );
+  }
+  const tre = /^(.*)([tT]eam [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const teammatch = message.match(tre);
+  if (teammatch) {
+    return (
+      <>
+        {renderNotificatonMessage(teammatch[1], client)}
+        <TeamName teamid={teammatch[2].substring(5)} />
+        {renderNotificatonMessage(teammatch[3], client)}
+      </>
+    );
+  }
+  const ore = /^(.*)([oO]rbit [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const orbitmatch = message.match(ore);
+  if (orbitmatch) {
+    return (
+      <>
+        {renderNotificatonMessage(orbitmatch[1], client)}
+        <OrbitName orbitid={orbitmatch[2].substring(6)} />
+        {renderNotificatonMessage(orbitmatch[3], client)}
+      </>
+    );
+  }
+  const are = /^(.*)([aA]ccount [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const accountmatch = message.match(are);
+  if (accountmatch) {
+    return (
+      <>
+        {renderNotificatonMessage(accountmatch[1], client)}
+        <AccountName accountid={accountmatch[2].substring(8)} />
+        {renderNotificatonMessage(accountmatch[3], client)}
+      </>
+    );
+  }
+  const sre = /^(.*)([sS]ervice [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const servicematch = message.match(sre);
+  if (servicematch) {
+    return (
+      <>
+        {renderNotificatonMessage(servicematch[1], client)}
+        <ServiceName serviceid={servicematch[2].substring(8)} />
+        {renderNotificatonMessage(servicematch[3], client)}
+      </>
+    );
+  }
+  return message;
 }

@@ -151,15 +151,24 @@ class Sidebar extends React.Component<SidebarProps, State> {
         if (!subscriptionData.data || subscriptionData.error) {
           return prev;
         }
-        this.setState({ notify: true });
-        setTimeout(() => this.setState({ notify: false }), 5000);
-
         if (
           subscriptionData.data.newNotification &&
-          subscriptionData.data.newNotification.options &&
-          subscriptionData.data.newNotification.options.type != "update"
+          (!subscriptionData.data.newNotification.options ||
+            (subscriptionData.data.newNotification.options &&
+              subscriptionData.data.newNotification.options.level > 1))
         ) {
-          this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
+          this.setState({ notify: true });
+          setTimeout(() => this.setState({ notify: false }), 5000);
+        }
+        this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
+        if (
+          subscriptionData.data.newNotification &&
+          (!subscriptionData.data.newNotification.options ||
+            (subscriptionData.data.newNotification.options &&
+              subscriptionData.data.newNotification.options.type != "update" &&
+              (!subscriptionData.data.newNotification.options.level ||
+                subscriptionData.data.newNotification.options.level > 1)))
+        ) {
           return {
             ...prev,
             fetchNotifications: [subscriptionData.data.newNotification, ...prev.fetchNotifications]
@@ -253,6 +262,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
         case "company":
           await client.query({ query: FETCH_COMPANY, ...options });
+          break;
+
+        case "semiPublicUser":
+          refetchQueries(client, ["onFetchSemiPublicUser"]);
+          break;
+
+        case "companyTeams":
+          refetchQueries(client, ["fetchCompanyTeams"]);
           break;
       }
     }

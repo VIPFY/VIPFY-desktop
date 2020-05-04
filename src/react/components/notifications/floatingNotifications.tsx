@@ -40,73 +40,82 @@ class FloatingNotifications extends React.Component<Props, State> {
         }
         if (
           subscriptionData.data.newNotification &&
-          subscriptionData.data.newNotification.options &&
-          subscriptionData.data.newNotification.options.type != "update"
+          (!subscriptionData.data.newNotification.options ||
+            !subscriptionData.data.newNotification.options.level ||
+            subscriptionData.data.newNotification.options.level > 1)
         ) {
-          const newNot = subscriptionData.data.newNotification;
-          this.floatingNotifications.push({
-            id: newNot.id,
-            time: newNot.sendtime,
-            data: newNot,
-            element: (
-              <FloatingNotification
-                key={newNot.id}
-                title="Status Update"
-                vipfyTask={{
-                  icon: newNot.icon,
-                  name: "VIPFY"
-                }}
-                text={newNot.message}
-                close={() => {
-                  this.floatingNotifications.splice(
-                    this.floatingNotifications.findIndex(e => e.id == newNot.id),
-                    1
-                  );
-                  this.forceUpdate();
-                }}
-                {...newNot.options}
-              />
-            )
-          });
-
-          return prev;
-        } else {
-          const updateNot = subscriptionData.data.newNotification;
-
-          const updateElement = this.floatingNotifications.find(fn => fn.id == updateNot.id);
-          if (updateElement) {
-            const updatedElement = {
-              ...updateElement,
-              data: { ...updateElement.data, ...updateNot },
+          if (
+            subscriptionData.data.newNotification &&
+            (!subscriptionData.data.newNotification.options ||
+              (subscriptionData.data.newNotification.options &&
+                subscriptionData.data.newNotification.options.type != "update"))
+          ) {
+            const newNot = subscriptionData.data.newNotification;
+            this.floatingNotifications.push({
+              id: newNot.id,
+              time: newNot.sendtime,
+              data: newNot,
               element: (
                 <FloatingNotification
-                  key={updateElement.data.id}
+                  key={newNot.id}
                   title="Status Update"
                   vipfyTask={{
-                    icon: updateNot.icon || updateElement.data.icon,
+                    icon: newNot.icon,
                     name: "VIPFY"
                   }}
-                  text={updateNot.message || updateElement.data.message}
+                  text={newNot.message}
                   close={() => {
                     this.floatingNotifications.splice(
-                      this.floatingNotifications.findIndex(e => e.id == updateElement.data.id),
+                      this.floatingNotifications.findIndex(e => e.id == newNot.id),
                       1
                     );
                     this.forceUpdate();
                   }}
-                  {...updateElement.data.options}
-                  {...updateNot.options}
+                  {...(newNot.options ? newNot.options : {})}
                 />
               )
-            };
-            this.floatingNotifications.splice(
-              this.floatingNotifications.findIndex(e => e.id == updateElement.data.id),
-              1,
-              updatedElement
-            );
+            });
             this.forceUpdate();
+
+            return prev;
+          } else {
+            const updateNot = subscriptionData.data.newNotification;
+
+            const updateElement = this.floatingNotifications.find(fn => fn.id == updateNot.id);
+            if (updateElement) {
+              const updatedElement = {
+                ...updateElement,
+                data: { ...updateElement.data, ...updateNot },
+                element: (
+                  <FloatingNotification
+                    key={updateElement.data.id}
+                    title="Status Update"
+                    vipfyTask={{
+                      icon: updateNot.icon || updateElement.data.icon,
+                      name: "VIPFY"
+                    }}
+                    text={updateNot.message || updateElement.data.message}
+                    close={() => {
+                      this.floatingNotifications.splice(
+                        this.floatingNotifications.findIndex(e => e.id == updateElement.data.id),
+                        1
+                      );
+                      this.forceUpdate();
+                    }}
+                    {...updateElement.data.options}
+                    {...updateNot.options}
+                  />
+                )
+              };
+              this.floatingNotifications.splice(
+                this.floatingNotifications.findIndex(e => e.id == updateElement.data.id),
+                1,
+                updatedElement
+              );
+              this.forceUpdate();
+            }
+            return prev;
           }
-          return prev;
         }
         return prev;
       }

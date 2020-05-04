@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import { QUERY_USER } from "../queries/user";
 import { WorkAround } from "../interfaces";
+import gql from "graphql-tag";
 
 /**
  * Prints a user name. If the person is the current user, it diplays "You"
@@ -19,20 +19,32 @@ export default function UserName(props: {
   userid?: string;
   short?: boolean;
   className?: string;
+  youplus?: boolean;
 }): JSX.Element {
   const { unitid, userid } = props;
   const short = props.short === undefined ? false : props.short;
+  const youplus = props.youplus === undefined ? false : props.youplus;
 
   if (unitid === null || unitid === undefined) {
     return <span>System</span>;
   }
 
-  if (unitid == userid) {
-    return <span className="user-name"> You </span>;
+  if (!youplus && unitid == userid) {
+    return <span> You </span>;
   }
 
+  const fetchPublicUser = gql`
+    query fetchPublicUser($userid: ID!) {
+      fetchPublicUser(userid: $userid, canbedeleted: true) {
+        id
+        firstname
+        lastname
+      }
+    }
+  `;
+
   return (
-    <Query<WorkAround, WorkAround> query={QUERY_USER} variables={{ userid: unitid }}>
+    <Query<WorkAround, WorkAround> query={fetchPublicUser} variables={{ userid: unitid }}>
       {({ loading, error, data }) => {
         if (loading) {
           return <span />;
@@ -43,6 +55,16 @@ export default function UserName(props: {
         }
 
         const userData = data.fetchPublicUser;
+        if (youplus && unitid == userid) {
+          return (
+            <span className={props.className} data-recording-sensitive>
+              {short
+                ? `${userData.firstname} (You)`
+                : `${userData.firstname} ${userData.lastname} (You)`}
+            </span>
+          );
+        }
+
         return (
           <span className={props.className} data-recording-sensitive>
             {short ? userData.firstname : `${userData.firstname} ${userData.lastname}`}
