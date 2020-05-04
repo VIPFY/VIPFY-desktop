@@ -1,3 +1,7 @@
+// enable requiring stuff from ts(x) files
+process.env.TS_NODE_PROJECT = "./tsconfig.json";
+require("ts-mocha");
+
 const Application = require("spectron").Application;
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
