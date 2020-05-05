@@ -14,7 +14,13 @@ import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
 import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
-import { FETCH_EMPLOYEES, fetchDepartmentsData, FETCH_COMPANY } from "../queries/departments";
+import {
+  FETCH_EMPLOYEES,
+  fetchDepartmentsData,
+  FETCH_COMPANY,
+  FETCH_VIPFY_PLAN,
+  VIPFYPlanParts
+} from "../queries/departments";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
 import { autoUpdater } from "electron";
@@ -74,13 +80,10 @@ const FETCH_CREDIT_DATA = gql`
     }
 
     fetchVipfyPlan {
-      id
-      plan: planid {
-        id
-        name
-      }
+      ...VIPFYPlan
     }
   }
+  ${VIPFYPlanParts}
 `;
 
 interface SidebarLinks {
@@ -256,6 +259,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         case "company":
           await client.query({ query: FETCH_COMPANY });
           break;
+        case "vipfyPlan":
+          await client.query({ query: FETCH_VIPFY_PLAN });
       }
     }
 

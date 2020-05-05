@@ -15,6 +15,29 @@ export const FETCH_COMPANY = gql`
   }
 `;
 
+export const VIPFYPlanParts = gql`
+  fragment VIPFYPlan on BoughtPlan {
+    id
+    endtime
+    totalprice
+    plan: planid {
+      id
+      name
+      currency
+      payperiod
+    }
+  }
+`;
+
+export const FETCH_VIPFY_PLAN = gql`
+  {
+    fetchVipfyPlan {
+      ...VIPFYPlan
+    }
+  }
+  ${VIPFYPlanParts}
+`;
+
 export const FETCH_EMPLOYEES = gql`
   {
     fetchEmployees {

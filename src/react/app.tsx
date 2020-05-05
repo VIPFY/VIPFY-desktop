@@ -46,7 +46,6 @@ interface AppProps {
   relogMeIn: Function;
   logMeIn: Function;
   logMeOut: Function;
-  setName: Function;
   signIn: any;
   signUp: any;
   signOut: Function;
@@ -180,11 +179,6 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  setName = async () => {
-    // legacy function, call refetchQueries directly instead
-    await refetchQueries(this.props.client, ["me"]);
-  };
-
   renderPopup = (data: PopUp) => {
     this.setState({ popup: { show: true, ...data } });
   };
@@ -313,7 +307,7 @@ class App extends React.Component<AppProps, AppState> {
               try {
                 await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
               } catch (err) {
-                console.log("ERRPOR", err, e);
+                console.log("ERROR", err, e);
               }
             });
           });
@@ -411,12 +405,9 @@ class App extends React.Component<AppProps, AppState> {
                   return (
                     <PostLogin
                       sidebarloaded={this.sidebarloaded}
-                      setName={this.setName}
                       logMeOut={this.logMeOut}
-                      closePlanModal={() => this.setState({ showPlanModal: false })}
                       showPopup={data => this.renderPopup(data)}
                       moveTo={this.moveTo}
-                      showPlanModal={this.state.showPlanModal}
                       expiredPlan={this.state.expiredPlan}
                       {...data.me}
                       employees={data.me.company.employees}

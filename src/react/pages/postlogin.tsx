@@ -8,17 +8,16 @@ import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
-import gql from "graphql-tag";
 import moment from "moment";
 import { concatName } from "../common/functions";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
+import { FETCH_VIPFY_PLAN } from "../queries/departments";
 
 interface PostLoginProps {
   logMeOut: Function;
   moveTo: Function;
   sidebarloaded: Function;
-  setName: Function;
   showPopup: Function;
   qrCode?: string;
   twoFAid?: string;
@@ -27,7 +26,6 @@ interface PostLoginProps {
   history: any;
   context: any;
   addUsedLicenceID: Function;
-  showPlanModal: boolean;
   expiredPlan: Expired_Plan;
   closePlanModal: Function;
   [moreProps: string]: any;
@@ -36,19 +34,6 @@ interface PostLoginProps {
 interface State {
   firstLogin: boolean;
 }
-
-const FETCH_VIPFY_PLAN = gql`
-  {
-    fetchVipfyPlan {
-      id
-      endtime
-      plan: planid {
-        id
-        name
-      }
-    }
-  }
-`;
 
 class PostLogin extends React.Component<PostLoginProps, State> {
   state = { firstLogin: false };
@@ -153,6 +138,16 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               {({ data, error: e2 }) => {
                 if (e2) {
                   console.error(e2);
+                  return (
+                    <React.Fragment>
+                      <Area
+                        {...pureProps}
+                        style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
+                      />
+
+                      <VIPFYPlanPopup company={pureProps.company} plan={this.props.expiredPlan} />
+                    </React.Fragment>
+                  );
                 }
 
                 if (data && data.fetchVipfyPlan) {
@@ -180,20 +175,10 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                 }
 
                 return (
-                  <React.Fragment>
-                    <Area
-                      {...pureProps}
-                      style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
-                    />
-
-                    {pureProps.showPlanModal && (
-                      <VIPFYPlanPopup
-                        company={pureProps.company}
-                        plan={this.props.expiredPlan}
-                        close={pureProps.closePlanModal}
-                      />
-                    )}
-                  </React.Fragment>
+                  <Area
+                    {...pureProps}
+                    style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
+                  />
                 );
               }}
             </Query>

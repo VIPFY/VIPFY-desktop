@@ -10,6 +10,10 @@
 }
 
 .vipfy-plans-popup {
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+
   & > p {
     margin: 1rem;
     font-size: 1.3rem;
@@ -35,8 +39,8 @@
   }
 
   button:last-of-type {
-    float: right;
-    margin-bottom: 36px;
+    align-self: flex-end;
+    margin-top: auto;
   }
 
   #stripe-form {
@@ -46,6 +50,15 @@
       font-size: 1rem;
       font-weight: 400;
     }
+  }
+
+  .illustration-login {
+    max-height: 400px;
+    object-fit: contain;
+  }
+
+  .float-right {
+    float: right;
   }
 }
 
@@ -123,6 +136,11 @@
 }
 
 .vipfy-plan-confirmation {
+  & > p {
+    margin: 1rem 0;
+    font-size: 1.3rem;
+  }
+
   .vipfy-plan:hover {
     background: unset;
     transform: unset;
@@ -137,6 +155,10 @@
 }
 
 #vat-form {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+
   input {
     border: 0;
     border-bottom: 1px solid $vipfy-darktext;
@@ -153,5 +175,18 @@
       border-radius: 4px;
       box-shadow: 0 0 4px $vipfy-cancel-color;
     }
+
+    &[value=""] {
+      box-shadow: unset;
+      color: unset;
+      border-bottom: 1px solid $vipfy-darktext;
+    }
+  }
+
+  .universalCoverButton {
+    align-self: flex-end;
+    justify-self: flex-end;
+    margin-bottom: 0;
+    margin-top: auto;
   }
 }
