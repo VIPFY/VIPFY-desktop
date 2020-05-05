@@ -1,7 +1,8 @@
 import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
-  APOLLO_DEVELOPER_TOOLS
+  APOLLO_DEVELOPER_TOOLS,
+  REACT_PERF
 } from "electron-devtools-installer";
 import path from "path";
 import Store from "electron-store";
@@ -196,6 +197,11 @@ const createWindow = async () => {
   if (isDevMode) {
     try {
       await installExtension(REACT_DEVELOPER_TOOLS);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      await installExtension(REACT_PERF);
     } catch (err) {
       console.log(err);
     }
