@@ -222,7 +222,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     const totalSitesWithResult = sitesWithResult.length;
 
     if (totalSitesWithResult == 0) {
-      return <span>0/0</span>;
+      return <span>0/0 (100.00%)</span>;
     }
 
     const totalSitesWithPassedTestResult = sitesWithResult.filter(
@@ -339,7 +339,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 <th key={testIndex}>{tests[testIndex].expectLoginSuccess ? "Login" : "Error"}</th>
               ))}
             </tr>
-            <tr>
+            <tr id="statistics">
               <th colSpan={2}>Tests Passed:</th>
               {Array.from({ length: tests.length }, (_, testIndex: number) => (
                 <th key={testIndex}>{this.renderProportion(testIndex)}</th>

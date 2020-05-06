@@ -79,8 +79,11 @@ describe("Application launch", function () {
       .and.equal(sites.length);
 
     // the results file should show that each site passed the important tests
-    overallTestResult = sites && sites.every(importantTestsPassed);
-    overallTestResult.should.be.true;
+    sitesPassedImportantTests = sites && sites.every(importantTestsPassed);
+    sitesPassedImportantTests.should.be.true;
+
+    const result = sitesPassedImportantTests ? "PASSED" : "FAILED";
+    const statistics = await app.client.elements(SsoTestPage.statisticsTableRow).getText();
 
     await sendEmail({
       templateId: "d-0bc1db6347c840729375e85e5682ae6d",
@@ -88,7 +91,7 @@ describe("Application launch", function () {
       personalizations: [
         {
           to: [{ email: "eva.kiszka@vipfy.store" }],
-          dynamic_template_data: { result: overallTestResult }
+          dynamic_template_data: { result, statistics }
         }
       ]
     });
