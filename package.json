@@ -19,7 +19,7 @@
     "test": "env REACT_APP_TESTING=true mocha",
     "test-fast": "env REACT_APP_TESTING=true mocha -fgrep 'slow' --invert",
     "test-slow": "env REACT_APP_TESTING=true mocha -fgrep 'slow'",
-    "test-sso-login": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -fgrep 'sso login'"
+    "test-sso": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -fgrep 'SSO'"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
@@ -166,6 +166,7 @@
     "@types/expect": "^24.3.0",
     "@types/mocha": "^7.0.2",
     "@types/react-dropzone": "^4.2.2",
+    "aws-sdk": "^2.670.0",
     "babel-plugin-shake-class-properties": "^0.2.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

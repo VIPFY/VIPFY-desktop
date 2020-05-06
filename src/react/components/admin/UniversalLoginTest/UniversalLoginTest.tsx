@@ -8,7 +8,9 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 import { tests } from "./tests";
+
 const { session, dialog } = remote;
+const RESULTS_FILE_PATH = "ssotest.json";
 
 interface Props {}
 
@@ -28,7 +30,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   };
 
   componentDidUpdate() {
-    fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
+    fs.writeFileSync(RESULTS_FILE_PATH, JSON.stringify(this.state.sites));
   }
 
   advance(allTestsFinishedForCurrentSite: boolean) {
@@ -301,7 +303,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
           <span
             onClick={async () => {
               const res = await dialog.showSaveDialog({
-                defaultPath: "ssotest.json",
+                defaultPath: RESULTS_FILE_PATH,
                 filters: [
                   { name: "JSON", extensions: ["json"] },
                   { name: "All Files", extensions: ["*"] }

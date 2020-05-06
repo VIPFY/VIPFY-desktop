@@ -1,5 +1,6 @@
 // enable requiring stuff from ts(x) files
 process.env.TS_NODE_PROJECT = "./tsconfig.json";
+require("chai/register-should");
 require("ts-mocha");
 
 const Application = require("spectron").Application;
@@ -9,7 +10,6 @@ const electronPath = require("electron");
 const path = require("path");
 
 global.before(() => {
-  chai.should();
   chai.use(chaiAsPromised);
 });
 
