@@ -258,6 +258,7 @@ export interface TestResult {
 export interface Expired_Plan {
   id: string;
   endtime: Date;
+  firstPlan: boolean;
   features: {
     teams?: number;
     users?: number;

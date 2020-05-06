@@ -18,6 +18,7 @@ import Webview from "./webview";
 import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
+import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
@@ -52,7 +53,7 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
-import { WorkAround } from "../interfaces";
+import { WorkAround, Expired_Plan } from "../interfaces";
 
 interface AreaProps {
   history: any[];
@@ -64,6 +65,8 @@ interface AreaProps {
   tutorialprogress?: any;
   highlightReferences?: any;
   addUsedLicenceID: Function;
+  showVIPFYPlanPopup: boolean;
+  expiredPlan: Expired_Plan;
 }
 
 interface AreaState {
@@ -534,6 +537,9 @@ class Area extends React.Component<AreaProps, AreaState> {
                     this.props.highlightReferences && <TutorialBase {...this.props} />}
                 </UserContext.Provider>
               </SideBarContext.Provider>
+              {this.props.showVIPFYPlanPopup && (
+                <VIPFYPlanPopup company={this.props.company} currentPlan={this.props.expiredPlan} />
+              )}
             </div>
           );
         }}

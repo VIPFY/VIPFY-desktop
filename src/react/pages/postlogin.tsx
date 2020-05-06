@@ -177,6 +177,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                 return (
                   <Area
                     {...pureProps}
+                    showVIPFYPlanPopup={e2}
                     style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
                   />
                 );

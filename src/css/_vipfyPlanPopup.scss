@@ -23,7 +23,7 @@
     display: flex;
     justify-content: space-between;
 
-    &:invalid ~ button div {
+    &:invalid ~ button:last-of-type div {
       background: gray;
       cursor: not-allowed;
       transition: background-color 300ms ease-in-out;
@@ -132,6 +132,25 @@
   .preferred {
     font-style: italic;
     color: $vipfy-primary-color;
+  }
+
+  &-current {
+    position: relative;
+    opacity: 0.3;
+
+    &:after {
+      content: "Your current plan";
+      position: absolute;
+      top: 10px;
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      cursor: default;
+      transform: unset;
+      background: unset;
+      color: black;
+    }
   }
 }
 

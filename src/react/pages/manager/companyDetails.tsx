@@ -288,10 +288,6 @@ class CompanyDetails extends React.Component<Props, State> {
                               return <ErrorComp error={error} />;
                             }
 
-                            console.log(
-                              "FIRE: CompanyDetails -> data.fetchVipfyPlan",
-                              data.fetchVipfyPlan
-                            );
                             return (
                               <div className="tableColumnSmall content twoline">
                                 <div
@@ -446,7 +442,7 @@ class CompanyDetails extends React.Component<Props, State> {
                 {this.state.showPlanModal && (
                   <VIPFYPlanPopup
                     headline="VIPFY Plan Update"
-                    plan={this.state.currentPlan}
+                    currentPlan={this.state.currentPlan}
                     company={this.props.company}
                     close={() => this.setState({ showPlanModal: false })}
                   />

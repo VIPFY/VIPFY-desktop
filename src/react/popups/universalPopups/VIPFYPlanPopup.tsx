@@ -37,7 +37,7 @@ const FETCH_VIPFY_PLANS = gql`
 `;
 
 interface Props {
-  plan: Expired_Plan;
+  currentPlan: Expired_Plan;
   close?: Function;
   headline?: string;
   company: {
@@ -54,10 +54,11 @@ export default (props: Props) => {
   const [selected, select] = React.useState(null);
   const [step, setStep] = React.useState(0);
   const [tos, toggleTos] = React.useState(false);
-  const { company } = props;
+  const { company, currentPlan } = props;
+  console.log("FIRE: company, currentPlan", company, currentPlan);
 
   return (
-    <PopupBase additionalclassName="vipfy-plans-popup" closeable={false}>
+    <PopupBase additionalclassName="vipfy-plans-popup" closeable={props.close ? true : false}>
       <h1>{props.headline || "Your VIPFY Plan has expired"}</h1>
 
       <Query<WorkAround, WorkAround> query={FETCH_VIPFY_PLANS}>
@@ -79,18 +80,30 @@ export default (props: Props) => {
                   setStep(2);
                 }}
                 id="vipfy-plans">
-                {data.fetchVIPFYPlans.map(plan => (
-                  <React.Fragment key={plan.id}>
-                    <input required id={plan.id} type="radio" name="vipfy-plan" />
-                    <VIPFYPlan
-                      preferred={Object.keys(plan.payperiod)[0] == "years"}
-                      plan={plan}
-                      onClick={() => select(plan)}
-                      htmlFor={plan.id}
-                    />
-                  </React.Fragment>
-                ))}
+                {data.fetchVIPFYPlans.map(plan => {
+                  const isCurrentPlan = !currentPlan.firstPlan && plan.id == currentPlan.id;
+
+                  return (
+                    <React.Fragment key={plan.id}>
+                      <input
+                        disabled={isCurrentPlan}
+                        required
+                        id={plan.id}
+                        type="radio"
+                        name="vipfy-plan"
+                      />
+                      <VIPFYPlan
+                        className={isCurrentPlan ? "vipfy-plan-current" : ""}
+                        preferred={Object.keys(plan.payperiod)[0] == "years"}
+                        plan={plan}
+                        onClick={() => select(plan)}
+                        htmlFor={plan.id}
+                      />
+                    </React.Fragment>
+                  );
+                })}
               </form>
+              {props.close && <UniversalButton type="low" onClick={props.close} label="cancel" />}
               <UniversalButton form="vipfy-plans" type="high" label="select plan" />
             </React.Fragment>
           );

@@ -4,6 +4,7 @@ interface Props {
   onClick?: Function;
   htmlFor?: string;
   preferred?: boolean;
+  className?: string;
   plan: {
     name: string;
     options: {
@@ -19,7 +20,7 @@ export default (props: Props) => {
 
   return (
     <label
-      className="vipfy-plan"
+      className={`vipfy-plan ${props.className}`}
       onClick={() => {
         if (props.onClick) {
           props.onClick();
