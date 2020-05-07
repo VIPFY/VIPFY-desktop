@@ -287,18 +287,26 @@ class CompanyDetails extends React.Component<Props, State> {
                             if (error || !data) {
                               return <ErrorComp error={error} />;
                             }
+                            const { payperiod, cancelperiod } = data.fetchVipfyPlan.plan;
 
                             return (
                               <div className="tableColumnSmall content twoline">
                                 <div
                                   className="tableColumnSmall editable"
+                                  style={{ width: "100%" }}
                                   onClick={() =>
                                     this.setState({
                                       showPlanModal: true,
-                                      currentPlan: data.fetchVipfyPlan.plan
+                                      currentPlan: {
+                                        id: data.fetchVipfyPlan.plan.id,
+                                        endtime: data.fetchVipfyPlan.endtime,
+                                        firstPlan: false,
+                                        payperiod,
+                                        cancelperiod,
+                                        features: data.fetchVipfyPlan.plan.options
+                                      }
                                     })
-                                  }
-                                  style={{ width: "100%" }}>
+                                  }>
                                   <h1>VIPFY-Plan</h1>
                                   <h2>{data.fetchVipfyPlan.plan.name}</h2>
                                   <div className="profileEditButton">
@@ -306,15 +314,20 @@ class CompanyDetails extends React.Component<Props, State> {
                                   </div>
                                 </div>
 
-                                <div
-                                  className="tableColumnSmall"
-                                  style={{ width: "100%" }} //editable
-                                >
-                                  <h1>VIPFY-Costs per month</h1>
-                                  <h2>{data.fetchVipfyPlan.totalprice || "Free"}</h2>
-                                  {/*<div className="profileEditButton">
-                                <i className="fal fa-pen editbuttons" />
-                              </div>*/}
+                                <div className="tableColumnSmall" style={{ width: "100%" }}>
+                                  <h1>{`VIPFY-Costs per ${
+                                    typeof payperiod == "string"
+                                      ? payperiod.split(" ")[1]
+                                      : Object.keys(payperiod)[0].substring(
+                                          0,
+                                          Object.keys(payperiod)[0].length - 1
+                                        )
+                                  }`}</h1>
+                                  <h2>
+                                    {data.fetchVipfyPlan.totalprice
+                                      ? `${data.fetchVipfyPlan.totalprice} ${data.fetchVipfyPlan.plan.currency}`
+                                      : "Free"}
+                                  </h2>
                                 </div>
                               </div>
                             );

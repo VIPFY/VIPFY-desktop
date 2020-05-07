@@ -12,6 +12,7 @@ import { shell } from "electron";
 import { FETCH_CARDS } from "../../queries/billing";
 import StripeForm from "../../components/billing/StripeForm";
 import { SET_VAT_ID } from "../../mutations/department";
+import moment from "moment";
 
 const SELECT_VIPFY_PLAN = gql`
   mutation onSelectVIPFYPlan($planid: ID!, $tos: Boolean!) {
@@ -55,7 +56,20 @@ export default (props: Props) => {
   const [step, setStep] = React.useState(0);
   const [tos, toggleTos] = React.useState(false);
   const { company, currentPlan } = props;
-  console.log("FIRE: company, currentPlan", company, currentPlan);
+  console.log("FIRE: currentPlan", currentPlan);
+
+  const calculateEndtime = () => {
+    let endtime;
+
+    if (currentPlan.endtime) {
+      endtime = moment(currentPlan.endtime);
+    } else {
+      const [periodAmount, period] = currentPlan.cancelperiod.split(" ");
+      endtime = moment().add(periodAmount, `${period}s`);
+
+      return endtime.add(1, "month").startOf("month").format("LL");
+    }
+  };
 
   return (
     <PopupBase additionalclassName="vipfy-plans-popup" closeable={props.close ? true : false}>
@@ -143,10 +157,18 @@ export default (props: Props) => {
                   props.close();
                 }
               }}>
-              {(mutate, { loading, error }) => (
+              {(mutate, { data, loading, error }) => (
                 <div className="vipfy-plan-confirmation">
                   <p>{`Please confirm selection of the ${selected.name} plan`}</p>
                   <VIPFYPlan plan={selected} />
+
+                  {!currentPlan.firstPlan && (
+                    <div className="vipfy-plan-notice">
+                      Your new plan will start on <b>{calculateEndtime()}</b>. Until then, your
+                      current plan is active.
+                    </div>
+                  )}
+
                   <UniversalCheckbox name="tos" liveValue={value => toggleTos(value)}>
                     <span style={{ lineHeight: "18px" }}>
                       I agree to the{" "}
@@ -166,10 +188,14 @@ export default (props: Props) => {
                   } ${Object.keys(
                     selected.cancelperiod
                   )}. We will use the chosen payment method in your account to deduct the amount of money.`}</p>
+
                   <ErrorComp error={error} />
+
+                  {data && <div className="success">Thank you for selecting a VIPFY Plan</div>}
+
                   <UniversalButton type="low" label="go back" onClick={() => setStep(1)} />
                   <UniversalButton
-                    disabled={!tos || loading}
+                    disabled={!tos || loading || data}
                     className="float-right"
                     onClick={() => mutate({ variables: { planid: selected.id, tos } })}
                     type="high"

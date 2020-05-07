@@ -11,7 +11,6 @@ import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import moment from "moment";
 import { concatName } from "../common/functions";
 import { WorkAround, Expired_Plan } from "../interfaces";
-import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 import { FETCH_VIPFY_PLAN } from "../queries/departments";
 
 interface PostLoginProps {
@@ -138,16 +137,6 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               {({ data, error: e2 }) => {
                 if (e2) {
                   console.error(e2);
-                  return (
-                    <React.Fragment>
-                      <Area
-                        {...pureProps}
-                        style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
-                      />
-
-                      <VIPFYPlanPopup company={pureProps.company} plan={this.props.expiredPlan} />
-                    </React.Fragment>
-                  );
                 }
 
                 if (data && data.fetchVipfyPlan) {

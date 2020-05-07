@@ -160,11 +160,20 @@
     font-size: 1.3rem;
   }
 
-  .vipfy-plan:hover {
-    background: unset;
-    transform: unset;
-    color: unset;
-    cursor: unset;
+  .vipfy-plan {
+    margin-bottom: 0;
+
+    &:hover {
+      background: unset;
+      transform: unset;
+      color: unset;
+      cursor: unset;
+    }
+  }
+
+  .generic-checkbox-holder,
+  .vipfy-plan-notice {
+    margin-top: 16px;
   }
 
   .legal-notice {

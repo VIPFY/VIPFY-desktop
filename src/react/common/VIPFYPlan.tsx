@@ -11,12 +11,15 @@ interface Props {
       [prop: string]: any;
     };
     payperiod: string;
+    cancelperiod: string;
     [prop: string]: any;
   };
 }
 
 export default (props: Props) => {
   const { plan } = props;
+  const renderPeriod = period =>
+    Object.keys(period)[0].substring(0, Object.keys(period)[0].length - 1);
 
   return (
     <label
@@ -36,11 +39,11 @@ export default (props: Props) => {
       <div className="price-container">
         <b>{plan.price}</b>
         <p>
-          Per User /{" "}
-          <span>
-            {Object.keys(plan.payperiod)[0].substring(0, Object.keys(plan.payperiod)[0].length - 1)}
-          </span>
+          Per User / <span>{renderPeriod(plan.payperiod)}</span>
         </p>
+      </div>
+      <div>
+        <i>Cancellable on a {renderPeriod(plan.cancelperiod)}ly basis</i>
       </div>
       {props.preferred && <div className="preferred">You save 6 € per User / Year!</div>}
     </label>

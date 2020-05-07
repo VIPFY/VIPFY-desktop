@@ -25,6 +25,8 @@ export const VIPFYPlanParts = gql`
       name
       currency
       payperiod
+      cancelperiod
+      options
     }
   }
 `;
