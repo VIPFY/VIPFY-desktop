@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const hooks = require("./hooks");
 const SsoTestPage = require("./pageObject/sso-test.page");
 const sendEmail = require("./helpers/email.js").sendEmail;
 const uploadSsoTestResult = require("./helpers/objectStorage.js").uploadSsoTestResult;
@@ -12,66 +11,19 @@ const SECOND = 1000;
 const appStartTimeout = 20 * SECOND;
 const batchRunTimeout = sites.length * tests.length * 15 * SECOND;
 
-describe("Application launch", function () {
+describe("SSO Execution", function () {
   this.timeout(appStartTimeout + batchRunTimeout);
-  let app;
 
-  beforeEach(async function () {
-    app = await hooks.startApp();
-  });
-
-  afterEach(async function () {
-    await hooks.stop(app);
-  });
-
-  function getChangeTimestamp() {
-    if (!fs.existsSync(RESULTS_FILE_PATH)) {
-      return 0;
-    }
-
-    return Math.trunc(fs.statSync(RESULTS_FILE_PATH).mtimeMs / SECOND);
-  }
-
-  function loadWindow() {
-    return app.client
-      .waitUntilWindowLoaded()
-      .browserWindow.focus()
-      .getWindowCount()
-      .should.eventually.be.above(0)
-      .browserWindow.isMinimized()
-      .should.eventually.be.false.browserWindow.isVisible()
-      .should.eventually.be.true.browserWindow.isFocused()
-      .should.eventually.be.true.browserWindow.getBounds()
-      .should.eventually.have.property("width")
-      .and.be.above(0)
-      .browserWindow.getBounds()
-      .should.eventually.have.property("height")
-      .and.be.above(0);
-  }
-
-  // we agreed that only the tests with correct login credentials or a
-  // pre-existing session are critical at the moment. the tests where an
-  // error is expected upon entering wrong credentials aren't taken into
-  // account here. if the order of the tests gets changed, this
-  // function needs to be changed accordingly.
-  function importantTestsPassed(site) {
-    return (
-      site.testResults &&
-      (site.testResults[0].passed || site.testResults[1].passed) &&
-      site.testResults[3].passed
-    );
-  }
-
-  it("applies SSO to all apps in list. Slow.", async function () {
+  it("should apply SSO execution to all apps in list @slow", async function () {
+    const app = this.test.app;
     const initialFileChangeTimestamp = getChangeTimestamp();
 
-    // start app
-    await loadWindow()
-      // go to SSO test page
-      .url(SsoTestPage.url)
-      // hit button to start a batch run (this removes the button...)
+    await app.client
+      .waitUntilWindowLoaded()
+      .url(SsoTestPage.url) // go to SSO test page
+      // hit button to start a batch run (this replaces the start btn with a pause btn)
       .click(SsoTestPage.startBatchRunIcon)
-      // wait for the start button to reappear after the batch run has finished
+      // finally wait for the start button to reappear after the batch run has finished
       .waitForVisible(SsoTestPage.startBatchRunIcon, batchRunTimeout);
 
     fs.existsSync(RESULTS_FILE_PATH).should.be.true;
@@ -118,3 +70,24 @@ describe("Application launch", function () {
     return true;
   });
 });
+
+function getChangeTimestamp() {
+  if (!fs.existsSync(RESULTS_FILE_PATH)) {
+    return 0;
+  }
+
+  return Math.trunc(fs.statSync(RESULTS_FILE_PATH).mtimeMs / SECOND);
+}
+
+// it was agreed that only the tests with correct login credentials or a
+// pre-existing session are critical at the moment. the tests where an
+// error is expected upon entering wrong credentials aren't taken into
+// account here. if the order of the tests gets changed, this
+// function needs to be changed accordingly.
+function importantTestsPassed(site) {
+  return (
+    site.testResults &&
+    (site.testResults[0].passed || site.testResults[1].passed) &&
+    site.testResults[3].passed
+  );
+}

@@ -9,26 +9,31 @@ const chaiAsPromised = require("chai-as-promised");
 const electronPath = require("electron");
 const path = require("path");
 
+const SECOND = 1000;
+const APP_LAUNCH_TIME = 20 * SECOND;
+
 global.before(() => {
   chai.use(chaiAsPromised);
 });
 
-module.exports = {
-  async startApp() {
-    const app = await new Application({
-      path: electronPath,
-      args: [path.join(__dirname, "..")],
-      webdriverOptions: { deprecationWarnings: false }
-    }).start();
+beforeEach(async function () {
+  this.timeout(APP_LAUNCH_TIME);
 
-    chaiAsPromised.transferPromiseness = app.transferPromiseness;
+  const app = await new Application({
+    path: electronPath,
+    args: [path.join(__dirname, "..")],
+    webdriverOptions: { deprecationWarnings: false }
+  }).start();
 
-    return app;
-  },
+  chaiAsPromised.transferPromiseness = app.transferPromiseness;
 
-  async stop(app) {
-    if (app && app.isRunning()) {
-      await app.stop();
-    }
+  this.currentTest.app = app;
+});
+
+afterEach(async function () {
+  const app = this.currentTest.app;
+
+  if (app && app.isRunning()) {
+    await app.stop();
   }
-};
+});

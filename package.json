@@ -16,10 +16,10 @@
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
     "faststart": "electron-forge start",
-    "test": "env REACT_APP_TESTING=true mocha",
-    "test-fast": "env REACT_APP_TESTING=true mocha -fgrep 'slow' --invert",
-    "test-slow": "env REACT_APP_TESTING=true mocha -fgrep 'slow'",
-    "test-sso": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha -fgrep 'SSO'"
+    "test": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha",
+    "test-slow": "npm run test -- -fgrep '@slow'",
+    "test-fast": "npm run test-slow -- --invert",
+    "test-sso": "npm run test -- -fgrep 'SSO'"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
