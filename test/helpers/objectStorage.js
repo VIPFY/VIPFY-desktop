@@ -1,29 +1,31 @@
-var AWS = require("aws-sdk");
-var fs = require("fs");
+const AWS = require("aws-sdk");
+const fs = require("fs");
 
 const BUCKET_NAME = "vipfy-ssotests";
 const s3 = new AWS.S3({ region: "eu-central-1" });
 
-export const uploadSsoTestResult = async (path, fileName) => {
-  try {
-    const readStream = fs.createReadStream(path);
+module.exports = {
+  async uploadSsoTestResult(path, fileName) {
+    try {
+      const readStream = fs.createReadStream(path);
 
-    const params = {
-      Bucket: BUCKET_NAME,
-      Key: fileName,
-      Body: readStream,
-      ContentType: "application/json"
-    };
+      const params = {
+        Bucket: BUCKET_NAME,
+        Key: fileName,
+        Body: readStream,
+        ContentType: "application/json"
+      };
 
-    s3.upload(params, function (err, data) {
-      if (err) {
-        throw err;
-      }
+      s3.upload(params, function (err, data) {
+        if (err) {
+          throw err;
+        }
 
-      console.log(`File uploaded successfully. ${data.Location}`);
-    });
-  } catch (err) {
-    throw new Error(err);
+        console.log(`File uploaded successfully. ${data.Location}`);
+      });
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 };
 
@@ -35,19 +37,19 @@ export const uploadSsoTestResult = async (path, fileName) => {
  * @param {string} time
  * @returns {string}
  */
-export const getInvoiceLink = async (billname, time) => {
-  const Key = `${billname}.pdf`;
-  const Bucket = process.env.AWS_BUCKET ? "invoices.dev.vipfy.store" : "invoices.vipfy.store";
+// export const getInvoiceLink = async (billname, time) => {
+//   const Key = `${billname}.pdf`;
+//   const Bucket = process.env.AWS_BUCKET ? "invoices.dev.vipfy.store" : "invoices.vipfy.store";
 
-  try {
-    const url = await s3.getSignedUrl("getObject", {
-      Bucket,
-      Key,
-      Expires: 3600
-    });
+//   try {
+//     const url = await s3.getSignedUrl("getObject", {
+//       Bucket,
+//       Key,
+//       Expires: 3600
+//     });
 
-    return url;
-  } catch (err) {
-    throw new Error(err);
-  }
-};
+//     return url;
+//   } catch (err) {
+//     throw new Error(err);
+//   }
+// };

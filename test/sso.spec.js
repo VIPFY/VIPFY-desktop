@@ -1,7 +1,9 @@
 const fs = require("fs");
+const path = require("path");
 const hooks = require("./hooks");
 const SsoTestPage = require("./pageObject/sso-test.page");
 const sendEmail = require("./helpers/email.js").sendEmail;
+const uploadSsoTestResult = require("./helpers/objectStorage.js").uploadSsoTestResult;
 const tests = require("../src/react/components/admin/UniversalLoginTest/tests.tsx").tests;
 const sites = require("../src/react/components/admin/UniversalLoginTest/sites.tsx").sites;
 
@@ -21,6 +23,14 @@ describe("Application launch", function () {
   afterEach(async function () {
     await hooks.stop(app);
   });
+
+  function getChangeTimestamp() {
+    if (!fs.existsSync(RESULTS_FILE_PATH)) {
+      return 0;
+    }
+
+    return Math.trunc(fs.statSync(RESULTS_FILE_PATH).mtimeMs / SECOND);
+  }
 
   function loadWindow() {
     return app.client
@@ -53,7 +63,7 @@ describe("Application launch", function () {
   }
 
   it("applies SSO to all apps in list. Slow.", async function () {
-    const startTime = Date.now();
+    const initialFileChangeTimestamp = getChangeTimestamp();
 
     // start app
     await loadWindow()
@@ -64,15 +74,24 @@ describe("Application launch", function () {
       // wait for the start button to reappear after the batch run has finished
       .waitForVisible(SsoTestPage.startBatchRunIcon, batchRunTimeout);
 
+    fs.existsSync(RESULTS_FILE_PATH).should.be.true;
+
     const sites = JSON.parse(fs.readFileSync(RESULTS_FILE_PATH, { encoding: "utf8" }));
+    const fileChangeTimestamp = getChangeTimestamp();
 
-    // the results file should have been updated after starting this test
-    const lastFileModificationTime = fs.statSync(RESULTS_FILE_PATH).mtimeMs;
-    lastFileModificationTime.should.be.greaterThan(startTime);
-
-    // the results file should contain a result for each site
     should.exist(sites);
     sites.should.be.an("array");
+
+    // upload the result file to object storage
+    // uploadSsoTestResult(
+    //   RESULTS_FILE_PATH,
+    //   fileChangeTimestamp + "_" + path.basename(RESULTS_FILE_PATH)
+    // );
+
+    // the results file should have been updated after starting this test
+    fileChangeTimestamp.should.be.greaterThan(initialFileChangeTimestamp);
+
+    // the results file should contain a result for each site
     app.client
       .elements(SsoTestPage.sitesTableRow)
       .should.eventually.have.property("length")
