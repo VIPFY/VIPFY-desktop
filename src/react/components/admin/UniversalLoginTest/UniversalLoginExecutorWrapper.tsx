@@ -32,18 +32,18 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
     );
   }
 
-  advance() {
-    if (this.hasNextTest()) {
+  advance(testIndex?: number) {
+    if (this.hasNextTest(testIndex)) {
       this.setState(state => {
         return {
-          currentTestIndex: state.currentTestIndex + 1
+          currentTestIndex: (testIndex ?? state.currentTestIndex) + 1
         };
       });
     }
   }
 
-  hasNextTest() {
-    return !!tests[this.state.currentTestIndex + 1];
+  hasNextTest(testIndex?: number) {
+    return !!tests[(testIndex ?? this.state.currentTestIndex) + 1];
   }
 
   setResult(currentTestIndex: number, testResult: TestResult) {
@@ -57,7 +57,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
       return { testResults };
     });
 
-    this.advance();
+    this.advance(currentTestIndex);
   }
 
   skipTest(currentTestIndex: number) {
