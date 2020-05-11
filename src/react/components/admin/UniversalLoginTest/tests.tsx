@@ -1,6 +1,7 @@
 export interface Test {
   setup: string;
   expectLoginSuccess: boolean;
+  expectPasswordEntered?: boolean;
   deleteCookies: boolean;
   speedFactor?: number;
   enterCorrectEmail?: boolean;

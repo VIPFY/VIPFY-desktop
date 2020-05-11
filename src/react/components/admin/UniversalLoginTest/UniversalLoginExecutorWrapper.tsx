@@ -28,7 +28,9 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   isPassed(test: Test, loginResult: LoginResult) {
     return (
       test.expectLoginSuccess == loginResult.loggedIn &&
-      test.expectLoginSuccess != loginResult.error
+      test.expectLoginSuccess != loginResult.error &&
+      (test.expectPasswordEntered === undefined ||
+        test.expectPasswordEntered == loginResult.passwordEntered)
     );
   }
 
