@@ -1,16 +1,19 @@
 // enable requiring stuff from ts(x) files
 process.env.TS_NODE_PROJECT = "./tsconfig.json";
-require("chai/register-should");
 require("ts-mocha");
+require("chai/register-should");
 
 const Application = require("spectron").Application;
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 const electronPath = require("electron");
 const path = require("path");
+const sendEmail = require("./helpers/email.js").sendEmail;
 
 const SECOND = 1000;
 const APP_LAUNCH_TIME = 20 * SECOND;
+
+exports.sendReportByMail = sendReportByMail;
 
 global.before(() => {
   chai.use(chaiAsPromised);
@@ -37,3 +40,18 @@ afterEach(async function () {
     await app.stop();
   }
 });
+
+async function sendReportByMail(done) {
+  await sendEmail({
+    templateId: "d-0bc1db6347c840729375e85e5682ae6d",
+    fromName: "VIPFY",
+    personalizations: [
+      {
+        to: [{ email: "eva.kiszka@vipfy.store" }],
+        dynamic_template_data: { result: "result", statistics: "stats" }
+      }
+    ]
+  });
+
+  done();
+}
