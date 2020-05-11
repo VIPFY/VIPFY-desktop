@@ -6,6 +6,7 @@ export interface Test {
   enterCorrectEmail?: boolean;
   enterCorrectPassword?: boolean;
   skipCondition?: SkipCondition;
+  timeout?: number;
 }
 
 // sometimes a test should be skipped. this defines the conditions under which that should happen
