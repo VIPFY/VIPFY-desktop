@@ -8,6 +8,7 @@ import { Mutation } from "react-apollo";
 import UserName from "../../components/UserName";
 import { ErrorComp } from "../../common/functions";
 import UniversalButton from "../../components/universalButtons/universalButton";
+import { WorkAround } from "../../interfaces";
 
 interface Props {
   closeFunction: Function;
@@ -16,7 +17,9 @@ interface Props {
 }
 
 export default (props: Props) => (
-  <Mutation mutation={FORCE_RESET} refetchQueries={[{ query: FETCH_USER_SECURITY_OVERVIEW }]}>
+  <Mutation<WorkAround, WorkAround>
+    mutation={FORCE_RESET}
+    refetchQueries={[{ query: FETCH_USER_SECURITY_OVERVIEW }]}>
     {(forceReset, { loading, error, data }) => (
       <PopupBase small={true} close={props.closeFunction}>
         <h1>Force Password Change</h1>

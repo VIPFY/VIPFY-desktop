@@ -1,10 +1,5 @@
 import gql from "graphql-tag";
-import {
-  decryptPrivateKey,
-  decryptLicence,
-  encryptPrivateKey,
-  generateNewKeypair
-} from "./common/crypto";
+import { decryptPrivateKey, decryptLicence } from "./common/crypto";
 import { Buffer } from "buffer";
 export const typeDefs = gql`
   extend type Key {
@@ -14,11 +9,7 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Key: {
-    privatekeyDecrypted: async (
-      parent,
-      _args,
-      { cache, client, forceFetch, getCacheKey, clientAwareness }
-    ) => {
+    privatekeyDecrypted: async (parent, _args, { client, forceFetch }) => {
       let key = { ...parent };
 
       if (!key.id) {
@@ -46,6 +37,7 @@ export const resolvers = {
           variables: { id: key.id },
           fetchPolicy: forceFetch ? "network-only" : "cache-first"
         });
+
         if (!d.data || !d.data.fetchKey == null) {
           throw new Error(d.error);
         }

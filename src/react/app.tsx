@@ -8,7 +8,7 @@ import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, refetchQueries, getMyUnitId } from "./common/functions";
+import { AppContext, getMyUnitId } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
@@ -23,7 +23,7 @@ import HeaderNotificationProvider from "./components/notifications/headerNotific
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
-const { session, BrowserWindow } = remote;
+const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
@@ -69,7 +69,6 @@ interface AppState {
   popup: PopUp;
   showTutorial: boolean;
   renderElements: { key: string; element: any }[];
-  page: string;
   sidebarloaded: boolean;
   reshow: string | null;
   twofactor: string | null;
@@ -94,7 +93,6 @@ const INITIAL_STATE = {
   popup: INITIAL_POPUP,
   showTutorial: true,
   renderElements: [],
-  page: "dashboard",
   sidebarloaded: false,
   reshow: null,
   twofactor: null,
@@ -103,29 +101,6 @@ const INITIAL_STATE = {
   showPlanModal: false,
   expiredPlan: null
 };
-
-const tutorial = gql`
-  {
-    tutorialSteps {
-      id
-      page
-      steptext
-      renderoptions
-      nextstep
-    }
-
-    me {
-      id
-      tutorialprogress
-      emails {
-        email
-      }
-      firstname
-      lastname
-      profilepicture
-    }
-  }
-`;
 
 const SAVE_COOKIES = gql`
   mutation saveCookies($cookies: JSON) {
@@ -138,7 +113,7 @@ class App extends React.Component<AppProps, AppState> {
 
   references: { key; element; listener?; action? }[] = [];
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
     this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
@@ -206,7 +181,7 @@ class App extends React.Component<AppProps, AppState> {
           const res = await this.props.endImpersonation({
             variables: { token: impersonated }
           });
-          token = res.endImpersonation;
+          token = res.data.endImpersonation;
         } catch (err) {
           // even if server side fails for some reason still undo impersonation locally
           console.error("LOG: logMeOut -> err endImpersonation", err);
@@ -216,6 +191,7 @@ class App extends React.Component<AppProps, AppState> {
         const impersonatorLocalStorage = JSON.parse(
           localStorage.getItem("impersonator-localStorage") ?? "{}"
         );
+
         localStorage.clear();
         for (const key in impersonatorLocalStorage) {
           localStorage.setItem(key, impersonatorLocalStorage[key]);
@@ -342,7 +318,6 @@ class App extends React.Component<AppProps, AppState> {
 
   moveTo = (path: string) => {
     if (!(this.props.location.pathname === `/area/${path}`)) {
-      this.setState({ page: path });
       this.props.history.push(`/area/${path}`);
     }
   };

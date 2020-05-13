@@ -38,11 +38,11 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   };
 
   componentDidMount() {
-    document.addEventListener("keydown", this.handleEnter, true);
+    document.addEventListener("keydown", this.handleEnter);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.handleEnter, true);
+    document.removeEventListener("keydown", this.handleEnter);
   }
 
   private handleEnter = (e): void => {
@@ -56,8 +56,8 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
   };
 
   private passwordChanged(
-    { score, password, isValid }: { score: number; password: string; isValid: boolean },
-    feedback: any
+    { password, isValid }: { score: number; password: string; isValid: boolean },
+    _feedback: any
   ): void {
     this.setState({ newPasswordValid: isValid, newPassword: password });
   }
@@ -153,7 +153,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
                 type="password"
               />
             </div>
-            <div className={this.state.error === null ? "formError noError" : "formError oneError"}>
+            <div className={`formError ${this.state.error === null ? "no" : "one"}Error`}>
               {this.state.error}
             </div>
 

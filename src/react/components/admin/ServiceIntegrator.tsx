@@ -36,6 +36,9 @@ const { session } = remote;
 // create an instance of the diagram-engine
 const engine = createEngine();
 
+var scrolling = false;
+var loaded = false;
+
 // register the two engines
 // engine.getNodeFactories().registerFactory(new JSCustomNodeFactory() as any);
 // engine.getNodeFactories().registerFactory(new TSCustomNodeFactory());
@@ -353,7 +356,13 @@ class ServiceIntegrator extends React.Component<Props, State> {
     const width = args[0];
     const height = args[1];
     const left = args[2] + 440;
+    // this depends on the vipfy trial popup.
     const top = args[3] + 72;
+
+    // if an element already exists don't make another one.
+    if (document.getElementById(args[4] + "a")) {
+      return;
+    }
 
     const div = (
       <div
@@ -898,6 +907,35 @@ class ServiceIntegrator extends React.Component<Props, State> {
     }
   };
 
+  // fired when message is received from ipc -> windows.scroll event
+  startScroll(scrollValue) {
+    console.log("scroll value: " + scrollValue);
+    if (!scrolling) {
+      // remove current divs shown
+      this.setState(oldstate => {
+        this.aktDivListState = {
+          divListHold: [],
+          divHold: false,
+          divHoldRepeat: false
+        };
+        oldstate.divList = [];
+        return oldstate;
+      });
+
+      scrolling = true;
+    }
+  }
+
+  // fired when message is received from ipc -> windows.scroll event
+  stopScroll() {
+    // show the divs
+    this.state.executionPlan.map((o, k) => {
+      this.zeigeElement(false, o.args.id, false);
+    });
+
+    scrolling = false;
+  }
+
   async onIpcMessage(e): Promise<void> {
     console.log("IPC called", e.channel);
     const currentexe = this.loginState.executing;
@@ -915,6 +953,23 @@ class ServiceIntegrator extends React.Component<Props, State> {
           }
         }
         break;
+
+      case "startScroll":
+        this.startScroll(e.args[0]);
+        break;
+
+      case "stopScroll":
+        this.stopScroll();
+        break;
+
+      case "gotClicked":
+        console.log("ServiceIntegrator.gotClicked called");
+        break;
+
+      case "stopScroll":
+        this.stopScroll();
+        break;
+
       case "sendMessage":
         let i = 0;
         while (e.args[i] != null) {
@@ -990,6 +1045,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
             break;
 
           case 1:
+            // incase of scrolling don't make more. check implemented in makeCoverdiv function.
             this.makeCoverdiv([e.args[0], e.args[1], e.args[2], e.args[3], e.args[4]]);
             break;
 
@@ -997,6 +1053,18 @@ class ServiceIntegrator extends React.Component<Props, State> {
             break;
         }
 
+        break;
+
+      case "loaded":
+        // route console  from webview to parent console.
+        if (!loaded) {
+          loaded = true;
+          console.log("webview console listener attached");
+          const webvieew = document.querySelector("webview");
+          webvieew.addEventListener("console-message", function (e) {
+            console.log("Webview: ", e.message);
+          });
+        }
         break;
 
       case "loadedDIS":
@@ -1261,7 +1329,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
         break;
 
       case "unload":
-        console.log("UNLOAD", this.webview);
+        //console.log("UNLOAD", this.webview);
         this.setState({ webviewReady: false });
         this.webview = null;
         break;
@@ -1307,31 +1375,23 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return <div>ERROR</div>;
             }
             const executionApps: JSX.Element[] = [];
-            data.fetchExecutionApps
-              .sort(function(a, b) {
-                let nameA = a.name.toUpperCase();
-                let nameB = b.name.toUpperCase();
-                if (nameA < nameB) {
-                  return -1;
-                }
-                if (nameA > nameB) {
-                  return 1;
-                }
-                // namen müssen gleich sein
-                return 0;
-              })
-              .forEach(e =>
-                executionApps.push(
-                  <div>
-                    <span>{e.name}</span>
-                    <UniversalButton
-                      type="high"
-                      onClick={() => this.setState({ app: e })}
-                      label="Edit"
-                    />
-                  </div>
-                )
-              );
+            data.fetchExecutionApps.sort((a, b) => (a.name > b.name ? 1 : -1));
+            data.fetchExecutionApps.forEach(e =>
+              executionApps.push(
+                <div>
+                  <span>{e.name}</span>
+                  <UniversalButton
+                    type="high"
+                    onClick={() => {
+                      // this.setState({ app: e })
+                      console.log("E", e);
+                      this.props.moveTo(`admin/service-integration/${e.id}`);
+                    }}
+                    label="Edit"
+                  />
+                </div>
+              )
+            );
             return (
               <div>
                 {executionApps}
@@ -1347,7 +1407,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
       );
     } else {
       return (
-        <div>
+        <div style={{ height: "100%" }}>
           <div
             style={{
               float: "left",
@@ -1469,7 +1529,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   </div>
                 </div>
               ))}
-
               <div
                 style={{ color: "white", textAlign: "center", width: "200px", marginTop: "30px" }}>
                 Everything selected?
@@ -1489,7 +1548,6 @@ class ServiceIntegrator extends React.Component<Props, State> {
                     });
                     this.sendExecute();
                   }}
-                  style={{ width: "100px" }}
                   label="EXECUTE Tracked"></UniversalButton>
               </div>
             </div>
@@ -1514,7 +1572,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
                     //set url back to null
                     console.log("EXECUTE BUTTON");
                     this.setState({ executing: 1, step: 0, test: true });
-                    await this.sendExecuteFinal();
+                    console.log(await this.sendExecuteFinal());
                   }}
                 />
               </div>

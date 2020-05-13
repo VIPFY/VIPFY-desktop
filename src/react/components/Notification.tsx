@@ -5,8 +5,7 @@ import * as ReactDOM from "react-dom";
 import { graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
-import { filterError, ErrorComp, getMyUnitId } from "../common/functions";
-import UserName from "./UserName";
+import { filterError, ErrorComp, renderNotificatonMessage } from "../common/functions";
 
 const READ_NOTIFICATION = gql`
   mutation onReadNotification($id: ID!) {
@@ -132,22 +131,6 @@ class Notification extends React.Component<Props, State> {
     }
   };
 
-  renderNotificatonMessage(message) {
-    let re = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
-    const match = message.match(re);
-    if (!match) {
-      return message;
-    } else {
-      return (
-        <>
-          {match[1]}
-          <UserName unitid={match[2].substring(5)} userid={getMyUnitId(this.props.client)} />
-          {match[3]}
-        </>
-      );
-    }
-  }
-
   renderNotifications(notifications) {
     if (this.state.error) {
       return <ErrorComp error={this.state.error} />;
@@ -156,7 +139,7 @@ class Notification extends React.Component<Props, State> {
     return notifications.map(({ message, icon, sendtime, id, link }) => (
       <div className="notification-item" key={id} onClick={() => this.markAsRead(id)}>
         <span className={`fas fa-${icon} notification-icon ${icon == "bug" ? "bug" : ""}`} />
-        <p className="notificationText">{this.renderNotificatonMessage(message)}</p>
+        <p className="notificationText">{renderNotificatonMessage(message, this.props.client)}</p>
         <div className="notificationTime">
           {!isNaN(sendtime - 0)
             ? moment(sendtime - 0).format("LLL")

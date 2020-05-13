@@ -237,7 +237,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       fetchPolicy: "network-only",
     });
     let licence = result.data.fetchLicenceAssignment;
-    console.log("LICENCE", licence);
+
     if (!licence) {
       return;
     }
@@ -250,9 +250,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
     if (licence.boughtPlan.key && licence.boughtPlan.key.domain) {
       loginurl = licence.boughtPlan.key.domain;
     }
+
     if (key && key.loginurl) {
       loginurl = key.loginurl;
     }
+
     let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);
     Object.assign(optionsobject, licence.options);
     this.setState({

@@ -91,10 +91,7 @@ function getSetupKey() {
     }
 
     const installerExe = process.argv[i + 2];
-    const candidateKey = installerExe
-      .split("-")
-      .slice(-1)[0]
-      .split(".")[0];
+    const candidateKey = installerExe.split("-").slice(-1)[0].split(".")[0];
 
     if (candidateKey.length !== 21) {
       return false;
@@ -135,7 +132,7 @@ const createWindow = async () => {
   if (!disableUpdater) {
     try {
       autoUpdater.checkForUpdates();
-      setInterval(function() {
+      setInterval(function () {
         try {
           if (!disableUpdater) {
             autoUpdater.checkForUpdates();

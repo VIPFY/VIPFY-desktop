@@ -8,6 +8,7 @@ interface Props {
   buttonLabel?: string;
   buttonStyles?: object;
   disabled?: boolean;
+  ref?: any;
 }
 
 interface State {
@@ -23,11 +24,11 @@ class TwoFactorForm extends React.Component<Props, State> {
   state = { 1: "", 2: "", 3: "", 4: "", 5: "", 6: "" };
 
   componentDidMount() {
-    document.addEventListener("keydown", this.onEnter, true);
+    document.addEventListener("keydown", this.onEnter);
   }
 
   componentWillUnmount() {
-    document.removeEventListener("keydown", this.onEnter, true);
+    document.removeEventListener("keydown", this.onEnter);
   }
 
   isValid = () => !Object.values(this.state).some(item => item.length == 0);
@@ -65,7 +66,7 @@ class TwoFactorForm extends React.Component<Props, State> {
         });
       }
 
-      if (name < 6) {
+      if ((this.props.fieldNumber && name < this.props.fieldNumber) || name < 6) {
         this[parseInt(name) + 1].focus();
       }
     }
@@ -118,7 +119,7 @@ class TwoFactorForm extends React.Component<Props, State> {
 
     return (
       <React.Fragment>
-        <form id="two-factor-form" onSubmit={this.handleSubmit}>
+        <form ref={this.props.ref || null} id="two-factor-form" onSubmit={this.handleSubmit}>
           {content}
         </form>
 

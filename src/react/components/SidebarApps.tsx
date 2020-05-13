@@ -30,17 +30,17 @@ class SidebarApps extends React.Component<Props, State> {
     context: false,
     clientX: 0,
     clientY: 0,
-    selected: -1,
+    selected: -1
   };
 
   wrapper = React.createRef();
 
   componentDidMount() {
-    document.addEventListener("mousedown", (e) => this.handleClickOutside(e));
+    document.addEventListener("mousedown", e => this.handleClickOutside(e));
   }
 
   componentWillUnmount() {
-    document.removeEventListener("mousedown", (e) => this.handleClickOutside(e));
+    document.removeEventListener("mousedown", e => this.handleClickOutside(e));
   }
 
   handleClickOutside(event) {
@@ -55,9 +55,9 @@ class SidebarApps extends React.Component<Props, State> {
   }
 
   toggleApps = () =>
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       ...prevState,
-      showApps: !prevState.showApps,
+      showApps: !prevState.showApps
     }));
 
   handleArrowKeys(key) {
@@ -66,7 +66,7 @@ class SidebarApps extends React.Component<Props, State> {
         if (
           (this.state.showMoreApps &&
             this.state.selected <
-              this.props.licences.filter((licence) => {
+              this.props.licences.filter(licence => {
                 if (licence.boughtplanid.alias) {
                   return licence.boughtplanid.alias
                     .toUpperCase()
@@ -80,7 +80,7 @@ class SidebarApps extends React.Component<Props, State> {
                 1) ||
           (!this.state.showMoreApps && this.state.selected < 4)
         ) {
-          this.setState((oldstate) => ({ ...oldstate, selected: oldstate.selected + 1 }));
+          this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected + 1 }));
         }
         break;
       case "ArrowUp":
@@ -89,14 +89,14 @@ class SidebarApps extends React.Component<Props, State> {
             this.searchInput.focus();
           }*/
           if (this.state.selected >= 0) {
-            this.setState((oldstate) => ({ ...oldstate, selected: oldstate.selected - 1 }));
+            this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected - 1 }));
           }
         }
         break;
       case "Enter":
         {
           const licences = this.props.licences
-            .filter((licence) => {
+            .filter(licence => {
               if (licence.boughtplanid.alias) {
                 return licence.boughtplanid.alias
                   .toUpperCase()
@@ -159,12 +159,12 @@ class SidebarApps extends React.Component<Props, State> {
     const input = (style = {}) => (
       <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
         <input
-          ref={(node) => (this.searchInput = node)}
+          ref={node => (this.searchInput = node)}
           value={this.state.searchString}
-          onChange={(e) => this.setState({ searchString: e.target.value, selected: -1 })}
+          onChange={e => this.setState({ searchString: e.target.value, selected: -1 })}
           placeholder="Search Apps"
           className={`sidebar-search${style ? style : sidebarOpen ? "" : "-tooltip"}`}
-          onContextMenu={(e) => {
+          onContextMenu={e => {
             e.preventDefault();
             this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
           }}
@@ -181,10 +181,17 @@ class SidebarApps extends React.Component<Props, State> {
       </div>
     );
 
+    const appOrbitCount = [];
+    licences.forEach(l =>
+      appOrbitCount[l.boughtplanid.planid.appid.id]
+        ? appOrbitCount[l.boughtplanid.planid.appid.id].push(l.id)
+        : (appOrbitCount[l.boughtplanid.planid.appid.id] = [])
+    );
+
     return (
       <ul
         className="sidebar-main sidebarAppsholder"
-        onKeyDown={(e) => this.handleArrowKeys(e.key)}
+        onKeyDown={e => this.handleArrowKeys(e.key)}
         onBlur={() => this.setState({ selected: -1 })}>
         {/* <li className={`sidebar-link${sidebarOpen ? "" : "-small"}`}>
           <button
@@ -289,7 +296,7 @@ class SidebarApps extends React.Component<Props, State> {
             {showApps &&
               licences.length > 0 &&
               licences
-                .filter((licence) => {
+                .filter(licence => {
                   if (licence.boughtplanid.alias) {
                     return licence.boughtplanid.alias
                       .toUpperCase()
@@ -362,6 +369,9 @@ class SidebarApps extends React.Component<Props, State> {
                       viewID={this.props.viewID}
                       isSearching={this.state.searchString === ""}
                       selected={this.state.selected == index}
+                      multipleOrbits={
+                        appOrbitCount[licence.boughtplanid.planid.appid.id].length > 0
+                      }
                     />
                   );
                 })}

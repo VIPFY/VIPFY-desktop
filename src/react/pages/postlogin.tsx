@@ -28,6 +28,9 @@ interface PostLoginProps {
   expiredPlan: Expired_Plan;
   closePlanModal: Function;
   [moreProps: string]: any;
+  firstname: string;
+  middlename: string;
+  lastname: string;
 }
 
 interface State {
@@ -41,6 +44,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
   render() {
     const isImpersonating = !!localStorage.getItem("impersonator-token");
+
     return (
       <Query<WorkAround, WorkAround> query={me}>
         {({ data, loading, error, refetch }) => {
@@ -75,7 +79,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           if (isImpersonating) {
             context.addHeaderNotification(
-              `You are impersonating the User ${concatName(this.props)}`,
+              `You are impersonating the User ${concatName(clearProps)}`,
               {
                 type: "impersonation",
                 key: "impersonator",
@@ -139,12 +143,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   console.error(e2);
                 }
 
-                if (data && data.fetchVipfyPlan) {
+                if (data.fetchVipfyPlan && data.fetchVipfyPlan.endtime) {
                   const vipfyPlan = data.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
 
-                  if (context && data.fetchVipfyPlan.endtime) {
+                  if (context) {
                     const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
 
                     if (moment().isAfter(expiry)) {

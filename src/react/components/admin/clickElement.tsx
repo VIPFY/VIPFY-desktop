@@ -22,10 +22,10 @@ class ClickElement extends React.Component<Props, State> {
   };
 
   giveOperationOptions() {
-    if (this.props.operationOptions) {
-      return this.props.operationOptions;
-    }
     if (this.props.isLogin) {
+      return this.props.operationOptions;
+    } else {
+      /* if (this.props.isLogin) {
       return [
         { value: "waitandfill", label: "Fill Field" },
         { value: "click", label: "click" },
@@ -33,15 +33,13 @@ class ClickElement extends React.Component<Props, State> {
         { value: "recaptcha", label: "Recaptcha" },
         { value: "select", label: "Select" }
       ];
-    } else {
-      return [
-        { value: "waitandfill", label: "Fill Field" },
-        { value: "click", label: "Click" },
+    }  */
+      return this.props.operationOptions.concat([
         { value: "wait", label: "Wait" },
-        { value: "select", label: "Select" },
+        /* { value: "select", label: "Select" }, */
         { value: "recaptcha", label: "Recaptcha" },
         { value: "repeatFill", label: "Repeat a filled field" }
-      ];
+      ]);
     }
   }
 
