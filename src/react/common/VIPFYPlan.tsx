@@ -10,6 +10,7 @@ interface Props {
     options: {
       [prop: string]: any;
     };
+    price: string;
     payperiod: string;
     cancelperiod: string;
     [prop: string]: any;

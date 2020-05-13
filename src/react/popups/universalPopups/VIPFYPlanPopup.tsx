@@ -56,7 +56,6 @@ export default (props: Props) => {
   const [step, setStep] = React.useState(0);
   const [tos, toggleTos] = React.useState(false);
   const { company, currentPlan } = props;
-  console.log("FIRE: currentPlan", currentPlan);
 
   const calculateEndtime = () => {
     let endtime;
@@ -124,7 +123,7 @@ export default (props: Props) => {
 
           const SetVat = (
             <Mutation<WorkAround, WorkAround> mutation={SET_VAT_ID} onCompleted={() => setStep(4)}>
-              {(mutate, { loading, error }) => (
+              {(mutate, { loading: l3, error: e3 }) => (
                 <React.Fragment>
                   <p>Please enter your vatnumber</p>
                   <form
@@ -141,8 +140,8 @@ export default (props: Props) => {
                       required
                       placeholder="Your vatnumber"
                     />
-                    <ErrorComp error={error} />
-                    <UniversalButton disabled={loading} type="high" label="Add" form="vat-form" />
+                    <ErrorComp error={e3} />
+                    <UniversalButton disabled={l3} type="high" label="Add" form="vat-form" />
                   </form>
                 </React.Fragment>
               )}
@@ -157,7 +156,7 @@ export default (props: Props) => {
                   props.close();
                 }
               }}>
-              {(mutate, { data, loading, error }) => (
+              {(mutate, { data: d2, loading: l2, error: e2 }) => (
                 <div className="vipfy-plan-confirmation">
                   <p>{`Please confirm selection of the ${selected.name} plan`}</p>
                   <VIPFYPlan plan={selected} />
@@ -169,7 +168,25 @@ export default (props: Props) => {
                     </div>
                   )}
 
-                  <UniversalCheckbox name="tos" liveValue={value => toggleTos(value)}>
+                  {selected.price !== 0 && (
+                    <div className="vipfy-plan-notice">
+                      {`Currently there ${company.employees > 1 ? "are" : "is"} ${
+                        company.employees
+                      } User${
+                        company.employees > 1 ? "s" : ""
+                      } in this company. You will pay a total of `}
+                      <b>
+                        {selected.price * company.employees} {selected.currency} per{" "}
+                        {Object.keys(selected.payperiod)[0].substring(
+                          0,
+                          Object.keys(selected.payperiod)[0].length - 1
+                        )}
+                      </b>
+                      .
+                    </div>
+                  )}
+
+                  <UniversalCheckbox name="tos" disabled={l2} liveValue={value => toggleTos(value)}>
                     <span style={{ lineHeight: "18px" }}>
                       I agree to the{" "}
                       <span
@@ -189,13 +206,20 @@ export default (props: Props) => {
                     selected.cancelperiod
                   )}. We will use the chosen payment method in your account to deduct the amount of money.`}</p>
 
-                  <ErrorComp error={error} />
+                  <ErrorComp error={e2} />
 
-                  {data && <div className="success">Thank you for selecting a VIPFY Plan</div>}
+                  {d2 && d2.selectVIPFYPlan && (
+                    <div className="success">Thank you for selecting a VIPFY Plan</div>
+                  )}
 
-                  <UniversalButton type="low" label="go back" onClick={() => setStep(1)} />
                   <UniversalButton
-                    disabled={!tos || loading || data}
+                    disabled={l2 || (d2 && d2.selectVIPFYPlan)}
+                    type="low"
+                    label="go back"
+                    onClick={() => setStep(1)}
+                  />
+                  <UniversalButton
+                    disabled={!tos || l2 || (d2 && d2.selectVIPFYPlan)}
                     className="float-right"
                     onClick={() => mutate({ variables: { planid: selected.id, tos } })}
                     type="high"
@@ -213,18 +237,18 @@ export default (props: Props) => {
             case 2:
               return (
                 <Query<WorkAround, WorkAround> query={FETCH_CARDS}>
-                  {({ data, loading, error }) => {
-                    if (loading) {
+                  {({ data: d4, loading: l4, error: e4 }) => {
+                    if (l4) {
                       return <LoadingDiv />;
                     }
 
-                    if (error) {
-                      return <ErrorComp error={error} />;
+                    if (e4) {
+                      return <ErrorComp error={e4} />;
                     }
 
                     const hasVat = company.legalinformation && company.legalinformation.vatID;
 
-                    if (!data || data.fetchPaymentData.length < 1) {
+                    if (!d4 || d4.fetchPaymentData.length < 1) {
                       return (
                         <StripeForm
                           departmentid={company.unit.id}

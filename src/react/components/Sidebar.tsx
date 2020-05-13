@@ -257,10 +257,10 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "company":
-          await client.query({ query: FETCH_COMPANY });
+          await client.query({ query: FETCH_COMPANY, ...options });
           break;
         case "vipfyPlan":
-          await client.query({ query: FETCH_VIPFY_PLAN });
+          await client.query({ query: FETCH_VIPFY_PLAN, ...options });
       }
     }
 
