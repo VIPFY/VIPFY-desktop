@@ -143,7 +143,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   console.error(e2);
                 }
 
-                if (data.fetchVipfyPlan && data.fetchVipfyPlan.endtime) {
+                if (data && data.fetchVipfyPlan && data.fetchVipfyPlan.endtime) {
                   const vipfyPlan = data.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
