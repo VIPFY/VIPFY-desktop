@@ -6,7 +6,9 @@ const objectStorage = require("./helpers/objectStorage.js");
 const tests = require("../src/react/components/admin/UniversalLoginTest/tests.tsx").tests;
 const sites = require("../src/react/components/admin/UniversalLoginTest/sites.tsx").sites;
 
-const RESULTS_FILE_PATH = "ssotest.json";
+const RESULT_FILE_PATH = "./ssotest.json";
+const RESULT_FILE_MIME_TYPE = "application/json";
+const RESULT_FILE_ENCODING = "utf8";
 const S3_BUCKET_NAME = "vipfy-ssotests";
 const SECOND = 1000;
 const appStartTimeout = 20 * SECOND;
@@ -19,9 +21,15 @@ let link = "";
 describe("SSO Execution", function () {
   this.timeout(appStartTimeout + batchRunTimeout);
 
+  before(function (done) {
+    fs.existsSync(RESULT_FILE_PATH) && fs.unlinkSync(RESULT_FILE_PATH);
+    done();
+  });
+
   it("should apply SSO execution to all apps in list @slow", async function () {
+    fs.existsSync(RESULT_FILE_PATH).should.be.false;
+
     const app = this.test.app;
-    const initialFileChangeTimestamp = getChangeTimestamp();
 
     await app.client
       .waitUntilWindowLoaded()
@@ -33,16 +41,13 @@ describe("SSO Execution", function () {
 
     statistics = await app.client.elements(SsoTestPage.statisticsTableRow).getText();
 
-    fs.existsSync(RESULTS_FILE_PATH).should.be.true;
+    fs.existsSync(RESULT_FILE_PATH).should.be.true;
+    await uploadResultFile();
 
-    const sites = JSON.parse(fs.readFileSync(RESULTS_FILE_PATH, { encoding: "utf8" }));
-    const fileChangeTimestamp = getChangeTimestamp();
+    const sites = JSON.parse(fs.readFileSync(RESULT_FILE_PATH, { encoding: RESULT_FILE_ENCODING }));
 
     should.exist(sites);
     sites.should.be.an("array");
-
-    // the results file should have been updated after starting this test
-    fileChangeTimestamp.should.be.greaterThan(initialFileChangeTimestamp);
 
     // the results file should contain a result for each site
     app.client
@@ -53,12 +58,6 @@ describe("SSO Execution", function () {
     // the results file should show that each site passed the important tests
     sitesPassedImportantTests = sites && sites.every(importantTestsPassed);
     sitesPassedImportantTests.should.be.true;
-
-    // upload the result file to object storage
-    const fileName = fileChangeTimestamp + "_" + path.basename(RESULTS_FILE_PATH);
-    await objectStorage.upload(fileName, S3_BUCKET_NAME);
-    link = await objectStorage.getDownloadUrl(fileName, S3_BUCKET_NAME);
-    console.log(link);
   });
 });
 
@@ -70,12 +69,13 @@ after(function (done) {
   sendReportByMail(mailParams, done);
 });
 
-function getChangeTimestamp() {
-  if (!fs.existsSync(RESULTS_FILE_PATH)) {
-    return 0;
-  }
+/** upload the result file to object storage and remember download link */
+async function uploadResultFile() {
+  const timestamp = Math.trunc(fs.statSync(RESULT_FILE_PATH).mtimeMs / SECOND);
+  const fileName = timestamp + "_" + path.basename(RESULT_FILE_PATH);
+  await objectStorage.upload(RESULT_FILE_PATH, fileName, RESULT_FILE_MIME_TYPE, S3_BUCKET_NAME);
 
-  return Math.trunc(fs.statSync(RESULTS_FILE_PATH).mtimeMs / SECOND);
+  link = await objectStorage.getDownloadUrl(fileName, S3_BUCKET_NAME);
 }
 
 // it was agreed that only the tests with correct login credentials or a
@@ -87,6 +87,6 @@ function importantTestsPassed(site) {
   return (
     site.testResults &&
     (site.testResults[0].passed || site.testResults[1].passed) &&
-    site.testResults[3].passed
+    site.testResults[2].passed
   );
 }
