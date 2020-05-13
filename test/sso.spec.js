@@ -7,9 +7,14 @@ const tests = require("../src/react/components/admin/UniversalLoginTest/tests.ts
 const sites = require("../src/react/components/admin/UniversalLoginTest/sites.tsx").sites;
 
 const RESULTS_FILE_PATH = "ssotest.json";
+const S3_BUCKET_NAME = "vipfy-ssotests";
 const SECOND = 1000;
 const appStartTimeout = 20 * SECOND;
 const batchRunTimeout = sites.length * tests.length * 15 * SECOND;
+
+let sitesPassedImportantTests = false;
+let statistics = "";
+let link = "";
 
 describe("SSO Execution", function () {
   this.timeout(appStartTimeout + batchRunTimeout);
@@ -18,50 +23,52 @@ describe("SSO Execution", function () {
     const app = this.test.app;
     const initialFileChangeTimestamp = getChangeTimestamp();
 
-    // await app.client
-    //   .waitUntilWindowLoaded()
-    //   .url(SsoTestPage.url) // go to SSO test page
-    //   // hit button to start a batch run (this replaces the start btn with a pause btn)
-    //   .click(SsoTestPage.startBatchRunIcon)
-    //   // finally wait for the start button to reappear after the batch run has finished
-    //   .waitForVisible(SsoTestPage.startBatchRunIcon, batchRunTimeout);
+    await app.client
+      .waitUntilWindowLoaded()
+      .url(SsoTestPage.url) // go to SSO test page
+      // hit button to start a batch run (this replaces the start btn with a pause btn)
+      .click(SsoTestPage.startBatchRunIcon)
+      // finally wait for the start button to reappear after the batch run has finished
+      .waitForVisible(SsoTestPage.startBatchRunIcon, batchRunTimeout);
 
-    // fs.existsSync(RESULTS_FILE_PATH).should.be.true;
+    statistics = await app.client.elements(SsoTestPage.statisticsTableRow).getText();
+
+    fs.existsSync(RESULTS_FILE_PATH).should.be.true;
 
     const sites = JSON.parse(fs.readFileSync(RESULTS_FILE_PATH, { encoding: "utf8" }));
     const fileChangeTimestamp = getChangeTimestamp();
 
-    // should.exist(sites);
-    // sites.should.be.an("array");
+    should.exist(sites);
+    sites.should.be.an("array");
+
+    // the results file should have been updated after starting this test
+    fileChangeTimestamp.should.be.greaterThan(initialFileChangeTimestamp);
+
+    // the results file should contain a result for each site
+    app.client
+      .elements(SsoTestPage.sitesTableRow)
+      .should.eventually.have.property("length")
+      .and.equal(sites.length);
+
+    // the results file should show that each site passed the important tests
+    sitesPassedImportantTests = sites && sites.every(importantTestsPassed);
+    sitesPassedImportantTests.should.be.true;
 
     // upload the result file to object storage
-    const url = await objectStorage.uploadSsoTestResult(
-      RESULTS_FILE_PATH,
-      fileChangeTimestamp + "_" + path.basename(RESULTS_FILE_PATH)
-    );
-    console.log(url);
-
-    // // the results file should have been updated after starting this test
-    // fileChangeTimestamp.should.be.greaterThan(initialFileChangeTimestamp);
-
-    // // the results file should contain a result for each site
-    // app.client
-    //   .elements(SsoTestPage.sitesTableRow)
-    //   .should.eventually.have.property("length")
-    //   .and.equal(sites.length);
-
-    // // the results file should show that each site passed the important tests
-    // sitesPassedImportantTests = sites && sites.every(importantTestsPassed);
-    // sitesPassedImportantTests.should.be.true;
-
-    // const result = sitesPassedImportantTests ? "PASSED" : "FAILED";
-    // const statistics = await app.client.elements(SsoTestPage.statisticsTableRow).getText();
+    const fileName = fileChangeTimestamp + "_" + path.basename(RESULTS_FILE_PATH);
+    await objectStorage.upload(fileName, S3_BUCKET_NAME);
+    link = await objectStorage.getDownloadUrl(fileName, S3_BUCKET_NAME);
+    console.log(link);
   });
 });
 
-// after(function (done) {
-//   sendReportByMail(done);
-// });
+after(function (done) {
+  const result = sitesPassedImportantTests ? "PASSED" : "FAILED";
+  const mailParams = { result, statistics, link };
+
+  console.log(mailParams);
+  sendReportByMail(mailParams, done);
+});
 
 function getChangeTimestamp() {
   if (!fs.existsSync(RESULTS_FILE_PATH)) {

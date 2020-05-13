@@ -41,14 +41,14 @@ afterEach(async function () {
   }
 });
 
-async function sendReportByMail(done) {
+async function sendReportByMail(mailParams, done) {
   await sendEmail({
     templateId: "d-0bc1db6347c840729375e85e5682ae6d",
     fromName: "VIPFY",
     personalizations: [
       {
         to: [{ email: "eva.kiszka@vipfy.store" }],
-        dynamic_template_data: { result: "result", statistics: "stats" }
+        dynamic_template_data: mailParams
       }
     ]
   });
