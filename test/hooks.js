@@ -75,7 +75,7 @@ function setUserGitEmail() {
 async function sendReportByMail(templateId, mailParams, done) {
   try {
     if (!userGitEmail) {
-      console.warn("Reports won't be sent.");
+      console.warn("No email recipient available. Report won't be sent.");
       return;
     }
 
