@@ -1,11 +1,13 @@
 export interface Test {
   setup: string;
   expectLoginSuccess: boolean;
+  expectPasswordEntered?: boolean;
   deleteCookies: boolean;
   speedFactor?: number;
   enterCorrectEmail?: boolean;
   enterCorrectPassword?: boolean;
   skipCondition?: SkipCondition;
+  timeout?: number;
 }
 
 // sometimes a test should be skipped. this defines the conditions under which that should happen

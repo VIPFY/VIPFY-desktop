@@ -28,22 +28,24 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
   isPassed(test: Test, loginResult: LoginResult) {
     return (
       test.expectLoginSuccess == loginResult.loggedIn &&
-      test.expectLoginSuccess != loginResult.error
+      test.expectLoginSuccess != loginResult.error &&
+      (test.expectPasswordEntered === undefined ||
+        test.expectPasswordEntered == loginResult.passwordEntered)
     );
   }
 
-  advance() {
-    if (this.hasNextTest()) {
+  advance(testIndex?: number) {
+    if (this.hasNextTest(testIndex)) {
       this.setState(state => {
         return {
-          currentTestIndex: state.currentTestIndex + 1
+          currentTestIndex: (testIndex ?? state.currentTestIndex) + 1
         };
       });
     }
   }
 
-  hasNextTest() {
-    return !!tests[this.state.currentTestIndex + 1];
+  hasNextTest(testIndex?: number) {
+    return !!tests[(testIndex ?? this.state.currentTestIndex) + 1];
   }
 
   setResult(currentTestIndex: number, testResult: TestResult) {
@@ -57,7 +59,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
       return { testResults };
     });
 
-    this.advance();
+    this.advance(currentTestIndex);
   }
 
   skipTest(currentTestIndex: number) {
@@ -89,7 +91,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         username={username + (test.enterCorrectEmail ? "" : "NO")}
         password={password + (test.enterCorrectPassword ? "" : "NO")}
         speed={test.speedFactor}
-        timeout={15 * SECOND}
+        timeout={test.timeout ?? 15 * SECOND}
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
         deleteCookies={test.deleteCookies}
