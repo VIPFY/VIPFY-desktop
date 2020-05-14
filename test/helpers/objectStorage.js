@@ -1,6 +1,5 @@
 const AWS = require("aws-sdk");
 const fs = require("fs");
-const path = require("path");
 
 const s3 = new AWS.S3({ region: "eu-central-1" });
 
@@ -16,7 +15,6 @@ async function upload(filePath, fileName, mimeType, bucketName) {
 
   try {
     await s3.upload(params).promise();
-
     return true;
   } catch (err) {
     console.error("Amazon S3 upload error.");

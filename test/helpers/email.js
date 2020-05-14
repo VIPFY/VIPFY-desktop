@@ -1,4 +1,3 @@
-//import { Client as ClientClass } from "@sendgrid/client";
 const ClientClass = require("@sendgrid/client").Client;
 const dotenv = require("dotenv");
 
@@ -8,7 +7,6 @@ const Client = new ClientClass();
 Client.setApiKey(process.env.SENDGRID_API_KEY);
 
 module.exports = {
-  // eslint-disable-next-line import/prefer-default-export
   async sendEmail({ templateId, personalizations, fromName }) {
     await Client.request({
       method: "POST",
@@ -25,9 +23,9 @@ module.exports = {
           name: "Vipfy Support"
         }
       }
-    }).catch(function (error) {
-      console.error("Mail request failed.");
-      console.error(JSON.stringify(error, null, "\t"));
+    }).catch(function (err) {
+      console.error("Sendgrid mail request error.");
+      console.error(JSON.stringify(err, null, "\t"));
     });
   }
 };

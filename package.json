@@ -17,9 +17,9 @@
     "start": "electron-forge start",
     "faststart": "electron-forge start",
     "test": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha",
-    "test-slow": "npm run test -- -fgrep '@slow'",
+    "test-slow": "npm test -- -fgrep '@slow'",
     "test-fast": "npm run test-slow -- --invert",
-    "test-sso": "npm run test -- -fgrep 'SSO'"
+    "test-sso": "npm test -- -fgrep 'SSO'"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
@@ -177,6 +177,7 @@
     "electron-notarize": "^0.3.0",
     "file-loader": "^6.0.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
+    "gitconfig": "^2.0.8",
     "jscrambler": "^5.4.0",
     "jscrambler-webpack-plugin": "^5.4.0",
     "mocha": "^7.1.1",

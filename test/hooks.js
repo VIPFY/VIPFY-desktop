@@ -3,6 +3,7 @@ process.env.TS_NODE_PROJECT = "./tsconfig.json";
 require("ts-mocha");
 require("chai/register-should");
 
+const gitConfig = require("gitconfig");
 const Application = require("spectron").Application;
 const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
@@ -11,16 +12,17 @@ const path = require("path");
 const sendEmail = require("./helpers/email.js").sendEmail;
 
 const SECOND = 1000;
-const APP_LAUNCH_TIME = 20 * SECOND;
+const APP_LAUNCH_SECONDS = 120 * SECOND;
 
-exports.sendReportByMail = sendReportByMail;
+let userGitEmail;
 
 global.before(() => {
   chai.use(chaiAsPromised);
+  setUserGitEmail();
 });
 
 beforeEach(async function () {
-  this.timeout(APP_LAUNCH_TIME);
+  this.timeout(APP_LAUNCH_SECONDS);
 
   const app = await new Application({
     path: electronPath,
@@ -41,17 +43,55 @@ afterEach(async function () {
   }
 });
 
-async function sendReportByMail(mailParams, done) {
-  await sendEmail({
-    templateId: "d-0bc1db6347c840729375e85e5682ae6d",
-    fromName: "VIPFY",
-    personalizations: [
-      {
-        to: [{ email: "eva.kiszka@vipfy.store" }],
-        dynamic_template_data: mailParams
-      }
-    ]
-  });
+/**
+ * Sets the email address of the developer who called the test script. It looks for the
+ * address in the developer's computer's global Git configuration.
+ */
+function setUserGitEmail() {
+  const LOCATION = "global";
 
-  done();
+  gitConfig
+    .get({
+      location: LOCATION
+    })
+    .then(config => {
+      if (!config || !config.user || !config.user.email) {
+        console.warn("No email address found in Git config. Location: " + LOCATION);
+      } else {
+        userGitEmail = config.user.email;
+      }
+    })
+    .catch(err => {
+      console.log(
+        "Error while getting developer's email address from Git config. Location: " + LOCATION
+      );
+      console.warn(err);
+    });
 }
+
+/**
+ * Sends test results in an email report to the developer who called the test script.
+ */
+async function sendReportByMail(templateId, mailParams, done) {
+  try {
+    if (!userGitEmail) {
+      console.warn("Reports won't be sent.");
+      return;
+    }
+
+    await sendEmail({
+      templateId,
+      fromName: "VIPFY",
+      personalizations: [
+        {
+          to: [{ email: userGitEmail }],
+          dynamic_template_data: mailParams
+        }
+      ]
+    });
+  } finally {
+    done();
+  }
+}
+
+module.exports = { sendReportByMail, APP_LAUNCH_SECONDS };
