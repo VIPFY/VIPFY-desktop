@@ -91,7 +91,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         username={username + (test.enterCorrectEmail ? "" : "NO")}
         password={password + (test.enterCorrectPassword ? "" : "NO")}
         speed={test.speedFactor}
-        timeout={test.timeout ?? 25 * SECOND}
+        timeout={test.timeout ?? 15 * SECOND}
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
         deleteCookies={test.deleteCookies}
