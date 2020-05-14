@@ -11,6 +11,7 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { ADD_PROMOCODE } from "../../mutations/auth";
 import welcomeBack from "../../../images/welcome_back.png";
+import { WorkAround } from "../../interfaces";
 
 interface Props {
   setupFinished: Function;
@@ -104,7 +105,7 @@ class DataNameForm extends React.Component<Props, State> {
               />
             </div>
 
-            <Mutation
+            <Mutation<WorkAround, WorkAround>
               mutation={ADD_PROMOCODE}
               onCompleted={() => {
                 if (this.state.name) {
@@ -169,7 +170,7 @@ class DataNameForm extends React.Component<Props, State> {
                           try {
                             await mutate({ variables: { promocode } });
                           } catch (err) {
-                            console.log("ERORR-Promocode", err);
+                            console.log("Error-Promocode", err);
                           }
                         }}
                       />

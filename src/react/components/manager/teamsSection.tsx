@@ -30,16 +30,16 @@ class TeamsSection extends React.Component<Props, State> {
         variables={{ userid: this.props.employeeid }}>
         {({ loading, error, data }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
 
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
 
           let teamArray: JSX.Element[] = [];
           if (data.fetchTeams) {
-            data.fetchTeams.sort(function(a, b) {
+            data.fetchTeams.sort(function (a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
               let nameB = b.name.toUpperCase(); // ignore upper and lowercase
               if (nameA < nameB) {

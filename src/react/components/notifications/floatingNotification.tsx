@@ -5,8 +5,7 @@ import { shell } from "electron";
 import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import { getMyUnitId } from "../../common/functions";
-import UserName from "../UserName";
+import { renderNotificatonMessage } from "../../common/functions";
 interface Props {
   disabled?: boolean;
   service?: any;
@@ -101,22 +100,6 @@ class FloatingNotification extends React.Component<Props, State> {
     }
   }
 
-  renderNotificatonMessage(message) {
-    let re = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
-    const match = message.match(re);
-    if (!match) {
-      return message;
-    } else {
-      return (
-        <>
-          {match[1]}
-          <UserName unitid={match[2].substring(5)} userid={getMyUnitId(this.props.client)} />
-          {match[3]}
-        </>
-      );
-    }
-  }
-
   render() {
     return (
       <div
@@ -158,7 +141,9 @@ class FloatingNotification extends React.Component<Props, State> {
         </div>
         <div className="notificationText">
           <div className="title">{this.props.title}</div>
-          {this.props.text && <span>{this.renderNotificatonMessage(this.props.text)}</span>}
+          {this.props.text && (
+            <span>{renderNotificatonMessage(this.props.text, this.props.client)}</span>
+          )}
           {this.props.progress != undefined && this.props.progress != null && (
             <div>
               <div className="progressText">

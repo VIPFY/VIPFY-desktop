@@ -16,6 +16,7 @@ import { ErrorComp, AppContext } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
+import { WorkAround } from "../../interfaces";
 
 const SIGN_OUT_EVERYWHERE = gql`
   mutation onSignOutEverywhere($userid: ID!) {
@@ -55,7 +56,9 @@ export default (props: Props) => {
      * the profile page as well as the security page. SemiPublicUser does not have
      * all required properties and this query should be in the cache anyway.
      */
-    <Query query={FETCH_USER_SECURITY_OVERVIEW} variables={userid == props.id ? { userid } : null}>
+    <Query<WorkAround, WorkAround>
+      query={FETCH_USER_SECURITY_OVERVIEW}
+      variables={userid == props.id ? { userid } : null}>
       {({ data, loading, error }) => {
         if (loading) {
           return <LoadingDiv />;
@@ -81,14 +84,17 @@ export default (props: Props) => {
               securityPage ? "the user is" : "you are"
             } currently logged into the account`,
             state: "showSessions"
-          },
-          {
+          }
+        ];
+
+        if (!localStorage.getItem("impersonator-token")) {
+          links.push({
             header: "Update Password",
             text: "You can update the current password here",
             state: "showPasswordUpdate",
             button: "update"
-          }
-        ];
+          });
+        }
 
         if (securityPage) {
           if (user.twofactormethods.length <= 0) {
@@ -245,7 +251,9 @@ export default (props: Props) => {
               )}
 
               {show == "showPasswordForce4All" && (
-                <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
+                <Query<WorkAround, WorkAround>
+                  pollInterval={60 * 10 * 1000 + 7000}
+                  query={FETCH_USER_SECURITY_OVERVIEW}>
                   {({ data, loading, error }) => {
                     if (loading) {
                       return <div>Loading</div>;
@@ -271,7 +279,7 @@ export default (props: Props) => {
               {show == "showSessions" && (
                 <AppContext.Consumer>
                   {({ logOut }) => (
-                    <Mutation mutation={SIGN_OUT_EVERYWHERE}>
+                    <Mutation<WorkAround, WorkAround> mutation={SIGN_OUT_EVERYWHERE}>
                       {(mutate, { loading, error }) => (
                         <PopupBase
                           buttonStyles={{ justifyContent: "space-between" }}
@@ -281,7 +289,7 @@ export default (props: Props) => {
                           <h1>Current Devices</h1>
                           <div className="sub-header">See on which devices you are logged in</div>
 
-                          <Query
+                          <Query<WorkAround, WorkAround>
                             query={FETCH_SESSIONS}
                             fetchPolicy="network-only"
                             variables={{ userid: user.id }}>

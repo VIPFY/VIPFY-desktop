@@ -73,6 +73,8 @@ interface AreaProps {
   client: any;
   recoverypublickey?: string;
   needstowfa: boolean;
+  isadmin: boolean;
+  [moreStuff: string]: any;
 }
 
 interface AreaState {
@@ -539,7 +541,12 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
 
-    if (!this.state.allowSkip && !this.props.recoverypublickey && !isImpersonating) {
+    if (
+      !this.state.allowSkip &&
+      !this.props.recoverypublickey &&
+      !isImpersonating &&
+      this.props.isadmin
+    ) {
       return (
         <div className="centralize backgroundLogo">
           <RecoveryKey continue={() => this.setState({ allowSkip: true })} />

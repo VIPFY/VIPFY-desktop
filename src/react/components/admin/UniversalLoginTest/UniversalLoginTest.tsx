@@ -39,9 +39,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     }
 
     this.setState((state: State) => {
+      let runningInBatchMode = state.runningInBatchMode;
       let nextSiteIndexUnderTest = -1;
       let sites = state.sites;
-      let runningInBatchMode = state.runningInBatchMode;
 
       if (this.state.runningInBatchMode) {
         nextSiteIndexUnderTest = state.siteIndexUnderTest + 1;

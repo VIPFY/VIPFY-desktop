@@ -9,11 +9,7 @@ export const typeDefs = gql`
 
 export const resolvers = {
   Key: {
-    privatekeyDecrypted: async (
-      parent,
-      _args,
-      { _cache, client, forceFetch, _getCacheKey, _clientAwareness }
-    ) => {
+    privatekeyDecrypted: async (parent, _args, { client, forceFetch }) => {
       let key = { ...parent };
 
       if (!key.id) {
@@ -39,7 +35,7 @@ export const resolvers = {
             }
           `,
           variables: { id: key.id },
-          fetchPolicy: forceFetch ? "network-only" : "cache-first",
+          fetchPolicy: forceFetch ? "network-only" : "cache-first"
         });
 
         if (!d.data || !d.data.fetchKey == null) {
@@ -81,7 +77,7 @@ export const resolvers = {
                 }
               `,
               variables: { id: encryptedby.id },
-              fetchPolicy: forceFetch ? "network-only" : "cache-first",
+              fetchPolicy: forceFetch ? "network-only" : "cache-first"
             });
             if (!d.data || !d.data.fetchKey == null) {
               throw new Error(d.error);
@@ -100,7 +96,7 @@ export const resolvers = {
         }
         throw new Error("unable to decrypt key");
       }
-    },
+    }
   },
-  Query: {},
+  Query: {}
 };

@@ -15,6 +15,7 @@ import {
   fetchTeams,
   fetchUserLicences
 } from "../../../../queries/departments";
+import { QUERY_SEMIPUBLICUSER } from "../../../../queries/user";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddTeamGeneralData from "../../addTeamGeneralData";
@@ -141,7 +142,6 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
           </div>
         );
       } else {
-        console.log("E", e);
         members.push(
           <AssignAccount
             orbit={e}
@@ -184,7 +184,6 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
     return members;
   }
   render() {
-    console.log("PROPS", this.props, this.state);
     return (
       <PopupBase
         small={true}
@@ -300,10 +299,10 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
           <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
             {({ loading, error, data }) => {
               if (loading) {
-                return "Loading...";
+                return <div>Loading...</div>;
               }
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error! {error.message}</div>;
               }
               const teams = data.fetchCompanyTeams;
               return (
@@ -444,7 +443,9 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                   },
                   refetchQueries: [
                     { query: fetchTeams, variables: { userid: this.props.employee.id } },
-                    { query: fetchUserLicences, variables: { unitid: this.props.employee.id } }
+                    { query: fetchUserLicences, variables: { unitid: this.props.employee.id } },
+                    { query: fetchCompanyTeams },
+                    { query: QUERY_SEMIPUBLICUSER, variables: { unitid: this.props.employee.id } }
                   ]
                 });
                 this.setState({ saved: true });
