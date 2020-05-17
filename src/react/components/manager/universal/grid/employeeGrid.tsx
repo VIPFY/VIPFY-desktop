@@ -2,6 +2,7 @@ import * as React from "react";
 import { Query } from "react-apollo";
 import PrintEmployeeSquare from "../squares/printEmployeeSquare";
 import { FETCH_EMPLOYEES } from "../../../../queries/departments";
+import { WorkAround } from "../../../../interfaces";
 
 interface Props {
   search: string;
@@ -24,7 +25,7 @@ class EmployeeGrid extends React.Component<Props, State> {
     let employeesArray: JSX.Element[] = [];
     let employees = [];
     if (interemployees.length > 0) {
-      interemployees.sort(function(a, b) {
+      interemployees.sort(function (a, b) {
         let nameA = `${a.firstname} ${a.lastname}`.toUpperCase(); // ignore upper and lowercase
         let nameB = `${b.firstname} ${b.lastname}`.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -38,7 +39,12 @@ class EmployeeGrid extends React.Component<Props, State> {
         return 0;
       });
 
-      employees = interemployees.filter(e => {return e.id && `${e.firstname} ${e.lastname}`.toUpperCase().includes(this.props.search.toUpperCase())});
+      employees = interemployees.filter(e => {
+        return (
+          e.id &&
+          `${e.firstname} ${e.lastname}`.toUpperCase().includes(this.props.search.toUpperCase())
+        );
+      });
 
       employees.forEach(employee => {
         employeesArray.push(
@@ -49,9 +55,9 @@ class EmployeeGrid extends React.Component<Props, State> {
             onDragStart={() => this.setState({ dragdelete: employee })}
             onClick={() => this.props.onChange({ action: "remove", content: employee })}>
             <PrintEmployeeSquare className="image" employee={employee} size={88} />
-            <div className="name" title={`${employee.firstname} ${employee.lastname}`}>{`${
-              employee.firstname
-            } ${employee.lastname}`}</div>
+            <div
+              className="name"
+              title={`${employee.firstname} ${employee.lastname}`}>{`${employee.firstname} ${employee.lastname}`}</div>
             {employee.current ? (
               <React.Fragment>
                 <div className="greyed" />
@@ -132,7 +138,7 @@ class EmployeeGrid extends React.Component<Props, State> {
                 )
               : data.fetchEmployees.filter(e => true);
 
-            employees.sort(function(a, b) {
+            employees.sort(function (a, b) {
               let nameA = `${a.employee.firstname} ${a.employee.lastname}`.toUpperCase(); // ignore upper and lowercase
               let nameB = `${b.employee.firstname} ${b.employee.lastname}`.toUpperCase(); // ignore upper and lowercase
               if (nameA < nameB) {
@@ -159,9 +165,9 @@ class EmployeeGrid extends React.Component<Props, State> {
                     available && this.props.onChange({ action: "add", content: employee })
                   }>
                   <PrintEmployeeSquare employee={employee} className="image" size={88} />
-                  <div className="name" title={`${employee.firstname} ${employee.lastname}`}>{`${
-                    employee.firstname
-                  } ${employee.lastname}`}</div>
+                  <div
+                    className="name"
+                    title={`${employee.firstname} ${employee.lastname}`}>{`${employee.firstname} ${employee.lastname}`}</div>
 
                   {available ? (
                     <div className="imageHover">

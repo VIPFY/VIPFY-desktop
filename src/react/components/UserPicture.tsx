@@ -10,14 +10,14 @@ import { getBgImageUser } from "../common/images";
  * @param unitid is the id of the users whose picture should be displayed
  * @param size a string representing the desired size. Valid values: inline, twolines, tiny.
  *
- * @example <UserPicture unitid={22} size={inline} /> James
+ * @example <UserPicture unitid="adsfas-asfasdfadsf-asdfasd" size={inline} /> James
  *
  * @deprecated use printEmployeeSquare instead
  *
  * @returns {JSX.Element}
  */
 export default function UserPicture(props: {
-  unitid: number | null;
+  unitid: string | null;
   size: string;
   style?: any;
   updateable?: any;

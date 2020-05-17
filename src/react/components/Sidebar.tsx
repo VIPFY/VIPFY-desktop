@@ -432,7 +432,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         show: true,
         highlight: "pluselement"
       },
-
       {
         label: "Domains",
         location: "domains",
@@ -774,6 +773,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 sidebarOpen={this.props.sidebarOpen}
                 history={this.props.history}
                 id={this.props.id}
+                company={this.props.company.unit.id}
                 isadmin={this.props.isadmin}
                 logMeOut={this.props.logMeOut}
                 goTo={location => {
