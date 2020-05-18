@@ -58,6 +58,7 @@ import FloatingNotifications from "../components/notifications/floatingNotificat
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
+import Workspace from "./Workspace";
 
 interface AreaProps {
   id: string;
@@ -517,6 +518,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
       { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "workspace", component: Workspace },
       { path: "vacation", component: Vacation, admin: true },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
