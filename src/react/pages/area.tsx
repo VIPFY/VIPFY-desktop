@@ -696,18 +696,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   <div
                                     className={`full-working ${chatOpen ? "chat-open" : ""}`}
                                     style={{ marginLeft: `${marginLeft}px` }}>
-                                    <ResizeAware
-                                      style={
-                                        path.includes("order")
-                                          ? {
-                                              height: "100%",
-                                              width: "100%",
-                                              display: "flex",
-                                              justifyContent: "center",
-                                              alignItems: "center"
-                                            }
-                                          : undefined
-                                      }>
+                                    <ResizeAware>
                                       {admin && (
                                         <div
                                           className={`sidebar-adminpanel${
