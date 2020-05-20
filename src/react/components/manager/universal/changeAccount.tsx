@@ -220,11 +220,6 @@ class ChangeAccount extends React.Component<Props, State> {
                           ) {
                             this.setState({ selfhosting: e, changedl: true });
                           } else {
-                            console.log(
-                              "PASSIVE",
-                              `${this.state.protocol}${this.state.loginurl}`,
-                              account.options.loginurl
-                            );
                             this.setState({ selfhosting: e, changedl: false });
                           }
                         }}
@@ -250,22 +245,14 @@ class ChangeAccount extends React.Component<Props, State> {
                     } else {
                       protocol = this.state.protocol;
                     }
-                    console.log(
-                      "STATE",
-                      this.state,
-                      account.options && account.options.loginurl,
-                      value
-                    );
                     if (
                       account.options &&
                       account.options.loginurl != `${this.state.protocol}${value}` &&
                       value != this.state.loginurl &&
                       value != ""
                     ) {
-                      console.log("ACTIVE");
                       this.setState({ loginurl: domain, changedl: true, protocol });
                     } else {
-                      console.log("PASSIVE");
                       this.setState({ loginurl: domain, changedl: false, protocol });
                     }
                   }}
