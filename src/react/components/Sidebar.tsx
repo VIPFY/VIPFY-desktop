@@ -426,8 +426,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         highlight: "marketplaceelement"
       },*/
       {
-        label: "Open Service",
-        location: "dashboard",
+        label: "Add Credentials",
+        location: "integrations",
         icon: "plus",
         show: true,
         highlight: "pluselement"
@@ -631,6 +631,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 )*/
                 }
                 viewID={this.props.viewID}
+                impersonation={this.props.impersonation}
               />
 
               {/* Temporary licences */}
@@ -720,7 +721,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                       distance={12}
                       arrowSize={5}
                       useHover={!sidebarOpen}
-                      content={`${this.props.adminOpen ? "Close" : "Open"} Admin Sidebar`}
+                      content="VIPFY Admin"
                       direction="right">
                       <div className="naked-button sidebarButton">
                         <i className="fal fa-users-crown" />

@@ -24,6 +24,8 @@ interface Props {
   refetch?: Function;
   noServiceEdit?: Boolean;
   client: any;
+  isEmployee?: boolean;
+  orbit?: any;
 }
 
 interface State {
@@ -64,7 +66,7 @@ const ASSIGN_ACCOUNT = gql`
 class AssignNewAccount extends React.Component<Props, State> {
   state = {
     service: this.props.service || null,
-    orbit: null,
+    orbit: this.props.orbit || null,
     account: null,
     saving: false,
     saved: false,
@@ -136,12 +138,13 @@ class AssignNewAccount extends React.Component<Props, State> {
               <span style={{ lineHeight: "24px", marginLeft: "8px" }}>
                 {this.state.service.name}
               </span>
-              {!this.props.noServiceEdit && (
-                <i
-                  className="fal fa-pen editbutton"
-                  onClick={() => this.setState({ service: null, orbit: null, account: null })}
-                />
-              )}
+              {!this.props.noServiceEdit ||
+                (!this.props.isEmployee && (
+                  <i
+                    className="fal fa-pen editbutton"
+                    onClick={() => this.setState({ service: null, orbit: null, account: null })}
+                  />
+                ))}
             </div>
             {this.state.orbit ? (
               <>
@@ -155,10 +158,13 @@ class AssignNewAccount extends React.Component<Props, State> {
                   }}>
                   <span style={{ lineHeight: "24px", width: "84px" }}>Orbit:</span>
                   <span style={{ lineHeight: "24px" }}>{this.state.orbit.alias}</span>
-                  <i
-                    className="fal fa-pen editbutton"
-                    onClick={() => this.setState({ orbit: null, account: null })}
-                  />
+
+                  {!this.props.isEmployee && (
+                    <i
+                      className="fal fa-pen editbutton"
+                      onClick={() => this.setState({ orbit: null, account: null })}
+                    />
+                  )}
                 </div>
                 {this.state.account ? (
                   <>

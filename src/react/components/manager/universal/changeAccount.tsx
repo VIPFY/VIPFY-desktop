@@ -2,6 +2,7 @@ import * as React from "react";
 import moment, { now } from "moment";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../../universalForms/universalTextInput";
+import UniversalCheckbox from "../../universalForms/universalCheckbox";
 import Calendar from "react-calendar";
 import UniversalButton from "../../universalButtons/universalButton";
 import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
@@ -47,6 +48,10 @@ interface State {
   fromdate: Date | null;
   editfrom: Boolean;
   aliastouched: Boolean;
+  loginurl: string | null;
+  protocol: string | null;
+  changedl: boolean;
+  selfhosting: boolean;
 }
 
 const INITAL_STATE = {
@@ -63,7 +68,8 @@ const INITAL_STATE = {
   showall: false,
   editfrom: false,
   fromdate: null,
-  aliastouched: false
+  aliastouched: false,
+  changedl: false
 };
 
 const CHANGE_ACCOUNT = gql`
@@ -124,7 +130,30 @@ class ChangeAccount extends React.Component<Props, State> {
       this.props.account.endtime != null
         ? moment(this.props.account ? this.props.account.endtime - 0 : 0).toDate()
         : null,
-    email: this.props.account && this.props.account.key ? this.props.account.key.email : ""
+    email: this.props.account && this.props.account.key ? this.props.account.key.email : "",
+    selfhosting:
+      this.props.account && this.props.account.options && this.props.account.options.selfhosting,
+    loginurl:
+      (this.props.account &&
+        this.props.account.options &&
+        this.props.account.options.loginurl &&
+        (this.props.account.options.loginurl.startsWith("https://") ||
+          this.props.account.options.loginurl.startsWith("http://")) &&
+        this.props.account.options.loginurl.substring(
+          this.props.account.options.loginurl.search(/:\/\/{1}/) + 3
+        )) ||
+      null,
+    protocol:
+      (this.props.account &&
+        this.props.account.options &&
+        this.props.account.options.loginurl &&
+        (this.props.account.options.loginurl.startsWith("https://") ||
+          this.props.account.options.loginurl.startsWith("http://")) &&
+        this.props.account.options.loginurl.substring(
+          0,
+          this.props.account.options.loginurl.search(/:\/\/{1}/) + 3
+        )) ||
+      null
   };
 
   render() {
@@ -164,6 +193,96 @@ class ChangeAccount extends React.Component<Props, State> {
                     }}
                   />
                 </span>
+              </div>
+            )}
+
+            {!newaccount && account.options && account.options.loginurl && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginBottom: "24px",
+                  marginTop: "28px",
+                  position: "relative"
+                }}>
+                <span style={{ lineHeight: "24px", width: "84px" }}>
+                  <span>Domain:</span>
+                  {this.props.app.options.selfhosting && (
+                    <div style={{ alignItems: "center", display: "flex" }}>
+                      <UniversalCheckbox
+                        startingvalue={account.options.selfhosting}
+                        liveValue={e => {
+                          if (e != account.options.selfhosting) {
+                            this.setState({ selfhosting: e, changedl: true });
+                          } else if (
+                            `${this.state.protocol}${this.state.loginurl}` !=
+                            account.options.loginurl
+                          ) {
+                            this.setState({ selfhosting: e, changedl: true });
+                          } else {
+                            this.setState({ selfhosting: e, changedl: false });
+                          }
+                        }}
+                        style={{ float: "left" }}
+                      />
+                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
+                        Selfhosting
+                      </span>
+                    </div>
+                  )}
+                </span>
+                <UniversalTextInput
+                  width="300px"
+                  id="domain"
+                  className="scrollable"
+                  startvalue={this.state.loginurl}
+                  livevalue={value => {
+                    let domain = value;
+                    let protocol = undefined;
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      protocol = this.state.protocol;
+                    }
+                    if (
+                      account.options &&
+                      account.options.loginurl != `${this.state.protocol}${value}` &&
+                      value != this.state.loginurl &&
+                      value != ""
+                    ) {
+                      this.setState({ loginurl: domain, changedl: true, protocol });
+                    } else {
+                      this.setState({ loginurl: domain, changedl: false, protocol });
+                    }
+                  }}
+                  modifyValue={value => {
+                    if (value.startsWith("https://") || value.startsWith("http://")) {
+                      return value.substring(value.search(/:\/\/{1}/) + 3);
+                    } else {
+                      return value;
+                    }
+                  }}
+                  prefix={
+                    this.state.selfhosting ? (
+                      <select
+                        className="universalTextInput"
+                        style={{ width: "75px" }}
+                        value={this.state.protocol}
+                        onChange={e => this.setState({ protocol: e.target.value, changedl: true })}>
+                        <option value="http://" key="http://">
+                          http://
+                        </option>
+                        <option value="https://" key="https://">
+                          https://
+                        </option>
+                      </select>
+                    ) : (
+                      this.props.app.options.predomain
+                    )
+                  }
+                  suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
+                />
               </div>
             )}
 
@@ -453,15 +572,17 @@ class ChangeAccount extends React.Component<Props, State> {
                     : this.state.changeda ||
                       this.state.changede ||
                       this.state.changedp ||
-                      this.state.changedt
+                      this.state.changedt ||
+                      this.state.changedl
                     ? "Save"
                     : "Close"
                 }
                 disabled={
                   newaccount
                     ? !(this.state.changeda && this.state.changede && this.state.changedp)
-                    : (this.state.changede || this.state.changedp) &&
-                      !(this.state.changede && this.state.changedp)
+                    : ((this.state.changede || this.state.changedp) &&
+                        !(this.state.changede && this.state.changedp)) ||
+                      (this.state.changedl && !(this.state.changede && this.state.changedp))
                 }
                 onClick={async () => {
                   if (newaccount) {
@@ -504,28 +625,43 @@ class ChangeAccount extends React.Component<Props, State> {
                   } else {
                     if (
                       this.state.changeda ||
-                      this.state.changede ||
-                      this.state.changedp ||
+                      (this.state.changede &&
+                        this.state.changedp &&
+                        (!account.options || (account.options.loginurl && this.state.changedl))) ||
                       this.state.changedt
                     ) {
                       this.setState({ saving: true });
                       try {
-                        const logindata = await reencryptLicenceKeyObject(
-                          account.id,
-                          {
-                            username: this.state.email ?? "",
-                            password: this.state.password ?? ""
-                          },
-                          false,
-                          this.props.client
-                        );
+                        let logindata = undefined;
+                        if (this.state.email && this.state.password) {
+                          logindata = await reencryptLicenceKeyObject(
+                            account.id,
+                            {
+                              username: this.state.email ?? "",
+                              password: this.state.password ?? ""
+                            },
+                            false,
+                            this.props.client
+                          );
+                          if (this.state.changedl) {
+                            logindata.loginurl = `${this.state.protocol}${this.state.loginurl}`;
+                          }
+                        }
                         await this.props.changeAccount({
                           variables: {
                             accountid: account.id,
                             alias: this.state.alias,
                             logindata,
                             endtime: this.state.todate || null,
-                            isNull: !!(this.state.todate == null)
+                            isNull: !!(this.state.todate == null),
+                            options:
+                              (this.state.changede &&
+                                this.state.changedp &&
+                                this.state.changedl && {
+                                  loginurl: `${this.state.protocol}${this.state.loginurl}`,
+                                  selfhosting: this.state.selfhosting
+                                }) ||
+                              undefined
                           },
                           refetchQueries: [
                             {

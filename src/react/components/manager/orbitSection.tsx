@@ -177,18 +177,32 @@ class OrbitSection extends React.Component<Props, State> {
         <div className="heading">
           <h1>{orbit.alias}</h1>
           {this.showStatus(orbit)}
-          <UniversalButton
-            type="high"
-            label="Change Orbit"
-            customStyles={{
-              fontSize: "12px",
-              lineHeight: "24px",
-              fontWeight: "700",
-              marginRight: "16px",
-              width: "120px"
-            }}
-            onClick={() => this.setState({ change: true })}
-          />
+          {orbit.key.employeeIntegrated ? (
+            <div
+              style={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px",
+                textAlign: "center"
+              }}>
+              Employee Orbit
+            </div>
+          ) : (
+            <UniversalButton
+              type="high"
+              label="Change Orbit"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px"
+              }}
+              onClick={() => this.setState({ change: true })}
+            />
+          )}
         </div>
         <div className="table">
           <div className="tableHeading">
@@ -225,34 +239,36 @@ class OrbitSection extends React.Component<Props, State> {
                   refetch={this.props.refetch}
                 />
               ))}
-          <div className="tableRow noHover">
-            <div className="tableMain">
-              <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
-                <AppContext.Consumer>
-                  {({ addRenderElement }) => (
-                    <UniversalButton
-                      innerRef={el => addRenderElement({ key: "addAccount", element: el })}
-                      type="low"
-                      label="Add Account"
-                      onClick={() => this.setState({ newaccount: true })}
-                    />
-                  )}
-                </AppContext.Consumer>
+          {!orbit.key.employeeIntegrated && (
+            <div className="tableRow noHover">
+              <div className="tableMain">
+                <div className="tableColumnBig" style={{ alignItems: "center", display: "flex" }}>
+                  <AppContext.Consumer>
+                    {({ addRenderElement }) => (
+                      <UniversalButton
+                        innerRef={el => addRenderElement({ key: "addAccount", element: el })}
+                        type="low"
+                        label="Add Account"
+                        onClick={() => this.setState({ newaccount: true })}
+                      />
+                    )}
+                  </AppContext.Consumer>
+                </div>
+                <div
+                  className="tableColumnSmall"
+                  style={{ alignItems: "center", display: "flex" }}></div>
+                <div
+                  className="tableColumnBig"
+                  style={{ alignItems: "center", display: "flex" }}></div>
+                <div
+                  className="tableColumnBig"
+                  style={{ alignItems: "center", display: "flex" }}></div>
               </div>
-              <div
-                className="tableColumnSmall"
-                style={{ alignItems: "center", display: "flex" }}></div>
-              <div
-                className="tableColumnBig"
-                style={{ alignItems: "center", display: "flex" }}></div>
-              <div
-                className="tableColumnBig"
-                style={{ alignItems: "center", display: "flex" }}></div>
+              <div className="tableEnd">
+                <div className="editOptions"></div>
+              </div>
             </div>
-            <div className="tableEnd">
-              <div className="editOptions"></div>
-            </div>
-          </div>
+          )}
         </div>
         {this.state.newaccount && (
           <ChangeAccount
