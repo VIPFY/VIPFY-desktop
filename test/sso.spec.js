@@ -28,7 +28,7 @@ describe("SSO Execution", function () {
   });
 
   it("should apply SSO execution to all apps in list @slow", async function () {
-    fs.existsSync(RESULT_FILE_PATH).should.be.true;
+    fs.existsSync(RESULT_FILE_PATH).should.be.false;
 
     const app = this.test.app;
 
