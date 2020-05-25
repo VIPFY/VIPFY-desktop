@@ -251,8 +251,8 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       loginurl = licence.boughtPlan.key.domain;
     }
 
-    if (key && key.loginurl) {
-      loginurl = key.loginurl;
+    if (licence.key && licence.key.loginurl) {
+      loginurl = licence.key.loginurl;
     }
 
     let optionsobject = Object.assign({}, licence.boughtPlan.plan.app.options);

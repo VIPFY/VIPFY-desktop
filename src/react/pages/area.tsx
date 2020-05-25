@@ -58,6 +58,7 @@ import FloatingNotifications from "../components/notifications/floatingNotificat
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
+import Workspace from "./Workspace";
 
 interface AreaProps {
   id: string;
@@ -358,15 +359,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "lmanager"
       }
     ],
-    "ACCOUNT INTEGRATOR": [
-      {
-        label: "Account Integrator",
-        location: "integrations",
-        icon: "shapes",
-        show: this.props.isadmin,
-        highlight: "integrationselement"
-      }
-    ],
     BILLING: [
       {
         label: "Billing Information",
@@ -512,11 +504,12 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "marketplace", component: Marketplace, admin: true },
       { path: "marketplace/:appid/", component: AppPage, admin: true },
       { path: "marketplace/:appid/:action", component: AppPage, admin: true },
-      { path: "integrations", component: Integrations, admin: true },
+      { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
       { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
+      { path: "workspace", component: Workspace },
       { path: "vacation", component: Vacation, admin: true },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
@@ -696,18 +689,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   <div
                                     className={`full-working ${chatOpen ? "chat-open" : ""}`}
                                     style={{ marginLeft: `${marginLeft}px` }}>
-                                    <ResizeAware
-                                      style={
-                                        path.includes("order")
-                                          ? {
-                                              height: "100%",
-                                              width: "100%",
-                                              display: "flex",
-                                              justifyContent: "center",
-                                              alignItems: "center"
-                                            }
-                                          : undefined
-                                      }>
+                                    <ResizeAware>
                                       {admin && (
                                         <div
                                           className={`sidebar-adminpanel${

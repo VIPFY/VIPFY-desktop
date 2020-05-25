@@ -17,6 +17,7 @@ interface Props {
   licences: any[];
   switchLayout: Function;
   isadmin: Boolean;
+  impersonation?: boolean;
 }
 
 interface State {
@@ -52,31 +53,32 @@ class Dashboard extends React.Component<Props, State> {
 
     if (licenceCheck) {
       this.props.licences.forEach(licence => {
-        if (
-          !licence.disabled &&
-          !licence.pending &&
-          !licence.boughtplanid.planid.appid.disabled &&
-          (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
-          (licence.endtime > moment.now() || licence.endtime == null)
-        ) {
-          if (licence.dashboard !== null && licence.dashboard <= 8) {
-            favourites[licence.dashboard] = licence;
-          }
-
-          if (licence.pending) {
-            //appLists["Pending Apps"].push(licence);
-          } else if (licence.tags.length > 0) {
-            if (
-              licence.tags.includes("vacation") &&
-              licence.vacationstart &&
-              moment().isBefore(moment(licence.vacationend))
-            ) {
-              appLists["Temporary Apps"].push(licence);
+        if (!(this.props.impersonation && licence.options && licence.options.private)) {
+          if (
+            !licence.disabled &&
+            !licence.pending &&
+            !licence.boughtplanid.planid.appid.disabled &&
+            (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
+            (licence.endtime > moment.now() || licence.endtime == null)
+          ) {
+            if (licence.dashboard !== null && licence.dashboard <= 8) {
+              favourites[licence.dashboard] = licence;
+            }
+            if (licence.pending) {
+              //appLists["Pending Apps"].push(licence);
+            } else if (licence.tags.length > 0) {
+              if (
+                licence.tags.includes("vacation") &&
+                licence.vacationstart &&
+                moment().isBefore(moment(licence.vacationend))
+              ) {
+                appLists["Temporary Apps"].push(licence);
+              } else {
+                appLists["My Apps"].push(licence);
+              }
             } else {
               appLists["My Apps"].push(licence);
             }
-          } else {
-            appLists["My Apps"].push(licence);
           }
         }
       });
