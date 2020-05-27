@@ -193,11 +193,13 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow.once("ready-to-show", () => {
+  mainWindow.once("ready-to-show", async () => {
     mainWindow.webContents.on("did-fail-load", (event, code, desc, url, isMainFrame) => {
       logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
     });
-    mainWindow.webContents.setZoomFactor(1.0);
+    if (isDevMode) {
+      await openDevTools(mainWindow.webContents.id);
+    }
     mainWindow.show();
   });
 
@@ -222,7 +224,6 @@ const createWindow = async () => {
     } catch (err) {
       console.log(err);
     }
-    openDevTools(mainWindow.webContents.id);
   }
 
   mainWindow.on("close", async () => {
@@ -294,7 +295,17 @@ app.on("activate", () => {
 
 let containerWithDevToolsOpen: Electron.WebContents | null = null;
 
-function closeDevTools() {
+async function closeDevTools(closeToolbar = true) {
+  if (closeToolbar) {
+    await mainWindow.webContents.executeJavaScript(`
+      (function(){
+        let app = document.querySelector("#App");
+        app.style.marginRight = "0";
+        let dt = document.querySelector("#DevToolToolBar");
+        dt.style.display = "none";
+      })();
+    `);
+  }
   if (devtools && !devtools.isDestroyed()) {
     if (containerWithDevToolsOpen && !containerWithDevToolsOpen.isDestroyed()) {
       containerWithDevToolsOpen.closeDevTools();
@@ -303,11 +314,22 @@ function closeDevTools() {
     mainWindow.removeBrowserView(devtools);
     devtools.destroy();
     devtools = null;
+    return true;
   }
+  return false;
 }
 
-function openDevTools(webContentId) {
-  closeDevTools();
+async function openDevTools(webContentId) {
+  if (!(await closeDevTools(false))) {
+    await mainWindow.webContents.executeJavaScript(`
+      (function(){
+        let app = document.querySelector("#App");
+        app.style.marginRight = "600px";
+        let dt = document.querySelector("#DevToolToolBar");
+        dt.style.display = "block";
+      })();
+    `);
+  }
   devtools = new BrowserView();
   mainWindow.addBrowserView(devtools);
   const bounds = mainWindow.getContentBounds();
@@ -321,19 +343,11 @@ function openDevTools(webContentId) {
   console.log(devtools.getBounds());
 }
 
-ipcMain.handle("openDevTools", e => {
+ipcMain.handle("openDevTools", async e => {
   if (mainWindow === null) {
     return;
   }
-  mainWindow.webContents.executeJavaScript(`
-    (function(){
-      let app = document.querySelector("#App");
-      app.style.marginRight = "600px";
-      let dt = document.querySelector("#DevToolToolBar");
-      dt.style.display = "block";
-    })();
-    `);
-  openDevTools(mainWindow.webContents.id);
+  await openDevTools(mainWindow.webContents.id);
 });
 
 ipcMain.handle("changeDevTools", (e, id: number) => {
@@ -360,15 +374,10 @@ ipcMain.handle("getDevToolsContentId", e => {
 });
 
 ipcMain.handle("closeDevTools", e => {
-  mainWindow.webContents.executeJavaScript(`
-    (function(){
-      let app = document.querySelector("#App");
-      app.style.marginRight = "0";
-      let dt = document.querySelector("#DevToolToolBar");
-      dt.style.display = "none";
-    })();
-    `);
-  closeDevTools();
+  if (mainWindow === null) {
+    return false;
+  }
+  return closeDevTools();
 });
 
 ipcMain.handle("getMainWindowPosition", e => {
