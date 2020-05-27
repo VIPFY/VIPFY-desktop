@@ -47,11 +47,7 @@ class PopupBase extends React.Component<Props, State> {
   state = {
     isopen: false,
     autoclosing: false,
-    id:
-      "popup-" +
-      Math.random()
-        .toString(36)
-        .substring(2, 15)
+    id: "popup-" + Math.random().toString(36).substring(2, 15)
   };
 
   open = isopen => {

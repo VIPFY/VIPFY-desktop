@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import { graphql, Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
-import { FETCH_COMPANY } from "../../queries/departments";
+import { FETCH_COMPANY, FETCH_VIPFY_PLAN } from "../../queries/departments";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
@@ -17,6 +17,8 @@ import { now } from "moment";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
+import { SET_VAT_ID } from "../../mutations/department";
+import VIPFYPlanPopup from "../../popups/universalPopups/VIPFYPlanPopup";
 
 const UPDATE_PIC = gql`
   mutation onUpdateCompanyPic($file: Upload!) {
@@ -55,17 +57,6 @@ const FETCH_COMPANY_SERVICES = gql`
   }
 `;
 
-const SET_VATID = gql`
-  mutation onSetVatID($vatID: String!) {
-    setVatID(vatID: $vatID) {
-      unit: unitid {
-        id
-      }
-      legalinformation
-    }
-  }
-`;
-
 interface Props {
   moveTo: Function;
   updatePic: Function;
@@ -87,6 +78,8 @@ interface State {
   updateing: boolean;
   editvalue: string | null;
   error: string | null;
+  showPlanModal: boolean;
+  currentPlan: null | object;
 }
 
 class CompanyDetails extends React.Component<Props, State> {
@@ -96,7 +89,9 @@ class CompanyDetails extends React.Component<Props, State> {
     edit: null,
     updateing: false,
     editvalue: null,
-    error: null
+    error: null,
+    showPlanModal: false,
+    currentPlan: null
   };
 
   uploadPic = async (picture: File) => {
@@ -283,38 +278,61 @@ class CompanyDetails extends React.Component<Props, State> {
                             </div>
                           </div>
                         </div>
-                        <div className="tableColumnSmall content twoline">
-                          <div
-                            className="tableColumnSmall" //editable
-                            /*onClick={() =>
-                                this.setState({
-                                  edit: {
-                                    id: "privatephones",
-                                    label: "Privatephone",
-                                    startvalue: querydata.privatePhones
-                                  }
-                                })
-                              }*/ style={{
-                              width: "100%"
-                            }}>
-                            <h1>VIPFY-Plan</h1>
-                            <h2>Free Trial</h2>
-                            {/*<div className="profileEditButton">
-                                <i className="fal fa-pen editbuttons" />
-                            </div>*/}
-                          </div>
+                        <Query<WorkAround, WorkAround> query={FETCH_VIPFY_PLAN}>
+                          {({ data, loading, error }) => {
+                            if (loading) {
+                              return <LoadingDiv />;
+                            }
 
-                          <div
-                            className="tableColumnSmall"
-                            style={{ width: "100%" }} //editable
-                          >
-                            <h1>VIPFY-Costs per month</h1>
-                            <h2>Free</h2>
-                            {/*<div className="profileEditButton">
-                                <i className="fal fa-pen editbuttons" />
-                            </div>*/}
-                          </div>
-                        </div>
+                            if (error || !data) {
+                              return <ErrorComp error={error} />;
+                            }
+                            const { payperiod, cancelperiod } = data.fetchVipfyPlan.plan;
+
+                            return (
+                              <div className="tableColumnSmall content twoline">
+                                <div
+                                  className="tableColumnSmall editable"
+                                  style={{ width: "100%" }}
+                                  onClick={() =>
+                                    this.setState({
+                                      showPlanModal: true,
+                                      currentPlan: {
+                                        id: data.fetchVipfyPlan.plan.id,
+                                        endtime: data.fetchVipfyPlan.endtime,
+                                        firstPlan: false,
+                                        payperiod,
+                                        cancelperiod,
+                                        features: data.fetchVipfyPlan.plan.options
+                                      }
+                                    })
+                                  }>
+                                  <h1>VIPFY-Plan</h1>
+                                  <h2>{data.fetchVipfyPlan.plan.name}</h2>
+                                  <div className="profileEditButton">
+                                    <i className="fal fa-pen editbuttons" />
+                                  </div>
+                                </div>
+
+                                <div className="tableColumnSmall" style={{ width: "100%" }}>
+                                  <h1>{`VIPFY-Costs per ${
+                                    typeof payperiod == "string"
+                                      ? payperiod.split(" ")[1]
+                                      : Object.keys(payperiod)[0].substring(
+                                          0,
+                                          Object.keys(payperiod)[0].length - 1
+                                        )
+                                  }`}</h1>
+                                  <h2>
+                                    {data.fetchVipfyPlan.totalprice
+                                      ? `${data.fetchVipfyPlan.totalprice} ${data.fetchVipfyPlan.plan.currency}`
+                                      : "Free"}
+                                  </h2>
+                                </div>
+                              </div>
+                            );
+                          }}
+                        </Query>
                         <div className="tableColumnSmall content twoline">
                           <div
                             className="tableColumnSmall editable"
@@ -430,9 +448,18 @@ class CompanyDetails extends React.Component<Props, State> {
                         )}
                       </PopupBase>
                     )}
+
                     <div className="personalEditButtons" />
                   </div>
                 </div>
+                {this.state.showPlanModal && (
+                  <VIPFYPlanPopup
+                    headline="VIPFY Plan Update"
+                    currentPlan={this.state.currentPlan}
+                    company={this.props.company}
+                    close={() => this.setState({ showPlanModal: false })}
+                  />
+                )}
               </div>
             );
           } else {
@@ -443,8 +470,9 @@ class CompanyDetails extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(
   graphql(UPDATE_PIC, { name: "updatePic" }),
   graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
-  graphql(SET_VATID, { name: "setVatID" })
+  graphql(SET_VAT_ID, { name: "setVatID" })
 )(withApollo(CompanyDetails));

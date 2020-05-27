@@ -1,14 +1,5 @@
 import gql from "graphql-tag";
 
-const fragment = gql`
-  fragment LicenceParts on Licence {
-    id
-    unitid {
-      id
-    }
-  }
-`;
-
 export const signInUser = gql`
   mutation SignInUser($email: String!, $password: String, $passkey: String) {
     signIn(email: $email, password: $password, passkey: $passkey) {
@@ -24,14 +15,6 @@ export const signInUser = gql`
 export const SIGN_OUT = gql`
   mutation {
     signOut
-  }
-`;
-
-export const editDepartment = gql`
-  mutation editDepartmentName($departmentid: ID!, $name: String!) {
-    editDepartmentName(departmentid: $departmentid, name: $name) {
-      ok
-    }
   }
 `;
 

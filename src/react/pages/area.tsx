@@ -18,6 +18,7 @@ import Webview from "./webview";
 import ErrorPage from "./error";
 import UsageStatistics from "./usagestatistics";
 import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
+import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
@@ -52,9 +53,9 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
-import { WorkAround } from "../interfaces";
 //import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
+import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
@@ -71,9 +72,10 @@ interface AreaProps {
   tutorialprogress?: any;
   highlightReferences?: any;
   addUsedLicenceID: Function;
+  showVIPFYPlanPopup: boolean;
+  expiredPlan: Expired_Plan;
   client: any;
   recoverypublickey?: string;
-  needstowfa: boolean;
   isadmin: boolean;
   [moreStuff: string]: any;
 }
@@ -808,6 +810,12 @@ class Area extends React.Component<AreaProps, AreaState> {
                       )}
                     </UserContext.Provider>
                   </SideBarContext.Provider>
+                  {this.props.showVIPFYPlanPopup && (
+                    <VIPFYPlanPopup
+                      company={this.props.company}
+                      currentPlan={this.props.expiredPlan}
+                    />
+                  )}
                 </div>
               );
             }}

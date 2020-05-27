@@ -8,16 +8,15 @@ import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
 import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
-import gql from "graphql-tag";
 import moment from "moment";
-import { filterError, concatName } from "../common/functions";
-import { WorkAround } from "../interfaces";
+import { concatName } from "../common/functions";
+import { WorkAround, Expired_Plan } from "../interfaces";
+import { FETCH_VIPFY_PLAN } from "../queries/departments";
 
 interface PostLoginProps {
   logMeOut: Function;
   moveTo: Function;
   sidebarloaded: Function;
-  setName: Function;
   showPopup: Function;
   qrCode?: string;
   twoFAid?: string;
@@ -26,6 +25,9 @@ interface PostLoginProps {
   history: any;
   context: any;
   addUsedLicenceID: Function;
+  expiredPlan: Expired_Plan;
+  closePlanModal: Function;
+  [moreProps: string]: any;
   firstname: string;
   middlename: string;
   lastname: string;
@@ -34,19 +36,6 @@ interface PostLoginProps {
 interface State {
   firstLogin: boolean;
 }
-
-const FETCH_VIPFY_PLAN = gql`
-  {
-    fetchVipfyPlan {
-      id
-      endtime
-      plan: planid {
-        id
-        name
-      }
-    }
-  }
-`;
 
 class PostLogin extends React.Component<PostLoginProps, State> {
   state = { firstLogin: false };
@@ -59,7 +48,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
     return (
       <Query<WorkAround, WorkAround> query={me}>
         {({ data, loading, error, refetch }) => {
-          const { context, ...clearProps } = this.props;
+          const { context, ...pureProps } = this.props;
 
           if (loading) {
             return <LoadingDiv />;
@@ -101,7 +90,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
               }
             );
 
-            clearProps.impersonation = true;
+            pureProps.impersonation = true;
           }
 
           if (!data.me.company.setupfinished) {
@@ -116,13 +105,13 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             return (
               <FirstLogin
                 setFirstLogin={() => this.setState({ firstLogin: true })}
-                {...clearProps}
+                {...pureProps}
               />
             );
           }
 
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
-            return <PasswordChange firstLogin={this.state.firstLogin} {...clearProps} />;
+            return <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />;
           }
 
           if (data.me.needstwofa) {
@@ -133,7 +122,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   dontClose={true}
                   finishSetup={() => {
                     refetch();
-                    clearProps.history.push("/area/dashboard");
+                    pureProps.history.push("/area/dashboard");
                   }}
                   user={data.me}
                 />
@@ -149,28 +138,25 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             <Query<WorkAround, WorkAround>
               pollInterval={60 * 60 * 1000 + 10000}
               query={FETCH_VIPFY_PLAN}>
-              {({ data: d2, error }) => {
-                if (error) {
-                  return filterError(error);
+              {({ data, error: e2 }) => {
+                if (e2) {
+                  console.error(e2);
                 }
 
-                if (d2 && d2.fetchVipfyPlan && d2.fetchVipfyPlan.endtime) {
-                  const vipfyPlan = d2.fetchVipfyPlan.plan.name;
+                if (data && data.fetchVipfyPlan && data.fetchVipfyPlan.endtime) {
+                  const vipfyPlan = data.fetchVipfyPlan.plan.name;
                   // TODO: [VIP-314] Reimplement credits when new structure is clear
                   // const { fetchCredits } = data;
-                  const expiry = moment(parseInt(d2.fetchVipfyPlan.endtime));
 
                   if (context) {
-                    if (expiry && moment().isAfter(expiry)) {
+                    const expiry = moment(parseInt(data.fetchVipfyPlan.endtime));
+
+                    if (moment().isAfter(expiry)) {
                       context.addHeaderNotification(
                         `Your plan ${vipfyPlan} expired. Please choose a new one before continuing`,
                         { type: "error", key: "expire" }
                       );
-                    } else if (
-                      moment()
-                        .add(3, "months")
-                        .isBefore(expiry)
-                    ) {
+                    } else if (moment().add(3, "months").isBefore(expiry)) {
                       // nothing to do
                     } else {
                       context.addHeaderNotification(
@@ -183,7 +169,8 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
                 return (
                   <Area
-                    {...clearProps}
+                    {...pureProps}
+                    showVIPFYPlanPopup={e2}
                     style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
                   />
                 );

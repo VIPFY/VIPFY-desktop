@@ -12,7 +12,11 @@ declare module "*.scss" {
 }
 
 import App from "./app";
-import client, { setLogoutFunction, setUpgradeErrorHandler } from "./networkInterface";
+import client, {
+  setLogoutFunction,
+  setUpgradeErrorHandler,
+  setShowPlanFunction
+} from "./networkInterface";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import UpgradeError from "./upgradeerror";
@@ -94,6 +98,7 @@ class Application extends React.Component<IndexProps> {
                 render={props => (
                   <App
                     {...props}
+                    showPlanFunction={setShowPlanFunction}
                     logoutFunction={setLogoutFunction}
                     upgradeErrorHandlerSetter={setUpgradeErrorHandler}
                   />
