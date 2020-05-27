@@ -420,11 +420,11 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
       return (
         <div className={cssClass}>
           <div className="appBreadCromp">
-            <span className="appBreadCrompNoLink">YOU ARE HERE > </span>
+            <span className="appBreadCrompNoLink">YOU ARE HERE &gt; </span>
             <span className="appBreadCrompLink" onClick={() => this.goTo()}>
               Marketplace
             </span>
-            <span className="appBreadCrompNoLink"> > </span>
+            <span className="appBreadCrompNoLink"> &gt; </span>
             <span className="appBreadCrompLink">{appDetails.name}</span>
           </div>
           <div className="appHeader">

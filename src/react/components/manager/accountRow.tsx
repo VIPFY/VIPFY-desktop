@@ -58,6 +58,21 @@ class AccountRow extends React.Component<Props, State> {
       );
     }
 
+    if (e.options && e.options.private) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            color: "white",
+            backgroundColor: "#3E576E",
+            textAlign: "center",
+            lineHeight: "initial"
+          }}>
+          Private
+        </span>
+      );
+    }
+
     if (moment(start - 0).isAfter(moment.now())) {
       return (
         <span
@@ -162,22 +177,25 @@ class AccountRow extends React.Component<Props, State> {
         </div>
         <div className="tableEnd">
           <div className="editOptions">
-            <i
-              className="fal fa-pen editbuttons"
-              title="Edit account settings"
-              onClick={() => this.setState({ change: true })}
-            />
+            {(!account.options || (account.options && !account.options.private)) && (
+              <i
+                className="fal fa-pen editbuttons"
+                title="Edit account settings"
+                onClick={() => this.setState({ change: true })}
+              />
+            )}
           </div>
         </div>
-        {this.state.change && (
-          <ChangeAccount
-            account={account}
-            orbit={this.props.orbit}
-            app={this.props.app}
-            closeChange={b => this.setState({ change: false })}
-            refetch={this.props.refetch}
-          />
-        )}
+        {(!account.options || (account.options && !account.options.private)) &&
+          this.state.change && (
+            <ChangeAccount
+              account={account}
+              orbit={this.props.orbit}
+              app={this.props.app}
+              closeChange={b => this.setState({ change: false })}
+              refetch={this.props.refetch}
+            />
+          )}
       </div>
     );
   }

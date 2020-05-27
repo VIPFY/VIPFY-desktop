@@ -27,7 +27,8 @@ const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { WorkAround, Expired_Plan } from "./interfaces";
+import { WorkAround } from "./interfaces";
+import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -495,6 +496,7 @@ class App extends React.Component<AppProps, AppState> {
             />
           )}
         </HeaderNotificationProvider>
+        <DevToolsToolBar />
       </AppContext.Provider>
     );
   }

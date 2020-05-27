@@ -14,7 +14,8 @@ import loading_pic from "../../../images/sso_creation_loading.png";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { fetchDepartmentsData } from "../../queries/departments";
 import UniversalDropDownInput from "../../components/universalForms/universalDropdownInput";
-import { concatName } from "../../common/functions";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
+import { concatName, getMyUnitId } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
 import { createEncryptedLicenceKeyObject } from "../../common/licences";
@@ -72,6 +73,12 @@ const ASSIGN_ACCOUNT = gql`
   }
 `;
 
+const CHECK_EMPLOYEE_ORBIT = gql`
+  mutation checkEmployeeOrbit($appid: ID!) {
+    checkEmployeeOrbit(appid: $appid)
+  }
+`;
+
 interface Props {
   closeFunction: Function;
   maxTime?: number;
@@ -85,6 +92,8 @@ interface Props {
   createAccount: Function;
   assignAccount: Function;
   client: any;
+  isEmployee?: boolean;
+  checkEmployeeOrbit: Function;
 }
 
 interface State {
@@ -174,7 +183,7 @@ class SelfSaving extends React.Component<Props, State> {
         variables: { ssoData: sso }
       });
 
-      if (this.state.showAssign) {
+      if (!this.props.isEmployee && this.state.showAssign) {
         try {
           const orbit = await this.props.createOrbit({
             variables: {
@@ -240,6 +249,58 @@ class SelfSaving extends React.Component<Props, State> {
           }
         } catch (error) {
           console.log("ERROR Creating Orbit", error);
+          this.props.closeFunction(error);
+        }
+      }
+      if (this.props.isEmployee) {
+        try {
+          const logindata = await createEncryptedLicenceKeyObject(
+            {
+              username: this.props.sso.email,
+              password: this.props.sso.password
+            },
+            null,
+            this.props.client
+          );
+          const employeeOrbit = await this.props.checkEmployeeOrbit({
+            variables: {
+              appid: app.data.createOwnApp.appid
+            }
+          });
+          const options = { employeeIntegrated: true, private: true };
+
+          const account = await this.props.createAccount({
+            variables: {
+              orbitid: employeeOrbit.data.checkEmployeeOrbit,
+              alias: this.state.alias,
+              logindata,
+              options
+            }
+          });
+
+          try {
+            const userid = await getMyUnitId(this.props.client);
+            await this.props.assignAccount({
+              variables: {
+                licenceid: account.data.createAccount.id,
+                userid,
+                rights: { view: true, use: true },
+                keyfragment: {}
+              }
+            });
+            this.props.closeFunction({
+              success: true,
+              appid: app.data.createOwnApp.appid,
+              planid: app.data.createOwnApp.planid,
+              orbitid: employeeOrbit.data.checkEmployeeOrbit,
+              accountid: account.data.createAccount.id
+            });
+          } catch (error) {
+            console.log("ERROR Assigning Account", error);
+            this.props.closeFunction(error);
+          }
+        } catch (error) {
+          console.log("ERROR EmployeeIntegrate", error);
           this.props.closeFunction(error);
         }
       }
@@ -331,28 +392,30 @@ class SelfSaving extends React.Component<Props, State> {
           ) : (
             <img className="status-pic" src={loading_pic} />
           )}
-          <div
-            style={{
-              marginTop: "24px",
-              marginBottom: "24px",
-              display: "flex",
-              alignItems: "center"
-            }}>
-            <label className="switch">
-              <input
-                onChange={() =>
-                  this.setState(oldstate => {
-                    return { ...oldstate, showAssign: !oldstate.showAssign };
-                  })
-                }
-                checked={this.state.showAssign}
-                type="checkbox"
-              />
-              <span className="slider" />
-            </label>
-            <span style={{ marginLeft: "16px" }}>Directly assign the given account</span>
-          </div>
-          {this.state.showAssign && (
+          {!this.props.isEmployee && (
+            <div
+              style={{
+                marginTop: "24px",
+                marginBottom: "24px",
+                display: "flex",
+                alignItems: "center"
+              }}>
+              <label className="switch">
+                <input
+                  onChange={() =>
+                    this.setState(oldstate => {
+                      return { ...oldstate, showAssign: !oldstate.showAssign };
+                    })
+                  }
+                  checked={this.state.showAssign}
+                  type="checkbox"
+                />
+                <span className="slider" />
+              </label>
+              <span style={{ marginLeft: "16px" }}>Directly assign the given account</span>
+            </div>
+          )}
+          {!this.props.isEmployee && this.state.showAssign && (
             <>
               <span style={{ marginTop: "20px", marginBottom: "20px" }}>
                 For this: We need some more information:
@@ -551,14 +614,31 @@ class SelfSaving extends React.Component<Props, State> {
             <>
               <h3 style={{ marginBottom: "24px" }}>
                 <span>Congratulations!</span>
-                <span>The Integration was possible.</span>
+                <span>The Integration is possible.</span>
               </h3>
+
+              {this.props.isEmployee && (
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+                  <span
+                    style={{ lineHeight: "24px", width: "84px" }}
+                    title="An administator can't edit nor access a private account from his account. It is still possible for him to reset your password and than login in into your account directly.">
+                    Private:
+                  </span>
+                  <UniversalCheckbox
+                    startingvalue={false}
+                    liveValue={e => this.setState({ private: e })}
+                  />
+                </div>
+              )}
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <UniversalButton type="low" label="Cancel" onClick={() => this.close()} />
                 <UniversalButton
                   type="high"
                   label="Integrate"
-                  disabled={!this.state.orbit || !this.state.alias || !this.state.user}
+                  disabled={
+                    !this.props.isEmployee &&
+                    (!this.state.orbit || !this.state.alias || !this.state.user)
+                  }
                   onClick={() => this.saveAndMaybeAssign()}
                 />
               </div>
@@ -630,5 +710,8 @@ export default compose(
   graphql(CREATE_ORBIT, { name: "createOrbit" }),
   graphql(CREATE_ACCOUNT, { name: "createAccount" }),
   graphql(ASSIGN_ACCOUNT, { name: "assignAccount" }),
+  graphql(CHECK_EMPLOYEE_ORBIT, {
+    name: "checkEmployeeOrbit"
+  }),
   withApollo
 )(SelfSaving);

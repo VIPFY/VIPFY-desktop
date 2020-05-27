@@ -1,7 +1,18 @@
-import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  autoUpdater,
+  dialog,
+  protocol,
+  session,
+  ipcMain,
+  BrowserView,
+  webContents
+} from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
-  APOLLO_DEVELOPER_TOOLS
+  APOLLO_DEVELOPER_TOOLS,
+  REACT_PERF
 } from "electron-devtools-installer";
 import path from "path";
 import Store from "electron-store";
@@ -14,6 +25,8 @@ process.on("uncaughtException", error => {
 });
 
 app.commandLine.appendSwitch("disable-site-isolation-trials");
+
+let devtools = null;
 
 const store = new Store();
 const key = getSetupKey();
@@ -200,11 +213,16 @@ const createWindow = async () => {
       console.log(err);
     }
     try {
+      await installExtension(REACT_PERF);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
       await installExtension(APOLLO_DEVELOPER_TOOLS);
     } catch (err) {
       console.log(err);
     }
-    mainWindow.webContents.openDevTools();
+    openDevTools(mainWindow.webContents.id);
   }
 
   mainWindow.on("close", async () => {
@@ -225,7 +243,29 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.on("will-resize", (e, newBounds) => fixDevToolSize(newBounds));
+
+  mainWindow.on("maximize", e => {
+    const bounds = mainWindow.getContentBounds(); // window bounds are larger than window to hide border in maximized state (on windows at least)
+    fixDevToolSize(bounds);
+  });
+  mainWindow.on("unmaximize", e => {
+    const bounds = mainWindow.getBounds();
+    fixDevToolSize(bounds);
+  });
 };
+
+function fixDevToolSize(newBounds) {
+  // autoresize is buggy, so we do our own
+  if (!devtools || devtools.isDestroyed()) return;
+  devtools.setBounds({
+    x: newBounds.width - 600,
+    y: 64,
+    width: 600,
+    height: newBounds.height - 64
+  });
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -251,3 +291,116 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+let containerWithDevToolsOpen: Electron.WebContents | null = null;
+
+function closeDevTools() {
+  if (devtools && !devtools.isDestroyed()) {
+    if (containerWithDevToolsOpen && !containerWithDevToolsOpen.isDestroyed()) {
+      containerWithDevToolsOpen.closeDevTools();
+    }
+    containerWithDevToolsOpen = null;
+    mainWindow.removeBrowserView(devtools);
+    devtools.destroy();
+    devtools = null;
+  }
+}
+
+function openDevTools(webContentId) {
+  closeDevTools();
+  devtools = new BrowserView();
+  mainWindow.addBrowserView(devtools);
+  const bounds = mainWindow.getContentBounds();
+  fixDevToolSize(bounds);
+
+  const container = webContents.fromId(webContentId);
+  container.setDevToolsWebContents(devtools.webContents);
+  //container.debugger.attach();
+  container.openDevTools({ mode: "detach" });
+  containerWithDevToolsOpen = container;
+  console.log(devtools.getBounds());
+}
+
+ipcMain.handle("openDevTools", e => {
+  if (mainWindow === null) {
+    return;
+  }
+  mainWindow.webContents.executeJavaScript(`
+    (function(){
+      let app = document.querySelector("#App");
+      app.style.marginRight = "600px";
+      let dt = document.querySelector("#DevToolToolBar");
+      dt.style.display = "block";
+    })();
+    `);
+  openDevTools(mainWindow.webContents.id);
+});
+
+ipcMain.handle("changeDevTools", (e, id: number) => {
+  if (mainWindow === null) {
+    return;
+  }
+  console.log("changeDevTools", id);
+  if (id == -1) {
+    id = mainWindow.webContents.id;
+  }
+  openDevTools(id);
+});
+
+ipcMain.handle("getDevToolsContentId", e => {
+  if (!containerWithDevToolsOpen || containerWithDevToolsOpen.isDestroyed()) {
+    closeDevTools();
+    return null;
+  }
+  const id = containerWithDevToolsOpen.id;
+  if (id == mainWindow.webContents.id) {
+    return -1;
+  }
+  return id;
+});
+
+ipcMain.handle("closeDevTools", e => {
+  mainWindow.webContents.executeJavaScript(`
+    (function(){
+      let app = document.querySelector("#App");
+      app.style.marginRight = "0";
+      let dt = document.querySelector("#DevToolToolBar");
+      dt.style.display = "none";
+    })();
+    `);
+  closeDevTools();
+});
+
+ipcMain.handle("getMainWindowPosition", e => {
+  if (mainWindow === null) {
+    return null;
+  }
+
+  return mainWindow.getPosition();
+});
+
+ipcMain.on("getMainWindowPositionSync", e => {
+  if (mainWindow === null) {
+    e.returnValue = null;
+    return;
+  }
+
+  e.returnValue = mainWindow.getPosition();
+});
+
+ipcMain.handle("getMainWindowContentBounds", e => {
+  if (mainWindow === null) {
+    return null;
+  }
+
+  return mainWindow.getContentBounds();
+});
+
+ipcMain.on("getMainWindowContentBoundsSync", e => {
+  if (mainWindow === null) {
+    e.returnValue = null;
+    return;
+  }
+
+  e.returnValue = mainWindow.getContentBounds();
+});
