@@ -193,24 +193,33 @@ const createWindow = async () => {
   // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  if (isDevMode) {
-    try {
-      await installExtension(REACT_DEVELOPER_TOOLS);
-    } catch (err) {
-      console.log(err);
+  // The dirty hack in the next line is required because of the elaborate ways how the app
+  // manages its ENV. It overrides the automatic setting of the ENV to "test" when an npm
+  // test script is run, in a way that unfortunately all tests are run in the "develop" ENV.
+  // However, when the tests run, there should be no dev tools installed in electron. They
+  // can cause the tests to fail.
+  // As soon as our ENV handling will hopefully be simplified, this hack (i.e. all occurrences
+  // of "REACT_APP_TESTING") should be removed.
+  if (!process.env.REACT_APP_TESTING) {
+    // Open the DevTools.
+    if (isDevMode) {
+      try {
+        await installExtension(REACT_DEVELOPER_TOOLS);
+      } catch (err) {
+        console.log(err);
+      }
+      try {
+        await installExtension(REACT_PERF);
+      } catch (err) {
+        console.log(err);
+      }
+      try {
+        await installExtension(APOLLO_DEVELOPER_TOOLS);
+      } catch (err) {
+        console.log(err);
+      }
+      mainWindow.webContents.openDevTools();
     }
-    try {
-      await installExtension(REACT_PERF);
-    } catch (err) {
-      console.log(err);
-    }
-    try {
-      await installExtension(APOLLO_DEVELOPER_TOOLS);
-    } catch (err) {
-      console.log(err);
-    }
-    mainWindow.webContents.openDevTools();
   }
 
   mainWindow.on("close", async () => {

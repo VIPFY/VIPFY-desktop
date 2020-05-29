@@ -14,7 +14,7 @@ import loading_pic from "../../../images/sso_creation_loading.png";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { fetchDepartmentsData } from "../../queries/departments";
 import UniversalDropDownInput from "../../components/universalForms/universalDropdownInput";
-import UniversalCheckbox from "../../components/universalForms/UniversalCheckbox";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { concatName, getMyUnitId } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
