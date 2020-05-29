@@ -1,4 +1,14 @@
-import { app, BrowserWindow, autoUpdater, dialog, protocol, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  autoUpdater,
+  dialog,
+  protocol,
+  session,
+  ipcMain,
+  BrowserView,
+  webContents
+} from "electron";
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
   APOLLO_DEVELOPER_TOOLS,
@@ -15,6 +25,8 @@ process.on("uncaughtException", error => {
 });
 
 app.commandLine.appendSwitch("disable-site-isolation-trials");
+
+let devtools = null;
 
 const store = new Store();
 const key = getSetupKey();
@@ -38,7 +50,7 @@ if (!disableUpdater) {
     serverType: "json"
   });
 
-  autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+  autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
     const dialogOpts = {
       type: "info",
       buttons: ["Restart", "Later"],
@@ -193,34 +205,7 @@ const createWindow = async () => {
   // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // The dirty hack in the next line is required because of the elaborate ways how the app
-  // manages its ENV. It overrides the automatic setting of the ENV to "test" when an npm
-  // test script is run, in a way that unfortunately all tests are run in the "develop" ENV.
-  // However, when the tests run, there should be no dev tools installed in electron. They
-  // can cause the tests to fail.
-  // As soon as our ENV handling will hopefully be simplified, this hack (i.e. all occurrences
-  // of "REACT_APP_TESTING") should be removed.
-  if (!process.env.REACT_APP_TESTING) {
-    // Open the DevTools.
-    if (isDevMode) {
-      try {
-        await installExtension(REACT_DEVELOPER_TOOLS);
-      } catch (err) {
-        console.log(err);
-      }
-      try {
-        await installExtension(REACT_PERF);
-      } catch (err) {
-        console.log(err);
-      }
-      try {
-        await installExtension(APOLLO_DEVELOPER_TOOLS);
-      } catch (err) {
-        console.log(err);
-      }
-      mainWindow.webContents.openDevTools();
-    }
-  }
+  await setElectronToDevMode();
 
   mainWindow.on("close", async () => {
     try {
@@ -240,7 +225,69 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  mainWindow.on("will-resize", (e, newBounds) => fixDevToolSize(newBounds));
+
+  mainWindow.on("maximize", e => {
+    const bounds = mainWindow.getContentBounds(); // window bounds are larger than window to hide border in maximized state (on windows at least)
+    fixDevToolSize(bounds);
+  });
+  mainWindow.on("unmaximize", e => {
+    const bounds = mainWindow.getBounds();
+    fixDevToolSize(bounds);
+  });
 };
+
+async function setElectronToDevMode() {
+  // The workaround in the next lines is required because of the elaborate ways how the app
+  // manages its ENV: it overrides the automatic setting of the ENV to "test" when an npm
+  // test script is run, in a way that unfortunately all tests are run in the "develop" ENV.
+  // However, when tests run, there should be no dev stuff made available in Electron (can even
+  // make tests fail).
+  // As soon as our ENV handling will hopefully be simplified, this workaround (i.e. all
+  // occurrences of "REACT_APP_TESTING") should be removed.
+  //
+  // START_WORKAROUND
+  if (process.env.REACT_APP_TESTING) {
+    return;
+  }
+  // /END_WORKAROUND
+
+  if (!isDevMode) {
+    return;
+  }
+
+  try {
+    await installExtension(REACT_DEVELOPER_TOOLS);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    await installExtension(REACT_PERF);
+  } catch (err) {
+    console.log(err);
+  }
+
+  try {
+    await installExtension(APOLLO_DEVELOPER_TOOLS);
+  } catch (err) {
+    console.log(err);
+  }
+
+  openDevTools(mainWindow.webContents.id);
+}
+
+function fixDevToolSize(newBounds) {
+  // autoresize is buggy, so we do our own
+  if (!devtools || devtools.isDestroyed()) return;
+  devtools.setBounds({
+    x: newBounds.width - 600,
+    y: 64,
+    width: 600,
+    height: newBounds.height - 64
+  });
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -266,3 +313,116 @@ app.on("activate", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
+let containerWithDevToolsOpen: Electron.WebContents | null = null;
+
+function closeDevTools() {
+  if (devtools && !devtools.isDestroyed()) {
+    if (containerWithDevToolsOpen && !containerWithDevToolsOpen.isDestroyed()) {
+      containerWithDevToolsOpen.closeDevTools();
+    }
+    containerWithDevToolsOpen = null;
+    mainWindow.removeBrowserView(devtools);
+    devtools.destroy();
+    devtools = null;
+  }
+}
+
+function openDevTools(webContentId) {
+  closeDevTools();
+  devtools = new BrowserView();
+  mainWindow.addBrowserView(devtools);
+  const bounds = mainWindow.getContentBounds();
+  fixDevToolSize(bounds);
+
+  const container = webContents.fromId(webContentId);
+  container.setDevToolsWebContents(devtools.webContents);
+  //container.debugger.attach();
+  container.openDevTools({ mode: "detach" });
+  containerWithDevToolsOpen = container;
+  console.log(devtools.getBounds());
+}
+
+ipcMain.handle("openDevTools", e => {
+  if (mainWindow === null) {
+    return;
+  }
+  mainWindow.webContents.executeJavaScript(`
+    (function(){
+      let app = document.querySelector("#App");
+      app.style.marginRight = "600px";
+      let dt = document.querySelector("#DevToolToolBar");
+      dt.style.display = "block";
+    })();
+    `);
+  openDevTools(mainWindow.webContents.id);
+});
+
+ipcMain.handle("changeDevTools", (e, id: number) => {
+  if (mainWindow === null) {
+    return;
+  }
+  console.log("changeDevTools", id);
+  if (id == -1) {
+    id = mainWindow.webContents.id;
+  }
+  openDevTools(id);
+});
+
+ipcMain.handle("getDevToolsContentId", e => {
+  if (!containerWithDevToolsOpen || containerWithDevToolsOpen.isDestroyed()) {
+    closeDevTools();
+    return null;
+  }
+  const id = containerWithDevToolsOpen.id;
+  if (id == mainWindow.webContents.id) {
+    return -1;
+  }
+  return id;
+});
+
+ipcMain.handle("closeDevTools", e => {
+  mainWindow.webContents.executeJavaScript(`
+    (function(){
+      let app = document.querySelector("#App");
+      app.style.marginRight = "0";
+      let dt = document.querySelector("#DevToolToolBar");
+      dt.style.display = "none";
+    })();
+    `);
+  closeDevTools();
+});
+
+ipcMain.handle("getMainWindowPosition", e => {
+  if (mainWindow === null) {
+    return null;
+  }
+
+  return mainWindow.getPosition();
+});
+
+ipcMain.on("getMainWindowPositionSync", e => {
+  if (mainWindow === null) {
+    e.returnValue = null;
+    return;
+  }
+
+  e.returnValue = mainWindow.getPosition();
+});
+
+ipcMain.handle("getMainWindowContentBounds", e => {
+  if (mainWindow === null) {
+    return null;
+  }
+
+  return mainWindow.getContentBounds();
+});
+
+ipcMain.on("getMainWindowContentBoundsSync", e => {
+  if (mainWindow === null) {
+    e.returnValue = null;
+    return;
+  }
+
+  e.returnValue = mainWindow.getContentBounds();
+});

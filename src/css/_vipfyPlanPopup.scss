@@ -1,0 +1,220 @@
+@mixin vipfy-plan-select {
+  transition: all 300ms ease-in-out;
+  transform: translate(10px, 10px);
+  background: $vipfy-primary;
+  color: white;
+
+  .preferred {
+    color: white;
+  }
+}
+
+.vipfy-plans-popup {
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+
+  & > p {
+    margin: 1rem;
+    font-size: 1.3rem;
+  }
+
+  #vipfy-plans {
+    display: flex;
+    justify-content: space-between;
+
+    &:invalid ~ button:last-of-type div {
+      background: gray;
+      cursor: not-allowed;
+      transition: background-color 300ms ease-in-out;
+    }
+
+    input[type="radio"] {
+      display: none;
+
+      &:checked + label {
+        @include vipfy-plan-select;
+      }
+    }
+  }
+
+  button:last-of-type {
+    align-self: flex-end;
+    margin-top: auto;
+  }
+
+  #stripe-form {
+    margin-top: 16px;
+
+    h1 {
+      font-size: 1rem;
+      font-weight: 400;
+    }
+  }
+
+  .illustration-login {
+    max-height: 400px;
+    object-fit: contain;
+  }
+
+  .float-right {
+    float: right;
+  }
+}
+
+.vipfy-plan {
+  cursor: pointer;
+  padding: 52px 32px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.16);
+  margin-bottom: 56px;
+  width: 250px;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  transition: all 300ms ease-in-out;
+
+  &:hover {
+    @include vipfy-plan-select;
+  }
+
+  h2 {
+    text-align: center;
+    font-family: Roboto Slap;
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 32px;
+  }
+
+  .price-container {
+    min-height: 77px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+
+    p > span {
+      text-transform: capitalize;
+    }
+  }
+
+  .text-container {
+    min-height: 150px;
+
+    p {
+      text-transform: capitalize;
+      text-align: center;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 30px;
+    }
+  }
+
+  b {
+    position: relative;
+    font-size: 36px;
+    width: 6rem;
+    text-align: center;
+
+    &::after {
+      content: "\f153";
+      font-family: "Font Awesome 5 Pro";
+      font-weight: 900;
+      position: absolute;
+      font-size: 21px;
+      top: 9px;
+      right: -15px;
+    }
+  }
+
+  .preferred {
+    font-style: italic;
+    color: $vipfy-primary-color;
+  }
+
+  &-current {
+    position: relative;
+    opacity: 0.3;
+
+    &:after {
+      content: "Your current plan";
+      position: absolute;
+      top: 10px;
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      cursor: default;
+      transform: unset;
+      background: unset;
+      color: black;
+    }
+  }
+}
+
+.vipfy-plan-confirmation {
+  & > p {
+    margin: 1rem 0;
+    font-size: 1.3rem;
+  }
+
+  .vipfy-plan {
+    margin-bottom: 0;
+
+    &:hover {
+      background: unset;
+      transform: unset;
+      color: unset;
+      cursor: unset;
+    }
+  }
+
+  .generic-checkbox-holder,
+  .vipfy-plan-notice {
+    margin-top: 16px;
+  }
+
+  .legal-notice {
+    margin-top: 12px;
+    font-size: 10px;
+  }
+}
+
+#vat-form {
+  flex: 1;
+  display: flex;
+  flex-flow: column;
+
+  input {
+    border: 0;
+    border-bottom: 1px solid $vipfy-darktext;
+    outline: none;
+
+    &:invalid ~ button .cleanup {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+
+    &:invalid {
+      border-bottom: 0;
+      color: $vipfy-cancel-color;
+      border-radius: 4px;
+      box-shadow: 0 0 4px $vipfy-cancel-color;
+    }
+
+    &[value=""] {
+      box-shadow: unset;
+      color: unset;
+      border-bottom: 1px solid $vipfy-darktext;
+    }
+  }
+
+  .universalCoverButton {
+    align-self: flex-end;
+    justify-self: flex-end;
+    margin-bottom: 0;
+    margin-top: auto;
+  }
+}

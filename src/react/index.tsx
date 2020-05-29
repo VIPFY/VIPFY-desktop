@@ -4,6 +4,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { ApolloProvider } from "react-apollo";
+import { ipcRenderer } from "electron";
 
 declare module "*.scss" {
   const content: any;
@@ -11,7 +12,11 @@ declare module "*.scss" {
 }
 
 import App from "./app";
-import client, { setLogoutFunction, setUpgradeErrorHandler } from "./networkInterface";
+import client, {
+  setLogoutFunction,
+  setUpgradeErrorHandler,
+  setShowPlanFunction
+} from "./networkInterface";
 import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import UpgradeError from "./upgradeerror";
@@ -28,7 +33,7 @@ interface IndexProps {
 }
 
 class Application extends React.Component<IndexProps> {
-  implementShortCuts = e => {
+  implementShortCuts = async e => {
     const mainWindow = remote.getCurrentWindow();
 
     if (e.keyCode == 82 && e.ctrlKey) {
@@ -38,6 +43,12 @@ class Application extends React.Component<IndexProps> {
         mainWindow.webContents.closeDevTools();
       } else {
         mainWindow.webContents.openDevTools();
+      }
+    } else if (e.keyCode == 74 && e.ctrlKey && e.shiftKey) {
+      if ((await ipcRenderer.invoke("getDevToolsContentId")) == null) {
+        ipcRenderer.invoke("openDevTools");
+      } else {
+        ipcRenderer.invoke("closeDevTools");
       }
     }
   };
@@ -86,6 +97,7 @@ class Application extends React.Component<IndexProps> {
                 render={props => (
                   <App
                     {...props}
+                    showPlanFunction={setShowPlanFunction}
                     logoutFunction={setLogoutFunction}
                     upgradeErrorHandlerSetter={setUpgradeErrorHandler}
                   />

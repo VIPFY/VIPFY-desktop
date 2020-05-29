@@ -16,13 +16,18 @@ import config from "../configurationManager";
 import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
 
+interface MemoryObject {
+  __typename: string;
+  [someProp: string]: any;
+}
+
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
 // eslint-disable-next-line
 const secure = config.backendSSL ? "s" : "";
 
 const cache = new InMemoryCache({
-  dataIdFromObject: (object) => {
+  dataIdFromObject: (object: MemoryObject) => {
     switch (object.__typename) {
       case "AppUsage":
         if (object.app && object.app.id !== undefined) {
@@ -122,26 +127,26 @@ const cache = new InMemoryCache({
   cacheRedirects: {
     Query: {
       fetchPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid }),
-    },
-  },
+        getCacheKey({ __typename: "User", id: args.userid })
+    }
+  }
 });
 
 const uploadLink = createUploadLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
-  credentials: "include",
+  credentials: "include"
 });
 
 const batchLink = new BatchHttpLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   credentials: "same-origin",
-  batchMax: 100,
+  batchMax: 100
 });
 
-const httpLink = split((operation) => operation.getContext().hasUpload, uploadLink, batchLink);
+const httpLink = split(operation => operation.getContext().hasUpload, uploadLink, batchLink);
 
 const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward!(operation).map((response) => {
+  return forward!(operation).map(response => {
     dismissHeaderNotification("network", true);
     return response;
   });
@@ -155,7 +160,7 @@ if (!store.has("deviceId")) {
 const deviceId = store.get("deviceId", "");
 
 const middlewareLink = setContext(() => ({
-  headers: { "X-USER-HOST": os.hostname(), "X-DEVICE": deviceId },
+  headers: { "X-USER-HOST": os.hostname(), "X-DEVICE": deviceId }
 }));
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
@@ -164,13 +169,17 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     connectionParams: () => ({
-      token: localStorage.getItem("token"),
-    }),
-  },
+      token: localStorage.getItem("token")
+    })
+  }
 });
 
-// We pass our logout function here to log the User out in case of Auth Errors
+// Declaring of Functions which will get logic on Mount. Otherwise an Error occurs.
 let logout = () => {
+  return;
+};
+
+let showPlanModal = _data => {
   return;
 };
 
@@ -186,20 +195,15 @@ let dismissHeaderNotification = (_a, _b) => {
   return;
 };
 
-export const setLogoutFunction = (logoutFunc) => {
+// Setting the declared Functions logic.
+export const setLogoutFunction = logoutFunc => {
   logout = logoutFunc;
   window.logout = logoutFunc;
 };
-
-export const setUpgradeErrorHandler = (handlerFunc) => {
-  handleUpgradeError = handlerFunc;
-};
-
-export const setHeaderNotification = (addFunction) => {
-  addHeaderNotification = addFunction;
-};
-
-export const setDismissHeaderNotification = (removeFunction) => {
+export const setShowPlanFunction = showPlanFunc => (showPlanModal = showPlanFunc);
+export const setUpgradeErrorHandler = handlerFunc => (handleUpgradeError = handlerFunc);
+export const setHeaderNotification = addFunction => (addHeaderNotification = addFunction);
+export const setDismissHeaderNotification = removeFunction => {
   dismissHeaderNotification = removeFunction;
 };
 
@@ -212,6 +216,8 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         return logger.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
+      } else if (data && data.code == 402) {
+        return showPlanModal(data.expiredPlan);
       } else if (data && data.code == 426) {
         handleUpgradeError();
       }
@@ -225,7 +231,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (networkError) {
     addHeaderNotification("Network Problem", {
       type: "error",
-      key: "network",
+      key: "network"
     });
     logger.warn(`[Network error]: ${networkError}`);
   }
@@ -237,9 +243,9 @@ const retryLink = new RetryLink({
     retryIf: (error, operation) => {
       console.log("GQL retry", inspect(error), operation);
       return !!error && error.name !== "ServerError" && !("mutation" in operation);
-    },
+    }
   },
-  delay: { initial: 1000 },
+  delay: { initial: 1000 }
 });
 
 // Concatenate the created links together
@@ -263,5 +269,5 @@ export default new ApolloClient({
   link,
   cache,
   typeDefs,
-  resolvers,
+  resolvers
 });

@@ -8,7 +8,7 @@ import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, refetchQueries, getMyUnitId } from "./common/functions";
+import { AppContext, getMyUnitId } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
@@ -21,13 +21,14 @@ import { resetLoggingContext } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
-import { hashPassword, encryptLicence } from "./common/crypto";
+import { hashPassword } from "./common/crypto";
 import { remote } from "electron";
 const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
 import { WorkAround } from "./interfaces";
+import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
   mutation onEndImpersonation($token: String!) {
@@ -39,13 +40,13 @@ interface AppProps {
   client: ApolloClient<InMemoryCache>;
   history: any;
   logoutFunction: Function;
+  showPlanFunction: Function;
   upgradeErrorHandlerSetter: Function;
   me: any;
   moveTo: Function;
   relogMeIn: Function;
   logMeIn: Function;
   logMeOut: Function;
-  setName: Function;
   signIn: any;
   signUp: any;
   signOut: Function;
@@ -74,6 +75,8 @@ interface AppState {
   twofactor: string | null;
   unitid: string | null;
   usedLicenceIDs: string[];
+  showPlanModal: boolean;
+  expiredPlan?: Expired_Plan;
 }
 
 const INITIAL_POPUP = {
@@ -95,7 +98,9 @@ const INITIAL_STATE = {
   reshow: null,
   twofactor: null,
   unitid: null,
-  usedLicenceIDs: []
+  usedLicenceIDs: [],
+  showPlanModal: false,
+  expiredPlan: null
 };
 
 const SAVE_COOKIES = gql`
@@ -111,6 +116,7 @@ class App extends React.Component<AppProps, AppState> {
 
   async componentDidMount() {
     this.props.logoutFunction(this.logMeOut);
+    this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
     // session.defaultSession.cookies.get({}, (error, cookies) => {
     //   if (error) {
@@ -147,11 +153,6 @@ class App extends React.Component<AppProps, AppState> {
       const store = new Store();
       store.delete("setupkey");
     }
-  };
-
-  setName = async () => {
-    // legacy function, call refetchQueries directly instead
-    await refetchQueries(this.props.client, ["me"]);
   };
 
   renderPopup = (data: PopUp) => {
@@ -283,7 +284,7 @@ class App extends React.Component<AppProps, AppState> {
               try {
                 await session.fromPartition(`service-${c.key}`, { cache: true }).cookies.set(e);
               } catch (err) {
-                console.log("ERRPOR", err, e);
+                console.log("ERROR", err, e);
               }
             });
           });
@@ -310,6 +311,10 @@ class App extends React.Component<AppProps, AppState> {
 
       return filterError(err);
     }
+  };
+
+  showPlanModal = expiredPlan => {
+    this.setState({ showPlanModal: true, expiredPlan });
   };
 
   moveTo = (path: string) => {
@@ -376,10 +381,10 @@ class App extends React.Component<AppProps, AppState> {
                   return (
                     <PostLogin
                       sidebarloaded={this.sidebarloaded}
-                      setName={this.setName}
                       logMeOut={this.logMeOut}
                       showPopup={data => this.renderPopup(data)}
                       moveTo={this.moveTo}
+                      expiredPlan={this.state.expiredPlan}
                       {...data.me}
                       employees={data.me.company.employees}
                       profilepicture={data.me.profilepicture}
@@ -465,14 +470,12 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     const { placeid, popup } = this.state;
-
     return (
       <AppContext.Provider
         value={{
           showPopup: (data: PopUp) => this.renderPopup(data),
           placeid,
           logOut: this.logMeOut,
-          renderTutorial: e => this.renderTutorial(e),
           setrenderElements: e => this.setrenderElements(e),
           addRenderElement: e => this.addRenderElement(e),
           addRenderAction: e => this.addRenderAction(e),
@@ -493,6 +496,7 @@ class App extends React.Component<AppProps, AppState> {
             />
           )}
         </HeaderNotificationProvider>
+        <DevToolsToolBar />
       </AppContext.Provider>
     );
   }

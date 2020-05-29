@@ -26,6 +26,7 @@
 @import "./support.scss";
 @import "./headerNotifications.scss";
 @import "./tutorials.scss";
+@import "./vipfyPlanPopup.scss";
 @import "./workspace.scss";
 @import "./macosx";
 @import "./error";
@@ -125,7 +126,16 @@ li {
 #App {
   color: #253647; //#333 durch #253647 überall ersetzen
   font-family: "Roboto", sans-serif;
-  width: 100%;
+  // background-color: #f5f5f5;
+  background-color: white;
+  height: calc(100vh - 32px);
+  margin-top: 32px;
+}
+
+#DevTools {
+  color: #253647; //#333 durch #253647 überall ersetzen
+  font-family: "Roboto", sans-serif;
+  width: 0;
   // background-color: #f5f5f5;
   background-color: white;
   height: calc(100vh - 32px);
@@ -2837,4 +2847,43 @@ progress[value] {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.devtoolbar {
+  white-space: nowrap;
+  .smalltab {
+    width: 128px;
+    height: 26px;
+    line-height: 26px;
+    display: inline-block;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-right: 1px solid #0000001c;
+    border-bottom: 1px solid #0000001c;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+    &.active {
+      border-bottom: 2px solid #30475d;
+    }
+  }
+}
+
+#DevToolToolBar {
+  z-index: npm;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 32px;
+  height: 32px;
+  width: 600px;
+  background: lightgrey;
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
 }

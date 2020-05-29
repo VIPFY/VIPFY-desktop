@@ -9,6 +9,7 @@ import { FETCH_CARDS } from "../../queries/billing";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import CreditCardSelector from "./CreditCardSelector";
+import { WorkAround } from "../../interfaces";
 
 const CHANGE_DEFAULT_METHOD = gql`
   mutation onChangeDefaultMethod($card: String!) {
@@ -36,7 +37,7 @@ export default (props: Props) => {
   const [multiple, setMultiple] = React.useState(false);
 
   return (
-    <Query query={FETCH_CARDS}>
+    <Query<WorkAround, WorkAround> query={FETCH_CARDS}>
       {({ data, loading, error }) => {
         if (loading) {
           return <LoadingDiv />;
@@ -131,7 +132,7 @@ export default (props: Props) => {
             )}
 
             {showCardChange && (
-              <Mutation mutation={CHANGE_DEFAULT_METHOD}>
+              <Mutation<WorkAround, WorkAround> mutation={CHANGE_DEFAULT_METHOD}>
                 {(changeMainCard, { loading: l2, error: e2 }) => (
                   <PopupBase close={() => setShowChange(false)} small={true}>
                     <h1>Set Active Card</h1>

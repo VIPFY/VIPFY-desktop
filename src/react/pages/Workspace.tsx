@@ -42,23 +42,28 @@ interface Props {
   employees: User[];
 }
 
-// ISO-8601, Europe
-moment.updateLocale("en", {
-  week: {
-    dow: 1, // First day of week is Monday
-    doy: 4 // First week of year must contain 4 January (7 + 1 - 4)
-  }
-});
-const nextWeekMonday = moment().add(1, "week").startOf("week");
-
 const Workspace = (props: Props) => {
-  const [day, setDay] = React.useState(0);
+  const [day, setDay] = React.useState(1);
   const [seats, updateSeats] = React.useState(props.currentWeek);
 
   const renderTakenSeat = userID => (
     <React.Fragment key={userID}>
       <input type="radio" id={userID} name="seat" disabled />
-      <label htmlFor={userID}>
+      <label
+        htmlFor={userID}
+        onClick={() => {
+          if (userID == props.myID) {
+            updateSeats(oldState => {
+              Object.keys(oldState[getWeekDay(day)]).forEach(d => {
+                if (oldState[getWeekDay(day)][d] == props.myID) {
+                  oldState[getWeekDay(day)][d] = "delete";
+                }
+              });
+
+              return { ...oldState };
+            });
+          }
+        }}>
         <PrintEmployeeSquare employee={props.employees.find(({ id }) => id == userID)} />
       </label>
     </React.Fragment>
@@ -69,7 +74,7 @@ const Workspace = (props: Props) => {
   const renderOpenSeat = id => {
     const seatTaken = seats[getWeekDay(day)][id];
 
-    if (seatTaken) {
+    if (seatTaken && seatTaken != "delete") {
       return renderTakenSeat(seatTaken);
     } else {
       return (
@@ -103,19 +108,20 @@ const Workspace = (props: Props) => {
     <section className="covid">
       <h1>Please select a seat</h1>
       <div className="date-selector">
-        <span>{`From ${nextWeekMonday.format("LL")} to ${moment()
-          .add(1, "week")
+        <span>{`From ${moment().startOf("week").add(1, "days").format("LL")} to ${moment()
           .endOf("week")
-          .subtract(2, "days")
+          .subtract(1, "days")
           .format("LL")}`}</span>
         <ul>
           {[...new Array(5)].map((_i, key) => (
             <li
               key={key}
-              className={key == day ? "active-day" : ""}
+              className={key + 1 == day ? "active-day" : ""}
               role="button"
-              onClick={() => setDay(key)}>
-              {moment().weekday(key).format("dddd")}
+              onClick={() => setDay(key + 1)}>
+              {moment()
+                .weekday(key + 1)
+                .format("dddd")}
             </li>
           ))}
         </ul>
@@ -127,40 +133,46 @@ const Workspace = (props: Props) => {
         {(mutate, { data, loading, error }) => (
           <React.Fragment>
             <form
+              id="offices"
               onSubmit={e => {
                 e.preventDefault();
-
                 const reserve = Object.keys(seats).reduce((acc, cV) => {
-                  const data = Object.keys(seats[cV]).find(index => seats[cV][index] == props.myID);
-                  acc[cV] = data || null;
+                  const data = Object.keys(seats[cV]).find(index => {
+                    if (seats[cV][index] == "delete" || seats[cV][index] == props.myID) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  });
+
+                  if (seats[cV][data] && seats[cV][data] == "delete") {
+                    acc[cV] = "delete";
+                  } else {
+                    acc[cV] = data || null;
+                  }
 
                   return acc;
                 }, {});
 
                 mutate({ variables: { seats: reserve } });
               }}
-              id="offices"
               onChange={handleChange}>
               <div id="office-1">
-                <div className="table">
-                  {renderTakenSeat("e72a945f-b29d-445b-ab68-d75d1070bdb6")}
-                  {renderOpenSeat(1)}
-                </div>
+                <div className="table">{renderOpenSeat(1)}</div>
 
-                <div className="table">{renderOpenSeat(2)}</div>
+                <div className="table">
+                  {renderOpenSeat(2)}
+                  {renderTakenSeat("e72a945f-b29d-445b-ab68-d75d1070bdb6")}
+                </div>
 
                 <div className="table">
                   {renderOpenSeat(3)}
-                  {renderTakenSeat("98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5")}
                   {renderOpenSeat(4)}
                 </div>
 
                 <div className="table">
-                  {[
-                    "f876804e-efd0-48b4-a5b2-807cbf66315f",
-                    "96d65748-7d36-459a-97d0-7f52a7a4bbf0",
-                    "91bd25cb-65cc-4dca-b0c8-285dbf5919f3"
-                  ].map(userID => renderTakenSeat(userID))}
+                  {renderTakenSeat("f876804e-efd0-48b4-a5b2-807cbf66315f")}
+                  {renderTakenSeat("91bd25cb-65cc-4dca-b0c8-285dbf5919f3")}
                 </div>
               </div>
 
@@ -168,23 +180,24 @@ const Workspace = (props: Props) => {
                 <div className="table">
                   {renderOpenSeat(5)}
                   {renderOpenSeat(6)}
-                  {renderTakenSeat("b65a0528-59b1-4137-887f-faf3d6a07fd7")}
                 </div>
               </div>
 
-              <ErrorComp error={error} />
-              {data && (
-                <div className="success">
-                  Your reservation was successful <i className="fal fa-thumbs-up" />
-                </div>
-              )}
+              <div className="network">
+                <div className="blind-users">Click on submit to finalize your reservation</div>
+                <ErrorComp error={error} />
+                {data && (
+                  <div className="success">
+                    Your reservation was successful <i className="fal fa-thumbs-up" />
+                  </div>
+                )}
+                {loading && <LoadingDiv style={{ maxHeight: "200px" }} />}
+              </div>
 
               <div id="office-3">
                 <div className="table">
-                  {renderOpenSeat(7)}
-                  <input disabled />
-                  <label style={{ visibility: "hidden" }} />
-                  {renderOpenSeat(8)}
+                  {renderTakenSeat("96d65748-7d36-459a-97d0-7f52a7a4bbf0")}
+                  {renderTakenSeat("98cdb502-51fc-4c0d-a5c7-ee274b6bb7b5")}
                 </div>
               </div>
             </form>
