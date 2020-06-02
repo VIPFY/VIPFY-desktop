@@ -80,15 +80,28 @@ async function uploadResultFile() {
   downloadLink = await objectStorage.getDownloadUrl(fileName, S3_BUCKET_NAME);
 }
 
-// it was agreed that only the tests with correct login credentials or a
-// pre-existing session are critical at the moment. the tests where an
-// error is expected upon entering wrong credentials aren't taken into
-// account here. if the order of the tests gets changed, this
-// function needs to be changed accordingly.
+/**
+ * Evaluates if a site should overall be regarded as successfully tested.
+ * This is the case when
+ * a) it couldn't be tested at all because of missing data
+ * b) it passed the tests with correct login credentials or a pre-existing
+ * session. Only those tests are considered critical. The tests where an
+ * error is expected upon entering wrong credentials aren't taken into account.
+ * If the order of the tests gets changed, this function needs to be changed, too.
+ */
 function importantTestsPassed(site) {
+  if (!isTestable(site)) {
+    return true;
+  }
+
   return (
     site.testResults &&
     (site.testResults[0].passed || site.testResults[1].passed) &&
     site.testResults[2].passed
   );
+}
+
+/** Checks whether all required data is available in a site for it to be tested */
+function isTestable(site) {
+  return site.url && site.email && site.password;
 }
