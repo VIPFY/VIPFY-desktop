@@ -12,7 +12,9 @@ import { tests } from "./tests";
 const { session, dialog } = remote;
 const RESULTS_FILE_PATH = "ssotest.json";
 
-interface Props {}
+interface Props {
+  dbApps?: [];
+}
 
 interface State {
   siteIndexUnderTest: number | null;
@@ -22,12 +24,35 @@ interface State {
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
-  state = {
-    siteIndexUnderTest: -1,
-    runningInBatchMode: false,
-    sites,
-    takeScreenshots: true
-  };
+  constructor(props) {
+    super(props);
+
+    const sitesWithOptions = this.mapDbAppOptionsToSites(props);
+
+    this.state = {
+      sites: sitesWithOptions,
+      siteIndexUnderTest: -1,
+      runningInBatchMode: false,
+      takeScreenshots: true
+    };
+  }
+
+  /** Adds the options found in the database's apps to the corresponding sites */
+  mapDbAppOptionsToSites(props) {
+    if (!props.dbApps) {
+      return sites;
+    }
+
+    return sites.map(site => {
+      const dbApp = props.dbApps.find(app => app.name.toUpperCase() === site.app.toUpperCase());
+
+      if (dbApp) {
+        site.options = dbApp.options;
+      }
+
+      return site;
+    });
+  }
 
   componentDidUpdate() {
     fs.writeFileSync(RESULTS_FILE_PATH, JSON.stringify(this.state.sites));
@@ -151,6 +176,13 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 setResult={(testResults: TestResult[], allTestsFinished: boolean) =>
                   this.handleResult(siteIndexUnderTest, testResults, allTestsFinished)
                 }
+                noUrlCheck={site.options && site.options.noUrlCheck}
+                speed={site.options ? site.options.loginspeed : null}
+                deleteCookies={site.options && site.options.deleteCookies}
+                execute={site.options ? site.options.execute : null}
+                noError={site.options && site.options.noError}
+                individualShow={site.options ? site.options.individualShow : ""}
+                individualNotShow={site.options ? site.options.individualNotShow : ""}
               />
             </td>
           </tr>

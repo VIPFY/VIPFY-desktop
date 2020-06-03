@@ -26,6 +26,7 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { remote } from "electron";
 const { session } = remote;
 import { version } from "../../package.json";
+import UniversalLoginTestFetcher from "./components/admin/UniversalLoginTest/UniversalLoginTestFetcher";
 import UniversalLoginTest from "./components/admin/UniversalLoginTest/UniversalLoginTest";
 
 interface IndexProps {
@@ -90,7 +91,15 @@ class Application extends React.Component<IndexProps> {
             <Switch>
               <Route exact path="/upgrade-error" component={UpgradeError} />
               {process.env.REACT_APP_TESTING && (
-                <Route exact path="/universal-login-test" component={UniversalLoginTest} />
+                <Route
+                  exact
+                  path="/universal-login-test"
+                  component={
+                    process.env.REACT_APP_TEST_SSO_WITH_OPTIONS
+                      ? UniversalLoginTestFetcher
+                      : UniversalLoginTest
+                  }
+                />
               )}
               <Route
                 path="/"

@@ -13,6 +13,8 @@ const RESULT_FILE_ENCODING = "utf8";
 const S3_BUCKET_NAME = "vipfy-ssotests";
 
 const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const DB_QUERY_SECONDS = 2 * MINUTE;
 const BATCH_RUN_SECONDS = sites.length * tests.length * 15 * SECOND;
 
 let sitesPassedImportantTests = false;
@@ -20,7 +22,7 @@ let statistics;
 let downloadLink;
 
 describe("SSO Execution", function () {
-  this.timeout(hooks.APP_LAUNCH_SECONDS + BATCH_RUN_SECONDS);
+  this.timeout(hooks.APP_LAUNCH_SECONDS + DB_QUERY_SECONDS + BATCH_RUN_SECONDS);
 
   before(function (done) {
     fs.existsSync(RESULT_FILE_PATH) && fs.unlinkSync(RESULT_FILE_PATH);
@@ -35,6 +37,10 @@ describe("SSO Execution", function () {
     await app.client
       .waitUntilWindowLoaded()
       .url(SsoTestPage.url) // go to SSO test page
+      .waitForVisible(
+        SsoTestPage.startBatchRunIcon,
+        process.env.REACT_APP_TEST_SSO_WITH_OPTIONS ? DB_QUERY_SECONDS : 0
+      )
       // hit button to start a batch run (this replaces the start btn with a pause btn)
       .click(SsoTestPage.startBatchRunIcon)
       // while the sso logins are being executed one after the other, wait for the start button to

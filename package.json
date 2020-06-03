@@ -19,7 +19,8 @@
     "test": "env REACT_APP_TESTING=true TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha",
     "test-slow": "npm test -- -fgrep '@slow'",
     "test-fast": "npm run test-slow -- --invert",
-    "test-sso": "npm test -- -fgrep 'SSO'"
+    "test-sso": "npm test -- -fgrep 'SSO'",
+    "test-sso-with-options": "env REACT_APP_TEST_SSO_WITH_OPTIONS=true npm run test-sso"
   },
   "keywords": [],
   "author": "Vipfy GmbH",
