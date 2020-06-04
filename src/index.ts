@@ -230,8 +230,7 @@ const createWindow = async () => {
     try {
       await mainWindow.webContents.executeJavaScript("window.logout()");
       await mainWindow.webContents.executeJavaScript("localStorage.clear()");
-      mainWindow.webContents.session.clearStorageData();
-      session.fromPartition("services").clearStorageData();
+      await mainWindow.webContents.session.clearStorageData();
     } catch (err) {
       logger.error(err);
     }
@@ -275,6 +274,9 @@ app.on("ready", createWindow);
 
 // Quit when all windows are closed.
 app.on("window-all-closed", async () => {
+  await session.defaultSession.clearStorageData({});
+  await session.fromPartition("services").clearStorageData();
+
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
