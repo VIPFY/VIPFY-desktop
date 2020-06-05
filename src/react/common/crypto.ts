@@ -19,7 +19,7 @@ export async function generatePersonalKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: null,
+    encryptedby: null
   };
 }
 
@@ -49,7 +49,7 @@ export async function generateAdminKeypair(
   return {
     privatekey: encPrivateKey.toString("hex"),
     publickey: publicKey.toString("hex"),
-    encryptedby: encryptingPublicKey.toString("hex"),
+    encryptedby: encryptingPublicKey.toString("hex")
   };
 }
 
@@ -78,9 +78,9 @@ export async function hashPassword(
       }
     `,
     variables: { email },
-    fetchPolicy: "network-only",
+    fetchPolicy: "network-only"
   });
-  console.log(pwParams);
+
   if (salt) {
     pwParams.data.fetchPwParams.salt = salt;
   }
@@ -102,7 +102,6 @@ export async function hashPasswordWithParams(
   // somewhat reasonable
   const salt = Buffer.from(params.salt, "hex");
   if (salt.length !== sodium.CRYPTO_PWHASH_SALTBYTES) {
-    console.log("salt", salt, salt.length);
     throw new Error(
       `Invalid salt length, expected ${sodium.CRYPTO_PWHASH_SALTBYTES}  but got ${salt.length}`
     );
@@ -120,12 +119,10 @@ export async function hashPasswordWithParams(
   ) {
     throw new Error("Invalid password hash mem");
   }
-  console.log(`Hashing password with ${ops} ops and ${mem} bytes of RAM`);
 
   // hash password using Argon2 (NaCl's default). This prevents
   // dictionary attacks and stretches the password
   const pw = Buffer.from(password);
-  //const masterkey = Buffer.alloc(sodium.CRYPTO_KDF_KEYBYTES); //256 bits
   const masterkey = await sodium.crypto_pwhash(
     32,
     pw,

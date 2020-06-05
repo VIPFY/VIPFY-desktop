@@ -3,11 +3,9 @@ import { PureComponent } from "react";
 import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
-//import lzma from "lzma";
 const screen = require("electron").remote.screen;
 const browserWindow = require("electron").remote.BrowserWindow;
 const lzma = require("lzma/src/lzma_worker.js").LZMA_WORKER; // workaround for https://github.com/LZMA-JS/LZMA-JS/issues/35
-// const HID = require("node-hid");
 
 interface Props {
   userid: string;
@@ -119,36 +117,6 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     this.window = browserWindow.getAllWindows()[0];
     this.logMousePos();
     global.addClickEvent = this.addEvent.bind(this);
-
-    /*for (let i = 0; i < 8721; i++) {
-      w.hookWindowMessage(i, (x, y, z) =>
-        console.log("WM", i, x, y, z, screen.getCursorScreenPoint(), performance.now())
-      );
-    }*/
-    // const devices = HID.devices();
-    // console.log(inspect(devices));
-    // console.log(
-    //   inspect(
-    //     unique(
-    //       devices
-    //         .filter(d => mice.some(m => d.usagePage == m[0] && d.usage == m[1]))
-    //         .map(d => ({
-    //           vendor: d.vendorId,
-    //           product: d.productId,
-    //           usagePage: d.usagePage,
-    //           usage: d.usage,
-    //           release: d.release
-    //         }))
-    //     )
-    //   )
-    // );
-    /*const device = new HID.HID(0x046d, 0xc52b);
-    if (device) {
-      //console.log(inspect(device.getFeatureReport()));
-      device.on("data", function(data) {
-        console.log(data);
-      });
-    }*/
   }
 
   componentWillUnmount() {
@@ -169,9 +137,8 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       this.removeEventListeners();
     }
     this.eventListeners.push({ event: "click", function: this.onClick.bind(this) });
-    // this.eventListeners.push({ event: "mousemove", function: this.onMouseMove.bind(this) });
+
     this.eventListeners.forEach(listener => {
-      console.log("adding event listener", listener);
       document.addEventListener(listener.event, listener.function);
     });
   }
@@ -228,8 +195,6 @@ class ClickTrackerInner extends PureComponent<Props, State> {
   relativeProps = ["time", "mouseX", "mouseY"];
 
   addEvent(e: Event) {
-    //console.log(inspect(e));
-
     let relative = true;
     for (let prop of this.relativeProps) {
       if (e[prop] !== undefined && this.previousEvent[prop] === undefined) {
@@ -289,7 +254,6 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       } catch (err) {
         console.error("error uploading usage data", err);
       }
-      console.log("sent events", result.length);
     });
   }
 
@@ -313,7 +277,7 @@ function ClickTracker(props: { client }) {
           }
         }
       `}>
-      {({ loading, error, data }) => {
+      {({ loading, error = null, data }) => {
         if (loading) {
           return null;
         }
