@@ -370,7 +370,7 @@ export async function decryptLicenceKey(client, licence) {
 
     for (const candidate of candidates) {
       try {
-        const d = await client.query({
+        const keyIDs = await client.query({
           query: gql`
             query onFetchKeys($publickey: ID!) {
               fetchKeys(publickey: $publickey) {
@@ -381,15 +381,15 @@ export async function decryptLicenceKey(client, licence) {
           variables: { publickey: candidate.key }
         });
 
-        if (d.error) {
-          console.error(d.error);
+        if (keyIDs.error) {
+          console.error(keyIDs.error);
           throw new Error("Can't fetch key");
         }
 
         let found = false;
-        for await (const k of d.data.fetchKeys) {
+        for await (const keyID of keyIDs.data.fetchKeys) {
           try {
-            const d = await client.query({
+            const keyPair = await client.query({
               query: gql`
                 query onFetchKey($id: ID!) {
                   fetchKey(id: $id) {
@@ -400,15 +400,15 @@ export async function decryptLicenceKey(client, licence) {
                   }
                 }
               `,
-              variables: { id: k.id }
+              variables: { id: keyID.id }
             });
 
             key = JSON.parse(
               (
                 await decryptLicence(
                   Buffer.from(candidate.data, "base64"),
-                  Buffer.from(d.data.fetchKey.publickey, "hex"),
-                  Buffer.from(d.data.fetchKey.privatekeyDecrypted, "hex")
+                  Buffer.from(keyPair.data.fetchKey.publickey, "hex"),
+                  Buffer.from(keyPair.data.fetchKey.privatekeyDecrypted, "hex")
                 )
               ).toString("utf8")
             );
