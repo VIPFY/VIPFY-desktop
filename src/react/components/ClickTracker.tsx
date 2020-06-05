@@ -187,9 +187,6 @@ class ClickTrackerInner extends PureComponent<Props, State> {
       isButton,
       time: e.timeStamp
     });
-    if (!isButton) {
-      console.debug("clicked nonbutton", t);
-    }
   }
 
   relativeProps = ["time", "mouseX", "mouseY"];
