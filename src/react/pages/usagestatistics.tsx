@@ -25,7 +25,7 @@ export default (props: Props) => {
       </div>
 
       <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_TOTAL_APP_USAGE}>
-        {({ data, loading, error }) => {
+        {({ data, loading, error = null }) => {
           if (loading) {
             return <div>Loading</div>;
           }
@@ -36,7 +36,6 @@ export default (props: Props) => {
 
           // Sort would mutate the array
           const usage = data.fetchTotalAppUsage;
-          console.log("LOG: usage", usage);
 
           if (usage.length < 1) {
             return null;
