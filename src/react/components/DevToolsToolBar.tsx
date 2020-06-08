@@ -35,7 +35,16 @@ const Tabs = (props: Props) => {
         <i className="fas fa-eye"></i>
       </button>
       {webviews
-        .filter(w => document.body.contains(w))
+        .filter(w => w.isVipfyFaked || document.body.contains(w))
+        .filter(w => {
+          // workaround in case dom-ready hasn't fired yet for webview
+          try {
+            w.getWebContentsId();
+            return true;
+          } catch {
+            return false;
+          }
+        })
         .map(w => (
           <button
             className={`naked-button smalltab ${w.getWebContentsId() == active ? "active" : ""}`}
