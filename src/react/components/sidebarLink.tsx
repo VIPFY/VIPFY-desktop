@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
 import Tooltip from "react-tooltip-lite";
-import { getBgImageApp } from "../common/images";
-import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import ServiceLogo from "./services/ServiceLogo";
 
 interface Props {
   disabled: boolean;
@@ -97,7 +96,15 @@ class SidebarLink extends React.Component<Props, State> {
   }
 
   render() {
-    const { licence, openInstances, sidebarOpen, active, setTeam } = this.props;
+    const {
+      licence,
+      openInstances,
+      sidebarOpen,
+      active,
+      disabled,
+      setTeam,
+      multipleOrbits
+    } = this.props;
 
     let cssClass = "sidebar-link service";
     let buttonClass = "naked-button serviceHolder";
@@ -111,7 +118,7 @@ class SidebarLink extends React.Component<Props, State> {
     if (active) {
       cssClass += " sidebar-active";
     }
-    if (this.props.openInstances[this.props.licence.id]) {
+    if (openInstances[licence.id]) {
       buttonClass += " selected";
     }
 
@@ -123,7 +130,7 @@ class SidebarLink extends React.Component<Props, State> {
         onMouseLeave={() => this.setState({ hover: false })}
         ref={el => (this.el = el)}>
         <button
-          disabled={this.props.disabled}
+          disabled={disabled}
           id={licence.id + "button"}
           type="button"
           onMouseDown={() => {
@@ -132,10 +139,9 @@ class SidebarLink extends React.Component<Props, State> {
           }}
           onMouseUp={() => {
             if (
-              this.props.openInstances &&
-              (!this.props.openInstances[licence.id] ||
-                (this.props.openInstances[licence.id] &&
-                  Object.keys(openInstances[licence.id]).length == 1))
+              openInstances &&
+              (!openInstances[licence.id] ||
+                (openInstances[licence.id] && Object.keys(openInstances[licence.id]).length == 1))
             ) {
               setTeam(licence.id);
             }
@@ -155,17 +161,9 @@ class SidebarLink extends React.Component<Props, State> {
             <div className="naked-button sidebarButton">
               <div className="service-hover">
                 <span className="white-background" />
-                <span
-                  className="service-logo-small"
-                  style={{
-                    backgroundImage:
-                      licence.boughtplanid.planid.appid.icon &&
-                      getBgImageApp(licence.boughtplanid.planid.appid.icon, 32)
-                  }}>
-                  {this.props.openInstances[this.props.licence.id] && (
-                    <i className="fa fa-circle active-app" />
-                  )}
-                  {this.props.multipleOrbits ? (
+                <ServiceLogo icon={licence.boughtplanid.planid.appid.icon}>
+                  {openInstances[licence.id] && <i className="fa fa-circle active-app" />}
+                  {multipleOrbits ? (
                     <span className="active-user">
                       <div
                         className="tiny-profile-pic"
@@ -176,7 +174,7 @@ class SidebarLink extends React.Component<Props, State> {
                   ) : (
                     ""
                   )}
-                </span>
+                </ServiceLogo>
               </div>
             </div>
           </Tooltip>
