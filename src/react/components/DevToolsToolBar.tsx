@@ -13,6 +13,12 @@ const Tabs = (props: Props) => {
   const [active, setActive] = React.useState(-1);
   useInterval(async () => {
     const w: any[] = Array.from(document.querySelectorAll("webview"));
+    w.push({
+      getWebContentsId: () => -1,
+      getTitle: () => "Global",
+      style: { outline: null },
+      isVipfyFaked: true
+    });
     w.sort((a, b) => a.getWebContentsId() - b.getWebContentsId());
     setWebviews(w);
     setActive(await ipcRenderer.invoke("getDevToolsContentId"));
