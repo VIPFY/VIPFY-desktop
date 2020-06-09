@@ -17,7 +17,7 @@ const ErrorPage = (props: Props) => (
     />
     <p>
       Please restart VIPFY. If the problem persists, please contact our support with details on the
-      exact steps that lead you to this page
+      exact steps that lead you to this page.
     </p>
 
     <UniversalButton
