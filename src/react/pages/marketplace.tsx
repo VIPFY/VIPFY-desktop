@@ -4,30 +4,22 @@ import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
 import CardDouble from "../components/marketplace/CardDouble";
 import { App } from "../interfaces";
+import { sortApps } from "../common/functions";
 
 class Marketplace extends React.Component<{}> {
-  sortApps(apps: App[]) {
-    apps.sort((a: App, b: App) => {
-      const nameA = a.name.toUpperCase();
-      const nameB = b.name.toUpperCase();
-
-      return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
-    });
-  }
-
-  renderApps(apps: App[]) {
-    this.sortApps(apps);
+  renderApps(shuffledApps: App[]) {
+    const sortedApps = sortApps(shuffledApps);
 
     return (
       <div className="marketplace">
-        {apps.length > 0 ? (
-          apps.map(app => <CardDouble app={app} />)
+        {sortedApps.length > 0 ? (
+          sortedApps.map(app => <CardDouble app={app} />)
         ) : (
           <div className="nothingHere">
-            <div className="h1">Nothing here :(</div>
+            <div className="h1">No apps available</div>
             <div className="h2">
-              That commonly means that you don't have enough rights or that VIPFY is not available
-              in your country.
+              This could mean that VIPFY isn't yet available in your country, or you don't have the
+              required permissions.
             </div>
           </div>
         )}

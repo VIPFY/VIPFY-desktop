@@ -1,8 +1,9 @@
 import * as React from "react";
+import { App } from "../../interfaces";
 import CardHeader from "./CardHeader";
 
 interface Props {
-  app: any;
+  app: App;
 }
 
 interface State {}
