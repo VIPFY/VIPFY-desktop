@@ -14,18 +14,13 @@
     "moduleResolution": "node",
     "target": "es2015",
     "jsx": "react",
-    "lib": ["dom","esnext","dom.iterable","scripthost"],
+    "lib": ["dom", "esnext", "dom.iterable", "scripthost"],
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": true
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
