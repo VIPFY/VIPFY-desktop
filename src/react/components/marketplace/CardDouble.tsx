@@ -4,6 +4,7 @@ import CardHeader from "./CardHeader";
 
 interface Props {
   app: App;
+  onClick: () => any;
 }
 
 interface State {}

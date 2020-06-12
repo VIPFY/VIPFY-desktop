@@ -7,7 +7,11 @@ import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 
-class Marketplace extends React.Component<{}> {
+interface Props {
+  history: any;
+}
+
+class Marketplace extends React.Component<Props> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -25,11 +29,13 @@ class Marketplace extends React.Component<{}> {
     return (
       <div className="marketplace">
         {sortedApps.map(app => (
-          <CardDouble app={app} />
+          <CardDouble app={app} key={app.id} onClick={() => this.openAppDetails(app.id)} />
         ))}
       </div>
     );
   }
+
+  openAppDetails = id => this.props.history.push(`/area/marketplace/${id}/`);
 
   render() {
     return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;
