@@ -4,21 +4,23 @@ import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
 import CardDouble from "../components/marketplace/CardDouble";
 import { App } from "../interfaces";
-import { sortApps, ErrorComp } from "../common/functions";
+import { sortApps } from "../common/functions";
+import ErrorPage from "./error";
 
 class Marketplace extends React.Component<{}> {
-  renderApps(shuffledApps: App[]) {
-    if (shuffledApps.length == 0) {
+  renderApps(apps: App[]) {
+    const marketplaceApps = apps.filter(app => app.options.marketplace);
+
+    if (marketplaceApps.length == 0) {
       return (
-        <ErrorComp
-          error={
-            "No apps available. Please check your permissions and VIPFY's availability in your country."
-          }
-        />
+        <ErrorPage>
+          No apps available. Please check your permissions and verify that VIPFY is available in
+          your country.
+        </ErrorPage>
       );
     }
 
-    const sortedApps = sortApps(shuffledApps);
+    const sortedApps = sortApps(marketplaceApps);
 
     return (
       <div className="marketplace">
