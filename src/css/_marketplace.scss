@@ -9,5 +9,13 @@
     background: #ccf2ff 0% 0% no-repeat padding-box;
     border-radius: 12px 0px;
     padding: 16px;
+
+    .rating {
+      font-size: 12px;
+
+      .fa-star {
+        color: #30475d;
+      }
+    }
   }
 }

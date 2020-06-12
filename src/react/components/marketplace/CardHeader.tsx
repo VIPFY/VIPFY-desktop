@@ -1,7 +1,7 @@
 import * as React from "react";
 import ServiceLogo from "../services/ServiceLogo";
-import app from "../../app";
 import { App } from "../../interfaces";
+import { showStars } from "../../common/functions";
 
 interface Props {
   app: App;
@@ -17,6 +17,7 @@ class CardHeader extends React.PureComponent<Props, State> {
       <div className="card-header">
         <ServiceLogo icon={app.icon} />
         {app.name}
+        <p className="rating">{showStars(4, 5)}</p>
       </div>
     );
   }

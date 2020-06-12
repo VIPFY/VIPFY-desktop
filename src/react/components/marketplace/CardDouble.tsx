@@ -24,6 +24,7 @@ class CardDouble extends React.PureComponent<Props, State> {
           }}>
           {!logo && <i className="fal fa-rocket" />}
         </div>
+
         <div className="caption">
           <h3>{name}</h3>
           <div className="appdiscripton">
