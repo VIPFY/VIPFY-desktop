@@ -1,7 +1,7 @@
 const { ipcRenderer } = require("electron");
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -12,7 +12,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -599,7 +599,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function(element) {
+  return function (element) {
     if (!element.hasAttributes()) {
       return false;
     }
@@ -628,9 +628,9 @@ function filterDom(includesAny, excludesAll) {
 }
 
 document.addEventListener("mousedown", onClick, true);
-(function() {
+(function () {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function(a, b, c) {
+  Element.prototype.addEventListener = function (a, b, c) {
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -639,12 +639,12 @@ document.addEventListener("mousedown", onClick, true);
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function(a) {
+  Element.prototype.getEventListeners = function (a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function(a) {
+  Element.prototype.clearEventListeners = function (a) {
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
       for (var x in this.getEventListeners()) this.clearEventListeners(x);
@@ -659,7 +659,7 @@ document.addEventListener("mousedown", onClick, true);
   };
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function(a, b, c) {
+  Element.prototype.removeEventListener = function (a, b, c) {
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
     if (!this.eventListenerList) this.eventListenerList = {};
@@ -736,10 +736,6 @@ function onClick(e) {
     isButton,
     time: e.timeStamp
   });
-
-  if (!isButton) {
-    console.debug("clicked nonbutton", t);
-  }
 }
 
 function verifyRecaptcha() {
