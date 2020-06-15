@@ -200,7 +200,6 @@ const createWindow = async () => {
     if (isDevMode) {
       await openDevTools(mainWindow.webContents.id);
       mainWindow.webContents.on("dom-ready", async e => {
-        console.log("dom-ready", mainWindow.webContents.isDevToolsOpened(), !!devtools);
         if (devtools) {
           await showDevToolsToolBar();
         }
