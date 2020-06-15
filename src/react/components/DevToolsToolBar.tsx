@@ -13,7 +13,6 @@ const Tabs = (props: Props) => {
   const [active, setActive] = React.useState(-1);
   useInterval(async () => {
     const w: any[] = Array.from(document.querySelectorAll("webview"));
-    w.push({ getWebContentsId: () => -1, getTitle: () => "Global", style: { outline: null } });
     w.sort((a, b) => a.getWebContentsId() - b.getWebContentsId());
     setWebviews(w);
     setActive(await ipcRenderer.invoke("getDevToolsContentId"));
@@ -35,20 +34,22 @@ const Tabs = (props: Props) => {
         }>
         <i className="fas fa-eye"></i>
       </button>
-      {webviews.map(w => (
-        <button
-          className={`naked-button smalltab ${w.getWebContentsId() == active ? "active" : ""}`}
-          onMouseEnter={() => (w.style.outline = "solid pink 3px")}
-          onMouseLeave={() => (w.style.outline = "unset")}
-          title={`${w.getWebContentsId()}: ${w.getTitle()}`}
-          onClick={() => {
-            const id = w.getWebContentsId();
-            setActive(id);
-            ipcRenderer.invoke("changeDevTools", id);
-          }}>
-          {w.getTitle()}
-        </button>
-      ))}
+      {webviews
+        .filter(w => document.body.contains(w))
+        .map(w => (
+          <button
+            className={`naked-button smalltab ${w.getWebContentsId() == active ? "active" : ""}`}
+            onMouseEnter={() => (w.style.outline = "solid pink 3px")}
+            onMouseLeave={() => (w.style.outline = "unset")}
+            title={`${w.getWebContentsId()}: ${w.getTitle()}`}
+            onClick={() => {
+              const id = w.getWebContentsId();
+              setActive(id);
+              ipcRenderer.invoke("changeDevTools", id);
+            }}>
+            {w.getTitle()}
+          </button>
+        ))}
     </div>
   );
 };
