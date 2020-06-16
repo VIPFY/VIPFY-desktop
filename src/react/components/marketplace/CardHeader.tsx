@@ -14,10 +14,17 @@ class CardHeader extends React.PureComponent<Props, State> {
     const app = this.props.app;
 
     return (
-      <div className="card-header">
-        <ServiceLogo icon={app.icon} />
-        {app.name}
-        <p className="rating">{showStars(4, 5)}</p>
+      <div className="header" style={{ backgroundColor: app.color || "#E9EEF4" }}>
+        <div className="item">
+          <ServiceLogo icon={app.icon} />
+        </div>
+        <div className="item">
+          <span>
+            {app.name}
+            <p className="rating">{showStars(4, 5)}</p>
+          </span>
+        </div>
+        <div className="item">bla</div>
       </div>
     );
   }

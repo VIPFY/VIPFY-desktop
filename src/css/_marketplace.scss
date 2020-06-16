@@ -3,12 +3,18 @@
   height: 256px;
   border: 1px solid #f4f5f7;
   border-radius: 12px;
+  overflow: hidden;
 
-  .card-header {
+  .header {
     height: 80px;
-    background: #ccf2ff 0% 0% no-repeat padding-box;
-    border-radius: 12px 0px;
+    background: 0% 0% no-repeat padding-box;
     padding: 16px;
+    font-size: 14px;
+
+    .item {
+      margin-right: 16px;
+      float: left;
+    }
 
     .rating {
       font-size: 12px;
