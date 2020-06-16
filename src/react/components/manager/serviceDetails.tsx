@@ -19,6 +19,8 @@ interface State {
   terminate: Boolean;
 }
 
+const TAG_STYLE = { marginLeft: "8px", textAlign: "center" };
+
 class ServiceDetails extends React.Component<Props, State> {
   state = {
     terminate: false
@@ -107,24 +109,33 @@ class ServiceDetails extends React.Component<Props, State> {
               {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
                 <Tag
                   tooltip="This account is shared between multiple users"
-                  className="sharedAccount"
-                  style={{ marginLeft: "8px", textAlign: "center" }}>
+                  style={{
+                    backgroundColor: "#253647",
+                    color: "white",
+                    ...TAG_STYLE
+                  }}>
                   Shared
                 </Tag>
               )}
               {e.tags && e.tags.includes("vacation") && (
                 <Tag
                   tooltip="This account is a vacation access"
-                  className="vacationAccount"
-                  style={{ marginLeft: "8px", textAlign: "center" }}>
+                  style={{
+                    backgroundColor: "#ffc15d",
+                    color: "#253647",
+                    ...TAG_STYLE
+                  }}>
                   Holiday
                 </Tag>
               )}
               {e.tags && e.tags.includes("teamlicence") && (
                 <Tag
                   tooltip="This account is assigned through a team"
-                  className="teamAccount"
-                  style={{ marginLeft: "8px", textAlign: "center" }}>
+                  style={{
+                    backgroundColor: "#9c13bc",
+                    color: "white",
+                    ...TAG_STYLE
+                  }}>
                   Team
                 </Tag>
               )}
