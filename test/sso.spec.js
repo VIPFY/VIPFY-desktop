@@ -30,6 +30,10 @@ describe("SSO Execution", function () {
   });
 
   it("should apply SSO execution to all apps in list @slow", async function () {
+    if (!sites || !sites.length) {
+      return;
+    }
+
     fs.existsSync(RESULT_FILE_PATH).should.be.false;
 
     const app = this.test.app;
@@ -52,19 +56,21 @@ describe("SSO Execution", function () {
     fs.existsSync(RESULT_FILE_PATH).should.be.true;
     await uploadResultFile();
 
-    const sites = JSON.parse(fs.readFileSync(RESULT_FILE_PATH, { encoding: RESULT_FILE_ENCODING }));
+    const results = JSON.parse(
+      fs.readFileSync(RESULT_FILE_PATH, { encoding: RESULT_FILE_ENCODING })
+    );
 
-    should.exist(sites);
-    sites.should.be.an("array");
+    should.exist(results);
+    results.should.be.an("array");
 
     // the results file should contain a result for each site
     app.client
       .elements(SsoTestPage.sitesTableRow)
       .should.eventually.have.property("length")
-      .and.equal(sites.length);
+      .and.equal(results.length);
 
     // the results file should show that each site passed the important tests
-    sitesPassedImportantTests = sites && sites.every(importantTestsPassed);
+    sitesPassedImportantTests = results.every(importantTestsPassed);
     sitesPassedImportantTests.should.be.true;
   });
 });
@@ -75,6 +81,14 @@ after(function (done) {
   const mailParams = { result, statistics, link };
 
   hooks.sendReportByMail(EMAIL_TEMPLATE_ID, mailParams, done);
+});
+
+afterEach(function (done) {
+  if (this.currentTest.state === "failed") {
+    console.error(statistics);
+  }
+
+  done();
 });
 
 /** Uploads the result file to object storage and sets the download link */
