@@ -38,14 +38,12 @@
     .headerNotificationButton {
       height: 32px;
       margin-left: 16px;
-      //border: 1px solid #253647;
       line-height: 32px;
       border-radius: 4px;
       padding: 0px 10px;
       transition: 200ms background-color, 200ms color;
       &:hover {
         background-color: rgba(255, 255, 255, 0.5);
-        //color: white;
       }
     }
   }
@@ -105,20 +103,6 @@
       border-radius: 4px;
       transition: background-color 200ms ease-in-out;
 
-      /*i:before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                background: #B17461;
-                z-index: -1;
-                -webkit-transform:scaleX(0);
-                    -ms-transform:scaleX(0);
-                        transform:scaleX(0);
-                -webkit-transition: -webkit-transform .5s;
-                        transition:         transform .5s;
-              }*/
-
       &:hover {
         background-color: #f5f7f9;
       }
@@ -131,11 +115,6 @@
       }
       &:active {
         background-color: #d3dae2;
-        /*i:before {
-                    -webkit-transform: scaleX(1);
-                        -ms-transform: scaleX(1);
-                            transform: scaleX(1);
-                  }*/
       }
     }
     .header {
