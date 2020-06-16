@@ -3,7 +3,8 @@ $domain-check-margin: 15px;
 @keyframes dropIn {
   from {
     transform: translateY(-27px);
-  } to {
+  }
+  to {
     transform: translateY(0);
     opacity: 1;
   }
@@ -95,7 +96,7 @@ $domain-check-margin: 15px;
       .info {
         color: #bbb;
       }
-      
+
       #domain-search-auth:focus + label,
       #domain-search-auth[value]:not([value=""]) + label,
       #domain-search-input:focus + label,
@@ -117,7 +118,7 @@ $domain-check-margin: 15px;
           font-size: 21px;
           transition: all 300ms ease-in-out;
 
-          &:hover  {
+          &:hover {
             color: $vipfy-primary-color;
             font-size: 25px;
           }
@@ -128,7 +129,7 @@ $domain-check-margin: 15px;
         color: $vipfy-primary-color !important;
         font-size: 25px !important;
       }
-   
+
       &:not(:first-child) {
         margin-top: 25px;
       }
@@ -172,7 +173,7 @@ $domain-check-margin: 15px;
       @include hide-overflowing-text;
       margin-left: 5px;
     }
-    
+
     span {
       &:first-child {
         margin-right: $domain-check-margin;
@@ -272,16 +273,16 @@ $domain-check-margin: 15px;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     background-color: $vipfy-primary-color;
     color: #fff;
-    
+
     li {
       padding: 10px 0 10px 5px;
       cursor: pointer;
       transition: all 300ms ease-in-out;
-      
+
       &:hover {
         background-color: darken($vipfy-primary-color, 10);
       }
-      
+
       &:not(:last-child) {
         border-right: 1px solid #fff;
       }
@@ -344,7 +345,7 @@ $domain-check-margin: 15px;
 
     &:nth-child(2),
     &:nth-child(5),
-    &:last-child  {
+    &:last-child {
       text-align: center;
     }
   }
@@ -382,7 +383,7 @@ $domain-check-margin: 15px;
   }
 }
 
-@media(max-width: 1080px) {
+@media (max-width: 1080px) {
   .domain-table {
     flex-direction: row;
   }

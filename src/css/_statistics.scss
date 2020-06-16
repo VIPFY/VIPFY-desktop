@@ -89,7 +89,7 @@
               background-size: contain;
               background-repeat: no-repeat;
               text-align: center;
-              background-color: #F5F5F5;
+              background-color: #f5f5f5;
             }
 
             span {
@@ -116,7 +116,7 @@
       .fa-minus {
         margin: 0 12px;
       }
-    
+
       .date-picker {
         width: 100px;
       }
@@ -163,7 +163,7 @@
       td {
         @include hide-overflowing-text;
         width: 160px;
-        
+
         &:first-child {
           span {
             margin-left: 10px;
@@ -215,8 +215,8 @@
   margin: 30px;
   display: grid;
   grid-template-areas:
-  "header-left header-right"
-  "statistics statistics";
+    "header-left header-right"
+    "statistics statistics";
 
   &-chart {
     display: grid;
@@ -241,7 +241,7 @@
     }
 
     span {
-      color: #1C29359A;
+      color: #1c29359a;
     }
   }
 

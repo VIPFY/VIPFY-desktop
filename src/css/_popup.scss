@@ -3,7 +3,6 @@ $modal-wh: 50%;
 
 #overlay {
   align-items: center;
-  //background-color: rgba(0, 0, 0, 0.8);
   background-color: rgba(37, 54, 71, 0.8);
   display: flex;
   height: calc(100vh - 32px);
@@ -13,17 +12,6 @@ $modal-wh: 50%;
   top: 32px;
   width: 100vw;
   z-index: $modal-z;
-  /*animation: lay-over 100ms ease-in;
-
-  @keyframes lay-over {
-    from {
-      transform: translateY(-40rem);
-    }
-
-    to {
-      transform: translateY(0);
-    }
-  }*/
 }
 
 #popup {
@@ -131,7 +119,6 @@ $modal-wh: 50%;
   width: 100%;
   height: 100%;
   display: flex;
-  //align-items: center;
   justify-content: center;
   justify-content: center;
   align-items: flex-start;
@@ -145,9 +132,6 @@ $modal-wh: 50%;
   border-radius: $vipfy_bigradius;
   position: relative;
   height: auto;
-  //transform: scale(0);
-  //margin-bottom: 50px;
-  //max-height: 80vh;
   overflow: auto;
   margin-top: 56px; //+32px == 88px
   margin-bottom: 88px;
@@ -156,12 +140,7 @@ $modal-wh: 50%;
 
 .closePopup {
   position: absolute;
-  //right: 5px;
-  //top: 5px;
-  //width: 30px;
-  //line-height: 30px;
   text-align: center;
-  //font-size: 15px;
   cursor: pointer;
   border-radius: $vipfy_smallradius;
   transition: background-color 200ms ease-in-out;
@@ -178,7 +157,6 @@ $modal-wh: 50%;
 }
 
 .contentPopup {
-  //margin: 40px;
   margin: 32px 48px 24px 48px;
   cursor: initial;
 }
@@ -206,7 +184,6 @@ $modal-wh: 50%;
     flex-flow: column;
     justify-content: space-between;
     align-items: center;
-    /*height: 341px;*/
 
     h3 {
       display: flex;
@@ -421,12 +398,10 @@ $modal-wh: 50%;
     top: -50%;
     left: -50%;
     &.loadComplete {
-      //background-color: $brand-success;
       box-shadow: 0px 0px 500px 500px inset $brand-success;
     }
 
     &.loadError {
-      //background-color: $brand-error;
       box-shadow: 0px 0px 500px 500px inset $brand-error;
     }
   }
@@ -458,8 +433,6 @@ $modal-wh: 50%;
     margin-bottom: 20%;
     border: 5px solid #eee;
     border-left-color: $check-color;
-    //border-left-width: 5px;
-    //box-shadow: 0px 0px 5px 0px #eee, #eee 0px 0px 5px 0px inset;
     animation: loader-spin 1.2s infinite linear;
     position: relative;
     display: inline-block;
@@ -510,9 +483,6 @@ $modal-wh: 50%;
     display: none;
 
     &.draw:after {
-      //animation-duration: 800ms;
-      //animation-timing-function: ease;
-      //animation-name: checkmark;
       transform: scaleX(-1) rotate(135deg);
     }
 
@@ -521,7 +491,6 @@ $modal-wh: 50%;
       height: 50px;
       width: 50px;
       transform-origin: left top;
-      //border-right: $check-thickness solid #eee;
       border-top: $check-thickness solid #eee;
       content: "";
       left: 37px;
@@ -530,9 +499,6 @@ $modal-wh: 50%;
     }
 
     &.draw:before {
-      //animation-duration: 800ms;
-      //animation-timing-function: ease;
-      //animation-name: checkmark;
       transform: scaleX(-1) rotate(45deg);
     }
 
@@ -541,7 +507,6 @@ $modal-wh: 50%;
       height: 50px;
       width: 50px;
       transform-origin: left top;
-      //border-right: $check-thickness solid #eee;
       border-bottom: $check-thickness solid #eee;
       content: "";
       left: 37px;
