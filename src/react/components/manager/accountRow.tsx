@@ -3,12 +3,12 @@ import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
 import ChangeAccount from "./universal/changeAccount";
 import ColumnTeams from "./universal/columns/columnTeams";
+import Tag from "../../common/Tag";
 
 interface Props {
   account: any;
   orbit: any;
   app: any;
-
   refetch: Function;
 }
 
@@ -16,13 +16,18 @@ interface State {
   change: Boolean;
 }
 
-const INITAL_STATE = {
+const INITIAL_STATE = {
   change: false
+};
+
+const TAG_STYLE = {
+  textAlign: "center",
+  lineHeight: "initial"
 };
 
 class AccountRow extends React.Component<Props, State> {
   state = {
-    ...INITAL_STATE,
+    ...INITIAL_STATE,
     alias: this.props.account ? this.props.account.alias : "",
     todate:
       this.props.account.endtime != 8640000000000000 && this.props.account.endtime != null
@@ -45,56 +50,52 @@ class AccountRow extends React.Component<Props, State> {
 
     if (activeAssignment.length == 0) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
+            color: "white",
             backgroundColor: "#c73544",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
+            ...TAG_STYLE
           }}>
           No Active Assignment
-        </span>
+        </Tag>
       );
     }
 
     if (e.options && e.options.private) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
             color: "white",
             backgroundColor: "#3E576E",
-            textAlign: "center",
-            lineHeight: "initial"
+            ...TAG_STYLE
           }}>
           Private
-        </span>
+        </Tag>
       );
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
+            color: "white",
             backgroundColor: "#20baa9",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
+            ...TAG_STYLE
           }}>
-          Starts in {moment(start - 0).toNow(true)}
-        </span>
+          {`Starts in ${moment(start - 0).toNow(true)}`}
+        </Tag>
       );
     }
 
     if (end) {
       return (
-        <span
-          className="infoTag"
-          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          Ends in {moment(end - 0).toNow(true)}
-        </span>
+        <Tag
+          style={{
+            backgroundColor: "#FFC15D",
+            ...TAG_STYLE
+          }}>
+          {`Ends in ${moment(end - 0).toNow(true)}`}
+        </Tag>
       );
     } else {
       return;

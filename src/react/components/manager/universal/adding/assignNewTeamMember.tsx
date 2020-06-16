@@ -12,6 +12,7 @@ import { fetchTeam, fetchDepartmentsData } from "../../../../queries/departments
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddEmployeePersonalData from "../../addEmployeePersonalData";
+import Tag from "../../../../common/Tag";
 
 interface Props {
   team: any;
@@ -251,8 +252,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                   position: "relative",
                   justifyContent: "center"
                 }}>
-                <span
-                  className="infoTag"
+                <Tag
                   style={{
                     backgroundColor: "rgb(199, 53, 68)",
                     textAlign: "center",
@@ -260,7 +260,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                     color: "white"
                   }}>
                   Employee is already in this team
-                </span>
+                </Tag>
               </div>
             ) : (
               <>

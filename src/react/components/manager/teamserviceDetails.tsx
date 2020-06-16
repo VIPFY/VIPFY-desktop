@@ -2,6 +2,7 @@ import * as React from "react";
 import moment from "moment";
 import RemoveTeamOrbit from "./removeTeamOrbit";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
+import Tag from "../../common/Tag";
 
 interface Props {
   service: any;
@@ -24,8 +25,7 @@ class TeamServiceDetails extends React.Component<Props, State> {
 
     if (e.pending) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
             backgroundColor: "#c73544",
             textAlign: "center",
@@ -33,35 +33,32 @@ class TeamServiceDetails extends React.Component<Props, State> {
             color: "white"
           }}>
           Integration pending
-        </span>
+        </Tag>
       );
     }
 
     if (moment(start).isAfter(moment.now())) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
             backgroundColor: "#20baa9",
             textAlign: "center",
             lineHeight: "initial",
             color: "white"
           }}>
-          Starts in {moment(start).toNow(true)}
-        </span>
+          {`Starts in ${moment(start).toNow(true)}`}
+        </Tag>
       );
     }
 
     if (end) {
       return (
-        <span
-          className="infoTag"
-          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          Ends in {moment(end).toNow(true)}
-        </span>
+        <Tag style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          {`Ends in ${moment(end).toNow(true)}`}
+        </Tag>
       );
     } else {
-      return <span className="infoTag">Active since {moment(start).fromNow(true)}</span>;
+      return <Tag>{`Active since ${moment(start).fromNow(true)}`}</Tag>;
     }
   }
 

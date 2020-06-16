@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment, { now } from "moment";
+import moment from "moment";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../../universalForms/universalTextInput";
 import UniversalCheckbox from "../../universalForms/universalCheckbox";
@@ -10,13 +10,13 @@ import ShowAndAddEmployee from "./showAndAddEmployee";
 import gql from "graphql-tag";
 import { graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
-import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
 import {
   createEncryptedLicenceKeyObject,
   reencryptLicenceKeyObject
 } from "../../../common/licences";
+import Tag from "../../../common/Tag";
 
 interface Props {
   account: any;
@@ -515,8 +515,8 @@ class ChangeAccount extends React.Component<Props, State> {
                 )}
               </div>
               {this.state.todate && (
-                <div
-                  className="infoTag"
+                <Tag
+                  div={true}
                   style={{
                     backgroundColor: "#ffc15d",
                     textAlign: "center",
@@ -525,9 +525,10 @@ class ChangeAccount extends React.Component<Props, State> {
                     fontSize: "12px",
                     padding: "5px"
                   }}>
-                  This will terminate all assignments on{" "}
-                  {moment(this.state.todate).format("DD.MM.YYYY")}
-                </div>
+                  {`This will terminate all assignments on ${moment(this.state.todate).format(
+                    "DD.MM.YYYY"
+                  )}`}
+                </Tag>
               )}
             </div>
             {!newaccount && (

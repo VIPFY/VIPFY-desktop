@@ -14,6 +14,7 @@ import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
 import { AppContext } from "../../common/functions";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
+import Tag from "../../common/Tag";
 
 interface Props {
   orbit: any;
@@ -85,6 +86,8 @@ const INITAL_STATE = {
   addUsers: null
 };
 
+const TAG_STYLE = { textAlign: "center", lineHeight: "initial" };
+
 class OrbitSection extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
@@ -123,47 +126,43 @@ class OrbitSection extends React.Component<Props, State> {
       )
     ) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
             backgroundColor: "#c73544",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
+            color: "white",
+            ...TAG_STYLE
           }}>
           No active Accounts
-        </span>
+        </Tag>
       );
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
       return (
-        <span
-          className="infoTag"
+        <Tag
           style={{
             backgroundColor: "#20baa9",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
+            color: "white",
+            ...TAG_STYLE
           }}>
-          Starts in {moment(start).toNow(true)}
-        </span>
+          {`Starts in ${moment(start).toNow(true)}`}
+        </Tag>
       );
     }
 
     if (end) {
       let enddate;
+
       if (moment(end).isValid()) {
         enddate = end;
       } else {
         enddate = new Date(end - 0);
       }
+
       return (
-        <span
-          className="infoTag"
-          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          Ends in {moment(enddate).toNow(true)}
-        </span>
+        <Tag style={{ backgroundColor: "#FFC15D", ...TAG_STYLE }}>
+          {`Ends in ${moment(enddate).toNow(true)}`}
+        </Tag>
       );
     } else {
       return "";
@@ -497,8 +496,8 @@ class OrbitSection extends React.Component<Props, State> {
               )}
             </div>
             {this.state.todate && (
-              <div
-                className="infoTag"
+              <Tag
+                div={true}
                 style={{
                   backgroundColor: "#ffc15d",
                   textAlign: "center",
@@ -507,9 +506,10 @@ class OrbitSection extends React.Component<Props, State> {
                   fontSize: "12px",
                   padding: "5px"
                 }}>
-                This will terminate all assignments and accounts on{" "}
-                {moment(this.state.todate).format("DD.MM.YYYY")}
-              </div>
+                {`This will terminate all assignments and accounts on ${moment(
+                  this.state.todate
+                ).format("DD.MM.YYYY")}`}
+              </Tag>
             )}
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
