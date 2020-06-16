@@ -205,6 +205,11 @@ const createWindow = async () => {
 
     if (isDevMode) {
       await openDevTools(mainWindow.webContents.id);
+      mainWindow.webContents.on("dom-ready", async e => {
+        if (devtools) {
+          await showDevToolsToolBar();
+        }
+      });
     }
 
     mainWindow.show();
@@ -307,6 +312,17 @@ app.on("activate", () => {
 
 let containerWithDevToolsOpen: Electron.WebContents | null = null;
 
+async function showDevToolsToolBar() {
+  return await mainWindow.webContents.executeJavaScript(`
+  (function(){
+    let app = document.querySelector("#App");
+    app.style.marginRight = "600px";
+    let dt = document.querySelector("#DevToolToolBar");
+    dt.style.display = "block";
+  })();
+`);
+}
+
 async function closeDevTools(closeToolbar = true) {
   if (closeToolbar) {
     await mainWindow.webContents.executeJavaScript(`
@@ -336,14 +352,7 @@ async function closeDevTools(closeToolbar = true) {
 
 async function openDevTools(webContentId) {
   if (!(await closeDevTools(false))) {
-    await mainWindow.webContents.executeJavaScript(`
-      (function(){
-        let app = document.querySelector("#App");
-        app.style.marginRight = "600px";
-        let dt = document.querySelector("#DevToolToolBar");
-        dt.style.display = "block";
-      })();
-    `);
+    await showDevToolsToolBar();
   }
 
   devtools = new BrowserView();
