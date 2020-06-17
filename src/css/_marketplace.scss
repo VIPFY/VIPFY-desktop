@@ -6,7 +6,7 @@
   overflow: hidden;
 
   .header {
-    height: 80px;
+    height: 48px;
     width: flexible;
     background: 0% 0% no-repeat padding-box;
     padding: 16px;
@@ -28,6 +28,22 @@
       .fa-star {
         color: #30475d;
       }
+    }
+
+    #tags {
+      margin: -4px 0px -4px 16px;
+    }
+
+    .tag {
+      border: 1px solid #c9d1da;
+      border-radius: 6px;
+      background-color: white;
+      width: 84px;
+      height: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 8px;
     }
   }
 }
