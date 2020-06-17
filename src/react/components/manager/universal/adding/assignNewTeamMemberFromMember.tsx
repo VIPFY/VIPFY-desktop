@@ -261,11 +261,10 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                   justifyContent: "center"
                 }}>
                 <Tag
+                  className="error"
                   style={{
-                    backgroundColor: "rgb(199, 53, 68)",
                     textAlign: "center",
-                    lineHeight: "initial",
-                    color: "white"
+                    lineHeight: "initial"
                   }}>
                   Employee is already in this team
                 </Tag>
