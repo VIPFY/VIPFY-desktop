@@ -1,6 +1,7 @@
 import * as React from "react";
 import { App } from "../../interfaces";
 import CardHeader from "./CardHeader";
+import Tag from "../../common/Tag";
 
 interface Props {
   app: App;
@@ -9,29 +10,25 @@ interface Props {
 
 interface State {}
 
-class CardDouble extends React.PureComponent<Props, State> {
-  render() {
-    const logo = null;
-    const teaserdescription = "Teaser description";
+const FEATURES = [
+  "Collaboration tools",
+  "Gantt charts",
+  "Video chat",
+  "File sharing",
+  "Excel export",
+  "Brain wipe"
+];
 
+class CardDouble extends React.PureComponent<Props, State> {
+  renderFeature(feature: string) {
+    return <Tag className="featureTag">{feature}</Tag>;
+  }
+
+  render() {
     return (
       <div className="card-double">
         <CardHeader app={this.props.app} />
-        <div
-          className="app-thumbnail-logo"
-          style={{
-            backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
-          }}>
-          {!logo && <i className="fal fa-rocket" />}
-        </div>
-
-        <div className="caption">
-          <h3>{name}</h3>
-          <div className="appdiscripton">
-            <p>{teaserdescription}</p>
-          </div>
-          <div className="app-short-info-holder" />
-        </div>
+        <div className="featureTags">{FEATURES.map(feature => this.renderFeature(feature))}</div>
       </div>
     );
   }

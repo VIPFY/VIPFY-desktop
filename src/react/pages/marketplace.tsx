@@ -13,7 +13,8 @@ interface Props {
 
 class Marketplace extends React.Component<Props> {
   renderApps(apps: App[]) {
-    const marketplaceApps = apps.filter(app => app.options.marketplace);
+    // const marketplaceApps = apps.filter(app => app.options.marketplace);
+    const marketplaceApps = apps.filter(app => app.name === "Miro");
 
     if (marketplaceApps.length == 0) {
       return (
