@@ -110,7 +110,7 @@ class OrbitSection extends React.Component<Props, State> {
     selfhosting: this.props.orbit.key && this.props.orbit.key.selfhosting
   };
 
-  renderTag(className: string, children: React.ReactChildren | React.ReactChild) {
+  renderTag(children: React.ReactChildren | React.ReactChild, className: string) {
     return (
       <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
         {children}
@@ -131,17 +131,17 @@ class OrbitSection extends React.Component<Props, State> {
         ).length >= 0
       )
     ) {
-      return this.renderTag("error", "No active Accounts");
+      return this.renderTag("No active Accounts", "error");
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return this.renderTag("info2", "Starts in " + moment(start).toNow(true));
+      return this.renderTag("Starts in " + moment(start).toNow(true), "info2");
     }
 
     if (end) {
       const endDate = moment(end).isValid() ? end : new Date(end - 0);
 
-      return this.renderTag("warn", "Ends in " + moment(endDate).toNow(true));
+      return this.renderTag("Ends in " + moment(endDate).toNow(true), "warn");
     } else {
       return "";
     }

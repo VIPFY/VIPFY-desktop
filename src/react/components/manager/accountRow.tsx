@@ -31,7 +31,7 @@ class AccountRow extends React.Component<Props, State> {
     email: this.props.account.key ? this.props.account.key.email : ""
   };
 
-  renderTag(className: string, children: React.ReactChildren | React.ReactChild) {
+  renderTag(children: React.ReactChildren | React.ReactChild, className: string) {
     return (
       <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
         {children}
@@ -52,19 +52,19 @@ class AccountRow extends React.Component<Props, State> {
     });
 
     if (activeAssignment.length == 0) {
-      return this.renderTag("error", "No Active Assignment");
+      return this.renderTag("No Active Assignment", "error");
     }
 
     if (e.options && e.options.private) {
-      return this.renderTag("info1", "Private");
+      return this.renderTag("Private", "info1");
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return this.renderTag("info2", "Starts in " + moment(start - 0).toNow(true));
+      return this.renderTag("Starts in " + moment(start - 0).toNow(true), "info2");
     }
 
     if (end) {
-      return this.renderTag("info3", "Ends in " + moment(end - 0).toNow(true));
+      return this.renderTag("Ends in " + moment(end - 0).toNow(true), "info3");
     } else {
       return null;
     }
