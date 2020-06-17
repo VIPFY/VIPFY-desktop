@@ -8,7 +8,7 @@ $fullWidth: 904px;
   position: relative;
   border-radius: 8px;
   box-shadow: 0 4px 5px rgba(#000000, 0.14);
-    
+
   .logo {
     background-repeat: no-repeat;
     background-position: center;
@@ -78,7 +78,7 @@ $fullWidth: 904px;
     .inputHolder {
       text-align: center;
       margin-top: 46px;
-      
+
       input {
         all: unset;
         display: inline-block;
@@ -91,7 +91,7 @@ $fullWidth: 904px;
       }
     }
 
-    .oneIllustrationHolder{
+    .oneIllustrationHolder {
       width: 904px;
       height: 224px;
       background-color: #7c8690;
@@ -106,14 +106,14 @@ $fullWidth: 904px;
       grid-template-columns: 264px 264px 264px;
       grid-gap: 56px;
 
-      .thirdHolder{
+      .thirdHolder {
         padding: 48px 24px 48px 24px;
         height: 272px;
         border-radius: 8px;
         cursor: pointer;
 
-        &:hover{
-            box-shadow: 0px 3px 4px rgba(#000000, 0.14)
+        &:hover {
+          box-shadow: 0px 3px 4px rgba(#000000, 0.14);
         }
       }
 
@@ -141,16 +141,16 @@ $fullWidth: 904px;
         margin-top: 16px;
       }
 
-      .buttonHolder{
+      .buttonHolder {
         margin-top: 24px;
       }
     }
 
-    .textHolder{
+    .textHolder {
       width: 100%;
       margin-top: 32px;
 
-      &>div{
+      & > div {
         display: inline-block;
         width: 342px;
       }
@@ -161,47 +161,34 @@ $fullWidth: 904px;
       font-size: 14px;
       line-height: 22px;
       border-bottom: 1px solid;
-
-        /*&:before{
-            width: 20px;
-            height: 20px;
-            background-color: #5D76FF;
-            content: "";
-            display: block;
-            margin-left: 12px;
-            margin-right: 7px;
-            border-radius: 10px;
-            float: left;
-            margin-bottom: 6px;
-        }*/
     }
     .notperson {
-        all: unset;
-        font-size: 10px;
-        line-height: 13px;
-        background-color: #F5F5F5;
-        padding: 5px 8px 6px 12px;
-        box-shadow: 0px 1px 1px rgba(#000000, 0.14);
-        display: block;
-        cursor: pointer;
-        margin-bottom: 4px;
-        position: relative;
-        margin-left: 6px;
+      all: unset;
+      font-size: 10px;
+      line-height: 13px;
+      background-color: #f5f5f5;
+      padding: 5px 8px 6px 12px;
+      box-shadow: 0px 1px 1px rgba(#000000, 0.14);
+      display: block;
+      cursor: pointer;
+      margin-bottom: 4px;
+      position: relative;
+      margin-left: 6px;
 
-        &:after {
-            right: 100%;
-            top: 50%;
-            border: solid transparent;
-            content: " ";
-            height: 0;
-            width: 0;
-            position: absolute;
-            pointer-events: none;
-            border-color: rgba(0, 0, 0, 0);
-            border-right-color: #F5F5F5;
-            border-width: 7px;
-            margin-top: -7px;
-        }
+      &:after {
+        right: 100%;
+        top: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-color: rgba(0, 0, 0, 0);
+        border-right-color: #f5f5f5;
+        border-width: 7px;
+        margin-top: -7px;
+      }
     }
 
     .accountBullet {
@@ -240,10 +227,10 @@ $fullWidth: 904px;
       position: relative;
 
       &:hover {
-        background-color: #F5F5F5;
-    }
+        background-color: #f5f5f5;
+      }
 
-    .accountHolderBullet {
+      .accountHolderBullet {
         width: 20px;
         height: 20px;
         content: "";

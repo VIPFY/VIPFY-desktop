@@ -1,12 +1,12 @@
-$app-logo:                  url('../images/logo-full-aaa-ai.svg');
-$newlogo-small:             url('../images/Vipfy-white.svg');
-$newlogo:                   url('../images/Vipfy-white.svg');
-$logo_white:                url('../images/logo_hell.png');
-$sidebar-background:        #333;
-$sidebar-width:             240px;
-$sidebar-margin:            8px;
-$sidebar-background:        #30475d;
-$fullworking-background:    #f5f5f5;
+$app-logo: url("../images/logo-full-aaa-ai.svg");
+$newlogo-small: url("../images/Vipfy-white.svg");
+$newlogo: url("../images/Vipfy-white.svg");
+$logo_white: url("../images/logo_hell.png");
+$sidebar-background: #333;
+$sidebar-width: 240px;
+$sidebar-margin: 8px;
+$sidebar-background: #30475d;
+$fullworking-background: #f5f5f5;
 $vipfy-primary-color: #20baa9;
 $vipfy-secondary-color: #117f91;
 $vipfy-cancel-color: #c73544;
@@ -20,23 +20,24 @@ $deleted-color: #b5a0a7;
 
 $vipfy-normaltext: #253647;
 $vipfy-darktext: #2a3949;
-$vipfy-lighttext: #415E72;
+$vipfy-lighttext: #415e72;
 $vipfy-disabledtext: #e1e3e5;
 $vipfy-grey: #f0f0f0;
 $vipfy-lightgrey: #f5f5f5;
-$vipfy-positive: #29CC94;
-$vipfy-negative: #DF3F19;
-$vipfy-infoblue: #5145E3;
-$vipfy-infolightblue: #2D84E6;
-$vipfy-vacation-blue: #5DA2FF;
-$vipfy-buttongreen: #20BAA9;
-$vipfy-buttondarkgreen: #1697A5;
+$vipfy-positive: #29cc94;
+$vipfy-negative: #df3f19;
+$vipfy-infoblue: #5145e3;
+$vipfy-infolightblue: #2d84e6;
+$vipfy-vacation-blue: #5da2ff;
+$vipfy-buttongreen: #20baa9;
+$vipfy-buttondarkgreen: #1697a5;
 $vipfy-lightshadow: 1px 3px 4px 0px #78787833;
 $vipfy-shadow: 1px 3px 4px 0px #78787866;
 
 $vipfy_mainColor: #253647;
 $vipfy_bigradius: 6px;
 $vipfy_smallradius: 3px;
+
 @for $x from 20 through 80 {
   .box#{$x} {
     height: #{$x}px;
@@ -45,16 +46,16 @@ $vipfy_smallradius: 3px;
     background-size: cover;
     border-radius: 3px;
 
-    &.text{
-        line-height: #{$x}px;
-        text-align: center;
+    &.text {
+      line-height: #{$x}px;
+      text-align: center;
     }
 
-    &.clickable{
+    &.clickable {
       cursor: pointer;
     }
   }
-  .circle#{$x}{
+  .circle#{$x} {
     height: #{$x}px;
     width: #{$x}px;
     border-radius: #{$x}px;
@@ -71,16 +72,16 @@ $vipfy_smallradius: 3px;
     background-size: cover;
     border-radius: 3px;
 
-    &.text{
-        line-height: #{$x}px;
-        text-align: center;
+    &.text {
+      line-height: #{$x}px;
+      text-align: center;
     }
 
-    &.clickable{
+    &.clickable {
       cursor: pointer;
     }
   }
-  .circle#{$x}{
+  .circle#{$x} {
     height: #{$x}px;
     width: #{$x}px;
     border-radius: #{$x}px;
@@ -95,9 +96,9 @@ $rccs-number-font-size: 0.8rem;
 $rccs-expiry-font-size: 0.6rem;
 $rccs-valid-font-size: 0.4rem;
 
-.cleanup{
+.cleanup {
   color: $vipfy_mainColor;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   all: unset;
 }
 
@@ -191,11 +192,10 @@ $rccs-valid-font-size: 0.4rem;
 
   .no-spacing {
     margin: 0;
-    padding: 0 ;
+    padding: 0;
     overflow: hidden;
   }
 }
-
 
 .inside-padding {
   padding: 10px 20px;
@@ -248,7 +248,7 @@ $rccs-valid-font-size: 0.4rem;
       opacity: 0;
       transform: translateX(3000px);
     }
-    
+
     90% {
       opacity: 1;
       transform: translateX(-10px);
@@ -267,7 +267,8 @@ $rccs-valid-font-size: 0.4rem;
     from {
       opacity: 1;
       transform: translateX(0);
-    } to {
+    }
+    to {
       opacity: 0;
       transform: translateX(500px);
     }
@@ -282,7 +283,7 @@ $rccs-valid-font-size: 0.4rem;
       opacity: 0;
       transform: translate(-100px);
     }
-    
+
     90% {
       opacity: 1;
       transform: translate(10px);
@@ -301,7 +302,7 @@ $rccs-valid-font-size: 0.4rem;
     0% {
       transform: translateY(-100px);
     }
-    
+
     90% {
       transform: translateY(10px);
     }
@@ -319,7 +320,7 @@ $rccs-valid-font-size: 0.4rem;
     0% {
       transform: translateY(0);
     }
-    
+
     90% {
       transform: translateY(1px);
     }
@@ -337,25 +338,25 @@ $rccs-valid-font-size: 0.4rem;
   transition: all 300ms ease-in-out;
 }
 
- .switch {
+.switch {
   position: relative;
   display: inline-block;
   width: 38px;
   height: 16px;
-  
+
   input {
     opacity: 0;
     width: 0;
     height: 0;
-    
+
     &:checked + .slider {
-      background-color: #BAEAE5FF;
+      background-color: #baeae5ff;
     }
-    
+
     &:focus + .slider {
-      box-shadow: 0 0 1px #BAEAE5FF;
+      box-shadow: 0 0 1px #baeae5ff;
     }
-    
+
     &:checked + .slider::before {
       transform: translateX(26px);
       background-color: $vipfy-primary-color;
@@ -370,10 +371,10 @@ $rccs-valid-font-size: 0.4rem;
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: 0.4s;
+    transition: 0.4s;
     border-radius: 34px;
-    
+
     &::before {
       position: absolute;
       content: "";
@@ -381,10 +382,10 @@ $rccs-valid-font-size: 0.4rem;
       width: 16px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
       background-color: white;
-      transition: .4s;
+      transition: 0.4s;
       border-radius: 50%;
-    }  
-  } 
+    }
+  }
 }
 
 .app-icon-wrapper {
@@ -401,7 +402,7 @@ $rccs-valid-font-size: 0.4rem;
     font-size: 16px;
     color: white;
     font-weight: 500;
-    background-color: #5D76FF;
+    background-color: #5d76ff;
     background-position: center;
     background-size: cover;
 
@@ -409,7 +410,7 @@ $rccs-valid-font-size: 0.4rem;
       margin-left: 8px;
     }
   }
-  
+
   span {
     @include hide-overflowing-text;
     font-size: 13px;
@@ -544,7 +545,7 @@ $rccs-valid-font-size: 0.4rem;
   }
 
   &:hover {
-    box-shadow: 0 0 4px rgba(0, 0, 0, .14);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
   }
 
   &:hover .button-holder {
@@ -566,7 +567,7 @@ $rccs-valid-font-size: 0.4rem;
 }
 
 .show-shadow {
-  box-shadow: 0 0 4px rgba(0, 0, 0, .14);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.14);
 }
 
 textarea {
@@ -597,7 +598,6 @@ textarea {
     transition: all 300ms ease-in-out;
   }
 
-
   &:focus-within label,
   textarea:valid + label {
     bottom: 200px;
@@ -609,8 +609,7 @@ textarea {
   }
 }
 
-
-.addEmployeePassword{
+.addEmployeePassword {
   width: 100%;
   margin-bottom: 40px;
 }
@@ -633,58 +632,77 @@ textarea {
   width: calc(85% - 28px);
 }
 
-.ReactPasswordStrength-input:not(:focus).is-password-invalid { color: #D1462F; }
-.ReactPasswordStrength-input:focus { outline: none; }
+.ReactPasswordStrength-input:not(:focus).is-password-invalid {
+  color: #d1462f;
+}
+.ReactPasswordStrength-input:focus {
+  outline: none;
+}
 
 .ReactPasswordStrength-strength-desc {
   color: transparent;
   font-style: italic;
   padding: 14px 12px;
-  position: absolute; top: 1px; right: 0;
+  position: absolute;
+  top: 1px;
+  right: 0;
   text-align: right;
   transition: color 250ms ease-in-out;
   width: 15%;
 }
 
-.ReactPasswordStrength.is-strength-0 .ReactPasswordStrength-strength-desc { color: #D1462F; }
-.ReactPasswordStrength.is-strength-1 .ReactPasswordStrength-strength-desc { color: #D1462F; }
-.ReactPasswordStrength.is-strength-2 .ReactPasswordStrength-strength-desc { color: #57B8FF; }
-.ReactPasswordStrength.is-strength-3 .ReactPasswordStrength-strength-desc { color: #57B8FF; }
-.ReactPasswordStrength.is-strength-4 .ReactPasswordStrength-strength-desc { color: #2FBF71; }
+.ReactPasswordStrength.is-strength-0 .ReactPasswordStrength-strength-desc {
+  color: #d1462f;
+}
+.ReactPasswordStrength.is-strength-1 .ReactPasswordStrength-strength-desc {
+  color: #d1462f;
+}
+.ReactPasswordStrength.is-strength-2 .ReactPasswordStrength-strength-desc {
+  color: #57b8ff;
+}
+.ReactPasswordStrength.is-strength-3 .ReactPasswordStrength-strength-desc {
+  color: #57b8ff;
+}
+.ReactPasswordStrength.is-strength-4 .ReactPasswordStrength-strength-desc {
+  color: #2fbf71;
+}
 
 .ReactPasswordStrength-strength-bar {
   box-sizing: border-box;
   height: 2px;
-  position: relative; top: 1px; right: 1px;
+  position: relative;
+  top: 1px;
+  right: 1px;
   transition: width 300ms ease-out;
   width: 0;
 }
 
 .ReactPasswordStrength.is-strength-0 .ReactPasswordStrength-strength-bar {
-  background: #D1462F;
+  background: #d1462f;
   width: 20%;
 }
 
 .ReactPasswordStrength.is-strength-1 .ReactPasswordStrength-strength-bar {
-  background: #D1462F;
+  background: #d1462f;
   width: 40%;
 }
 
 .ReactPasswordStrength.is-strength-2 .ReactPasswordStrength-strength-bar {
-  background: #57B8FF;
+  background: #57b8ff;
   width: 60%;
 }
 
 .ReactPasswordStrength.is-strength-3 .ReactPasswordStrength-strength-bar {
-  background: #57B8FF;
+  background: #57b8ff;
   width: 80%;
 }
 
 .ReactPasswordStrength.is-strength-4 .ReactPasswordStrength-strength-bar {
-  background: #2FBF71;
+  background: #2fbf71;
   width: calc(100% + 2px);
 }
 
-.fa-star, .fa-star-half {
+.fa-star,
+.fa-star-half {
   color: $vipfy-primary-color;
 }

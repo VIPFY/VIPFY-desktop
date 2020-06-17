@@ -1,4 +1,4 @@
-// needs to be imported first, is imported in many of the following files
+// this needs to be imported first because it is used in the other imported files
 @import "./constants";
 
 // please add in alphabetical order
@@ -28,7 +28,6 @@
 @import "./sidebar";
 @import "./statistics";
 @import "./support";
-@import "./tag";
 @import "./titlebar";
 @import "./tooltip";
 @import "./tutorials";
@@ -230,11 +229,6 @@ li {
   display: flex;
   justify-content: center;
 }
-.loadingTextBlock {
-}
-
-.mainPosition {
-}
 .newMainPosition {
   height: 100%;
 }
@@ -273,7 +267,6 @@ li {
   margin-bottom: 2em;
 }
 .full-working {
-  background-color: white;
   height: 100%;
   margin-left: 64px;
   overflow-y: scroll;
@@ -2677,6 +2670,52 @@ progress[value] {
     letter-spacing: 0.02em;
   }
 }
+
+.tag {
+  padding: 2px 5px;
+  font-size: 10px;
+  border-radius: 4px;
+
+  &.warn {
+    background-color: #ffc15d;
+    color: white;
+  }
+
+  &.error {
+    background-color: #c73544;
+    color: white;
+  }
+
+  &.info1 {
+    background-color: #3e576e;
+    color: white;
+  }
+
+  &.info2 {
+    background-color: #20baa9;
+    color: white;
+  }
+
+  &.info3 {
+    background-color: #ffc15d;
+  }
+
+  &.info4 {
+    background-color: #253647;
+    color: white;
+  }
+
+  &.info5 {
+    background-color: #ffc15d;
+    color: #253647;
+  }
+
+  &.info6 {
+    background-color: #9c13bc;
+    color: white;
+  }
+}
+
 .addressLayout {
   display: grid;
   grid-template-columns: 300px 300px;

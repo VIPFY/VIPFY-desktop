@@ -1,6 +1,10 @@
 @keyframes button-move {
-  from {left: 0}
-  to {left: -1000px}
+  from {
+    left: 0;
+  }
+  to {
+    left: -1000px;
+  }
 }
 
 .button-holder {
@@ -46,7 +50,7 @@
   &-nav {
     @include vipfy-button(10px);
     background: #000;
-    
+
     a {
       color: #fff !important;
     }
@@ -81,17 +85,13 @@
     min-height: 26px;
   }
 
-  /*&-review {
-    @include vipfy-button(5px);
-  }*/
-
   &-address,
   &-phone {
     @include vipfy-button(5px);
     margin: 2rem 0 1.3rem 2.3rem;
     width: 10rem;
   }
-  
+
   &-pw {
     @include vipfy-button(5px);
   }
@@ -110,7 +110,6 @@
     }
   }
 }
-
 
 .button > span {
   display: block;

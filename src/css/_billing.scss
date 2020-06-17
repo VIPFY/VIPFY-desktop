@@ -34,7 +34,7 @@
     display: flex;
     flex-flow: column;
     min-height: 50px;
-    
+
     .card-wrapper {
       position: relative;
       width: 100%;
@@ -148,13 +148,13 @@
   td {
     padding: 10px;
   }
-  
+
   thead {
     .spacer {
       height: 10px;
     }
   }
-  
+
   tbody {
     tr {
       height: 56px;
@@ -191,7 +191,8 @@
       .generic-checkbox-holder {
         margin-top: 10px;
 
-        .checkboxSquare,.checkboxSquareActive {
+        .checkboxSquare,
+        .checkboxSquareActive {
           margin-right: 10px;
         }
       }
@@ -245,8 +246,8 @@
       border: 0;
       outline: none;
       text-align: center;
-      border-bottom: 1px solid #20BAA9;
-      font-family: 'Montserrat', sans-serif !important;
+      border-bottom: 1px solid #20baa9;
+      font-family: "Montserrat", sans-serif !important;
     }
   }
 }
@@ -274,4 +275,3 @@
     }
   }
 }
-

@@ -116,12 +116,6 @@ $sidebar-dark: #30475d;
   }
 
   &-tooltip {
-    //position: relative;
-    //margin-left: auto;
-    //margin-right: auto;
-    /*margin-left: 6px;
-    margin-right: 6px;*/
-
     &-nav {
       margin-left: auto;
       margin-right: auto;
@@ -145,7 +139,6 @@ $sidebar-dark: #30475d;
 
     .sidebar-apps > .sidebar-.sidebar-active > .itemHolderlink:first-of-type > .naked-button {
       background: #f5f5f5 0% 0% no-repeat padding-box !important;
-      /* box-shadow: 0 2px 2px #00000029 !important; */
 
       input,
       .fa-search {
@@ -165,7 +158,6 @@ $sidebar-dark: #30475d;
     .itemHolder {
       &:hover {
         background: #f5f5f5 0% 0% no-repeat padding-box !important;
-        /* box-shadow: 0 2px 2px #00000029 !important; */
       }
     }
   }
@@ -182,17 +174,14 @@ $sidebar-dark: #30475d;
 
     &:hover {
       background: #26394a;
-      /* box-shadow: 0 2px 2px #00000029; */
     }
 
     &.active {
       background: #1e2e3b;
-      /* box-shadow: 0 2px 2px #00000029; */
     }
 
     &.selected {
       background: #1e2e3b;
-      /* box-shadow: 0 2px 2px #00000029; */
     }
 
     &:disabled {
@@ -285,7 +274,6 @@ $sidebar-dark: #30475d;
 
   .sidebar-link-caption-context {
     @extend .sidebar-link-caption;
-    //  animation: caption-grow-context 600ms ease-in-out forwards !important;
   }
 
   .showMore {
@@ -442,7 +430,6 @@ $sidebar-dark: #30475d;
     }
 
     &-caption {
-      //@include hide-overflowing-text;
       white-space: nowrap;
       overflow: hidden;
       font-size: 16px;
@@ -453,16 +440,7 @@ $sidebar-dark: #30475d;
     }
 
     .show-more {
-      //    transform: translateX(8px);
       text-align: left;
-    }
-
-    .invisible {
-      //  animation: caption-shrink 600ms ease-in-out forwards;
-    }
-
-    .invisible-context {
-      //   animation: caption-shrink-context 600ms ease-in-out forwards !important;
     }
   }
 
@@ -471,7 +449,6 @@ $sidebar-dark: #30475d;
 
     & > .itemHolder {
       background: #1e2e3b;
-      /*  box-shadow: 0 2px 2px #00000029; */
     }
   }
 
@@ -518,9 +495,7 @@ $sidebar-dark: #30475d;
     height: 16px;
     line-height: 16px;
     text-align: center;
-    border-radius: 16px; /* 
-    background-color: #FF6F61;
-    color: #ffffff; */
+    border-radius: 16px;
     position: absolute;
   }
 }
@@ -739,7 +714,6 @@ $sidebar-dark: #30475d;
   border: 1px solid #e9ecef;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
   cursor: default;
-  //animation: pop-in 150ms ease-in-out 0s forwards;
   transform-origin: left bottom;
   color: $vipfy-normaltext;
 

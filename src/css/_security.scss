@@ -1,5 +1,5 @@
 .security-table {
-  border-spacing: 16px 10px ;
+  border-spacing: 16px 10px;
   padding: 11px 0 0;
 
   thead {
@@ -12,7 +12,7 @@
       }
     }
   }
-  
+
   tbody {
     tr {
       height: 56px;
@@ -38,7 +38,7 @@
     td {
       position: relative;
       width: 200px;
-      
+
       &:first-child {
         .name {
           @include hide-overflowing-text;
@@ -256,18 +256,18 @@
           opacity: 0;
           transition: all 300ms ease-in-out;
         }
-  
+
         .location {
           font-size: 10px;
           color: #253647;
           opacity: 0.6;
         }
-  
+
         .current {
           color: $vipfy-primary-color;
           justify-self: flex-end;
         }
-  
+
         .turn {
           transform: rotate(180deg);
           opacity: 1;
@@ -281,10 +281,10 @@
         grid-template-columns: 16px 1fr 1fr 1fr 16px;
         grid-template-rows: repeat(3, 34px);
         grid-template-areas:
-        ". label1 value1 . ."
-        ". label2 value2 . ."
-        ". label3 value3 . .";
-  
+          ". label1 value1 . ."
+          ". label2 value2 . ."
+          ". label3 value3 . .";
+
         span {
           font-size: 10px;
           color: #253647;
@@ -293,24 +293,24 @@
           &:nth-of-type(1) {
             grid-area: label1;
           }
-  
+
           &:nth-of-type(2) {
             grid-area: value1;
           }
-  
+
           &:nth-of-type(3) {
             grid-area: label2;
           }
-  
+
           &:nth-of-type(4) {
             grid-area: value2;
           }
-  
+
           &:nth-of-type(5) {
             grid-area: label3;
           }
         }
-  
+
         .universalCoverButton {
           grid-area: value3;
           align-self: start;
