@@ -86,8 +86,6 @@ const INITAL_STATE = {
   addUsers: null
 };
 
-const TAG_STYLE = { textAlign: "center", lineHeight: "initial" };
-
 class OrbitSection extends React.Component<Props, State> {
   state = {
     ...INITAL_STATE,
@@ -112,6 +110,14 @@ class OrbitSection extends React.Component<Props, State> {
     selfhosting: this.props.orbit.key && this.props.orbit.key.selfhosting
   };
 
+  renderTag(className: string, children: React.ReactChildren | React.ReactChild) {
+    return (
+      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
+        {children}
+      </Tag>
+    );
+  }
+
   showStatus(e) {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
     const start = e.buytime;
@@ -125,45 +131,17 @@ class OrbitSection extends React.Component<Props, State> {
         ).length >= 0
       )
     ) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#c73544",
-            color: "white",
-            ...TAG_STYLE
-          }}>
-          No active Accounts
-        </Tag>
-      );
+      return this.renderTag("error", "No active Accounts");
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#20baa9",
-            color: "white",
-            ...TAG_STYLE
-          }}>
-          {`Starts in ${moment(start).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("info2", "Starts in " + moment(start).toNow(true));
     }
 
     if (end) {
-      let enddate;
+      const endDate = moment(end).isValid() ? end : new Date(end - 0);
 
-      if (moment(end).isValid()) {
-        enddate = end;
-      } else {
-        enddate = new Date(end - 0);
-      }
-
-      return (
-        <Tag style={{ backgroundColor: "#FFC15D", ...TAG_STYLE }}>
-          {`Ends in ${moment(enddate).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("warn", "Ends in " + moment(endDate).toNow(true));
     } else {
       return "";
     }
