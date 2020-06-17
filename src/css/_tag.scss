@@ -5,10 +5,25 @@
 
   &.warn {
     background-color: #ffc15d;
-    text-align: center;
-    line-height: initial;
     color: white;
-    font-size: 12px;
-    padding: 5px;
+  }
+
+  &.error {
+    background-color: #c73544;
+    color: white;
+  }
+
+  &.info1 {
+    background-color: #3e576e;
+    color: white;
+  }
+
+  &.info2 {
+    background-color: #20baa9;
+    color: white;
+  }
+
+  &.info3 {
+    background-color: #ffc15d;
   }
 }

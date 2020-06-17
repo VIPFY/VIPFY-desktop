@@ -20,11 +20,6 @@ const INITIAL_STATE = {
   change: false
 };
 
-const TAG_STYLE = {
-  textAlign: "center",
-  lineHeight: "initial"
-};
-
 class AccountRow extends React.Component<Props, State> {
   state = {
     ...INITIAL_STATE,
@@ -35,6 +30,14 @@ class AccountRow extends React.Component<Props, State> {
         : null,
     email: this.props.account.key ? this.props.account.key.email : ""
   };
+
+  renderTag(className: string, children: React.ReactChildren | React.ReactChild) {
+    return (
+      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
+        {children}
+      </Tag>
+    );
+  }
 
   showStatus(e) {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
@@ -49,56 +52,21 @@ class AccountRow extends React.Component<Props, State> {
     });
 
     if (activeAssignment.length == 0) {
-      return (
-        <Tag
-          style={{
-            color: "white",
-            backgroundColor: "#c73544",
-            ...TAG_STYLE
-          }}>
-          No Active Assignment
-        </Tag>
-      );
+      return this.renderTag("error", "No Active Assignment");
     }
 
     if (e.options && e.options.private) {
-      return (
-        <Tag
-          style={{
-            color: "white",
-            backgroundColor: "#3E576E",
-            ...TAG_STYLE
-          }}>
-          Private
-        </Tag>
-      );
+      return this.renderTag("info1", "Private");
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return (
-        <Tag
-          style={{
-            color: "white",
-            backgroundColor: "#20baa9",
-            ...TAG_STYLE
-          }}>
-          {`Starts in ${moment(start - 0).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("info2", "Starts in " + moment(start - 0).toNow(true));
     }
 
     if (end) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#FFC15D",
-            ...TAG_STYLE
-          }}>
-          {`Ends in ${moment(end - 0).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("info3", "Ends in " + moment(end - 0).toNow(true));
     } else {
-      return;
+      return null;
     }
   }
 

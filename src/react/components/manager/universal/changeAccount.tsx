@@ -515,7 +515,15 @@ class ChangeAccount extends React.Component<Props, State> {
                 )}
               </div>
               {this.state.todate && (
-                <Tag div={true} className="warn">
+                <Tag
+                  div={true}
+                  className="warn"
+                  style={{
+                    textAlign: "center",
+                    lineHeight: "initial",
+                    fontSize: "12px",
+                    padding: "5px"
+                  }}>
                   {`This will terminate all assignments on ${moment(this.state.todate).format(
                     "DD.MM.YYYY"
                   )}`}
