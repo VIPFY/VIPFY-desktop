@@ -7,6 +7,7 @@ export interface Site {
   password: string;
   testResults?: TestResult[];
   allTestsFinished?: boolean;
+  options?: any;
 }
 
 export const sites: Site[] = [];

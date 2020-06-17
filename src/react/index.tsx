@@ -26,6 +26,8 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { remote } from "electron";
 const { session } = remote;
 import { version } from "../../package.json";
+import UniversalLoginTestFetcher from "./components/admin/UniversalLoginTest/UniversalLoginTestFetcher";
+import UniversalLoginTest from "./components/admin/UniversalLoginTest/UniversalLoginTest";
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
@@ -56,15 +58,9 @@ class Application extends React.Component<IndexProps> {
     if (process.env.DEVELOPMENT) {
       window.addEventListener("keyup", this.implementShortCuts, true);
     }
+
     // inline styles to make them available to smartlook
     const style = document.createElement("style");
-    // fs.readFile(__dirname + "/../css/layout.css", "utf8", (err, contents) => {
-    //   console.log("LOG: Application -> componentDidMount -> err", err);
-    //   style.innerHTML = contents;
-    //   document.head!.appendChild(style);
-    //   // use setTimeout to allow some time for layouting
-    //   window.setTimeout(() => this.forceUpdate(), 0);
-    // });
 
     if (is.macOS()) {
       document.body.classList.add("mac");
@@ -81,6 +77,7 @@ class Application extends React.Component<IndexProps> {
     if (is.macOS()) {
       document.body.classList.remove("mac");
     }
+
     this.props.client.cache.reset(); // clear graphql cache
     localStorage.removeItem("token");
     session.fromPartition("services").clearStorageData();
@@ -93,6 +90,17 @@ class Application extends React.Component<IndexProps> {
           <Router>
             <Switch>
               <Route exact path="/upgrade-error" component={UpgradeError} />
+              {process.env.REACT_APP_TESTING && (
+                <Route
+                  exact
+                  path="/universal-login-test"
+                  component={
+                    process.env.REACT_APP_TEST_SSO_WITH_OPTIONS
+                      ? UniversalLoginTestFetcher
+                      : UniversalLoginTest
+                  }
+                />
+              )}
               <Route
                 path="/"
                 render={props => (
@@ -111,22 +119,5 @@ class Application extends React.Component<IndexProps> {
     );
   };
 }
-
-//install context menu
-// window.addEventListener("DOMContentLoaded", () => {
-//   //webview
-//   require("electron-context-menu")({
-//     showInspectElement: false,
-//     showCopyImageAddress: true,
-//     showSaveImageAs: true,
-//     window: document.getElementById("webview")
-//   });
-//   //normal windows
-//   require("electron-context-menu")({
-//     showInspectElement: config.allowDevTools
-//   });
-
-//   document!.getElementById("versionnumber")!.innerHTML += pjson.version;
-// });
 
 ReactDOM.render(<Application />, document.getElementById("App"));
