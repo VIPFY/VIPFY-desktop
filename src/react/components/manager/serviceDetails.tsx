@@ -19,51 +19,28 @@ interface State {
   terminate: Boolean;
 }
 
-const TAG_STYLE = { marginLeft: "8px", textAlign: "center" };
-
 class ServiceDetails extends React.Component<Props, State> {
   state = {
     terminate: false
   };
 
   showStatus(e) {
-    const end = e.endtime == 8640000000000000 ? null : e.endtime;
-    const start = e.starttime;
-
     if (e.pending) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#c73544",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          Integration pending
-        </Tag>
-      );
+      return this.renderTag("Integration pending", "error", { lineHeight: "initial" });
     }
 
+    const start = e.starttime;
     if (moment(start - 0).isAfter(moment.now())) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#20baa9",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          {`Starts in ${moment(start - 0).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("Starts in " + moment(start - 0).toNow(true), "info2", {
+        lineHeight: "initial"
+      });
     }
 
+    const end = e.endtime == 8640000000000000 ? null : e.endtime;
     if (end) {
-      return (
-        <Tag style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          {`Ends in {moment(end - 0).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("Ends in " + moment(end - 0).toNow(true), "info3", {
+        lineHeight: "initial"
+      });
     } else {
       return <Tag>{`Active since ${moment(start - 0).fromNow(true)}`}</Tag>;
     }
@@ -73,6 +50,19 @@ class ServiceDetails extends React.Component<Props, State> {
     if (nextProps.e.id != this.props.e.id) {
       this.setState({ terminate: false });
     }
+  }
+
+  renderTag(
+    children: React.ReactChildren | React.ReactChild,
+    className: string = "",
+    style: object = {},
+    tooltip: string = undefined
+  ) {
+    return (
+      <Tag tooltip={tooltip} className={className} style={{ textAlign: "center", ...style }}>
+        {children}
+      </Tag>
+    );
   }
 
   render() {
@@ -106,39 +96,30 @@ class ServiceDetails extends React.Component<Props, State> {
               {e.boughtplanid.alias}
             </span>
             <span>
-              {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
-                <Tag
-                  tooltip="This account is shared between multiple users"
-                  style={{
-                    backgroundColor: "#253647",
-                    color: "white",
-                    ...TAG_STYLE
-                  }}>
-                  Shared
-                </Tag>
-              )}
-              {e.tags && e.tags.includes("vacation") && (
-                <Tag
-                  tooltip="This account is a vacation access"
-                  style={{
-                    backgroundColor: "#ffc15d",
-                    color: "#253647",
-                    ...TAG_STYLE
-                  }}>
-                  Holiday
-                </Tag>
-              )}
-              {e.tags && e.tags.includes("teamlicence") && (
-                <Tag
-                  tooltip="This account is assigned through a team"
-                  style={{
-                    backgroundColor: "#9c13bc",
-                    color: "white",
-                    ...TAG_STYLE
-                  }}>
-                  Team
-                </Tag>
-              )}
+              {!(e.tags && e.tags.includes("vacation")) &&
+                e.rightscount > 1 &&
+                this.renderTag(
+                  "Shared",
+                  "info4",
+                  { marginLeft: "8px" },
+                  "This account is shared between multiple users"
+                )}
+              {e.tags &&
+                e.tags.includes("vacation") &&
+                this.renderTag(
+                  "Holiday",
+                  "info5",
+                  { marginLeft: "8px" },
+                  "This account is a vacation access"
+                )}
+              {e.tags &&
+                e.tags.includes("teamlicence") &&
+                this.renderTag(
+                  "Team",
+                  "info6",
+                  { marginLeft: "8px" },
+                  "This account is assigned through a team"
+                )}
             </span>
           </div>
 
