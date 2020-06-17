@@ -19,55 +19,37 @@ class TeamServiceDetails extends React.Component<Props, State> {
     delete: false
   };
 
+  renderTag(children: React.ReactChildren | React.ReactChild, className: string = "") {
+    return (
+      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
+        {children}
+      </Tag>
+    );
+  }
+
   showStatus(e) {
-    const end = e.endtime == 8640000000000000 ? null : e.endtime;
-    const start = e.buytime;
-
     if (e.pending) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#c73544",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          Integration pending
-        </Tag>
-      );
+      return this.renderTag("Integration pending", "error");
     }
 
+    const start = e.buytime;
     if (moment(start).isAfter(moment.now())) {
-      return (
-        <Tag
-          style={{
-            backgroundColor: "#20baa9",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          {`Starts in ${moment(start).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("Starts in " + moment(start).toNow(true), "info2");
     }
 
+    const end = e.endtime == 8640000000000000 ? null : e.endtime;
     if (end) {
-      return (
-        <Tag style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          {`Ends in ${moment(end).toNow(true)}`}
-        </Tag>
-      );
+      return this.renderTag("Ends in " + moment(end).toNow(true), "info3");
     } else {
       return <Tag>{`Active since ${moment(start).fromNow(true)}`}</Tag>;
     }
   }
 
   render() {
-    const { service } = this.props;
+    const { service, team, moveTo } = this.props;
+
     return (
-      <div
-        className="tableRow"
-        onClick={() => this.props.moveTo(`lmanager/${service.planid.appid.id}`)}>
+      <div className="tableRow" onClick={() => moveTo(`lmanager/${service.planid.appid.id}`)}>
         <div className="tableMain">
           <div className="tableColumnSmall">
             <PrintServiceSquare
@@ -87,17 +69,12 @@ class TeamServiceDetails extends React.Component<Props, State> {
               {service.planid.appid.name}
             </span>
           </div>
-          <div className="tableColumnSmall content">
-            {/*moment(service.buytime).format("DD.MM.YYYY")*/}
-            {service.alias}
-          </div>
-          <div className="tableColumnSmall content">
-            {/*service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"*/}
-            {this.showStatus(service)}
-          </div>
-          <div className="tableColumnSmall content">{/*${service.totalprice.toFixed(2)*/}</div>
+          <div className="tableColumnSmall content">{service.alias}</div>
+          <div className="tableColumnSmall content">{this.showStatus(service)}</div>
+          <div className="tableColumnSmall content"></div>
           <div className="tableColumnSmall content">{/*not implemented yet*/}</div>
         </div>
+
         <div className="tableEnd">
           <div className="editOptions">
             <i className="fal fa-external-link-alt editbuttons" />
@@ -110,10 +87,11 @@ class TeamServiceDetails extends React.Component<Props, State> {
             />
           </div>
         </div>
+
         {this.state.delete && (
           <RemoveTeamOrbit
-            orbit={this.props.service}
-            team={this.props.team}
+            orbit={service}
+            team={team}
             close={() => this.setState({ delete: false })}
           />
         )}
