@@ -113,7 +113,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         }}
         noUrlCheck={this.props.noUrlCheck}
         execute={this.props.execute}
-        noError={this.props.noUrlCheck}
+        noError={this.props.noError}
         individualShow={this.props.individualShow}
         individualNotShow={this.props.individualNotShow}
       />
