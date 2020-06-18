@@ -156,6 +156,16 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <span onClick={() => this.runTestOnSite(siteIndexUnderTest)}>
               <i className="fal fa-play" />
             </span>
+            <span
+              onClick={async () => {
+                await this.setState({
+                  runningInBatchMode: true,
+                  siteIndexUnderTest: siteIndexUnderTest - 1
+                });
+                this.advance(true);
+              }}>
+              <i className="fal fa-fast-forward" />
+            </span>
           </td>
           {Array.from({ length: tests.length }, (_, testIndex: number) => (
             <td key={`${site.app}_${siteIndexUnderTest}_${testIndex}`}>
