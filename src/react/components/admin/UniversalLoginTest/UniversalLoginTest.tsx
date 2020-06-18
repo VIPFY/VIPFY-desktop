@@ -146,7 +146,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
   renderTable(siteUnderTest: Site) {
     return this.state.sites.map((site: Site, siteIndexUnderTest: number) => (
-      <React.Fragment key={`${site.app}`}>
+      <React.Fragment key={`${site.app}-${siteIndexUnderTest}`}>
         <tr>
           <td>{site.app}</td>
           <td>
