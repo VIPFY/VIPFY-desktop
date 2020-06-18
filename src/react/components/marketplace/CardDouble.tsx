@@ -30,7 +30,9 @@ class CardDouble extends React.PureComponent<Props, State> {
   renderPro(pro: string) {
     return (
       <div>
-        <Tag>+</Tag>
+        <Tag>
+          <span className="fal fa-plus fa-fw" />
+        </Tag>
         <span className="pro">{pro}</span>
       </div>
     );
