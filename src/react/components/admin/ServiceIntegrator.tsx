@@ -15,13 +15,6 @@ import UniversalButton from "../universalButtons/universalButton";
 import { threadId } from "worker_threads";
 
 import * as ReactDOM from "react-dom";
-import "./diagrams/diagram.scss";
-import createEngine, { DefaultLinkModel, DiagramModel } from "@projectstorm/react-diagrams";
-// import { JSCustomNodeFactory } from "./diagrams/custom-node-js/JSCustomNodeFactory";
-// import { TSCustomNodeFactory } from "./diagrams/custom-node-ts/TSCustomNodeFactory";
-// import { JSCustomNodeModel } from "./diagrams/custom-node-js/JSCustomNodeModel";
-// import { TSCustomNodeModel } from "./diagrams/custom-node-ts/TSCustomNodeModel";
-import { BodyWidget } from "./diagrams/BodyWidget";
 import { ipcRenderer, TouchBarScrubber } from "electron";
 import { clipboard } from "electron";
 import { Query, graphql } from "react-apollo";
@@ -32,9 +25,6 @@ import { enhanceErrorWithDocument } from "apollo-cache-inmemory";
 
 // capture the session for reset reasons
 const { session } = remote;
-
-// create an instance of the diagram-engine
-const engine = createEngine();
 
 var scrolling = false;
 var loaded = false;
