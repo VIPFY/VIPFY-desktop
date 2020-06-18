@@ -8,12 +8,15 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 import { tests } from "./tests";
+import { withApollo } from "react-apollo";
+import gql from "graphql-tag";
 
 const { session, dialog } = remote;
 const RESULTS_FILE_PATH = "ssotest.json";
 
 interface Props {
   dbApps?: [];
+  client: any;
 }
 
 interface State {
@@ -349,6 +352,51 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             title="Save results to file">
             <i className="fal fa-save fa-2x" style={{ padding: "8px" }} />
           </span>
+          <span
+            onClick={async () => {
+              this.setState({ sites });
+            }}
+            title="Load Local Test Config"
+            style={{ marginLeft: "30px" }}>
+            <i className="fal fa-globe-europe fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span
+            onClick={async () => {
+              let data = await this.props.client.query({
+                query: gql`
+                  query {
+                    testing_fetchSSOTestConfig
+                  }
+                `,
+                fetchPolicy: "network-only"
+              });
+              let sites = data.data.testing_fetchSSOTestConfig;
+              console.log(sites);
+              this.setState({ sites });
+            }}
+            title="Load Remote Test Config">
+            <i className="fal fa-moon fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span
+            onClick={async () => {
+              let data = await this.props.client.query({
+                query: gql`
+                  query {
+                    testing_fetchSSOTestConfig
+                  }
+                `,
+                fetchPolicy: "network-only"
+              });
+              let sites = data.data.testing_fetchSSOTestConfig.map(site => ({
+                ...site,
+                options: null
+              }));
+              console.log(sites);
+              this.setState({ sites });
+            }}
+            title="Load Remote Test Config (no options)">
+            <i className="fal fa-rocket fa-2x" style={{ padding: "8px" }} />
+          </span>
         </div>
 
         <table className="simpletable">
@@ -393,4 +441,4 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 }
 
-export default UniversalLoginTest;
+export default withApollo(UniversalLoginTest);
