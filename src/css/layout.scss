@@ -2682,7 +2682,7 @@ progress[value] {
   }
 
   &.error {
-    background-color: #c73544;
+    background-color: $vipfy-cancel-color;
     color: white;
   }
 
@@ -2692,7 +2692,7 @@ progress[value] {
   }
 
   &.info2 {
-    background-color: #20baa9;
+    background-color: $vipfy-primary-color;
     color: white;
   }
 
@@ -2701,7 +2701,7 @@ progress[value] {
   }
 
   &.info4 {
-    background-color: #253647;
+    background-color: $vipfy-normaltext;
     color: white;
   }
 

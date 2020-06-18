@@ -29,7 +29,11 @@ class CardDouble extends React.PureComponent<Props, State> {
     return (
       <div className="card-double">
         <CardHeader app={this.props.app} />
-        <div className="featureTags">{FEATURES.map(feature => this.renderFeature(feature))}</div>
+        <div className="cardContent">
+          <div className="multilineTagContainer">
+            {FEATURES.map(feature => this.renderFeature(feature))}
+          </div>
+        </div>
       </div>
     );
   }
