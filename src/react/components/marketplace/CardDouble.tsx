@@ -16,12 +16,13 @@ const FEATURES = [
   "Video chat",
   "File sharing",
   "Excel export",
-  "Brain wipe"
+  "Brain wipe",
+  "And many, many more"
 ];
 
 class CardDouble extends React.PureComponent<Props, State> {
   renderFeature(feature: string) {
-    return <Tag className="featureTag">{feature}</Tag>;
+    return <Tag>{feature}</Tag>;
   }
 
   render() {

@@ -10,16 +10,20 @@
     transform: translateY(-2px);
   }
 
-  .featureTag {
-    border-radius: 6px;
-    background-color: #e9eef4;
-    padding: 0 12px;
-    width: 136px;
-    height: 24px;
+  .featureTags {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
+    flex-flow: row wrap;
+
+    .tag {
+      border-radius: 6px;
+      background-color: #e9eef4;
+      padding: 0 12px;
+      height: 24px;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
   }
 
   .header {
