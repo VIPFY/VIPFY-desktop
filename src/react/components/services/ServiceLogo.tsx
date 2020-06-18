@@ -3,21 +3,25 @@ import { getBgImageApp } from "../../common/images";
 
 interface Props {
   icon?: string;
-  iconSize?: number;
+  size?: number;
   children?: any;
 }
 
-const DEFAULT_ICON_SIZE = 32;
+const DEFAULT_SIZE = 48;
 
 class ServiceLogo extends React.PureComponent<Props> {
   render() {
-    const { icon, iconSize, children } = this.props;
-    console.log("icon size", iconSize);
+    const { icon, size, children } = this.props;
+    const finalSize = size || DEFAULT_SIZE;
 
     return (
       <span
-        className="service-logo-small"
-        style={{ backgroundImage: icon && getBgImageApp(icon, iconSize || DEFAULT_ICON_SIZE) }}>
+        className="service-logo-circle"
+        style={{
+          backgroundImage: icon && getBgImageApp(icon, finalSize),
+          height: finalSize,
+          width: finalSize
+        }}>
         {children}
       </span>
     );

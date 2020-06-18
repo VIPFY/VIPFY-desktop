@@ -17,7 +17,7 @@ class CardHeader extends React.PureComponent<Props, State> {
     return (
       <div className="header" style={{ backgroundColor: app.color || "#E9EEF4" }}>
         <div className="item">
-          <ServiceLogo icon={app.icon} iconSize={48} />
+          <ServiceLogo icon={app.icon} />
         </div>
         <div className="item appNameItem">
           {app.name}
