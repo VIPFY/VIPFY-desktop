@@ -8,9 +8,13 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 import { tests } from "./tests";
-const { session, dialog } = remote;
 
-interface Props {}
+const { session, dialog } = remote;
+const RESULTS_FILE_PATH = "ssotest.json";
+
+interface Props {
+  dbApps?: [];
+}
 
 interface State {
   siteIndexUnderTest: number | null;
@@ -20,15 +24,38 @@ interface State {
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
-  state = {
-    siteIndexUnderTest: -1,
-    runningInBatchMode: false,
-    sites,
-    takeScreenshots: true
-  };
+  constructor(props) {
+    super(props);
+
+    const sitesWithOptions = this.mapDbAppOptionsToSites(props);
+
+    this.state = {
+      sites: sitesWithOptions,
+      siteIndexUnderTest: -1,
+      runningInBatchMode: false,
+      takeScreenshots: true
+    };
+  }
+
+  /** Adds the options found in the database's apps to the corresponding sites */
+  mapDbAppOptionsToSites(props) {
+    if (!props.dbApps) {
+      return sites;
+    }
+
+    return sites.map(site => {
+      const dbApp = props.dbApps.find(app => app.name.toUpperCase() === site.app.toUpperCase());
+
+      if (dbApp) {
+        site.options = dbApp.options;
+      }
+
+      return site;
+    });
+  }
 
   componentDidUpdate() {
-    fs.writeFileSync("ssotest.json", JSON.stringify(this.state.sites));
+    fs.writeFileSync(RESULTS_FILE_PATH, JSON.stringify(this.state.sites));
   }
 
   advance(allTestsFinishedForCurrentSite: boolean) {
@@ -149,6 +176,13 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 setResult={(testResults: TestResult[], allTestsFinished: boolean) =>
                   this.handleResult(siteIndexUnderTest, testResults, allTestsFinished)
                 }
+                noUrlCheck={site.options && site.options.noUrlCheck}
+                speed={site.options ? site.options.loginspeed : null}
+                deleteCookies={site.options && site.options.deleteCookies}
+                execute={site.options ? site.options.execute : null}
+                noError={site.options && site.options.noError}
+                individualShow={site.options ? site.options.individualShow : ""}
+                individualNotShow={site.options ? site.options.individualNotShow : ""}
               />
             </td>
           </tr>
@@ -220,7 +254,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
     const totalSitesWithResult = sitesWithResult.length;
 
     if (totalSitesWithResult == 0) {
-      return <span>0/0</span>;
+      return <span>0/0 (100.00%)</span>;
     }
 
     const totalSitesWithPassedTestResult = sitesWithResult.filter(
@@ -263,7 +297,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
                 this.advance(true);
               }}>
-              <i className="fal fa-play fa-2x" style={{ padding: "8px" }} />
+              <i className="fal fa-play fa-2x" style={{ padding: "8px" }} id="startBatchRunIcon" />
             </span>
           )}
           {this.state.takeScreenshots ? (
@@ -301,7 +335,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
           <span
             onClick={async () => {
               const res = await dialog.showSaveDialog({
-                defaultPath: "ssotest.json",
+                defaultPath: RESULTS_FILE_PATH,
                 filters: [
                   { name: "JSON", extensions: ["json"] },
                   { name: "All Files", extensions: ["*"] }
@@ -337,7 +371,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 <th key={testIndex}>{tests[testIndex].expectLoginSuccess ? "Login" : "Error"}</th>
               ))}
             </tr>
-            <tr>
+            <tr id="statistics">
               <th colSpan={2}>Tests Passed:</th>
               {Array.from({ length: tests.length }, (_, testIndex: number) => (
                 <th key={testIndex}>{this.renderProportion(testIndex)}</th>

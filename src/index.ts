@@ -30,6 +30,7 @@ let devtools = null;
 
 const store = new Store();
 const key = getSetupKey();
+
 if (key !== false) {
   store.set("setupkey", key);
 }
@@ -77,11 +78,10 @@ if (!disableUpdater) {
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 
-let isDevMode = !!process.execPath.match(/[\\/]electron/);
+let isDevMode = !process.env.REACT_APP_TESTING && !!process.execPath.match(/[\\/]electron/);
 
 const vipfyHandler = (request, callback) => {
   const url = request.url.substr(8);
-  // callback({path: path.normalize(`${__dirname}/${url}`)})
 
   if (url.startsWith("todo")) {
     callback({ path: path.normalize(`${app.getAppPath()}/src/todo.html`) });
@@ -121,20 +121,24 @@ function getSetupKey() {
 }
 
 function checkSetupKey(key) {
+  const ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  let sum = 0;
+
   try {
-    const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    let sum = 0;
     for (let i = 0; i < 20; i++) {
-      let index = alphabet.indexOf(key[i]);
+      let index = ALPHABET.indexOf(key[i]);
+
       if (index === -1) {
         return false;
       }
+
       sum *= 7; // 7 is prime
       sum += index + 1;
     }
-    sum %= alphabet.length;
 
-    let checksum = alphabet[sum];
+    sum %= ALPHABET.length;
+
+    let checksum = ALPHABET[sum];
     return key[20] === checksum;
   } catch (e) {
     return false;
@@ -145,6 +149,7 @@ const createWindow = async () => {
   if (!disableUpdater) {
     try {
       autoUpdater.checkForUpdates();
+
       setInterval(function () {
         try {
           if (!disableUpdater) {
@@ -194,9 +199,10 @@ const createWindow = async () => {
   });
 
   mainWindow.once("ready-to-show", async () => {
-    mainWindow.webContents.on("did-fail-load", (event, code, desc, url, isMainFrame) => {
+    mainWindow.webContents.on("did-fail-load", (event, code, _desc, url, isMainFrame) => {
       logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
     });
+
     if (isDevMode) {
       await openDevTools(mainWindow.webContents.id);
       mainWindow.webContents.on("dom-ready", async e => {
@@ -205,25 +211,27 @@ const createWindow = async () => {
         }
       });
     }
+
     mainWindow.show();
   });
 
   // and load the index.html of the app.
-  // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
+  // Open the DevTools
   if (isDevMode) {
     try {
       await installExtension(REACT_DEVELOPER_TOOLS);
     } catch (err) {
       console.log(err);
     }
+
     try {
       await installExtension(REACT_PERF);
     } catch (err) {
       console.log(err);
     }
+
     try {
       await installExtension(APOLLO_DEVELOPER_TOOLS);
     } catch (err) {
@@ -249,13 +257,14 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  mainWindow.on("will-resize", (e, newBounds) => fixDevToolSize(newBounds));
+  mainWindow.on("will-resize", (_e, newBounds) => fixDevToolSize(newBounds));
 
-  mainWindow.on("maximize", e => {
+  mainWindow.on("maximize", () => {
     const bounds = mainWindow.getContentBounds(); // window bounds are larger than window to hide border in maximized state (on windows at least)
     fixDevToolSize(bounds);
   });
-  mainWindow.on("unmaximize", e => {
+
+  mainWindow.on("unmaximize", () => {
     const bounds = mainWindow.getBounds();
     fixDevToolSize(bounds);
   });
@@ -264,6 +273,7 @@ const createWindow = async () => {
 function fixDevToolSize(newBounds) {
   // autoresize is buggy, so we do our own
   if (!devtools || devtools.isDestroyed()) return;
+
   devtools.setBounds({
     x: newBounds.width - 600,
     y: 64,
@@ -324,16 +334,19 @@ async function closeDevTools(closeToolbar = true) {
       })();
     `);
   }
+
   if (devtools && !devtools.isDestroyed()) {
     if (containerWithDevToolsOpen && !containerWithDevToolsOpen.isDestroyed()) {
       containerWithDevToolsOpen.closeDevTools();
     }
+
     containerWithDevToolsOpen = null;
     mainWindow.removeBrowserView(devtools);
     devtools.destroy();
     devtools = null;
     return true;
   }
+
   return false;
 }
 
@@ -341,6 +354,7 @@ async function openDevTools(webContentId) {
   if (!(await closeDevTools(false))) {
     await showDevToolsToolBar();
   }
+
   devtools = new BrowserView();
   mainWindow.addBrowserView(devtools);
   const bounds = mainWindow.getContentBounds();
@@ -348,50 +362,53 @@ async function openDevTools(webContentId) {
 
   const container = webContents.fromId(webContentId);
   container.setDevToolsWebContents(devtools.webContents);
-  //container.debugger.attach();
   container.openDevTools({ mode: "detach" });
   containerWithDevToolsOpen = container;
-  console.log(devtools.getBounds());
 }
 
-ipcMain.handle("openDevTools", async e => {
+ipcMain.handle("openDevTools", async () => {
   if (mainWindow === null) {
     return;
   }
+
   await openDevTools(mainWindow.webContents.id);
 });
 
-ipcMain.handle("changeDevTools", (e, id: number) => {
+ipcMain.handle("changeDevTools", (_e, id: number) => {
   if (mainWindow === null) {
     return;
   }
-  console.log("changeDevTools", id);
+
   if (id == -1) {
     id = mainWindow.webContents.id;
   }
+
   openDevTools(id);
 });
 
-ipcMain.handle("getDevToolsContentId", e => {
+ipcMain.handle("getDevToolsContentId", () => {
   if (!containerWithDevToolsOpen || containerWithDevToolsOpen.isDestroyed()) {
     closeDevTools();
     return null;
   }
+
   const id = containerWithDevToolsOpen.id;
+
   if (id == mainWindow.webContents.id) {
     return -1;
   }
+
   return id;
 });
 
-ipcMain.handle("closeDevTools", e => {
+ipcMain.handle("closeDevTools", () => {
   if (mainWindow === null) {
     return false;
   }
   return closeDevTools();
 });
 
-ipcMain.handle("getMainWindowPosition", e => {
+ipcMain.handle("getMainWindowPosition", () => {
   if (mainWindow === null) {
     return null;
   }
@@ -408,7 +425,7 @@ ipcMain.on("getMainWindowPositionSync", e => {
   e.returnValue = mainWindow.getPosition();
 });
 
-ipcMain.handle("getMainWindowContentBounds", e => {
+ipcMain.handle("getMainWindowContentBounds", () => {
   if (mainWindow === null) {
     return null;
   }

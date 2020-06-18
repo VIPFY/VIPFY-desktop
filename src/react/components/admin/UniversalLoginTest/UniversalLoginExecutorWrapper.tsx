@@ -9,6 +9,13 @@ interface Props {
   password: string;
   takeScreenshot: boolean;
   setResult: (testResults: TestResult[], allTestsFinished: boolean) => void;
+  noUrlCheck?: boolean;
+  speed?: number;
+  deleteCookies?: boolean;
+  execute?: [];
+  noError?: boolean;
+  individualShow?: string;
+  individualNotShow?: string;
 }
 
 interface State {
@@ -90,12 +97,12 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         loginUrl={loginUrl}
         username={username + (test.enterCorrectEmail ? "" : "NO")}
         password={password + (test.enterCorrectPassword ? "" : "NO")}
-        speed={test.speedFactor}
+        speed={this.props.speed || test.speedFactor}
         timeout={test.timeout ?? 15 * SECOND}
+        takeScreenshot={takeScreenshot}
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
-        deleteCookies={test.deleteCookies}
-        takeScreenshot={takeScreenshot}
+        deleteCookies={this.props.deleteCookies || test.deleteCookies}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
             passed: this.isPassed(test, loginResult),
@@ -104,6 +111,11 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
           };
           this.setResult(currentTestIndex, testResult);
         }}
+        noUrlCheck={this.props.noUrlCheck}
+        execute={this.props.execute}
+        noError={this.props.noUrlCheck}
+        individualShow={this.props.individualShow}
+        individualNotShow={this.props.individualNotShow}
       />
     );
   }
