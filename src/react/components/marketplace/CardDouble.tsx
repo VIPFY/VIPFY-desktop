@@ -31,23 +31,23 @@ class CardDouble extends React.PureComponent<Props, State> {
     return (
       <div>
         <Tag>+</Tag>
-        {pro}
+        <span className="pro">{pro}</span>
       </div>
     );
   }
 
   render() {
     return (
-      <div className="card-double">
+      <div className="card">
         <CardHeader app={this.props.app} />
-        <div className="cardContent">
-          <div className="pros">{PROS.map(pro => this.renderPro(pro))}</div>
+        <div className="cardBody">
+          <div className="cardBodySection pros">{PROS.map(pro => this.renderPro(pro))}</div>
 
           {PROS && !!PROS.length && FEATURES && !!FEATURES.length && <hr />}
 
-          <div className="multilineTagContainer">
+          <div className="cardBodySection multilineTagContainer">
             {FEATURES.map(feature => (
-              <Tag>{feature}</Tag>
+              <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
             ))}
           </div>
         </div>

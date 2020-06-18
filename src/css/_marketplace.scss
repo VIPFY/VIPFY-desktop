@@ -1,33 +1,44 @@
-.card-double {
+.card {
   width: 552px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #f4f5f7;
   color: #3b4c5d;
+  font-size: 14px;
 
   &:hover {
     border-width: 2px;
     transform: translateY(-2px);
   }
 
-  .cardContent {
+  > .tag {
+    font-size: 12px;
+  }
+
+  .cardBody {
     padding: 16px;
 
-    .pros {
-    }
-
-    hr {
-      margin: 16px 0;
-    }
-
-    .multilineTagContainer {
+    .cardBodySection {
       display: flex;
-      flex-flow: row wrap;
-      margin: 0 -8px -8px 0;
 
       > * {
         margin: 0 8px 8px 0;
       }
+    }
+
+    .pros {
+      flex-direction: column;
+
+      .tag {
+        color: #1b9a8b;
+        background-color: #d6f2ef;
+        border-radius: 6px;
+      }
+    }
+
+    .multilineTagContainer {
+      flex-flow: row wrap;
+      margin: 0 -8px -8px 0;
 
       .tag {
         border-radius: 6px;
@@ -42,54 +53,62 @@
     }
   }
 
-  .header {
-    height: 48px;
-    width: flexible;
-    background: 0% 0% no-repeat padding-box;
-    padding: 16px;
-    font-size: 14px;
+  hr {
+    border: 1px solid #dfe3eb;
+    transform: scaleY(0.5);
+    margin: 8px 0 16px 0;
+  }
+}
 
-    .item {
-      margin-right: 16px;
-      float: left;
+.header {
+  height: 48px;
+  width: flexible;
+  background: 0% 0% no-repeat padding-box;
+  padding: 16px;
 
-      &:last-child {
-        margin-right: 0px;
-        float: right;
-      }
+  .item {
+    margin-right: 16px;
+    float: left;
+
+    &:last-child {
+      margin-right: 0px;
+      float: right;
     }
+  }
 
-    .appNameItem {
-      padding: 4px 0;
+  .appNameItem {
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .rating {
+    margin-top: 9px;
+    font-size: 12px;
+
+    .fa-star {
+      color: #3b4c5d;
     }
+  }
 
-    .rating {
-      margin-top: 9px;
-      font-size: 12px;
+  #headerTags {
+    margin: -4px 0px -4px 16px;
+  }
 
-      .fa-star {
-        color: #3b4c5d;
-      }
-    }
+  .tag {
+    border: 1px solid #c9d1da;
+    border-radius: 6px;
+    color: black;
+    font-size: 12px;
+    background-color: white;
+    width: 84px;
+    height: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 8px;
 
-    #tags {
-      margin: -4px 0px -4px 16px;
-    }
-
-    .tag {
-      border: 1px solid #c9d1da;
-      border-radius: 6px;
-      background-color: white;
-      width: 84px;
-      height: 18px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 8px;
-
-      &.priceType {
-        text-transform: uppercase;
-      }
+    &.priceType {
+      text-transform: uppercase;
     }
   }
 }

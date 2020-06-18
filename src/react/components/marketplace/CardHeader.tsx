@@ -23,7 +23,7 @@ class CardHeader extends React.PureComponent<Props, State> {
           {app.name}
           <p className="rating">{showStars(4, 5)}</p>
         </div>
-        <div className="item" id="tags">
+        <div className="item" id="headerTags">
           <Tag div={true} className="info7 priceType">
             Free trial
           </Tag>
