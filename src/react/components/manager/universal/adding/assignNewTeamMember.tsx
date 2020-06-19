@@ -12,6 +12,7 @@ import { fetchTeam, fetchDepartmentsData } from "../../../../queries/departments
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddEmployeePersonalData from "../../addEmployeePersonalData";
+import Tag from "../../../../common/Tag";
 
 interface Props {
   team: any;
@@ -251,16 +252,14 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                   position: "relative",
                   justifyContent: "center"
                 }}>
-                <span
-                  className="infoTag"
+                <Tag
+                  className="error"
                   style={{
-                    backgroundColor: "rgb(199, 53, 68)",
                     textAlign: "center",
-                    lineHeight: "initial",
-                    color: "white"
+                    lineHeight: "initial"
                   }}>
                   Employee is already in this team
-                </span>
+                </Tag>
               </div>
             ) : (
               <>
@@ -286,14 +285,17 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             pollInterval={60 * 10 * 1000 + 1000}
             query={fetchDepartmentsData}
             fetchPolicy="network-only">
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
-                return "Loading...";
+                return <>Loading...</>;
               }
+
               if (error) {
-                return `Error! ${error.message}`;
+                return <>Error! {error.message}</>;
               }
+
               const employees = data.fetchDepartmentsData[0].employees;
+
               return (
                 <>
                   <div
@@ -393,13 +395,6 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                           />
                         </div>
                       ))}
-                      {/*<div className="listingDiv" key="new">
-                        <UniversalButton
-                          type="low"
-                          label="Create new User"
-                          onClick={() => this.setState({ add: true })}
-                        />
-                          </div>*/}
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
                     </PopupBase>
                   )}

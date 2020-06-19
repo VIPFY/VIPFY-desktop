@@ -3,12 +3,12 @@ import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
 import ChangeAccount from "./universal/changeAccount";
 import ColumnTeams from "./universal/columns/columnTeams";
+import Tag from "../../common/Tag";
 
 interface Props {
   account: any;
   orbit: any;
   app: any;
-
   refetch: Function;
 }
 
@@ -16,13 +16,13 @@ interface State {
   change: Boolean;
 }
 
-const INITAL_STATE = {
+const INITIAL_STATE = {
   change: false
 };
 
 class AccountRow extends React.Component<Props, State> {
   state = {
-    ...INITAL_STATE,
+    ...INITIAL_STATE,
     alias: this.props.account ? this.props.account.alias : "",
     todate:
       this.props.account.endtime != 8640000000000000 && this.props.account.endtime != null
@@ -30,6 +30,14 @@ class AccountRow extends React.Component<Props, State> {
         : null,
     email: this.props.account.key ? this.props.account.key.email : ""
   };
+
+  renderTag(children: React.ReactChildren | React.ReactChild, className: string) {
+    return (
+      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
+        {children}
+      </Tag>
+    );
+  }
 
   showStatus(e) {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
@@ -44,60 +52,21 @@ class AccountRow extends React.Component<Props, State> {
     });
 
     if (activeAssignment.length == 0) {
-      return (
-        <span
-          className="infoTag"
-          style={{
-            backgroundColor: "#c73544",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          No Active Assignment
-        </span>
-      );
+      return this.renderTag("No Active Assignment", "error");
     }
 
     if (e.options && e.options.private) {
-      return (
-        <span
-          className="infoTag"
-          style={{
-            color: "white",
-            backgroundColor: "#3E576E",
-            textAlign: "center",
-            lineHeight: "initial"
-          }}>
-          Private
-        </span>
-      );
+      return this.renderTag("Private", "info1");
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return (
-        <span
-          className="infoTag"
-          style={{
-            backgroundColor: "#20baa9",
-            textAlign: "center",
-            lineHeight: "initial",
-            color: "white"
-          }}>
-          Starts in {moment(start - 0).toNow(true)}
-        </span>
-      );
+      return this.renderTag("Starts in " + moment(start - 0).toNow(true), "info2");
     }
 
     if (end) {
-      return (
-        <span
-          className="infoTag"
-          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
-          Ends in {moment(end - 0).toNow(true)}
-        </span>
-      );
+      return this.renderTag("Ends in " + moment(end - 0).toNow(true), "info3");
     } else {
-      return;
+      return null;
     }
   }
 
