@@ -387,7 +387,6 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 fetchPolicy: "network-only"
               });
               let sites = data.data.testing_fetchSSOTestConfig;
-              console.log(sites);
               this.setState({ sites });
             }}
             title="Load Remote Test Config">
@@ -407,7 +406,6 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 ...site,
                 options: null
               }));
-              console.log(sites);
               this.setState({ sites });
             }}
             title="Load Remote Test Config (no options)">
