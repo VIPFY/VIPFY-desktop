@@ -26,7 +26,7 @@ const FEATURES = [
   "And many, many more"
 ];
 
-class CardDouble extends React.PureComponent<Props, State> {
+class Card extends React.PureComponent<Props, State> {
   renderPro(pro: string) {
     return (
       <div>
@@ -58,4 +58,4 @@ class CardDouble extends React.PureComponent<Props, State> {
   }
 }
 
-export default CardDouble;
+export default Card;

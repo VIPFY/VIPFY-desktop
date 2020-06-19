@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
-import CardDouble from "../components/marketplace/CardDouble";
+import Card from "../components/marketplace/Card";
 import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
@@ -30,7 +30,7 @@ class Marketplace extends React.Component<Props> {
     return (
       <div className="marketplace">
         {sortedApps.map(app => (
-          <CardDouble app={app} key={app.id} onClick={() => this.openAppDetails(app.id)} />
+          <Card app={app} key={app.id} onClick={() => this.openAppDetails(app.id)} />
         ))}
       </div>
     );
