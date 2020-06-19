@@ -1,4 +1,5 @@
-import React, { ReactChildren, ReactChild, FunctionComponent } from "react";
+import React from "react";
+import type { ReactChildren, ReactChild, FunctionComponent } from "react";
 
 interface Props {
   children: ReactChild | ReactChildren;
