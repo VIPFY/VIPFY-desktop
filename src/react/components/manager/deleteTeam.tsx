@@ -82,6 +82,7 @@ class DeleteTeam extends React.Component<Props, State> {
             .forEach((asa, k) => {
               assignments.push(
                 <div
+                  key={`AssignmentToDelete-${asa.id}-${k}`}
                   style={{
                     display: "flex",
                     alignItems: "center",

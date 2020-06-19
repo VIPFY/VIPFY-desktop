@@ -5,7 +5,6 @@ import moment from "moment";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import TerminateAssignedAccount from "./universal/adding/terminateAssignedAccount";
 import { shortEnglishHumanizer } from "../../common/duration";
-import Tag from "../../common/Tag";
 
 interface Props {
   e: any;
@@ -25,44 +24,56 @@ class ServiceDetails extends React.Component<Props, State> {
   };
 
   showStatus(e) {
-    if (e.pending) {
-      return this.renderTag("Integration pending", "error", { lineHeight: "initial" });
-    }
-
-    const start = e.starttime;
-    if (moment(start - 0).isAfter(moment.now())) {
-      return this.renderTag("Starts in " + moment(start - 0).toNow(true), "info2", {
-        lineHeight: "initial"
-      });
-    }
-
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
+    const start = e.starttime;
+
+    if (e.pending) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Integration pending
+        </span>
+      );
+    }
+
+    if (moment(start - 0).isAfter(moment.now())) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#20baa9",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Starts in {moment(start - 0).toNow(true)}
+        </span>
+      );
+    }
+
     if (end) {
-      return this.renderTag("Ends in " + moment(end - 0).toNow(true), "info3", {
-        lineHeight: "initial"
-      });
+      return (
+        <span
+          className="infoTag"
+          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          Ends in {moment(end - 0).toNow(true)}
+        </span>
+      );
     } else {
-      return <Tag>{`Active since ${moment(start - 0).fromNow(true)}`}</Tag>;
+      return <span className="infoTag">Active since {moment(start - 0).fromNow(true)}</span>;
     }
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillUpdate(nextProps, nextState) {
     if (nextProps.e.id != this.props.e.id) {
       this.setState({ terminate: false });
     }
-  }
-
-  renderTag(
-    children: React.ReactChildren | React.ReactChild,
-    className: string = "",
-    style: object = {},
-    tooltip: string = undefined
-  ) {
-    return (
-      <Tag tooltip={tooltip} className={className} style={{ textAlign: "center", ...style }}>
-        {children}
-      </Tag>
-    );
   }
 
   render() {
@@ -92,43 +103,81 @@ class ServiceDetails extends React.Component<Props, State> {
               className="managerSquare"
               additionalStyles={{ marginTop: "0px" }}
             />
+            {/*} <div className="licenceInfoHolder">
+                      <div className="licenceInfoElement">
+                        {e.teamaccount ? (
+                          <i className="fal fa-users" title="Shared Account" />
+                        ) : (
+                          <i className="fal fa-user" title="Single Account" />
+                        )}
+                      </div>
+                      <div>
+                        {e.teamaccount ||
+                          (e.teamlicence && (
+                            <PrintTeamSquare
+                              team={e.teamaccount || e.teamlicence}
+                              title={`Assigned via team ${(e.teamaccount && e.teamaccount.name) ||
+                                (e.teamlicence && e.teamlicence.name)}`}
+                              className="licenceInfoElement whitetext"
+                            />
+                          ))}
+                      </div>
+                    </div>*/}
             <span className="name" style={{ marginLeft: "8px" }} title={e.boughtplanid.alias}>
+              {/*e.boughtplanid.planid.appid.name*/}
               {e.boughtplanid.alias}
             </span>
             <span>
-              {!(e.tags && e.tags.includes("vacation")) &&
-                e.rightscount > 1 &&
-                this.renderTag(
-                  "Shared",
-                  "info4",
-                  { marginLeft: "8px" },
-                  "This account is shared between multiple users"
-                )}
-              {e.tags &&
-                e.tags.includes("vacation") &&
-                this.renderTag(
-                  "Holiday",
-                  "info5",
-                  { marginLeft: "8px" },
-                  "This account is a vacation access"
-                )}
-              {e.tags &&
-                e.tags.includes("teamlicence") &&
-                this.renderTag(
-                  "Team",
-                  "info6",
-                  { marginLeft: "8px" },
-                  "This account is assigned through a team"
-                )}
+              {e.options && e.options.private && (
+                <span
+                  className="infoTag"
+                  style={{
+                    marginLeft: "8px",
+                    textAlign: "center",
+                    color: "white",
+                    backgroundColor: "rgb(62, 87, 110)"
+                  }}
+                  title="This account is private">
+                  Private
+                </span>
+              )}
+              {!(e.tags && e.tags.includes("vacation")) && e.rightscount > 1 && (
+                <span
+                  className="infoTag share"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is shared between multiple users">
+                  Shared
+                </span>
+              )}
+              {e.tags && e.tags.includes("vacation") && (
+                <span
+                  className="infoTag vacationTag"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is a vacation access">
+                  Holiday
+                </span>
+              )}
+              {e.tags && e.tags.includes("teamlicence") && (
+                <span
+                  className="infoTag teamTag"
+                  style={{ marginLeft: "8px", textAlign: "center" }}
+                  title="This account is a assigned through a team">
+                  Team
+                </span>
+              )}
             </span>
           </div>
-
-          <div className="tableColumnSmall content">{this.showStatus(e)}</div>
+          {/*<div className="tableColumnSmall content">{e.boughtplanid.alias}</div>*/}
+          <div className="tableColumnSmall content">
+            {/*moment(e.starttime - 0).format("DD.MM.YYYY")*/}
+            {this.showStatus(e)}
+          </div>
           <div className="tableColumnSmall content">{e.alias}</div>
 
           <div className="tableColumnSmall content">
             {this.props.isadmin && (
               <Query
+                //pollInterval={60 * 10 * 1000 + 500}
                 query={gql`
                   query fetchTotalUsageMinutes(
                     $starttime: Date!
@@ -147,16 +196,15 @@ class ServiceDetails extends React.Component<Props, State> {
                   assignmentid: e.id,
                   unitid: this.props.employeeid
                 }}>
-                {({ data, loading, error = null }) => {
+                {({ data, loading, error }) => {
                   if (loading) {
                     return <div>Loading</div>;
                   }
-
                   if (error) {
                     return <div>Error fetching data</div>;
                   }
-
                   if (data) {
+                    //console.log("LOG: ServiceDetails -> render -> data", data);
                     const percent = (data.assignment / data.total) * 100;
 
                     return (
@@ -175,25 +223,47 @@ class ServiceDetails extends React.Component<Props, State> {
                       </React.Fragment>
                     );
                   }
-
-                  return null;
+                  return "";
                 }}
               </Query>
             )}
           </div>
-          <div className="tableColumnSmall content"></div>
+          <div
+            className="tableColumnSmall content"
+            /*title="Please check in external account"*/
+          >
+            {/*{e.boughtplanid.totalprice > 0
+                      ? `$${e.boughtplanid.totalprice}/month`
+                    : "Integrated Account"}*/}
+          </div>
         </div>
+        {/*<div style={{ width: "18px", display: "flex", alignItems: "center" }}>
+                  {e.pending && (
+                    <i
+                      className="fad fa-exclamation-triangle warningColor"
+                      title="Integration pending"></i>
+                  )}
+                  </div>*/}
         <div className="tableEnd">
           {this.props.isadmin && (
             <div className="editOptions">
               <i className="fal fa-link editbuttons" />
-              <i
-                className="fal fa-trash-alt editbuttons"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.setState({ terminate: true });
-                }}
-              />
+              {(!e.options || !e.options.private) && (
+                <i
+                  className="fal fa-trash-alt editbuttons"
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.setState({ terminate: true });
+                  }}
+                />
+              )}
+              {/*<i
+                        className="fal fa-island-tropical editbuttons"
+                        onClick={e => {
+                          e.stopPropagation();
+                          this.setState({ vacation: true });
+                        }}
+                      />*/}
             </div>
           )}
         </div>

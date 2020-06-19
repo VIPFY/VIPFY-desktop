@@ -14,7 +14,6 @@ import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
 import { AppContext } from "../../common/functions";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import Tag from "../../common/Tag";
 
 interface Props {
   orbit: any;
@@ -110,14 +109,6 @@ class OrbitSection extends React.Component<Props, State> {
     selfhosting: this.props.orbit.key && this.props.orbit.key.selfhosting
   };
 
-  renderTag(children: React.ReactChildren | React.ReactChild, className: string) {
-    return (
-      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
-        {children}
-      </Tag>
-    );
-  }
-
   showStatus(e) {
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
     const start = e.buytime;
@@ -131,17 +122,49 @@ class OrbitSection extends React.Component<Props, State> {
         ).length >= 0
       )
     ) {
-      return this.renderTag("No active Accounts", "error");
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          No active Accounts
+        </span>
+      );
     }
 
     if (moment(start - 0).isAfter(moment.now())) {
-      return this.renderTag("Starts in " + moment(start).toNow(true), "info2");
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#20baa9",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Starts in {moment(start).toNow(true)}
+        </span>
+      );
     }
 
     if (end) {
-      const endDate = moment(end).isValid() ? end : new Date(end - 0);
-
-      return this.renderTag("Ends in " + moment(endDate).toNow(true), "warn");
+      let enddate;
+      if (moment(end).isValid()) {
+        enddate = end;
+      } else {
+        enddate = new Date(end - 0);
+      }
+      return (
+        <span
+          className="infoTag"
+          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          Ends in {moment(enddate).toNow(true)}
+        </span>
+      );
     } else {
       return "";
     }
@@ -382,11 +405,23 @@ class OrbitSection extends React.Component<Props, State> {
                     }
                   }}
                   modifyValue={value => {
+                    let deletedPrefix = value;
                     if (value.startsWith("https://") || value.startsWith("http://")) {
-                      return value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      return value;
+                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
                     }
+                    let deletedSuffix = deletedPrefix;
+                    if (
+                      this.props.orbit &&
+                      this.props.orbit.options &&
+                      this.props.orbit.options.afterdomain &&
+                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                    ) {
+                      deletedSuffix = deletedPrefix.substring(
+                        0,
+                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                      );
+                    }
+                    return deletedSuffix;
                   }}
                   prefix={
                     this.state.selfhosting ? (
@@ -474,19 +509,19 @@ class OrbitSection extends React.Component<Props, State> {
               )}
             </div>
             {this.state.todate && (
-              <Tag
-                div={true}
-                className="warn"
+              <div
+                className="infoTag"
                 style={{
+                  backgroundColor: "#ffc15d",
                   textAlign: "center",
                   lineHeight: "initial",
+                  color: "white",
                   fontSize: "12px",
                   padding: "5px"
                 }}>
-                {`This will terminate all assignments and accounts on ${moment(
-                  this.state.todate
-                ).format("DD.MM.YYYY")}`}
-              </Tag>
+                This will terminate all assignments and accounts on{" "}
+                {moment(this.state.todate).format("DD.MM.YYYY")}
+              </div>
             )}
 
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>

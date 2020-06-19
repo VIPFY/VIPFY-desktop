@@ -2,7 +2,6 @@ import * as React from "react";
 import moment from "moment";
 import RemoveTeamOrbit from "./removeTeamOrbit";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import Tag from "../../common/Tag";
 
 interface Props {
   service: any;
@@ -19,37 +18,59 @@ class TeamServiceDetails extends React.Component<Props, State> {
     delete: false
   };
 
-  renderTag(children: React.ReactChildren | React.ReactChild, className: string = "") {
-    return (
-      <Tag className={className} style={{ textAlign: "center", lineHeight: "initial" }}>
-        {children}
-      </Tag>
-    );
-  }
-
   showStatus(e) {
-    if (e.pending) {
-      return this.renderTag("Integration pending", "error");
-    }
-
-    const start = e.buytime;
-    if (moment(start).isAfter(moment.now())) {
-      return this.renderTag("Starts in " + moment(start).toNow(true), "info2");
-    }
-
     const end = e.endtime == 8640000000000000 ? null : e.endtime;
+    const start = e.buytime;
+
+    if (e.pending) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#c73544",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Integration pending
+        </span>
+      );
+    }
+
+    if (moment(start).isAfter(moment.now())) {
+      return (
+        <span
+          className="infoTag"
+          style={{
+            backgroundColor: "#20baa9",
+            textAlign: "center",
+            lineHeight: "initial",
+            color: "white"
+          }}>
+          Starts in {moment(start).toNow(true)}
+        </span>
+      );
+    }
+
     if (end) {
-      return this.renderTag("Ends in " + moment(end).toNow(true), "info3");
+      return (
+        <span
+          className="infoTag"
+          style={{ backgroundColor: "#FFC15D", textAlign: "center", lineHeight: "initial" }}>
+          Ends in {moment(end).toNow(true)}
+        </span>
+      );
     } else {
-      return <Tag>{`Active since ${moment(start).fromNow(true)}`}</Tag>;
+      return <span className="infoTag">Active since {moment(start).fromNow(true)}</span>;
     }
   }
 
   render() {
-    const { service, team, moveTo } = this.props;
-
+    const { service } = this.props;
     return (
-      <div className="tableRow" onClick={() => moveTo(`lmanager/${service.planid.appid.id}`)}>
+      <div
+        className="tableRow"
+        onClick={() => this.props.moveTo(`lmanager/${service.planid.appid.id}`)}>
         <div className="tableMain">
           <div className="tableColumnSmall">
             <PrintServiceSquare
@@ -69,12 +90,17 @@ class TeamServiceDetails extends React.Component<Props, State> {
               {service.planid.appid.name}
             </span>
           </div>
-          <div className="tableColumnSmall content">{service.alias}</div>
-          <div className="tableColumnSmall content">{this.showStatus(service)}</div>
-          <div className="tableColumnSmall content"></div>
+          <div className="tableColumnSmall content">
+            {/*moment(service.buytime).format("DD.MM.YYYY")*/}
+            {service.alias}
+          </div>
+          <div className="tableColumnSmall content">
+            {/*service.endtime ? moment(service.endtime - 0).format("DD.MM.YYYY") : "Recurring"*/}
+            {this.showStatus(service)}
+          </div>
+          <div className="tableColumnSmall content">{/*${service.totalprice.toFixed(2)*/}</div>
           <div className="tableColumnSmall content">{/*not implemented yet*/}</div>
         </div>
-
         <div className="tableEnd">
           <div className="editOptions">
             <i className="fal fa-external-link-alt editbuttons" />
@@ -87,11 +113,10 @@ class TeamServiceDetails extends React.Component<Props, State> {
             />
           </div>
         </div>
-
         {this.state.delete && (
           <RemoveTeamOrbit
-            orbit={service}
-            team={team}
+            orbit={this.props.service}
+            team={this.props.team}
             close={() => this.setState({ delete: false })}
           />
         )}

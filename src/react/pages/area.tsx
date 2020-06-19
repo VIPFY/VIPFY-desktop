@@ -60,6 +60,9 @@ import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
 import Workspace from "./Workspace";
+//import PaymentMethod from "./billing/paymentMethod";
+import InboundEmails from "../components/admin/emails";
+import PendingIntegrations from "../components/admin/PendingIntegrations";
 
 interface AreaProps {
   id: string;
@@ -131,6 +134,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (assignmentId: number) => {
+    console.log("OPEN INSTANCES", this.state);
     if (this.state.openInstances[assignmentId]) {
       this.setState(prevState => {
         const newstate = {
@@ -143,6 +147,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       });
       this.props.history.push(`/area/app/${assignmentId}`);
     } else {
+      console.log("SET APP", assignmentId);
       this.addWebview(assignmentId, true);
       this.props.history.push(`/area/app/${assignmentId}`);
     }
@@ -175,6 +180,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
+    console.log("ADDWEBVIEW", licenceID, this.state);
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = {
@@ -250,6 +256,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   }; */
 
   closeInstance = (viewID: number, licenceID: number) => {
+    console.log("CLOSE", viewID, licenceID, this.state.webviews);
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -270,6 +277,13 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
+          console.log(
+            "TEST",
+            prevState.webviews[position],
+            prevState.webviews[0],
+            prevState.webviews.length - 1,
+            prevState.openInstances
+          );
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -377,8 +391,8 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "billingelement"
       },
       {
-        label: "Billing Statistics",
-        location: "billing",
+        label: "Payment Method",
+        location: "paymentdata/paymentmethod",
         icon: "file-invoice-dollar",
         show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
@@ -485,12 +499,39 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   handleClose = (viewID: number, licenceID: number) => {
     this.setState(prevState => {
+      console.log("TEST", prevState.webviews, viewID, licenceID);
       const webviews = prevState.webviews.filter(view => view.key != viewID);
 
       return { webviews };
     });
 
     this.closeInstance(viewID, licenceID);
+  };
+
+  printBreadcrumbs = (headline, breadcrumbs) => {
+    const bc: JSX.Element[] = [];
+
+    if (breadcrumbs) {
+      breadcrumbs.forEach(b =>
+        bc.push(
+          <>
+            <button
+              className={`cleanup breadcrumb ${b.link ? "" : "disabeld"}`}
+              onClick={() => b.link && this.props.moveTo(b.link)}>
+              {b.text}
+            </button>
+            <span className="breadcrumbSeperator">/</span>
+          </>
+        )
+      );
+    }
+    bc.push(
+      <>
+        <button className="cleanup breadcrumb current">{headline}</button>
+        <span className="breadcrumbSeperator">/</span>
+      </>
+    );
+    return bc;
   };
 
   render() {
@@ -503,9 +544,20 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing, admin: true },
+      /*{
+        path: "paymentdata/paymentmethod",
+        component: PaymentMethod,
+        admin: true,
+        addprops: {
+          breadcrumbs: [{ text: "Payment Data", link: "billing" }],
+          heading: "Payment Method"
+        },
+        design: 2
+      },*/
       { path: "marketplace", component: Marketplace, admin: true },
       { path: "marketplace/:appid/", component: AppPage, admin: true },
       { path: "marketplace/:appid/:action", component: AppPage, admin: true },
+      //{ path: "marketplace/order/:appid/:planid", component: Order, admin: true },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
@@ -519,8 +571,11 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/service-edit", component: ServiceEdit, admin: true },
       { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
       { path: "admin/service-integration/:appid", component: LoginIntegrator, admin: true },
+      { path: "admin/email-integration/:emailid", component: LoginIntegrator, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
+      //{ path: "admin/testingbilling", component: TestingBilling, admin: true },
+      { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
       { path: "emanager", component: EmployeeOverview, admin: true },
@@ -531,7 +586,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
       { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "company", component: CompanyDetails, admin: true }
+      { path: "company", component: CompanyDetails, admin: true },
+      { path: "admin/inboundemails", component: InboundEmails, admin: true }
     ];
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
@@ -563,7 +619,6 @@ class Area extends React.Component<AreaProps, AreaState> {
               if (error) {
                 return <ErrorPage />;
               }
-
               const licences = data.fetchUserLicenceAssignments;
               return (
                 <div className="area" style={this.props.style}>
@@ -670,7 +725,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           render={() => <SupportPage {...this.state} fromErrorPage={true} />}
                         />
 
-                        {routes.map(({ path, component, admin, addprops }) => {
+                        {routes.map(({ path, component, admin, addprops, design }) => {
                           const RouteComponent = component;
                           let marginLeft = 64;
                           if (admin) {
@@ -690,8 +745,24 @@ class Area extends React.Component<AreaProps, AreaState> {
                                 render={props => (
                                   <div
                                     className={`full-working ${chatOpen ? "chat-open" : ""}`}
-                                    style={{ marginLeft: `${marginLeft}px` }}>
-                                    <ResizeAware>
+                                    style={Object.assign(
+                                      design == 2
+                                        ? { padding: "0px 32px" }
+                                        : { backgroundColor: "white" },
+                                      { marginLeft: `${marginLeft}px` }
+                                    )}>
+                                    <ResizeAware
+                                      style={
+                                        path.includes("order")
+                                          ? {
+                                              height: "100%",
+                                              width: "100%",
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              alignItems: "center"
+                                            }
+                                          : undefined
+                                      }>
                                       {admin && (
                                         <div
                                           className={`sidebar-adminpanel${
@@ -714,6 +785,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                                             )}
                                           </ul>
                                         </div>
+                                      )}
+                                      {addprops && addprops.heading && (
+                                        <div className="breadcrumbs">
+                                          {this.printBreadcrumbs(
+                                            addprops.heading,
+                                            addprops.breadcrumbs
+                                          )}
+                                        </div>
+                                      )}
+                                      {addprops && addprops.heading && (
+                                        <div className="pageHeading">{addprops.heading}</div>
                                       )}
                                       <RouteComponent
                                         setApp={this.setApp}

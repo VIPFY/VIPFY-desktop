@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment from "moment";
+import moment, { now } from "moment";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../../universalForms/universalTextInput";
 import UniversalCheckbox from "../../universalForms/universalCheckbox";
@@ -10,13 +10,13 @@ import ShowAndAddEmployee from "./showAndAddEmployee";
 import gql from "graphql-tag";
 import { graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
+import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../queries/billing";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
 import {
   createEncryptedLicenceKeyObject,
   reencryptLicenceKeyObject
 } from "../../../common/licences";
-import Tag from "../../../common/Tag";
 
 interface Props {
   account: any;
@@ -257,11 +257,23 @@ class ChangeAccount extends React.Component<Props, State> {
                     }
                   }}
                   modifyValue={value => {
+                    let deletedPrefix = value;
                     if (value.startsWith("https://") || value.startsWith("http://")) {
-                      return value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      return value;
+                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
                     }
+                    let deletedSuffix = deletedPrefix;
+                    if (
+                      this.props.orbit &&
+                      this.props.orbit.options &&
+                      this.props.orbit.options.afterdomain &&
+                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                    ) {
+                      deletedSuffix = deletedPrefix.substring(
+                        0,
+                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                      );
+                    }
+                    return deletedSuffix;
                   }}
                   prefix={
                     this.state.selfhosting ? (
@@ -491,7 +503,7 @@ class ChangeAccount extends React.Component<Props, State> {
                       locale="en-us"
                       minDate={moment(
                         moment.max(
-                          moment(!newaccount ? account.starttime : 0),
+                          moment(!newaccount ? account.starttime : moment().add(1, "days")),
                           this.state.fromdate ? moment(this.state.fromdate) : moment()
                         )
                       ).toDate()}
@@ -515,19 +527,19 @@ class ChangeAccount extends React.Component<Props, State> {
                 )}
               </div>
               {this.state.todate && (
-                <Tag
-                  div={true}
-                  className="warn"
+                <div
+                  className="infoTag"
                   style={{
+                    backgroundColor: "#ffc15d",
                     textAlign: "center",
                     lineHeight: "initial",
+                    color: "white",
                     fontSize: "12px",
                     padding: "5px"
                   }}>
-                  {`This will terminate all assignments on ${moment(this.state.todate).format(
-                    "DD.MM.YYYY"
-                  )}`}
-                </Tag>
+                  This will terminate all assignments on{" "}
+                  {moment(this.state.todate).format("DD.MM.YYYY")}
+                </div>
               )}
             </div>
             {!newaccount && (
