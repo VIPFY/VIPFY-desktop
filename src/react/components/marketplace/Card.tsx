@@ -1,30 +1,16 @@
 import * as React from "react";
-import { App } from "../../interfaces";
-import CardHeader from "./CardHeader";
 import Tag from "../../common/Tag";
+import { showStars } from "../../common/functions";
+import { App } from "../../interfaces";
+import ServiceLogo from "../services/ServiceLogo";
 
 interface Props {
   app: App;
+  colSpan: number; // number between 1 and 4
   onClick: () => any;
 }
 
 interface State {}
-
-const PROS = [
-  "This is the first pro we provide",
-  "This is the second pro",
-  "This is the last pro we provide"
-];
-
-const FEATURES = [
-  "Collaboration tools",
-  "Gantt charts",
-  "Video chat",
-  "File sharing",
-  "Excel export",
-  "Brain wipe",
-  "And many, many more"
-];
 
 class Card extends React.PureComponent<Props, State> {
   renderPro(pro: string) {
@@ -39,19 +25,45 @@ class Card extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const { app } = this.props;
+    console.log(this.props);
+
+    const hasPros = app.pros && !!app.pros.length;
+    const hasFeatures = app.features && !!app.features.length;
+
     return (
       <div className="card">
-        <CardHeader app={this.props.app} />
-        <div className="cardBody">
-          <div className="cardBodySection pros">{PROS.map(pro => this.renderPro(pro))}</div>
-
-          {PROS && !!PROS.length && FEATURES && !!FEATURES.length && <hr />}
-
-          <div className="cardBodySection multilineTagContainer">
-            {FEATURES.map(feature => (
-              <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
-            ))}
+        <div className="header" style={{ backgroundColor: app.color || "#E9EEF4" }}>
+          <div className="item">
+            <ServiceLogo icon={app.icon} />
           </div>
+          <div className="item appNameItem">
+            {app.name}
+            <p className="rating">{showStars(4, 5)}</p>
+          </div>
+          <div className="item" id="headerTags">
+            <Tag div={true} className="info7 priceType">
+              Free trial
+            </Tag>
+            <Tag div={true} className="info7">
+              19.99$ p.m.
+            </Tag>
+          </div>
+        </div>
+        <div className="cardBody">
+          {hasPros && (
+            <div className="cardBodySection pros">{app.pros.map(pro => this.renderPro(pro))}</div>
+          )}
+
+          {hasPros && hasFeatures && <hr />}
+
+          {hasFeatures && (
+            <div className="cardBodySection multilineTagContainer">
+              {app.features.map(feature => (
+                <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );

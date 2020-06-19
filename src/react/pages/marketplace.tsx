@@ -11,10 +11,31 @@ interface Props {
   history: any;
 }
 
+const DUMMY_APP = {
+  name: "Dummy App",
+  icon: "Miro/logo.png",
+
+  color: "grey",
+  options: { marketplace: true },
+  pros: [
+    "This is the first pro we provide",
+    "This is the second pro",
+    "This is the last pro we provide"
+  ],
+  features: [
+    "Collaboration tools",
+    "Gantt charts",
+    "Video chat",
+    "File sharing",
+    "Excel export",
+    "Brain wipe",
+    "And many, many more"
+  ]
+};
+
 class Marketplace extends React.Component<Props> {
   renderApps(apps: App[]) {
-    // const marketplaceApps = apps.filter(app => app.options.marketplace);
-    const marketplaceApps = apps.filter(app => app.name === "Miro");
+    const marketplaceApps = apps.filter(app => app.options.marketplace);
 
     if (marketplaceApps.length == 0) {
       return (
@@ -29,8 +50,13 @@ class Marketplace extends React.Component<Props> {
 
     return (
       <div className="marketplace">
-        {sortedApps.map(app => (
-          <Card app={app} key={app.id} onClick={() => this.openAppDetails(app.id)} />
+        {sortedApps.map((app, i) => (
+          <Card
+            app={DUMMY_APP}
+            colSpan={(i % 4) + 1}
+            key={app.id}
+            onClick={() => this.openAppDetails(app.id)}
+          />
         ))}
       </div>
     );
