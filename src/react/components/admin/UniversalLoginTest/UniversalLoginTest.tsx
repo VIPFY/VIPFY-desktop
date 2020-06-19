@@ -153,7 +153,9 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
         <tr>
           <td>{site.app}</td>
           <td>
-            <span onClick={() => this.runTestOnSite(siteIndexUnderTest)}>
+            <span
+              onClick={() => this.runTestOnSite(siteIndexUnderTest)}
+              style={{ marginRight: "8px" }}>
               <i className="fal fa-play" />
             </span>
             <span
@@ -310,7 +312,11 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
                 this.advance(true);
               }}>
-              <i className="fal fa-play fa-2x" style={{ padding: "8px" }} id="startBatchRunIcon" />
+              <i
+                className="fal fa-fast-forward fa-2x"
+                style={{ padding: "8px" }}
+                id="startBatchRunIcon"
+              />
             </span>
           )}
           {this.state.takeScreenshots ? (
