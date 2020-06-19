@@ -2670,6 +2670,52 @@ progress[value] {
     letter-spacing: 0.02em;
   }
 }
+
+.tag {
+  padding: 2px 5px;
+  font-size: 10px;
+  border-radius: 4px;
+
+  &.warn {
+    background-color: #ffc15d;
+    color: white;
+  }
+
+  &.error {
+    background-color: #c73544;
+    color: white;
+  }
+
+  &.info1 {
+    background-color: #3e576e;
+    color: white;
+  }
+
+  &.info2 {
+    background-color: #20baa9;
+    color: white;
+  }
+
+  &.info3 {
+    background-color: #ffc15d;
+  }
+
+  &.info4 {
+    background-color: #253647;
+    color: white;
+  }
+
+  &.info5 {
+    background-color: #ffc15d;
+    color: #253647;
+  }
+
+  &.info6 {
+    background-color: #9c13bc;
+    color: white;
+  }
+}
+
 .addressLayout {
   display: grid;
   grid-template-columns: 300px 300px;

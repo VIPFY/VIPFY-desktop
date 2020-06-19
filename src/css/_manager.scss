@@ -821,23 +821,6 @@
   --fa-secondary-color: #ffc15d;
 }
 
-.infoTag {
-  padding: 2px 5px;
-  font-size: 10px;
-  border-radius: 4px;
-  &.share {
-    background-color: #253647;
-    color: white;
-  }
-  &.vacationTag {
-    background-color: #ffc15d;
-    color: #253647;
-  }
-  &.teamTag {
-    background-color: #9c13bc;
-    color: white;
-  }
-}
 .calendarEdit {
   border: none;
   font-family: "Roboto";
