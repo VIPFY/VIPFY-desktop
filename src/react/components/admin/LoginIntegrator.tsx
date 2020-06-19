@@ -6,7 +6,6 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ClickElement from "./clickElement";
 import UniversalButton from "../universalButtons/universalButton";
-import "./diagrams/diagram.scss";
 import { graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
