@@ -28,12 +28,25 @@ class Card extends React.PureComponent<Props, State> {
     const { app } = this.props;
     console.log(this.props);
 
+    const hasPic = !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
 
     return (
       <div className="card">
-        <div className="header" style={{ backgroundColor: app.color || "#E9EEF4" }}>
+        {hasPic && (
+          <div>
+            <img
+              src={app.pic}
+              alt="Service Image"
+              className="servicePic"
+              style={{ backgroundColor: app.color || "#E9EEF4" }}
+            />
+          </div>
+        )}
+        <div
+          className="serviceMainInfo"
+          style={{ backgroundColor: hasPic ? "white" : app.color || "#E9EEF4" }}>
           <div className="item">
             <ServiceLogo icon={app.icon} />
           </div>

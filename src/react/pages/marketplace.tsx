@@ -6,6 +6,7 @@ import Card from "../components/marketplace/Card";
 import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
+import welcomeImage from "../../images/onboarding.png";
 
 interface Props {
   history: any;
@@ -14,7 +15,6 @@ interface Props {
 const DUMMY_APP = {
   name: "Dummy App",
   icon: "Miro/logo.png",
-
   color: "grey",
   options: { marketplace: true },
   pros: [
@@ -32,6 +32,8 @@ const DUMMY_APP = {
     "And many, many more"
   ]
 };
+
+const DUMMY_APP_WITH_PIC = { ...DUMMY_APP, pic: welcomeImage };
 
 class Marketplace extends React.Component<Props> {
   renderApps(apps: App[]) {
@@ -53,6 +55,14 @@ class Marketplace extends React.Component<Props> {
         {sortedApps.map((app, i) => (
           <Card
             app={DUMMY_APP}
+            colSpan={(i % 4) + 1}
+            key={app.id}
+            onClick={() => this.openAppDetails(app.id)}
+          />
+        ))}
+        {sortedApps.map((app, i) => (
+          <Card
+            app={DUMMY_APP_WITH_PIC}
             colSpan={(i % 4) + 1}
             key={app.id}
             onClick={() => this.openAppDetails(app.id)}
