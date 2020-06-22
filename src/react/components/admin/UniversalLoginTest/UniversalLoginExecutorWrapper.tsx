@@ -16,7 +16,7 @@ interface Props {
   noError?: boolean;
   individualShow?: string;
   individualNotShow?: string;
-  timeout: number;
+  timeout?: number;
 }
 
 interface State {
