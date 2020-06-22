@@ -8,17 +8,12 @@ import UniversalButton from "../../../../components/universalButtons/universalBu
 import { graphql, Query } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import {
-  fetchTeam,
-  fetchDepartmentsData,
-  fetchCompanyTeams,
-  fetchTeams,
-  fetchUserLicences
-} from "../../../../queries/departments";
+import { fetchCompanyTeams, fetchTeams, fetchUserLicences } from "../../../../queries/departments";
 import { QUERY_SEMIPUBLICUSER } from "../../../../queries/user";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddTeamGeneralData from "../../addTeamGeneralData";
+import Tag from "../../../../common/Tag";
 
 interface Props {
   employee: any;
@@ -265,16 +260,14 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                   position: "relative",
                   justifyContent: "center"
                 }}>
-                <span
-                  className="infoTag"
+                <Tag
+                  className="error"
                   style={{
-                    backgroundColor: "rgb(199, 53, 68)",
                     textAlign: "center",
-                    lineHeight: "initial",
-                    color: "white"
+                    lineHeight: "initial"
                   }}>
                   Employee is already in this team
-                </span>
+                </Tag>
               </div>
             ) : (
               <>
@@ -297,7 +290,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
           </>
         ) : (
           <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
                 return <div>Loading...</div>;
               }
@@ -361,8 +354,6 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                       )}
                       startvalue=""
                       livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
-                      //noresults="Create new team"
-                      //noresultsClick={v => this.setState({ newTeam: true })}
                       fewResults={true}
                       livevalue={v => this.setState({ value: v })}
                     />
@@ -402,13 +393,6 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                           />
                         </div>
                       ))}
-                      {/*<div className="listingDiv" key="new">
-                        <UniversalButton
-                          type="low"
-                          label="Create new team"
-                          onClick={() => this.setState({ newTeam: true })}
-                        />
-                          </div>*/}
                       <UniversalButton type="low" label="Cancel" closingPopup={true} />
                     </PopupBase>
                   )}
