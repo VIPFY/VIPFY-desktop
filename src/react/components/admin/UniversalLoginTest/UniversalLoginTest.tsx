@@ -415,20 +415,23 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             <i className="fal fa-rocket fa-2x" style={{ padding: "8px" }} />
           </span>
           <span style={{ display: "inline-block", marginLeft: "30px" }}>
-            Timeout:
-            <br />
-            <input
-              type="number"
-              id="timeoutInput"
-              style={{ width: "45px", textAlign: "right" }}
-              value={this.state.timeout}
-              onChange={e => {
-                const timeout = parseInt(e.target.value);
-                this.setState({ timeout });
-              }}
-              min={1}
-              max={3600}
-            />
+            <label>
+              Timeout:
+              <br />
+              <input
+                type="number"
+                id="timeoutInput"
+                style={{ width: "45px", textAlign: "right" }}
+                value={this.state.timeout}
+                onChange={e => {
+                  const timeout = parseInt(e.target.value);
+                  this.setState({ timeout });
+                }}
+                min={1}
+                max={3600}
+              />{" "}
+              s
+            </label>
           </span>
         </div>
 
