@@ -414,7 +414,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             title="Load Remote Test Config (no options)">
             <i className="fal fa-rocket fa-2x" style={{ padding: "8px" }} />
           </span>
-          <span style={{ display: "inline-block" }}>
+          <span style={{ display: "inline-block", marginLeft: "30px" }}>
             Timeout:
             <br />
             <input
