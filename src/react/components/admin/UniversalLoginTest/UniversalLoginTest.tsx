@@ -24,6 +24,7 @@ interface State {
   runningInBatchMode: boolean;
   sites: Site[];
   takeScreenshots: boolean;
+  timeout: number;
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
@@ -36,7 +37,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
       sites: sitesWithOptions,
       siteIndexUnderTest: -1,
       runningInBatchMode: false,
-      takeScreenshots: true
+      takeScreenshots: true,
+      timeout: 60
     };
   }
 
@@ -198,6 +200,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 noError={site.options && site.options.noError}
                 individualShow={site.options ? site.options.individualShow : ""}
                 individualNotShow={site.options ? site.options.individualNotShow : ""}
+                timeout={this.state.timeout * 1000}
               />
             </td>
           </tr>
@@ -410,6 +413,22 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             }}
             title="Load Remote Test Config (no options)">
             <i className="fal fa-rocket fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span style={{ display: "inline-block" }}>
+            Timeout:
+            <br />
+            <input
+              type="number"
+              id="timeoutInput"
+              style={{ width: "45px", textAlign: "right" }}
+              value={this.state.timeout}
+              onChange={e => {
+                const timeout = parseInt(e.target.value);
+                this.setState({ timeout });
+              }}
+              min={1}
+              max={3600}
+            />
           </span>
         </div>
 

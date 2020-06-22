@@ -16,6 +16,7 @@ interface Props {
   noError?: boolean;
   individualShow?: string;
   individualNotShow?: string;
+  timeout: number;
 }
 
 interface State {
@@ -98,7 +99,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         username={username + (test.enterCorrectEmail ? "" : "NO")}
         password={password + (test.enterCorrectPassword ? "" : "NO")}
         speed={this.props.speed || test.speedFactor}
-        timeout={test.timeout ?? 60 * SECOND}
+        timeout={test.timeout ?? this.props.timeout ?? 60 * SECOND}
         takeScreenshot={takeScreenshot}
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
