@@ -10,28 +10,27 @@
     transform: translateY(-2px);
   }
 
-  > .tag {
-    font-size: 12px;
-  }
-
-  .servicePic {
+  .headerPic {
     max-width: 100%;
     max-height: 100%;
   }
 
-  .cardBody {
+  .cardSection {
     padding: 16px;
+  }
 
-    .cardBodySection {
-      display: flex;
+  .cardBody {
+    .tagList .tag {
+      margin: 0 8px 8px 0;
+    }
 
-      > * {
-        margin: 0 8px 8px 0;
-      }
+    .tag {
+      font-size: 12px;
     }
 
     .pros {
       flex-direction: column;
+      margin: 0 -8px -8px 0;
 
       .tag {
         display: inline-flex;
@@ -55,8 +54,9 @@
     }
 
     .multilineTagContainer {
-      flex-flow: row wrap;
       margin: 0 -8px -8px 0;
+      display: inline-flex;
+      flex-flow: row wrap;
 
       .tag {
         @include flex-system(center, center);
@@ -72,15 +72,12 @@
   hr {
     border: 1px solid #dfe3eb;
     transform: scaleY(0.5);
-    margin: 8px 0 16px 0;
+    margin: 0 16px;
   }
 }
 
 .serviceMainInfo {
   height: 48px;
-  width: flexible;
-  background: 0% 0% no-repeat padding-box;
-  padding: 16px;
 
   .item {
     margin-right: 16px;
@@ -92,7 +89,7 @@
     }
   }
 
-  .appNameItem {
+  .appName {
     font-weight: 500;
     padding: 4px 0;
   }
@@ -107,7 +104,7 @@
   }
 
   #headerTags {
-    margin: -4px 0px -4px 16px;
+    margin: -4px 0;
   }
 
   .tag {

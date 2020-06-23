@@ -26,8 +26,8 @@ class Card extends React.PureComponent<Props, State> {
 
   render() {
     const { app } = this.props;
-    console.log(this.props);
 
+    const headerColor = app.color || "#E9EEF4";
     const hasPic = !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
@@ -35,22 +35,17 @@ class Card extends React.PureComponent<Props, State> {
     return (
       <div className="card">
         {hasPic && (
-          <div>
-            <img
-              src={app.pic}
-              alt="Service Image"
-              className="servicePic"
-              style={{ backgroundColor: app.color || "#E9EEF4" }}
-            />
+          <div className="cardSection" style={{ backgroundColor: headerColor }}>
+            <img src={app.pic} alt="Service Image" className="headerPic" />
           </div>
         )}
         <div
-          className="serviceMainInfo"
-          style={{ backgroundColor: hasPic ? "white" : app.color || "#E9EEF4" }}>
+          className="cardSection serviceMainInfo"
+          style={{ backgroundColor: hasPic ? "white" : headerColor }}>
           <div className="item">
             <ServiceLogo icon={app.icon} />
           </div>
-          <div className="item appNameItem">
+          <div className="item appName">
             {app.name}
             <p className="rating">{showStars(4, 5)}</p>
           </div>
@@ -63,15 +58,20 @@ class Card extends React.PureComponent<Props, State> {
             </Tag>
           </div>
         </div>
+
+        {hasPic && (hasPros || hasFeatures) && <hr />}
+
         <div className="cardBody">
           {hasPros && (
-            <div className="cardBodySection pros">{app.pros.map(pro => this.renderPro(pro))}</div>
+            <div className="cardSection tagList pros">
+              {app.pros.map(pro => this.renderPro(pro))}
+            </div>
           )}
 
           {hasPros && hasFeatures && <hr />}
 
           {hasFeatures && (
-            <div className="cardBodySection multilineTagContainer">
+            <div className="cardSection tagList multilineTagContainer">
               {app.features.map(feature => (
                 <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
               ))}
