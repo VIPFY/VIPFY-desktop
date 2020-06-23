@@ -10,6 +10,10 @@
     transform: translateY(-2px);
   }
 
+  .tag {
+    border-radius: 6px;
+  }
+
   .headerPic {
     max-width: 100%;
     max-height: 100%;
@@ -20,29 +24,31 @@
   }
 
   .cardBody {
-    .tagList .tag {
-      margin: 0 8px 8px 0;
-    }
-
     .tag {
       font-size: 12px;
     }
 
-    .pros {
-      flex-direction: column;
+    .tagList {
       margin: 0 -8px -8px 0;
 
       .tag {
-        display: inline-flex;
         justify-content: center;
         align-items: center;
+        margin: 0 8px 8px 0;
+        height: 24px;
+      }
+    }
+
+    .pros {
+      flex-direction: column;
+
+      .tag {
+        display: inline-flex;
         padding: 0;
         margin-right: 8px;
-        height: 24px;
         width: 24px;
         color: #1b9a8b;
         background-color: #d6f2ef;
-        border-radius: 6px;
         font-size: 14px;
 
         > .span {
@@ -53,17 +59,14 @@
       }
     }
 
-    .multilineTagContainer {
-      margin: 0 -8px -8px 0;
+    .features {
       display: inline-flex;
       flex-flow: row wrap;
 
       .tag {
-        @include flex-system(center, center);
-        border-radius: 6px;
+        display: flex;
         background-color: #e9eef4;
         padding: 0 12px;
-        height: 24px;
         text-transform: uppercase;
       }
     }
@@ -74,51 +77,50 @@
     transform: scaleY(0.5);
     margin: 0 16px;
   }
-}
 
-.serviceMainInfo {
-  height: 48px;
+  .serviceMainInfo {
+    height: 48px;
 
-  .item {
-    margin-right: 16px;
-    float: left;
+    .item {
+      margin-right: 16px;
+      float: left;
 
-    &:last-child {
-      margin-right: 0px;
-      float: right;
+      &:last-child {
+        margin-right: 0px;
+        float: right;
+      }
     }
-  }
 
-  .appName {
-    font-weight: 500;
-    padding: 4px 0;
-  }
-
-  .rating {
-    margin-top: 9px;
-    font-size: 12px;
-
-    .fa-star {
-      color: #3b4c5d;
+    .appName {
+      font-weight: 500;
+      padding: 4px 0;
     }
-  }
 
-  #headerTags {
-    margin: -4px 0;
-  }
+    .rating {
+      margin-top: 9px;
+      font-size: 12px;
 
-  .tag {
-    @include flex-system(center, center);
-    border: 1px solid #c9d1da;
-    border-radius: 6px;
-    font-size: 12px;
-    background-color: white;
-    width: 84px;
-    height: 18px;
-    margin-bottom: 8px;
+      .fa-star {
+        color: #3b4c5d;
+      }
+    }
 
-    &.priceType {
-      text-transform: uppercase;
+    #headerTags {
+      margin: -4px 0;
+    }
+
+    .tag {
+      @include flex-system(center, center);
+      border: 1px solid #c9d1da;
+      font-size: 12px;
+      background-color: white;
+      width: 84px;
+      height: 18px;
+      margin-bottom: 8px;
+
+      &.priceType {
+        text-transform: uppercase;
+      }
     }
   }
 }

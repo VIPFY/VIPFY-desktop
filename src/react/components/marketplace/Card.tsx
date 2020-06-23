@@ -71,7 +71,7 @@ class Card extends React.PureComponent<Props, State> {
           {hasPros && hasFeatures && <hr />}
 
           {hasFeatures && (
-            <div className="cardSection tagList multilineTagContainer">
+            <div className="cardSection tagList features">
               {app.features.map(feature => (
                 <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
               ))}
