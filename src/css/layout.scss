@@ -284,10 +284,10 @@ li {
   background-color: #357aa5;
 }
 .marketplace {
-  display: grid;
-  height: calc(100% - 2rem);
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  grid-gap: 1rem;
+  // display: grid;
+  // height: calc(100% - 2rem);
+  // grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  // grid-gap: 1rem;
 }
 .appThumbnail {
   height: 18em;

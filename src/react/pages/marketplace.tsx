@@ -7,6 +7,7 @@ import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
+import { app } from "electron";
 
 interface Props {
   history: any;
@@ -51,23 +52,38 @@ class Marketplace extends React.Component<Props> {
 
     return (
       <div className="marketplace">
-        {sortedApps.map((app, i) => (
-          <Card
-            app={DUMMY_APP}
-            colSpan={(i % 4) + 1}
-            key={app.id}
-            onClick={() => this.openAppDetails(app.id)}
-          />
-        ))}
-        {sortedApps.map((app, i) => (
-          <Card
-            showPic={true}
-            app={DUMMY_APP}
-            colSpan={(i % 4) + 1}
-            key={app.id}
-            onClick={() => this.openAppDetails(app.id)}
-          />
-        ))}
+        {/* {sortedApps.map(app => ( */}
+        <>
+          <div>
+            {/* example 1-er Card (always with pic) */}
+            <Card app={DUMMY_APP} colSpan={12} />
+          </div>
+          <div>
+            {/* examples 2-er Card (with pic) */}
+            <Card app={DUMMY_APP} colSpan={6} showPic={true} />
+          </div>
+          <div>
+            {/* examples 2-er Card (without pic) */}
+            <Card app={DUMMY_APP} colSpan={6} />
+          </div>
+          <div>
+            {/* examples 3-er Card (with pic) */}
+            <Card app={DUMMY_APP} colSpan={4} showPic={true} />
+          </div>
+          <div>
+            {/* examples 3-er Card (without pic) */}
+            <Card app={DUMMY_APP} colSpan={4} />
+          </div>
+          <div>
+            {/* examples 4-er Card (with pic) */}
+            <Card app={DUMMY_APP} colSpan={3} showPic={true} />
+          </div>
+          <div>
+            {/* examples 4-er Card (without pic) */}
+            <Card app={DUMMY_APP} colSpan={3} />
+          </div>
+        </>
+        {/* ))} */}
       </div>
     );
   }
