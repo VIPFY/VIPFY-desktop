@@ -6,6 +6,7 @@ import ServiceLogo from "../services/ServiceLogo";
 
 interface Props {
   app: App;
+  showPic?: boolean;
   colSpan: number; // number between 1 and 4
   onClick: () => any;
 }
@@ -25,23 +26,23 @@ class Card extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { app } = this.props;
+    const { app, showPic } = this.props;
 
     const headerColor = app.color || "#E9EEF4";
-    const hasPic = !!app.pic;
+    const renderPic = showPic && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
 
     return (
       <div className="card">
-        {hasPic && (
+        {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <img src={app.pic} alt="Service Image" className="headerPic" />
           </div>
         )}
         <div
           className="cardSection serviceMainInfo"
-          style={{ backgroundColor: hasPic ? "white" : headerColor }}>
+          style={{ backgroundColor: renderPic ? "white" : headerColor }}>
           <div className="item">
             <ServiceLogo icon={app.icon} />
           </div>
@@ -59,7 +60,7 @@ class Card extends React.PureComponent<Props, State> {
           </div>
         </div>
 
-        {hasPic && (hasPros || hasFeatures) && <hr />}
+        {renderPic && (hasPros || hasFeatures) && <hr />}
 
         <div className="cardBody">
           {hasPros && (

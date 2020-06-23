@@ -16,6 +16,7 @@ const DUMMY_APP = {
   name: "Dummy App",
   icon: "Miro/logo.png",
   color: "grey",
+  pic: welcomeImage,
   options: { marketplace: true },
   pros: [
     "This is the first pro we provide",
@@ -32,8 +33,6 @@ const DUMMY_APP = {
     "And many, many more"
   ]
 };
-
-const DUMMY_APP_WITH_PIC = { ...DUMMY_APP, pic: welcomeImage };
 
 class Marketplace extends React.Component<Props> {
   renderApps(apps: App[]) {
@@ -62,7 +61,8 @@ class Marketplace extends React.Component<Props> {
         ))}
         {sortedApps.map((app, i) => (
           <Card
-            app={DUMMY_APP_WITH_PIC}
+            showPic={true}
+            app={DUMMY_APP}
             colSpan={(i % 4) + 1}
             key={app.id}
             onClick={() => this.openAppDetails(app.id)}
