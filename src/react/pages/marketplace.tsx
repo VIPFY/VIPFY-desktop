@@ -14,7 +14,7 @@ interface Props {
 }
 
 const DUMMY_APP = {
-  name: "Dummy App with a Long Name",
+  name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
   icon: "Miro/logo.png",
   color: "grey",
   pic: welcomeImage,

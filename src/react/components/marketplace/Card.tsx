@@ -43,10 +43,11 @@ class Card extends React.PureComponent<Props> {
             </div>
           </div>
         )}
+
         <div
           className="cardSection serviceMainInfo"
           style={{ backgroundColor: renderPic ? "white" : headerColor }}>
-          <div className="item">
+          <div className="item logo">
             <ServiceLogo icon={app.icon} />
           </div>
           <div className="item appName">
@@ -55,12 +56,14 @@ class Card extends React.PureComponent<Props> {
           </div>
           {format === WIDE_FORMAT && (
             <div className="item" id="headerTags">
-              <Tag div={true} className="info7 priceType">
-                Free trial
-              </Tag>
-              <Tag div={true} className="info7">
-                19.99$ p.m.
-              </Tag>
+              <div>
+                <Tag div={true} className="info7 priceType">
+                  Free trial
+                </Tag>
+                <Tag div={true} className="info7">
+                  19.99$ p.m.
+                </Tag>
+              </div>
             </div>
           )}
         </div>
