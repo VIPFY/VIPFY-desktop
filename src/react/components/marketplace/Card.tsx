@@ -5,9 +5,11 @@ import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 
+const WIDE_FORMAT = "wide";
+
 interface Props {
   app: App;
-  colSpan: number; // number between 1 and 4
+  format: "small" | "medium" | "large" | "wide";
   showPic?: boolean;
   onClick: () => any;
 }
@@ -25,18 +27,20 @@ class Card extends React.PureComponent<Props> {
   }
 
   render() {
-    const { app, colSpan, showPic } = this.props;
+    const { app, format, showPic } = this.props;
 
     const headerColor = app.color || "#E9EEF4";
-    const renderPic = (showPic || colSpan == 12) && !!app.pic;
+    const renderPic = (showPic || format === WIDE_FORMAT) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
 
     return (
-      <div className={classNames("card", "colSpan-" + colSpan)}>
+      <div className={classNames("card", format)}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
-            <img src={app.pic} alt="Service Image" className="headerPic" />
+            <div className="picHolder">
+              <img src={app.pic} alt="Service Image" className="headerPic" />
+            </div>
           </div>
         )}
         <div
@@ -49,7 +53,7 @@ class Card extends React.PureComponent<Props> {
             {app.name}
             <p className="rating">{showStars(4, 5)}</p>
           </div>
-          {colSpan == 12 && (
+          {format === WIDE_FORMAT && (
             <div className="item" id="headerTags">
               <Tag div={true} className="info7 priceType">
                 Free trial

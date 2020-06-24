@@ -14,7 +14,7 @@ interface Props {
 }
 
 const DUMMY_APP = {
-  name: "Dummy App",
+  name: "Dummy App with a Long Name",
   icon: "Miro/logo.png",
   color: "grey",
   pic: welcomeImage,
@@ -31,7 +31,7 @@ const DUMMY_APP = {
     "File sharing",
     "Excel export",
     "Brain wipe",
-    "And many, many more"
+    "And many, many, many more"
   ]
 };
 
@@ -56,31 +56,31 @@ class Marketplace extends React.Component<Props> {
         <>
           <div>
             {/* example 1-er Card (always with pic) */}
-            <Card app={DUMMY_APP} colSpan={12} />
+            <Card app={DUMMY_APP} format={"wide"} />
           </div>
           <div>
-            {/* examples 2-er Card (with pic) */}
-            <Card app={DUMMY_APP} colSpan={6} showPic={true} />
+            {/* example 2-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"large"} showPic={true} />
           </div>
           <div>
-            {/* examples 2-er Card (without pic) */}
-            <Card app={DUMMY_APP} colSpan={6} />
+            {/* example 2-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"large"} />
           </div>
           <div>
-            {/* examples 3-er Card (with pic) */}
-            <Card app={DUMMY_APP} colSpan={4} showPic={true} />
+            {/* example 3-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           </div>
           <div>
-            {/* examples 3-er Card (without pic) */}
-            <Card app={DUMMY_APP} colSpan={4} />
+            {/* example 3-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"medium"} />
           </div>
           <div>
-            {/* examples 4-er Card (with pic) */}
-            <Card app={DUMMY_APP} colSpan={3} showPic={true} />
+            {/* example 4-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"small"} showPic={true} />
           </div>
           <div>
-            {/* examples 4-er Card (without pic) */}
-            <Card app={DUMMY_APP} colSpan={3} />
+            {/* example 4-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"small"} />
           </div>
         </>
         {/* ))} */}
