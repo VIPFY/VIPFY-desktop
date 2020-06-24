@@ -175,7 +175,7 @@ export interface App {
   logo: string;
   images: string[];
   features: JSON;
-  options: JSON;
+  options: { marketplace?: boolean };
   developer: Unit;
   supportunit: Unit;
   color: string;

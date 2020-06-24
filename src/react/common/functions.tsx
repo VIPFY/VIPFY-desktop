@@ -11,6 +11,7 @@ import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
+import { App } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -199,6 +200,23 @@ export const filterLicences = licences =>
       return true;
     }
   });
+
+/**
+ * Defines the sort order of apps. The locale used for the ordering is that of the user's machine.
+ * Differences like e.g. capitalization and accents are not taken into account.
+ */
+export const compareApps = (appA: App, appB: App): number => {
+  const appNameCollator = new Intl.Collator(undefined, { sensitivity: "base" });
+  return appNameCollator.compare(appA.name, appB.name);
+};
+
+/**
+ * Returns an array of the apps in ascending alphabetical order.
+ *
+ * @param shuffledApps
+ */
+export const sortApps = (shuffledApps: App[]): App[] =>
+  shuffledApps.sort((appA, appB) => compareApps(appA, appB));
 
 /**
  * Filters and sorts licences

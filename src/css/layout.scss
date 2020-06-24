@@ -7,6 +7,7 @@
 @import "./authentication";
 @import "./billing";
 @import "./buttons";
+@import "./card";
 @import "./creditCards";
 @import "./dashboard";
 @import "./dataForms";
@@ -283,10 +284,10 @@ li {
   background-color: #357aa5;
 }
 .marketplace {
-  display: grid;
-  height: calc(100% - 2rem);
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  grid-gap: 1rem;
+  // display: grid;
+  // height: calc(100% - 2rem);
+  // grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  // grid-gap: 1rem;
 }
 .appThumbnail {
   height: 18em;
@@ -1895,7 +1896,6 @@ option {
 
   &:hover {
     box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
-
     background-color: #1697a5;
     overflow: initial;
   }
@@ -2041,6 +2041,23 @@ table {
   height: 192px;
   width: 328px;
   object-fit: contain;
+}
+
+.service-logo-circle {
+  height: 48px;
+  width: 48px;
+  padding: 0rem !important;
+  border-radius: 32px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+  background-position: center;
+  position: relative;
 }
 
 .service-logo {
@@ -2682,7 +2699,7 @@ progress[value] {
   }
 
   &.error {
-    background-color: #c73544;
+    background-color: $vipfy-cancel-color;
     color: white;
   }
 
@@ -2692,7 +2709,7 @@ progress[value] {
   }
 
   &.info2 {
-    background-color: #20baa9;
+    background-color: $vipfy-primary-color;
     color: white;
   }
 
@@ -2701,7 +2718,7 @@ progress[value] {
   }
 
   &.info4 {
-    background-color: #253647;
+    background-color: $vipfy-normaltext;
     color: white;
   }
 
