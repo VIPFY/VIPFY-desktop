@@ -33,6 +33,7 @@ class Card extends React.PureComponent<Props> {
     const renderPic = (showPic || format === WIDE_FORMAT) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
+    const hasFreeTrial = Math.random() < 0.5;
 
     return (
       <div className={classNames("card", format)}>
@@ -61,9 +62,11 @@ class Card extends React.PureComponent<Props> {
           {format === WIDE_FORMAT && (
             <div className="item" id="headerTags">
               <div>
-                <Tag div={true} className="info7 priceType">
-                  Free trial
-                </Tag>
+                {hasFreeTrial && (
+                  <Tag div={true} className="info7 priceType">
+                    Free trial
+                  </Tag>
+                )}
                 <Tag div={true} className="info7">
                   19.99$ p.m.
                 </Tag>
