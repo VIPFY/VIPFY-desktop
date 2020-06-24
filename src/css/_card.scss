@@ -131,18 +131,15 @@
 
   .serviceMainInfo {
     min-height: 48px;
-    display: grid;
-    grid-auto-flow: column;
-    gap: 16px;
+    display: flex;
+    align-items: center;
 
     .item {
-      float: left;
+      display: inline-flex;
     }
 
     .logo {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin-right: 16px;
     }
 
     .appName {
@@ -160,7 +157,7 @@
     }
 
     #headerTags {
-      margin: -4px 0;
+      margin: -4px 0 -4px 16px;
       float: right;
       display: flex;
       justify-content: center;

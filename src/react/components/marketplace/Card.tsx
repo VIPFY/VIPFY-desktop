@@ -51,8 +51,10 @@ class Card extends React.PureComponent<Props> {
             <ServiceLogo icon={app.icon} />
           </div>
           <div className="item appName">
-            {app.name}
-            <p className="rating">{showStars(4, 5)}</p>
+            <div>
+              {app.name}
+              <p className="rating">{showStars(4, 5)}</p>
+            </div>
           </div>
           {format === WIDE_FORMAT && (
             <div className="item" id="headerTags">
