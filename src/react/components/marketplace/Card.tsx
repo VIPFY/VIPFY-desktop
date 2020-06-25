@@ -15,17 +15,6 @@ interface Props {
 }
 
 class Card extends React.PureComponent<Props> {
-  renderPro(pro: string) {
-    return (
-      <div>
-        <Tag>
-          <span className="fal fa-plus fa-fw" />
-        </Tag>
-        <span className="pro">{pro}</span>
-      </div>
-    );
-  }
-
   render() {
     const { app, format, showPic } = this.props;
 
@@ -76,9 +65,29 @@ class Card extends React.PureComponent<Props> {
         {renderPic && (hasPros || hasFeatures) && <hr />}
 
         <div className="cardBody">
+          {format !== WIDE_FORMAT && (
+            <>
+              <div className="item" id="headerTags">
+                <div>
+                  {hasFreeTrial && <Tag className="info7 priceType">Free trial</Tag>}
+                  <Tag className="info7">19.99$ p.m.</Tag>
+                </div>
+              </div>
+
+              <hr />
+            </>
+          )}
+
           {hasPros && (
-            <div className="cardSection tagList pros">
-              {app.pros.map(pro => this.renderPro(pro))}
+            <div className="cardSection pros">
+              {app.pros.map(pro => (
+                <div className="pro">
+                  <Tag>
+                    <span className="fal fa-plus fa-fw" />
+                  </Tag>
+                  <span>{pro}</span>
+                </div>
+              ))}
             </div>
           )}
 

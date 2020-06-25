@@ -90,21 +90,29 @@
     }
 
     .pros {
+      display: flex;
       flex-direction: column;
+      margin-bottom: -8px;
 
-      .tag {
-        display: inline-flex;
-        padding: 0;
-        margin-right: 8px;
-        width: 24px;
-        color: #1b9a8b;
-        background-color: #d6f2ef;
-        font-size: 14px;
+      .pro {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
 
-        > .span {
-          font-size: 12px;
-          height: 12px;
-          width: 12px;
+        .tag {
+          display: flex;
+          padding: 0;
+          margin-right: 8px;
+          min-width: 24px;
+          height: 24px;
+          color: #1b9a8b;
+          background-color: #d6f2ef;
+          font-size: 14px;
+
+          > .span {
+            font-size: 12px;
+            width: 12px;
+          }
         }
       }
     }
@@ -171,11 +179,11 @@
       background-color: white;
       width: 84px;
       height: 18px;
-
-      &.priceType {
-        text-transform: uppercase;
-        margin-bottom: 8px;
-      }
     }
+  }
+
+  .priceType {
+    text-transform: uppercase;
+    margin-bottom: 8px;
   }
 }
