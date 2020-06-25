@@ -37,27 +37,27 @@ class Card extends React.PureComponent<Props> {
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">
-              <img src={app.pic} alt="Service Image" className="headerPic" />
+              <img src={app.pic} alt="Service Image" className="pic" />
             </div>
           </div>
         )}
 
         <div
-          className="cardSection serviceMainInfo"
+          className="cardSection header"
           style={{ backgroundColor: renderPic ? "white" : headerColor }}>
-          <div className="item logo">
+          <div className="headerItem logo">
             <ServiceLogo icon={app.icon} />
           </div>
-          <div className="item appName">
+          <div className="headerItem appName">
             <div>
               {app.name}
               <p className="rating">{showStars(4, 5)}</p>
             </div>
           </div>
           {format === WIDE_FORMAT && (
-            <div className="item headerTags">
+            <div className="headerItem headerTags">
               <div>
-                {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrial")}
+                {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
                 {this.renderPricingTag("19.99$ p.m.", true)}
               </div>
             </div>
@@ -66,41 +66,39 @@ class Card extends React.PureComponent<Props> {
 
         {renderPic && (hasPros || hasFeatures) && <hr />}
 
-        <div className="cardBody">
-          {format !== WIDE_FORMAT && (
-            <>
-              <div className="tagList">
-                {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrial")}
-                {this.renderPricingTag("19.99$ p.m.")}
+        {format !== WIDE_FORMAT && (
+          <>
+            <div className="cardSection tagsRow">
+              {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
+              {this.renderPricingTag("19.99$ p.m.")}
+            </div>
+
+            <hr />
+          </>
+        )}
+
+        {hasPros && (
+          <div className="cardSection pros">
+            {app.pros.map(pro => (
+              <div className="pro">
+                <Tag>
+                  <span className="fal fa-plus fa-fw" />
+                </Tag>
+                <span>{pro}</span>
               </div>
+            ))}
+          </div>
+        )}
 
-              <hr />
-            </>
-          )}
+        {hasPros && hasFeatures && <hr />}
 
-          {hasPros && (
-            <div className="cardSection pros">
-              {app.pros.map(pro => (
-                <div className="pro">
-                  <Tag>
-                    <span className="fal fa-plus fa-fw" />
-                  </Tag>
-                  <span>{pro}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {hasPros && hasFeatures && <hr />}
-
-          {hasFeatures && (
-            <div className="cardSection tagList features">
-              {app.features.map(feature => (
-                <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
-              ))}
-            </div>
-          )}
-        </div>
+        {hasFeatures && (
+          <div className="cardSection tagsRow">
+            {app.features.map(feature => (
+              <Tag className="featureTag">{feature}</Tag>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
