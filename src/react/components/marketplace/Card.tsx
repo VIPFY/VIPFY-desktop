@@ -78,7 +78,7 @@ class Card extends React.PureComponent<Props> {
         )}
 
         {hasPros && (
-          <div className="cardSection pros">
+          <div className="cardSection tagsCol">
             {app.pros.map(pro => (
               <div className="pro">
                 <Tag>
