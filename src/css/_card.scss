@@ -131,12 +131,9 @@
 
   .serviceMainInfo {
     display: inline-flex;
+    align-items: center;
+    width: calc(100% - 32px);
     min-height: 48px;
-
-    .defaultInfo {
-      display: inline-flex;
-      align-items: center;
-    }
 
     .item {
       display: inline-flex;
@@ -147,22 +144,22 @@
     }
 
     .appName {
+      flex-grow: 1;
       font-weight: 500;
       padding: 4px 0;
-    }
 
-    .rating {
-      margin-top: 9px;
-      font-size: 12px;
+      .rating {
+        margin-top: 9px;
+        font-size: 12px;
 
-      .fa-star {
-        color: #3b4c5d;
+        .fa-star {
+          color: #3b4c5d;
+        }
       }
     }
 
     #headerTags {
       margin: -4px 0 -4px 16px;
-      float: right;
       display: flex;
       justify-content: center;
       align-items: center;

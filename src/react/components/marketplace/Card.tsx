@@ -48,15 +48,13 @@ class Card extends React.PureComponent<Props> {
         <div
           className="cardSection serviceMainInfo"
           style={{ backgroundColor: renderPic ? "white" : headerColor }}>
-          <div className="defaultInfo">
-            <div className="item logo">
-              <ServiceLogo icon={app.icon} />
-            </div>
-            <div className="item appName">
-              <div>
-                {app.name}
-                <p className="rating">{showStars(4, 5)}</p>
-              </div>
+          <div className="item logo">
+            <ServiceLogo icon={app.icon} />
+          </div>
+          <div className="item appName">
+            <div>
+              {app.name}
+              <p className="rating">{showStars(4, 5)}</p>
             </div>
           </div>
           {format === WIDE_FORMAT && (
