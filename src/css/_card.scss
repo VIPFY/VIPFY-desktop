@@ -63,6 +63,19 @@
     border-radius: 6px;
     justify-content: center;
     align-items: center;
+
+    &.pricingTag {
+      display: flex;
+      background-color: white;
+      border: 1px solid #c9d1da;
+      font-size: 12px;
+      width: 84px;
+      height: 18px;
+
+      &.freeTrial {
+        text-transform: uppercase;
+      }
+    }
   }
 
   .headerPic {
@@ -165,25 +178,15 @@
       }
     }
 
-    #headerTags {
+    .headerTags {
       margin: -4px 0 -4px 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-    }
 
-    .tag {
-      display: flex;
-      border: 1px solid #c9d1da;
-      font-size: 12px;
-      background-color: white;
-      width: 84px;
-      height: 18px;
+      .tag:nth-child(2) {
+        margin-top: 8px;
+      }
     }
-  }
-
-  .priceType {
-    text-transform: uppercase;
-    margin-bottom: 8px;
   }
 }

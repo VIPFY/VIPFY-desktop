@@ -15,6 +15,14 @@ interface Props {
 }
 
 class Card extends React.PureComponent<Props> {
+  renderPricingTag(text: string, div?: boolean, className?: string) {
+    return (
+      <Tag div={div} className={classNames("pricingTag", className)}>
+        {text}
+      </Tag>
+    );
+  }
+
   render() {
     const { app, format, showPic } = this.props;
 
@@ -47,16 +55,10 @@ class Card extends React.PureComponent<Props> {
             </div>
           </div>
           {format === WIDE_FORMAT && (
-            <div className="item" id="headerTags">
+            <div className="item headerTags">
               <div>
-                {hasFreeTrial && (
-                  <Tag div={true} className="info7 priceType">
-                    Free trial
-                  </Tag>
-                )}
-                <Tag div={true} className="info7">
-                  19.99$ p.m.
-                </Tag>
+                {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrial")}
+                {this.renderPricingTag("19.99$ p.m.", true)}
               </div>
             </div>
           )}
@@ -67,11 +69,9 @@ class Card extends React.PureComponent<Props> {
         <div className="cardBody">
           {format !== WIDE_FORMAT && (
             <>
-              <div className="item" id="headerTags">
-                <div>
-                  {hasFreeTrial && <Tag className="info7 priceType">Free trial</Tag>}
-                  <Tag className="info7">19.99$ p.m.</Tag>
-                </div>
+              <div className="tagList">
+                {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrial")}
+                {this.renderPricingTag("19.99$ p.m.")}
               </div>
 
               <hr />
