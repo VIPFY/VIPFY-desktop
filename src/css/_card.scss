@@ -56,6 +56,10 @@
     border: 1px solid #dfe3eb;
     transform: scaleY(0.5);
     margin: 0 16px;
+
+    &:last-of-type {
+      display: none;
+    }
   }
 
   .tag {
