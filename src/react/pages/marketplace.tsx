@@ -27,6 +27,8 @@ const DUMMY_APP = {
   features: [
     "Collaboration tools",
     "Gantt charts",
+    "Cats",
+    "Dogs",
     "Video chat",
     "File sharing",
     "Excel export",
