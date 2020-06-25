@@ -7,7 +7,7 @@ import ServiceLogo from "../services/ServiceLogo";
 
 interface CardSectionProps {
   className?: string;
-  style?: {};
+  style?: { [someProps: string]: any };
   children: any;
 }
 
