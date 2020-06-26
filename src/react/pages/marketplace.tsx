@@ -9,6 +9,7 @@ import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
 import { app } from "electron";
 import UniversalSearchBox from "../components/universalSearchBox";
+import SeparatedSection from "../components/marketplace/SeparatedSection";
 
 interface Props {
   history: any;
@@ -57,37 +58,57 @@ class Marketplace extends React.Component<Props> {
       <div className="marketplace">
         <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
 
-        {/* {sortedApps.map(app => ( */}
-        <>
-          <div>
-            {/* example 1-er Card (always with pic) */}
+        <SeparatedSection topSeparator={true}>
+          <div className="headline">Discover</div>
+          {/* <div className="promoted">
             <Card app={DUMMY_APP} format={"wide"} />
-          </div>
-          <div>
-            {/* example 2-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"large"} showPic={true} />
-          </div>
-          <div>
-            {/* example 2-er Card (without pic) */}
-            <Card app={DUMMY_APP} format={"large"} />
-          </div>
-          <div>
-            {/* example 3-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-          </div>
-          <div>
-            {/* example 3-er Card (without pic) */}
-            <Card app={DUMMY_APP} format={"medium"} />
-          </div>
-          <div>
-            {/* example 4-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"small"} showPic={true} />
-          </div>
-          <div>
-            {/* example 4-er Card (without pic) */}
             <Card app={DUMMY_APP} format={"small"} />
-          </div>
-        </>
+            <Card app={DUMMY_APP} format={"small"} />
+            <Card app={DUMMY_APP} format={"small"} />
+            <Card app={DUMMY_APP} format={"small"} />
+          </div> */}
+        </SeparatedSection>
+
+        {/* <SeparatedSection topSeparator={true}>
+          <div className="headline">Headline</div>
+          <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+          <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+          <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+        </SeparatedSection> */}
+
+        {/* {sortedApps.map(app => ( */}
+        {false && (
+          <>
+            <div>
+              {/* example 1-er Card (always with pic) */}
+              <Card app={DUMMY_APP} format={"large"} showPic={true} />
+            </div>
+            <div>
+              {/* example 2-er Card (with pic) */}
+              <Card app={DUMMY_APP} format={"large"} showPic={true} />
+            </div>
+            <div>
+              {/* example 2-er Card (without pic) */}
+              <Card app={DUMMY_APP} format={"large"} />
+            </div>
+            <div>
+              {/* example 3-er Card (with pic) */}
+              <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+            </div>
+            <div>
+              {/* example 3-er Card (without pic) */}
+              <Card app={DUMMY_APP} format={"medium"} />
+            </div>
+            <div>
+              {/* example 4-er Card (with pic) */}
+              <Card app={DUMMY_APP} format={"small"} showPic={true} />
+            </div>
+            <div>
+              {/* example 4-er Card (without pic) */}
+              <Card app={DUMMY_APP} format={"small"} />
+            </div>
+          </>
+        )}
         {/* ))} */}
       </div>
     );

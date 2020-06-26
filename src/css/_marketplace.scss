@@ -1,23 +1,34 @@
 .marketplace {
   display: grid;
-  grid-template-columns: repeat(12, [col-start] 1fr);
+  grid-template-columns: repeat(12, 1fr);
   grid-gap: 24px;
   max-width: 1608px;
   margin: auto;
   padding: 0 32px;
-  // height: calc(100% - 2rem);
-  // grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  // grid-gap: 1rem;
+  color: #3b4c5d;
 
   .genericSearchHolder {
-    grid-column: col-start 4 / span 6;
+    grid-column: 4 / span 6;
+    grid-row-start: 1;
+    margin: -8px auto;
+  }
+
+  .headline {
+    grid-column-start: 1 / span 3;
+    grid-row-start: 1;
+    margin: -8px 0;
+    font-weight: 500;
   }
 
   hr {
     border: 1px solid #dfe3eb;
 
-    &:last-of-type {
+    &:first-of-type {
       display: none;
     }
+  }
+
+  .promoted {
+    grid-row: 2;
   }
 }
