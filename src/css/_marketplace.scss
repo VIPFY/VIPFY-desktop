@@ -12,4 +12,12 @@
   .genericSearchHolder {
     grid-column: col-start 4 / span 6;
   }
+
+  hr {
+    border: 1px solid #dfe3eb;
+
+    &:last-of-type {
+      display: none;
+    }
+  }
 }
