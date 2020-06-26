@@ -8,6 +8,7 @@ import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
 import { app } from "electron";
+import UniversalSearchBox from "../components/universalSearchBox";
 
 interface Props {
   history: any;
@@ -54,6 +55,8 @@ class Marketplace extends React.Component<Props> {
 
     return (
       <div className="marketplace">
+        <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
+
         {/* {sortedApps.map(app => ( */}
         <>
           <div>

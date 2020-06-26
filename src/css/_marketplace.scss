@@ -1,6 +1,15 @@
 .marketplace {
   display: grid;
+  grid-template-columns: repeat(12, [col-start] 1fr);
+  grid-gap: 24px;
+  max-width: 1608px;
+  margin: auto;
+  padding: 0 32px;
   // height: calc(100% - 2rem);
   // grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   // grid-gap: 1rem;
+
+  .genericSearchHolder {
+    grid-column: col-start 4 / span 6;
+  }
 }
