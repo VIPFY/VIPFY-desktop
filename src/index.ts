@@ -51,7 +51,7 @@ if (!disableUpdater) {
     serverType: "json"
   });
 
-  autoUpdater.on("update-downloaded", (event, releaseNotes, releaseName) => {
+  autoUpdater.on("update-downloaded", async (event, releaseNotes, releaseName) => {
     const dialogOpts = {
       type: "info",
       buttons: ["Restart", "Later"],
@@ -64,13 +64,12 @@ if (!disableUpdater) {
       logger.error("Autoupdater error", error);
     });
 
-    dialog.showMessageBox(dialogOpts, response => {
-      if (response === 0) {
-        autoUpdater.quitAndInstall();
-      } else {
-        disableUpdater = true;
-      }
-    });
+    const response = await dialog.showMessageBox(dialogOpts);
+    if (response.response === 0) {
+      autoUpdater.quitAndInstall();
+    } else {
+      disableUpdater = true;
+    }
   });
 }
 
