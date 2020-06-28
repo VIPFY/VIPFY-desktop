@@ -1,67 +1,98 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
 
 import { fetchApps } from "../queries/products";
-import LoadingDiv from "../components/LoadingDiv";
+import QueryWrapper from "../common/QueryWrapper";
+import Card from "../components/marketplace/Card";
+import { App } from "../interfaces";
+import { sortApps } from "../common/functions";
+import ErrorPage from "./error";
+import welcomeImage from "../../images/onboarding.png";
+import { app } from "electron";
 
 interface Props {
   history: any;
-  products: any;
 }
 
+const DUMMY_APP = {
+  name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
+  icon: "Miro/logo.png",
+  color: "grey",
+  pic: welcomeImage,
+  options: { marketplace: true },
+  pros: [
+    "This is the first pro we provide",
+    "This is the second pro",
+    "This is the last pro we provide"
+  ],
+  features: [
+    "Collaboration tools",
+    "Gantt charts",
+    "Video chat",
+    "File sharing",
+    "Excel export",
+    "Brain wipe",
+    "And many, many, many more"
+  ]
+};
+
 class Marketplace extends React.Component<Props> {
-  renderLoading(apps) {
-    if (apps) {
-      apps.sort((a, b) => {
-        const textA = a.name.toUpperCase();
-        const textB = b.name.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
+  renderApps(apps: App[]) {
+    const marketplaceApps = apps.filter(app => app.options.marketplace);
+
+    if (marketplaceApps.length == 0) {
       return (
-        <div className="marketplace">
-          {apps.length > 0 ? (
-            apps.map(appDetails => this.renderAppCard(appDetails))
-          ) : (
-            <div className="nothingHere">
-              <div className="h1">Nothing here :(</div>
-              <div className="h2">
-                That commonly means that you don't have enough rights or that VIPFY is not available
-                in your country.
-              </div>
-            </div>
-          )}
-        </div>
+        <ErrorPage>
+          No apps available. Please check your permissions and verify that VIPFY is available in
+          your country.
+        </ErrorPage>
       );
     }
-    return <LoadingDiv text="Preparing marketplace" legalText="Just a moment please" />;
+
+    const sortedApps = sortApps(marketplaceApps);
+
+    return (
+      <div className="marketplace">
+        {/* {sortedApps.map(app => ( */}
+        <>
+          <div>
+            {/* example 1-er Card (always with pic) */}
+            <Card app={DUMMY_APP} format={"wide"} />
+          </div>
+          <div>
+            {/* example 2-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"large"} showPic={true} />
+          </div>
+          <div>
+            {/* example 2-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"large"} />
+          </div>
+          <div>
+            {/* example 3-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+          </div>
+          <div>
+            {/* example 3-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"medium"} />
+          </div>
+          <div>
+            {/* example 4-er Card (with pic) */}
+            <Card app={DUMMY_APP} format={"small"} showPic={true} />
+          </div>
+          <div>
+            {/* example 4-er Card (without pic) */}
+            <Card app={DUMMY_APP} format={"small"} />
+          </div>
+        </>
+        {/* ))} */}
+      </div>
+    );
   }
 
   openAppDetails = id => this.props.history.push(`/area/marketplace/${id}/`);
 
-  renderAppCard = ({ id, logo, name, teaserdescription }) => (
-    <div className="appThumbnail" key={id} onClick={() => this.openAppDetails(id)}>
-      <div
-        className="app-thumbnail-logo"
-        style={{
-          backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/logos/${logo})`
-        }}>
-        {!logo && <i className="fal fa-rocket" />}
-      </div>
-      <div className="caption">
-        <h3>{name}</h3>
-        <div className="appdiscripton">
-          <p>{teaserdescription}</p>
-        </div>
-        <div className="app-short-info-holder" />
-      </div>
-    </div>
-  );
-
   render() {
-    return this.renderLoading(this.props.products.allApps);
+    return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;
   }
 }
 
-export default graphql(fetchApps, {
-  name: "products"
-})(Marketplace);
+export default Marketplace;

@@ -58,7 +58,7 @@ module.exports = {
   module: {
     rules
   },
-  mode: "development",
+  mode: fast ? "development" : "production",
   target: "electron-renderer",
   node: { global: true },
   plugins,

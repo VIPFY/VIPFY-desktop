@@ -160,7 +160,11 @@ if (!store.has("deviceId")) {
 const deviceId = store.get("deviceId", "");
 
 const middlewareLink = setContext(() => ({
-  headers: { "X-USER-HOST": os.hostname(), "X-DEVICE": deviceId }
+  headers: {
+    "X-USER-HOST": os.hostname(),
+    "X-DEVICE": deviceId,
+    "X-SECONDARY-AUTHORIZATION": config.secondaryAuthorization
+  }
 }));
 
 // Implement Web Sockets for Subscriptions. The uri must be the servers one.
