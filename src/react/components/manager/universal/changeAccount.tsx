@@ -17,6 +17,7 @@ import {
   createEncryptedLicenceKeyObject,
   reencryptLicenceKeyObject
 } from "../../../common/licences";
+import Tag from "../../../common/Tag";
 
 interface Props {
   account: any;
@@ -527,19 +528,19 @@ class ChangeAccount extends React.Component<Props, State> {
                 )}
               </div>
               {this.state.todate && (
-                <div
-                  className="infoTag"
+                <Tag
+                  div={true}
+                  className="warn"
                   style={{
-                    backgroundColor: "#ffc15d",
                     textAlign: "center",
                     lineHeight: "initial",
-                    color: "white",
                     fontSize: "12px",
                     padding: "5px"
                   }}>
-                  This will terminate all assignments on{" "}
-                  {moment(this.state.todate).format("DD.MM.YYYY")}
-                </div>
+                  {`This will terminate all assignments on ${moment(this.state.todate).format(
+                    "DD.MM.YYYY"
+                  )}`}
+                </Tag>
               )}
             </div>
             {!newaccount && (
