@@ -4,8 +4,8 @@ import gql from "graphql-tag";
 import { WorkAround } from "./../../interfaces";
 
 const FETCH_INBOUNDEMAILS = gql`
-  query fetchInboundEmails {
-    fetchInboundEmails
+  query adminFetchInboundEmails {
+    adminFetchInboundEmails
   }
 `;
 interface Props {
@@ -28,11 +28,11 @@ class Emails extends React.Component<Props, State> {
           if (error) {
             return <div>ERROR</div>;
           }
-          console.log(data.fetchInboundEmails);
+          console.log(data.adminFetchInboundEmails);
 
           const emails: JSX.Element[] = [];
-          if (data.fetchInboundEmails) {
-            data.fetchInboundEmails.forEach(email =>
+          if (data.adminFetchInboundEmails) {
+            data.adminFetchInboundEmails.forEach(email =>
               emails.push(
                 <div onClick={() => this.props.moveTo(`admin/email-integration/${email.id}`)}>
                   Email: {email.subject} | {email.sendtime}

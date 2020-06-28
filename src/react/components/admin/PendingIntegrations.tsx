@@ -11,7 +11,7 @@ interface State {}
 
 const FETCH_INTEGRATIONS = gql`
   {
-    fetchPendingIntegrations {
+    adminFetchPendingIntegrations {
       id
       key
     }
@@ -53,7 +53,7 @@ class PendingIntegrations extends React.Component<Props, State> {
                 </thead>
 
                 <tbody>
-                  {data.fetchPendingIntegrations.map(app => (
+                  {data.adminFetchPendingIntegrations.map(app => (
                     <Integration key={app.id} id={app.id} data={app.key} />
                   ))}
                 </tbody>
