@@ -22,6 +22,7 @@
 
   > hr {
     transform: translate(0, 5px);
+    grid-column: 1 / span 12;
 
     &:first-child {
       display: none;
