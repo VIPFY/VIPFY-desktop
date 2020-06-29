@@ -1,0 +1,17 @@
+.separatedSection {
+  hr {
+    border: 1px solid #dfe3eb;
+
+    :first-of-type {
+      .hideFirst {
+        display: none;
+      }
+    }
+
+    :last-of-type {
+      .hideLast {
+        display: none;
+      }
+    }
+  }
+}

@@ -22,6 +22,18 @@ class Card extends React.PureComponent<CardProps> {
     );
   }
 
+  renderSection(children: any, style, className?: string) {
+    return (
+      <SeparatedSection
+        className={classNames("cardSection", className)}
+        style={style}
+        hrClassName="cardDivider"
+        hideLast={true}>
+        {children}
+      </SeparatedSection>
+    );
+  }
+
   render() {
     const { app, format, showPic } = this.props;
 
@@ -44,7 +56,9 @@ class Card extends React.PureComponent<CardProps> {
 
         <SeparatedSection
           className="cardSection header"
-          style={{ backgroundColor: renderPic ? "white" : headerColor }}>
+          style={{ backgroundColor: renderPic ? "white" : headerColor }}
+          hrClassName="cardDivider"
+          hideLast={true}>
           <div className="headerItem logo">
             <ServiceLogo icon={app.icon} />
           </div>
@@ -65,14 +79,14 @@ class Card extends React.PureComponent<CardProps> {
         </SeparatedSection>
 
         {!isWideFormat && (
-          <SeparatedSection className="cardSection tagsRow">
+          <SeparatedSection className="cardSection tagsRow" hideLast={true}>
             {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
             {this.renderPricingTag("19.99$ p.m.")}
           </SeparatedSection>
         )}
 
         {hasPros && (
-          <SeparatedSection className="cardSection tagsColumn">
+          <SeparatedSection className="cardSection tagsColumn" hideLast={true}>
             {app.pros.map(pro => (
               <div className="pro">
                 <Tag>
@@ -85,7 +99,7 @@ class Card extends React.PureComponent<CardProps> {
         )}
 
         {hasFeatures && (
-          <SeparatedSection className="cardSection tagsRow">
+          <SeparatedSection className="cardSection tagsRow" hideLast={true}>
             {app.features.map(feature => (
               <Tag className="featureTag">{feature}</Tag>
             ))}

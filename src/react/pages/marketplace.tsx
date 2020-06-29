@@ -58,23 +58,27 @@ class Marketplace extends React.Component<Props> {
       <div className="marketplace">
         <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
 
-        <SeparatedSection topSeparator={true}>
-          <div className="headline">Discover</div>
-          {/* <div className="promoted">
+        <SeparatedSection topSeparator={true} hideFirst={true}>
+          <div className="headline" style={{ gridRowStart: 1 }}>
+            Discover
+          </div>
+          <div className="promoted">
             <Card app={DUMMY_APP} format={"wide"} />
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-          </div> */}
+          </div>
+          <Card app={DUMMY_APP} format={"small"} />
+          <Card app={DUMMY_APP} format={"small"} />
+          <Card app={DUMMY_APP} format={"small"} />
+          <Card app={DUMMY_APP} format={"small"} />
         </SeparatedSection>
 
-        {/* <SeparatedSection topSeparator={true}>
-          <div className="headline">Headline</div>
+        <SeparatedSection topSeparator={true} hideFirst={true}>
+          <div className="headline" style={{ gridRowStart: 2 }}>
+            Headline
+          </div>
+          {/* <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-          <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-          <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-        </SeparatedSection> */}
+          <Card app={DUMMY_APP} format={"medium"} showPic={true} /> */}
+        </SeparatedSection>
 
         {/* {sortedApps.map(app => ( */}
         {false && (
