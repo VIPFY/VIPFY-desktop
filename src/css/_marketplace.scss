@@ -9,6 +9,12 @@
   padding: 16px 32px 0;
   color: #3b4c5d;
 
+  .evenNumberOfCards {
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(216px, 1fr));
+  }
+
   // adapt once newly designed search box is available
   .searchBar {
     grid-column: 4 / span 6;

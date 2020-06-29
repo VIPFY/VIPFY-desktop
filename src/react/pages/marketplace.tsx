@@ -76,10 +76,12 @@ class Marketplace extends React.Component<MarketplaceProps> {
             Discover
           </div>
           <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
-          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "1 / span 3" }} />
-          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "4 / span 3" }} />
-          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "7 / span 3" }} />
-          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "10 / span 3" }} />
+          <div className="evenNumberOfCards" style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
+            <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} />
+          </div>
         </SeparatedMarketplaceSection>
 
         <SeparatedMarketplaceSection hrGridRowStart={4}>
