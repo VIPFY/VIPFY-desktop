@@ -28,6 +28,7 @@ interface CardProps {
   app: App;
   format: "small" | "medium" | "large" | "wide";
   showPic?: boolean;
+  style?: { [someProps: string]: any };
   onClick: () => any;
 }
 
@@ -65,7 +66,7 @@ class Card extends React.PureComponent<CardProps> {
   }
 
   render() {
-    const { app, format, showPic } = this.props;
+    const { app, format, showPic, style } = this.props;
 
     const isWideFormat = format === "wide";
     const renderPic = (showPic || isWideFormat) && !!app.pic;
@@ -75,7 +76,7 @@ class Card extends React.PureComponent<CardProps> {
     const headerColor = app.color || "#E9EEF4";
 
     return (
-      <div className={classNames("card", format)}>
+      <div className={classNames("card", format)} style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">

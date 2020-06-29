@@ -7,7 +7,6 @@ import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
 import { app } from "electron";
-import UniversalSearchBox from "../components/universalSearchBox";
 import SeparatedSection from "../components/marketplace/SeparatedSection";
 
 interface SeparatedMarketplaceSectionProps {
@@ -76,26 +75,38 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline h1" style={{ gridRowStart: 1 }}>
             Discover
           </div>
-          <div className="apps" style={{ gridRowStart: 2 }}>
-            <div className="promoted">
-              <Card app={DUMMY_APP} format={"wide"} />
-            </div>
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-            <Card app={DUMMY_APP} format={"small"} />
-          </div>
+          <Card app={DUMMY_APP} format={"wide"} style={{ gridRowStart: 2 }} />
+          <Card
+            app={DUMMY_APP}
+            format={"small"}
+            style={{ gridRowStart: 3, gridColumn: "1 / span 3" }}
+          />
+          <Card
+            app={DUMMY_APP}
+            format={"small"}
+            style={{ gridRowStart: 3, gridColumn: "4 / span 3" }}
+          />
+          <Card
+            app={DUMMY_APP}
+            format={"small"}
+            style={{ gridRowStart: 3, gridColumn: "7 / span 3" }}
+          />
+          <Card
+            app={DUMMY_APP}
+            format={"small"}
+            style={{ gridRowStart: 3, gridColumn: "10 / span 3" }}
+          />
         </SeparatedMarketplaceSection>
 
-        <SeparatedMarketplaceSection hrGridRowStart={3}>
-          <div className="headline h2" style={{ gridRowStart: 4 }}>
+        <SeparatedMarketplaceSection hrGridRowStart={4}>
+          <div className="headline h2" style={{ gridRowStart: 5 }}>
             Headline
           </div>
-          <div className="apps" style={{ gridRowStart: 5 }}>
+          {/* <div className="apps" style={{ gridRowStart: 6 }}>
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-          </div>
+          </div> */}
         </SeparatedMarketplaceSection>
 
         <span className="searchBar">Search a Service in Marketplace</span>
