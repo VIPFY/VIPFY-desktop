@@ -1,5 +1,4 @@
 import * as React from "react";
-import classNames from "classnames";
 import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
 import Card from "../components/marketplace/Card";
@@ -17,14 +16,9 @@ interface MarketplaceSectionProps {
 
 class MarketplaceSection extends React.PureComponent<MarketplaceSectionProps> {
   render() {
-    const { children } = this.props;
-
     return (
-      <SeparatedSection
-        className="marketplaceSection"
-        hrClassName="marketplaceDivider"
-        topSeparator={true}>
-        {children}
+      <SeparatedSection className="marketplaceSection" topSeparator={true}>
+        {this.props.children}
       </SeparatedSection>
     );
   }

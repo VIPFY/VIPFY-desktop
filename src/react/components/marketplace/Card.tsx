@@ -6,21 +6,18 @@ import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 import SeparatedSection from "./SeparatedSection";
 
-interface CardSectionProps {
+interface SeparatedCardSectionProps {
   children: any;
   className?: string;
   style?: { [someProps: string]: any };
 }
 
-class CardSection extends React.PureComponent<CardSectionProps> {
+class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps> {
   render() {
     const { className, style, children } = this.props;
 
     return (
-      <SeparatedSection
-        className={classNames("cardSection", className)}
-        style={style}
-        hrClassName="cardDivider">
+      <SeparatedSection className={classNames("cardSection", className)} style={style}>
         {children}
       </SeparatedSection>
     );
@@ -88,11 +85,11 @@ class Card extends React.PureComponent<CardProps> {
         )}
 
         {renderPic ? (
-          <CardSection
+          <SeparatedCardSection
             className="header"
             style={{ backgroundColor: renderPic ? "white" : headerColor }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial)}
-          </CardSection>
+          </SeparatedCardSection>
         ) : (
           <div
             className="cardSection header"
@@ -102,14 +99,14 @@ class Card extends React.PureComponent<CardProps> {
         )}
 
         {!isWideFormat && (
-          <CardSection className="tagsRow">
+          <SeparatedCardSection className="tagsRow">
             {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
             {this.renderPricingTag("19.99$ p.m.")}
-          </CardSection>
+          </SeparatedCardSection>
         )}
 
         {hasPros && (
-          <CardSection className="tagsColumn">
+          <SeparatedCardSection className="tagsColumn">
             {app.pros.map(pro => (
               <div className="pro">
                 <Tag>
@@ -118,15 +115,15 @@ class Card extends React.PureComponent<CardProps> {
                 <span>{pro}</span>
               </div>
             ))}
-          </CardSection>
+          </SeparatedCardSection>
         )}
 
         {hasFeatures && (
-          <CardSection className="tagsRow">
+          <SeparatedCardSection className="tagsRow">
             {app.features.map(feature => (
               <Tag className="featureTag">{feature}</Tag>
             ))}
-          </CardSection>
+          </SeparatedCardSection>
         )}
       </div>
     );

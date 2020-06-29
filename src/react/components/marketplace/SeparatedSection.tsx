@@ -2,7 +2,6 @@ import * as React from "react";
 import classNames from "classnames";
 
 interface SeparatedSectionProps {
-  hrClassName: string;
   topSeparator?: boolean;
   className?: string;
   style?: { [someProps: string]: any };
@@ -11,11 +10,11 @@ interface SeparatedSectionProps {
 
 class SeparatedSection extends React.PureComponent<SeparatedSectionProps> {
   render() {
-    const { className, hrClassName, style, topSeparator, children } = this.props;
+    const { className, style, topSeparator, children } = this.props;
 
     return (
       <>
-        {topSeparator && <hr className={hrClassName} />}
+        {topSeparator && <hr />}
         {className || style ? (
           <div className={classNames(className)} style={style}>
             {children}
@@ -23,7 +22,7 @@ class SeparatedSection extends React.PureComponent<SeparatedSectionProps> {
         ) : (
           children
         )}
-        {!topSeparator && <hr className={hrClassName} />}
+        {!topSeparator && <hr />}
       </>
     );
   }
