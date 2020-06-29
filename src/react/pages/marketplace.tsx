@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import classNames from "classnames";
 import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
 import Card from "../components/marketplace/Card";
@@ -11,7 +11,26 @@ import { app } from "electron";
 import UniversalSearchBox from "../components/universalSearchBox";
 import SeparatedSection from "../components/marketplace/SeparatedSection";
 
-interface Props {
+interface MarketplaceSectionProps {
+  children: any;
+}
+
+class MarketplaceSection extends React.PureComponent<MarketplaceSectionProps> {
+  render() {
+    const { children } = this.props;
+
+    return (
+      <SeparatedSection
+        className="marketplaceSection"
+        hrClassName="marketplaceDivider"
+        topSeparator={true}>
+        {children}
+      </SeparatedSection>
+    );
+  }
+}
+
+interface MarketplaceProps {
   history: any;
 }
 
@@ -39,7 +58,7 @@ const DUMMY_APP = {
   ]
 };
 
-class Marketplace extends React.Component<Props> {
+class Marketplace extends React.Component<MarketplaceProps> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -56,9 +75,7 @@ class Marketplace extends React.Component<Props> {
 
     return (
       <div className="marketplace">
-        <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
-
-        <SeparatedSection topSeparator={true} hideFirst={true}>
+        <MarketplaceSection>
           <div className="headline" style={{ gridRowStart: 1 }}>
             Discover
           </div>
@@ -69,16 +86,18 @@ class Marketplace extends React.Component<Props> {
           <Card app={DUMMY_APP} format={"small"} />
           <Card app={DUMMY_APP} format={"small"} />
           <Card app={DUMMY_APP} format={"small"} />
-        </SeparatedSection>
+        </MarketplaceSection>
 
-        <SeparatedSection topSeparator={true} hideFirst={true}>
+        <MarketplaceSection>
           <div className="headline" style={{ gridRowStart: 2 }}>
             Headline
           </div>
           {/* <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           <Card app={DUMMY_APP} format={"medium"} showPic={true} /> */}
-        </SeparatedSection>
+        </MarketplaceSection>
+
+        <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
 
         {/* {sortedApps.map(app => ( */}
         {false && (

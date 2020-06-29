@@ -51,9 +51,13 @@
     transform: translateY(-2px);
   }
 
-  hr {
+  > hr {
     transform: scaleY(0.5);
     margin: 0 16px;
+
+    &:last-child {
+      display: none;
+    }
   }
 
   .tag {
