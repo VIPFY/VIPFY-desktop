@@ -26,7 +26,7 @@ class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps
 
 interface CardProps {
   app: App;
-  format: "small" | "medium" | "large" | "wide";
+  isWideFormat?: boolean;
   showPic?: boolean;
   style?: { [someProps: string]: any };
   onClick: () => any;
@@ -66,9 +66,8 @@ class Card extends React.PureComponent<CardProps> {
   }
 
   render() {
-    const { app, format, showPic, style } = this.props;
+    const { app, isWideFormat, showPic, style } = this.props;
 
-    const isWideFormat = format === "wide";
     const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
@@ -76,7 +75,7 @@ class Card extends React.PureComponent<CardProps> {
     const headerColor = app.color || "#E9EEF4";
 
     return (
-      <div className={classNames("card", format)} style={style}>
+      <div className={classNames("card", { wide: isWideFormat })} style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">

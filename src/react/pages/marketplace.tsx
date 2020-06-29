@@ -75,27 +75,11 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline h1" style={{ gridRowStart: 1 }}>
             Discover
           </div>
-          <Card app={DUMMY_APP} format={"wide"} style={{ gridRowStart: 2 }} />
-          <Card
-            app={DUMMY_APP}
-            format={"small"}
-            style={{ gridRowStart: 3, gridColumn: "1 / span 3" }}
-          />
-          <Card
-            app={DUMMY_APP}
-            format={"small"}
-            style={{ gridRowStart: 3, gridColumn: "4 / span 3" }}
-          />
-          <Card
-            app={DUMMY_APP}
-            format={"small"}
-            style={{ gridRowStart: 3, gridColumn: "7 / span 3" }}
-          />
-          <Card
-            app={DUMMY_APP}
-            format={"small"}
-            style={{ gridRowStart: 3, gridColumn: "10 / span 3" }}
-          />
+          <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
+          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "1 / span 3" }} />
+          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "4 / span 3" }} />
+          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "7 / span 3" }} />
+          <Card app={DUMMY_APP} style={{ gridRowStart: 3, gridColumn: "10 / span 3" }} />
         </SeparatedMarketplaceSection>
 
         <SeparatedMarketplaceSection hrGridRowStart={4}>
@@ -103,48 +87,13 @@ class Marketplace extends React.Component<MarketplaceProps> {
             Headline
           </div>
           {/* <div className="apps" style={{ gridRowStart: 6 }}>
-            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
           </div> */}
         </SeparatedMarketplaceSection>
 
         <span className="searchBar">Search a Service in Marketplace</span>
-
-        {/* {sortedApps.map(app => ( */}
-        {false && (
-          <>
-            <div>
-              {/* example 1-er Card (always with pic) */}
-              <Card app={DUMMY_APP} format={"large"} showPic={true} />
-            </div>
-            <div>
-              {/* example 2-er Card (with pic) */}
-              <Card app={DUMMY_APP} format={"large"} showPic={true} />
-            </div>
-            <div>
-              {/* example 2-er Card (without pic) */}
-              <Card app={DUMMY_APP} format={"large"} />
-            </div>
-            <div>
-              {/* example 3-er Card (with pic) */}
-              <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-            </div>
-            <div>
-              {/* example 3-er Card (without pic) */}
-              <Card app={DUMMY_APP} format={"medium"} />
-            </div>
-            <div>
-              {/* example 4-er Card (with pic) */}
-              <Card app={DUMMY_APP} format={"small"} showPic={true} />
-            </div>
-            <div>
-              {/* example 4-er Card (without pic) */}
-              <Card app={DUMMY_APP} format={"small"} />
-            </div>
-          </>
-        )}
-        {/* ))} */}
       </div>
     );
   }

@@ -21,28 +21,8 @@
     }
   }
 
-  &.small {
-    min-width: 216px;
-    max-width: 384px;
-  }
-
-  &.medium {
-    min-width: 296px;
-    max-width: 520px;
-  }
-
-  &.large {
-    min-width: 264px;
-    max-width: 792px;
-  }
-
-  &.wide {
-    min-width: 552px;
-    max-width: 1608px;
-
-    .picHolder {
-      padding-top: 26%;
-    }
+  &.wide .picHolder {
+    padding-top: 26%;
   }
 
   &:hover {
