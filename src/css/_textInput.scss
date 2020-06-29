@@ -1,0 +1,74 @@
+.universalLabel {
+  font-size: 12px;
+  padding-bottom: 4px;
+  color: #3b4c5d;
+  display: block;
+}
+.passwordIcon {
+  width: 20px;
+  text-align: center;
+
+  margin-right: 16px;
+  margin-left: 16px;
+}
+.universalLabelInput {
+  display: flex;
+  border: solid 1px;
+  border-radius: 8px;
+  border-color: #c9d1da;
+  &:hover {
+    border-color: #96a7ba;
+    color: #2a3642;
+  }
+  &:focus-within {
+    border-color: #20baa9;
+    color: #2a3642;
+  }
+}
+
+.universalTextInput {
+  color: #3b4c5d;
+  text-align: left;
+  font-family: "Roboto";
+  padding-left: 16px;
+  user-select: none;
+  padding-right: 16px;
+
+  &:disabled {
+    border-color: #e3e7ec;
+    color: #a1aab4;
+    &:hover {
+      border-color: #e3e7ec;
+      color: #a1aab4;
+    }
+    .universalLabel {
+      color: #a1aab4;
+    }
+    .universalHelperText {
+      color: #a1aab4;
+    }
+  }
+}
+
+.textField {
+  &.disabled {
+    border-color: #e3e7ec;
+    color: #a1aab4;
+    &:hover {
+      border-color: #e3e7ec;
+      color: #a1aab4;
+    }
+    .universalLabel {
+      color: #a1aab4;
+    }
+    .universalHelperText {
+      color: #a1aab4;
+    }
+  }
+}
+
+.universalHelperText {
+  font-size: 12px;
+  padding-top: 4px;
+  color: #3b4c5d;
+}

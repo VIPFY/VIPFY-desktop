@@ -14,7 +14,6 @@
 @import "./date-picker";
 @import "./domains";
 @import "./dropdown";
-@import "./dropdown";
 @import "./editor";
 @import "./error";
 @import "./fa_pro_all_5.10.2";
@@ -34,6 +33,7 @@
 @import "./vacation";
 @import "./vipfyPlanPopup";
 @import "./workspace";
+@import "./textInput";
 
 ::-webkit-scrollbar-thumb {
   background: #ccc;
@@ -270,7 +270,7 @@ li {
   height: 100%;
   margin-left: 64px;
   overflow-y: scroll;
-  transition: margin-left 0.6s ease-in-out, margin-right 0.6s ease-in-out;
+  transition: margin-left 0.6s ease, margin-right 0.6s ease-in-out;
   margin-right: 0rem;
 }
 
@@ -2901,4 +2901,37 @@ progress[value] {
   &::-webkit-scrollbar {
     height: 4px;
   }
+}
+.breadcrumbs {
+  margin-top: 24px;
+  font-size: 14px;
+  line-height: 19px;
+  color: #3b4c5d;
+  border-bottom: 1px solid transparent;
+  .breadcrumb {
+    cursor: pointer;
+    &:hover {
+      color: #2a3642;
+    }
+    &:focus {
+      border-bottom: 1px solid #20baa9;
+    }
+    &.current {
+      cursor: normal;
+      border-bottom: 1px solid #2a3642;
+    }
+  }
+  .breadcrumbSeperator {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+}
+
+.pageHeading {
+  margin-top: 7px;
+  margin-bottom: 24px;
+  font-size: 24px;
+  line-height: 32px;
+  color: #3b4c5d;
+  font-size: bold;
 }

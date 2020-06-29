@@ -40,6 +40,7 @@ interface Props {
   webviewId?: number;
   modifyFields?: Object;
   licenceID?: string;
+  continueExecute?: boolean;
 }
 
 interface State {
@@ -127,7 +128,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     Object.keys(props).forEach(function (key) {
       if (props[key] != nextProps[key] && typeof props[key] != "function") {
         if (
-          (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
+          (Array.isArray(props[key]) &&
+            nextProps[key] &&
+            props[key].length == nextProps[key].length) ||
           (props[key].fetchNotifications &&
             props[key].fetchNotifications.length == nextProps[key].fetchNotifications.length)
         ) {
@@ -182,6 +185,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
       //TODO: [VIP-1210] Choose account when there are multiple ones
+      //console.log("DOMAIN", app.data.fetchLicenceAssignmentsByDomain);
       if (
         app.data.fetchLicenceAssignmentsByDomain &&
         app.data.fetchLicenceAssignmentsByDomain.length > 0
@@ -285,7 +289,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                   <UniversalButton
                     type="high"
                     onClick={() => {
-                      console.log("CLICK", c);
                       this.props.addWebview(c.id, true, c.url, false);
                       this.setState({ multipleChoose: null });
                     }}
@@ -479,12 +482,13 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           
-          return loginarray.length > 0;
+          return loginarray;
         })();
         `
         )
         .then(e => {
-          return e;
+          //console.log("TESTING", e);
+          return e.length > 0;
         });
     } else {
       return false;
@@ -732,18 +736,22 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     ) {
       await sleep(100);
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
-        this.timeout = false;
-        this.progress = 1;
+        if (!this.props.continueExecute) {
+          this.timeout = false;
+          this.progress = 1;
+          this.clearProgressTimer();
+        }
         this.sendResult({ ...this.loginState, loggedIn: false, error: true });
-        this.clearProgressTimer();
       }
     }
 
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      this.timeout = false;
-      this.progress = 1;
+      if (!this.props.continueExecute) {
+        this.timeout = false;
+        this.progress = 1;
+        this.clearProgressTimer();
+      }
       this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
-      this.clearProgressTimer();
     }
 
     if (this.progress == 1) {
@@ -779,10 +787,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   checkPreLoggedIn = async () => {
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      this.timeout = false;
-      this.progress = 1;
+      if (!this.props.continueExecute) {
+        this.timeout = false;
+        this.progress = 1;
+        this.clearProgressTimer();
+      }
       this.props.setResult({ ...this.loginState, loggedIn: true, error: false, direct: true }, "");
-      this.clearProgressTimer();
     }
   };
 
@@ -830,14 +840,15 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           this.loginState.unloaded = false;
 
           if (this.webview && (await this.isLoggedIn(this.webview))) {
-            this.timeout = false;
-            this.progress = 1;
+            if (!this.props.continueExecute) {
+              this.timeout = false;
+              this.progress = 1;
+              this.clearProgressTimer();
+            }
             this.props.setResult(
               { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
-
-            this.clearProgressTimer();
           }
         }
         break;
@@ -845,6 +856,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         {
           const w = e.target;
           let text = "";
+
           if (e.args[0] == "domain") {
             text = this.props.domain;
             this.loginState.domainEntered = true;
@@ -852,10 +864,18 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             text = this.props.username;
             this.loginState.emailEntered = true;
           } else if (e.args[0] == "password") {
-            text = this.props.password + "\u000d";
+            if (this.props.execute) {
+              text = this.props.password;
+            } else {
+              text = this.props.password + "\u000d";
+            }
             this.loginState.passwordEntered = true;
           } else {
-            throw new Error("unknown string");
+            if (e.args[1]) {
+              text = e.args[0];
+            } else {
+              throw new Error("unknown string");
+            }
           }
           for await (const c of text) {
             if (this.loginState.unloaded) {
@@ -885,21 +905,25 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           } else if (e.args[0] == "password") {
             this.loginState.passwordEnteredEnd = true;
           } else {
-            throw new Error("unknown string");
+            if (!e.args[1]) {
+              throw new Error("unknown string");
+            }
           }
         }
         break;
       case "getLoginData":
         {
           if (await this.isLoggedIn(e.target)) {
-            this.timeout = false;
-            this.progress = 1;
+            if (!this.props.continueExecute) {
+              this.timeout = false;
+              this.progress = 1;
+              this.clearProgressTimer();
+            }
             this.props.setResult(
               { ...this.loginState, loggedIn: true, error: false, direct: true },
               ""
             );
 
-            this.clearProgressTimer();
             return; //we are done with login
           }
           if (this.state.errorin) {
@@ -959,7 +983,22 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
       case "redirectClick": {
         console.log("REDIRECT CLICK", e.args[0], e.args[1]);
+        break;
       }
+      case "executeEnd":
+        {
+          this.timeout = false;
+          this.progress = 1;
+          this.clearProgressTimer();
+          const loggedIn = await this.isLoggedIn(e.target);
+          this.props.setResult(
+            { ...this.loginState, loggedIn, executeEnd: true, currentUrl: e.target.src },
+            ""
+          );
+          return; //we are done with login
+          break;
+        }
+        break;
     }
   }
 }
