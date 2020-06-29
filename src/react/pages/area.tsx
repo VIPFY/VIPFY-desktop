@@ -134,7 +134,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   setApp = (assignmentId: number) => {
-    console.log("OPEN INSTANCES", this.state);
     if (this.state.openInstances[assignmentId]) {
       this.setState(prevState => {
         const newstate = {
@@ -147,7 +146,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       });
       this.props.history.push(`/area/app/${assignmentId}`);
     } else {
-      console.log("SET APP", assignmentId);
       this.addWebview(assignmentId, true);
       this.props.history.push(`/area/app/${assignmentId}`);
     }
@@ -180,7 +178,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
-    console.log("ADDWEBVIEW", licenceID, this.state);
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = {
@@ -256,7 +253,6 @@ class Area extends React.Component<AreaProps, AreaState> {
   }; */
 
   closeInstance = (viewID: number, licenceID: number) => {
-    console.log("CLOSE", viewID, licenceID, this.state.webviews);
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -277,13 +273,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
-          console.log(
-            "TEST",
-            prevState.webviews[position],
-            prevState.webviews[0],
-            prevState.webviews.length - 1,
-            prevState.openInstances
-          );
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -499,7 +488,6 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   handleClose = (viewID: number, licenceID: number) => {
     this.setState(prevState => {
-      console.log("TEST", prevState.webviews, viewID, licenceID);
       const webviews = prevState.webviews.filter(view => view.key != viewID);
 
       return { webviews };
