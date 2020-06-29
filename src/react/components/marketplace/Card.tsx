@@ -5,88 +5,112 @@ import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 
-const WIDE_FORMAT = "wide";
+interface CardSectionProps {
+  className?: string;
+  style?: { [someProps: string]: any };
+  children: any;
+}
 
-interface Props {
+class CardSection extends React.PureComponent<CardSectionProps> {
+  render() {
+    const { className, style, children } = this.props;
+
+    return (
+      <>
+        <div className={classNames("cardSection", className)} style={style}>
+          {children}
+        </div>
+        <hr />
+      </>
+    );
+  }
+}
+
+interface CardProps {
   app: App;
   format: "small" | "medium" | "large" | "wide";
   showPic?: boolean;
   onClick: () => any;
 }
 
-class Card extends React.PureComponent<Props> {
-  renderPro(pro: string) {
+class Card extends React.PureComponent<CardProps> {
+  renderPricingTag(text: string, div?: boolean, className?: string) {
     return (
-      <div>
-        <Tag>
-          <span className="fal fa-plus fa-fw" />
-        </Tag>
-        <span className="pro">{pro}</span>
-      </div>
+      <Tag div={div} className={classNames("pricingTag", className)}>
+        {text}
+      </Tag>
     );
   }
 
   render() {
     const { app, format, showPic } = this.props;
 
-    const headerColor = app.color || "#E9EEF4";
-    const renderPic = (showPic || format === WIDE_FORMAT) && !!app.pic;
+    const isWideFormat = format === "wide";
+    const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
+    const hasFreeTrial = Math.random() < 0.5;
+    const headerColor = app.color || "#E9EEF4";
 
     return (
       <div className={classNames("card", format)}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">
-              <img src={app.pic} alt="Service Image" className="headerPic" />
+              <img src={app.pic} alt="Service Image" className="pic" />
             </div>
           </div>
         )}
 
-        <div
-          className="cardSection serviceMainInfo"
+        <CardSection
+          className="header"
           style={{ backgroundColor: renderPic ? "white" : headerColor }}>
-          <div className="item logo">
+          <div className="headerItem logo">
             <ServiceLogo icon={app.icon} />
           </div>
-          <div className="item appName">
-            {app.name}
-            <p className="rating">{showStars(4, 5)}</p>
+          <div className="headerItem appName">
+            <div>
+              {app.name}
+              <p className="rating">{showStars(4, 5)}</p>
+            </div>
           </div>
-          {format === WIDE_FORMAT && (
-            <div className="item" id="headerTags">
+          {isWideFormat && (
+            <div className="headerItem headerTags">
               <div>
-                <Tag div={true} className="info7 priceType">
-                  Free trial
-                </Tag>
-                <Tag div={true} className="info7">
-                  19.99$ p.m.
-                </Tag>
+                {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
+                {this.renderPricingTag("19.99$ p.m.", true)}
               </div>
             </div>
           )}
-        </div>
+        </CardSection>
 
-        {renderPic && (hasPros || hasFeatures) && <hr />}
+        {!isWideFormat && (
+          <CardSection className="tagsRow">
+            {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
+            {this.renderPricingTag("19.99$ p.m.")}
+          </CardSection>
+        )}
 
-        <div className="cardBody">
-          {hasPros && (
-            <div className="cardSection tagList pros">
-              {app.pros.map(pro => this.renderPro(pro))}
-            </div>
-          )}
+        {hasPros && (
+          <CardSection className="tagsColumn">
+            {app.pros.map(pro => (
+              <div className="pro">
+                <Tag>
+                  <span className="fal fa-plus fa-fw" />
+                </Tag>
+                <span>{pro}</span>
+              </div>
+            ))}
+          </CardSection>
+        )}
 
-          {hasPros && hasFeatures && <hr />}
-
-          {hasFeatures && (
-            <div className="cardSection tagList features">
-              {app.features.map(feature => (
-                <Tag style={{ fontSize: "12px" }}>{feature}</Tag>
-              ))}
-            </div>
-          )}
-        </div>
+        {hasFeatures && (
+          <CardSection className="tagsRow">
+            {app.features.map(feature => (
+              <Tag className="featureTag">{feature}</Tag>
+            ))}
+          </CardSection>
+        )}
       </div>
     );
   }

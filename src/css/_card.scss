@@ -6,31 +6,36 @@
   font-size: 14px;
   margin-bottom: 8px;
 
+  .picHolder {
+    position: relative;
+    padding-top: 56%;
+
+    .pic {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      max-height: 100%;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
   &.small {
     min-width: 216px;
     max-width: 384px;
-
-    .picHolder {
-      padding-top: 56%;
-    }
   }
 
   &.medium {
     min-width: 296px;
     max-width: 520px;
-
-    .picHolder {
-      padding-top: 56%;
-    }
   }
 
   &.large {
     min-width: 264px;
     max-width: 792px;
-
-    .picHolder {
-      padding-top: 56%;
-    }
   }
 
   &.wide {
@@ -47,138 +52,127 @@
     transform: translateY(-2px);
   }
 
-  .picHolder {
-    position: relative;
+  hr {
+    border: 1px solid #dfe3eb;
+    transform: scaleY(0.5);
+    margin: 0 16px;
 
-    .headerPic {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
+    &:last-of-type {
+      display: none;
     }
   }
 
   .tag {
+    font-size: 12px;
     border-radius: 6px;
     justify-content: center;
     align-items: center;
   }
 
-  .headerPic {
-    max-height: 100%;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+  .pricingTag {
+    display: flex;
+    background-color: white;
+    border: 1px solid #c9d1da;
+    font-size: 12px;
+    width: 84px;
+    height: 18px;
+  }
+
+  .freeTrialTag {
+    text-transform: uppercase;
   }
 
   .cardSection {
     padding: 16px;
   }
 
-  .cardBody {
-    .tag {
-      font-size: 12px;
-    }
+  .tagsColumn {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: -8px;
 
-    .tagList {
-      margin: 0 -8px -8px 0;
-
-      .tag {
-        margin: 0 8px 8px 0;
-        height: 24px;
-      }
-    }
-
-    .pros {
-      flex-direction: column;
+    .pro {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
 
       .tag {
-        display: inline-flex;
+        display: flex;
         padding: 0;
         margin-right: 8px;
-        width: 24px;
+        min-width: 24px;
+        height: 24px;
         color: #1b9a8b;
         background-color: #d6f2ef;
         font-size: 14px;
 
         > .span {
           font-size: 12px;
-          height: 12px;
           width: 12px;
         }
       }
     }
-
-    .features {
-      display: inline-flex;
-      flex-flow: row wrap;
-
-      .tag {
-        display: flex;
-        background-color: #e9eef4;
-        padding: 0 12px;
-        text-transform: uppercase;
-      }
-    }
   }
 
-  hr {
-    border: 1px solid #dfe3eb;
-    transform: scaleY(0.5);
-    margin: 0 16px;
-  }
-
-  .serviceMainInfo {
-    min-height: 48px;
-    display: grid;
-    grid-auto-flow: column;
-    gap: 16px;
-
-    .item {
-      float: left;
-    }
-
-    .logo {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .appName {
-      font-weight: 500;
-      padding: 4px 0;
-    }
-
-    .rating {
-      margin-top: 9px;
-      font-size: 12px;
-
-      .fa-star {
-        color: #3b4c5d;
-      }
-    }
-
-    #headerTags {
-      margin: -4px 0;
-      float: right;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+  .tagsRow {
+    display: inline-flex;
+    flex-flow: row wrap;
+    margin: 0 -8px -8px 0;
 
     .tag {
+      margin: 0 8px 8px 0;
       display: flex;
-      border: 1px solid #c9d1da;
-      font-size: 12px;
-      background-color: white;
-      width: 84px;
-      height: 18px;
-      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
 
-      &.priceType {
-        text-transform: uppercase;
-      }
+    .pricingTag {
+      padding: 2px 12px;
+    }
+  }
+
+  .featureTag {
+    background-color: #e9eef4;
+    padding: 5px 12px;
+  }
+
+  .header {
+    display: inline-flex;
+    align-items: center;
+    width: calc(100% - 32px);
+    min-height: 48px;
+
+    .headerItem {
+      display: inline-flex;
+    }
+  }
+
+  .appName {
+    flex-grow: 1;
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .logo {
+    margin-right: 16px;
+  }
+
+  .rating {
+    margin-top: 9px;
+    font-size: 12px;
+
+    .fa-star {
+      color: #3b4c5d;
+    }
+  }
+
+  .headerTags {
+    margin: -4px 0 -4px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .tag:nth-child(2) {
+      margin-top: 8px;
     }
   }
 }
