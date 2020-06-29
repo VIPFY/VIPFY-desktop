@@ -76,7 +76,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline" style={{ gridRowStart: 1 }}>
             Discover
           </div>
-          <div style={{ gridRowStart: 2, gridColumnStart: 1, gridColumnEnd: 13 }}>
+          <div className="apps" style={{ gridRowStart: 2 }}>
             <div className="promoted">
               <Card app={DUMMY_APP} format={"wide"} />
             </div>
@@ -91,7 +91,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline" style={{ gridRowStart: 4 }}>
             Headline
           </div>
-          <div style={{ gridRowStart: 5, gridColumnStart: 1, gridColumnEnd: 13 }}>
+          <div className="apps" style={{ gridRowStart: 5 }}>
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
             <Card app={DUMMY_APP} format={"medium"} showPic={true} />
