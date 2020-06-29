@@ -96,6 +96,14 @@ class ServiceDetails extends React.Component<Props, State> {
               {e.boughtplanid.alias}
             </span>
             <span>
+              {e.options &&
+                e.options.private &&
+                this.renderTag(
+                  "Private",
+                  "info1",
+                  { marginLeft: "8px" },
+                  "This account is private"
+                )}
               {!(e.tags && e.tags.includes("vacation")) &&
                 e.rightscount > 1 &&
                 this.renderTag(

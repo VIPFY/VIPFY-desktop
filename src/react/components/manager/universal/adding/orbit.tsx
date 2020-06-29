@@ -166,11 +166,23 @@ class CreateOrbit extends React.Component<Props, State> {
                     }
                   }}
                   modifyValue={value => {
+                    let deletedPrefix = value;
                     if (value.startsWith("https://") || value.startsWith("http://")) {
-                      return value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      return value;
+                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
                     }
+                    let deletedSuffix = deletedPrefix;
+                    if (
+                      this.props.orbit &&
+                      this.props.orbit.options &&
+                      this.props.orbit.options.afterdomain &&
+                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                    ) {
+                      deletedSuffix = deletedPrefix.substring(
+                        0,
+                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                      );
+                    }
+                    return deletedSuffix;
                   }}
                   prefix={
                     this.state.selfhosting ? (
@@ -289,7 +301,7 @@ export default (props: Props) => (
       }
       let plans = data.fetchPlans;
 
-      plans.sort(function(a, b) {
+      plans.sort(function (a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
