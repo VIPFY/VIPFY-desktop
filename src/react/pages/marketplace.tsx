@@ -73,7 +73,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <SeparatedMarketplaceSection hrGridRowStart={0}>
-          <div className="headline" style={{ gridRowStart: 1 }}>
+          <div className="headline h1" style={{ gridRowStart: 1 }}>
             Discover
           </div>
           <div className="apps" style={{ gridRowStart: 2 }}>
@@ -88,7 +88,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
         </SeparatedMarketplaceSection>
 
         <SeparatedMarketplaceSection hrGridRowStart={3}>
-          <div className="headline" style={{ gridRowStart: 4 }}>
+          <div className="headline h2" style={{ gridRowStart: 4 }}>
             Headline
           </div>
           <div className="apps" style={{ gridRowStart: 5 }}>
@@ -98,7 +98,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
           </div>
         </SeparatedMarketplaceSection>
 
-        <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
+        <span className="searchBar">Search a Service in Marketplace</span>
 
         {/* {sortedApps.map(app => ( */}
         {false && (
