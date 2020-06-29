@@ -10,11 +10,11 @@ import { app } from "electron";
 import UniversalSearchBox from "../components/universalSearchBox";
 import SeparatedSection from "../components/marketplace/SeparatedSection";
 
-interface MarketplaceSectionProps {
+interface SeparatedMarketplaceSectionProps {
   children: any;
 }
 
-class MarketplaceSection extends React.PureComponent<MarketplaceSectionProps> {
+class SeparatedMarketplaceSection extends React.PureComponent<SeparatedMarketplaceSectionProps> {
   render() {
     return (
       <SeparatedSection className="marketplaceSection" topSeparator={true}>
@@ -69,7 +69,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
 
     return (
       <div className="marketplace">
-        <MarketplaceSection>
+        <SeparatedMarketplaceSection>
           <div className="headline" style={{ gridRowStart: 1 }}>
             Discover
           </div>
@@ -80,16 +80,16 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <Card app={DUMMY_APP} format={"small"} />
           <Card app={DUMMY_APP} format={"small"} />
           <Card app={DUMMY_APP} format={"small"} />
-        </MarketplaceSection>
+        </SeparatedMarketplaceSection>
 
-        <MarketplaceSection>
+        <SeparatedMarketplaceSection>
           <div className="headline" style={{ gridRowStart: 2 }}>
             Headline
           </div>
           {/* <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           <Card app={DUMMY_APP} format={"medium"} showPic={true} />
           <Card app={DUMMY_APP} format={"medium"} showPic={true} /> */}
-        </MarketplaceSection>
+        </SeparatedMarketplaceSection>
 
         <UniversalSearchBox>Search a Service in Marketplace</UniversalSearchBox>
 
