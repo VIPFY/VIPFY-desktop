@@ -76,7 +76,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
             Discover
           </div>
           <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
-          <div className="foursomeGrid" style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
+          <div
+            className="multipleOfTFourGrid"
+            style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
@@ -92,7 +94,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline h2" style={{ gridRowStart: 5 }}>
             Headline
           </div>
-          <div className="threesomeGrid" style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
+          <div
+            className="multipleOfThreeGrid"
+            style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
@@ -102,6 +106,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
           </div>
         </SeparatedMarketplaceSection>
 
+        {/* this needs to be the last child of the marketplace div to make the corresponding css work correctly */}
         <span className="searchBar">Search a Service in Marketplace</span>
       </div>
     );
