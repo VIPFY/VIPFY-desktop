@@ -8,13 +8,15 @@
     min-width: 552px;
     max-width: 1608px;
     margin: auto;
-    padding: 16px 32px 0;
+    padding: 0 32px 16px;
     color: #3b4c5d;
   }
 
   .marketplaceHeader {
     @include marketplaceGrid;
     grid-template-rows: auto;
+    padding-top: 16px;
+    background-color: inherit;
     position: sticky;
     top: 0;
     z-index: 1;
