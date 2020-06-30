@@ -71,43 +71,46 @@ class Marketplace extends React.Component<MarketplaceProps> {
 
     return (
       <div className="marketplace">
-        <SeparatedMarketplaceSection hrGridRowStart={0}>
+        <div className="marketplaceHeader">
           <h1 className="headline" style={{ gridRowStart: 1 }}>
             Discover
           </h1>
-          <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
-          <div
-            className="multipleOfTFourGrid"
-            style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} showPic={true} />
-            <Card app={DUMMY_APP} showPic={true} />
-            <Card app={DUMMY_APP} showPic={true} />
-            <Card app={DUMMY_APP} showPic={true} />
-          </div>
-        </SeparatedMarketplaceSection>
+          <span className="searchBar">Search a Service in Marketplace</span>
+        </div>
 
-        <SeparatedMarketplaceSection hrGridRowStart={4}>
-          <h1 className="headline" style={{ gridRowStart: 5 }}>
-            Headline
-          </h1>
-          <div
-            className="multipleOfThreeGrid"
-            style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} />
-            <Card app={DUMMY_APP} showPic={true} />
-            <Card app={DUMMY_APP} showPic={true} />
-            <Card app={DUMMY_APP} showPic={true} />
-          </div>
-        </SeparatedMarketplaceSection>
+        <div className="marketplaceContent">
+          <SeparatedMarketplaceSection hrGridRowStart={0}>
+            <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 1 }} />
+            <div
+              className="multipleOfTFourGrid"
+              style={{ gridRowStart: 2, gridColumn: "1 / span 12" }}>
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+            </div>
+          </SeparatedMarketplaceSection>
 
-        {/* this needs to be the last child of the marketplace div to make the corresponding css work correctly */}
-        <span className="searchBar">Search a Service in Marketplace</span>
+          <SeparatedMarketplaceSection hrGridRowStart={3}>
+            <h1 className="headline" style={{ gridRowStart: 4 }}>
+              Headline
+            </h1>
+            <div
+              className="multipleOfThreeGrid"
+              style={{ gridRowStart: 5, gridColumn: "1 / span 12" }}>
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+            </div>
+          </SeparatedMarketplaceSection>
+        </div>
       </div>
     );
   }

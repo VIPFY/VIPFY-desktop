@@ -1,13 +1,56 @@
 .marketplace {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(5, auto);
-  grid-gap: 24px;
-  min-width: 552px;
-  max-width: 1608px;
-  margin: auto;
-  padding: 16px 32px 0;
-  color: #3b4c5d;
+  background-color: #f5f7f9;
+
+  @mixin marketplaceGrid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-gap: 24px;
+    min-width: 552px;
+    max-width: 1608px;
+    margin: auto;
+    padding: 16px 32px 0;
+    color: #3b4c5d;
+  }
+
+  .marketplaceHeader {
+    @include marketplaceGrid;
+    grid-template-rows: auto;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    // adapt once newly designed search box is available
+    .searchBar {
+      grid-column: 4 / span 6;
+      grid-row-start: 1;
+      margin: 0 auto;
+    }
+  }
+
+  .marketplaceContent {
+    @include marketplaceGrid;
+    grid-template-rows: repeat(5, auto);
+
+    > hr {
+      width: 100%;
+      border: none;
+      border-top: 1px solid #c9d1da;
+      grid-column: 1 / -1;
+      transform: translateY(8px);
+
+      &:first-child {
+        display: none;
+      }
+    }
+
+    .headline {
+      margin-bottom: -8px;
+    }
+  }
+
+  .headline {
+    grid-column: 1 / span 3;
+  }
 
   .multipleOfThreeGrid {
     display: grid;
@@ -30,30 +73,6 @@
 
     @media (max-width: 1240px) {
       grid-template-columns: repeat(2, minmax(264px, 1fr));
-    }
-  }
-
-  // adapt once newly designed search box is available
-  .searchBar {
-    grid-column: 4 / span 6;
-    grid-row-start: 1;
-    margin: 0 auto;
-  }
-
-  .headline {
-    grid-column: 1 / span 3;
-    margin-bottom: -8px;
-  }
-
-  > hr {
-    width: 100%;
-    border: none;
-    border-top: 1px solid #c9d1da;
-    grid-column: 1 / -1;
-    transform: translateY(8px);
-
-    &:first-child {
-      display: none;
     }
   }
 

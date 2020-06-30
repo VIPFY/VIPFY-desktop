@@ -1,8 +1,10 @@
 .card {
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0px 1px 1px #00000026;
   border: 1px solid #f4f5f7;
   font-size: 14px;
+  background-color: #fff;
 
   .picHolder {
     position: relative;
