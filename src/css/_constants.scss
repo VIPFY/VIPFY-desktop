@@ -2,7 +2,6 @@ $app-logo: url("../images/logo-full-aaa-ai.svg");
 $newlogo-small: url("../images/Vipfy-white.svg");
 $newlogo: url("../images/Vipfy-white.svg");
 $logo_white: url("../images/logo_hell.png");
-$sidebar-background: #333;
 $sidebar-width: 240px;
 $sidebar-margin: 8px;
 $sidebar-background: #30475d;
@@ -18,7 +17,9 @@ $hover: #117f91;
 $hover-secondary: #991b78;
 $deleted-color: #b5a0a7;
 
-$vipfy-normaltext: #253647;
+$vipfy_mainColor: #253647;
+
+$vipfy-normaltext: $vipfy_mainColor;
 $vipfy-darktext: #2a3949;
 $vipfy-lighttext: #415e72;
 $vipfy-disabledtext: #e1e3e5;
@@ -34,7 +35,6 @@ $vipfy-buttondarkgreen: #1697a5;
 $vipfy-lightshadow: 1px 3px 4px 0px #78787833;
 $vipfy-shadow: 1px 3px 4px 0px #78787866;
 
-$vipfy_mainColor: #253647;
 $vipfy_bigradius: 6px;
 $vipfy_smallradius: 3px;
 
