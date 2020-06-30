@@ -8,12 +8,15 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 import { tests } from "./tests";
+import { withApollo } from "react-apollo";
+import gql from "graphql-tag";
 
 const { session, dialog } = remote;
 const RESULTS_FILE_PATH = "ssotest.json";
 
 interface Props {
   dbApps?: [];
+  client: any;
 }
 
 interface State {
@@ -21,6 +24,7 @@ interface State {
   runningInBatchMode: boolean;
   sites: Site[];
   takeScreenshots: boolean;
+  timeout: number;
 }
 
 class UniversalLoginTest extends React.PureComponent<Props, State> {
@@ -33,7 +37,8 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
       sites: sitesWithOptions,
       siteIndexUnderTest: -1,
       runningInBatchMode: false,
-      takeScreenshots: true
+      takeScreenshots: true,
+      timeout: 60
     };
   }
 
@@ -146,12 +151,24 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
 
   renderTable(siteUnderTest: Site) {
     return this.state.sites.map((site: Site, siteIndexUnderTest: number) => (
-      <React.Fragment key={`${site.app}`}>
+      <React.Fragment key={`${site.app}-${siteIndexUnderTest}`}>
         <tr>
           <td>{site.app}</td>
           <td>
-            <span onClick={() => this.runTestOnSite(siteIndexUnderTest)}>
+            <span
+              onClick={() => this.runTestOnSite(siteIndexUnderTest)}
+              style={{ marginRight: "8px" }}>
               <i className="fal fa-play" />
+            </span>
+            <span
+              onClick={async () => {
+                await this.setState({
+                  runningInBatchMode: true,
+                  siteIndexUnderTest: siteIndexUnderTest - 1
+                });
+                this.advance(true);
+              }}>
+              <i className="fal fa-fast-forward" />
             </span>
           </td>
           {Array.from({ length: tests.length }, (_, testIndex: number) => (
@@ -183,6 +200,7 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 noError={site.options && site.options.noError}
                 individualShow={site.options ? site.options.individualShow : ""}
                 individualNotShow={site.options ? site.options.individualNotShow : ""}
+                timeout={this.state.timeout * 1000}
               />
             </td>
           </tr>
@@ -297,7 +315,11 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
                 await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
                 this.advance(true);
               }}>
-              <i className="fal fa-play fa-2x" style={{ padding: "8px" }} id="startBatchRunIcon" />
+              <i
+                className="fal fa-fast-forward fa-2x"
+                style={{ padding: "8px" }}
+                id="startBatchRunIcon"
+              />
             </span>
           )}
           {this.state.takeScreenshots ? (
@@ -349,6 +371,68 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
             title="Save results to file">
             <i className="fal fa-save fa-2x" style={{ padding: "8px" }} />
           </span>
+          <span
+            onClick={async () => {
+              this.setState({ sites });
+            }}
+            title="Load Local Test Config"
+            style={{ marginLeft: "30px" }}>
+            <i className="fal fa-globe-europe fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span
+            onClick={async () => {
+              let data = await this.props.client.query({
+                query: gql`
+                  query {
+                    testing_fetchSSOTestConfig
+                  }
+                `,
+                fetchPolicy: "network-only"
+              });
+              let sites = data.data.testing_fetchSSOTestConfig;
+              this.setState({ sites });
+            }}
+            title="Load Remote Test Config">
+            <i className="fal fa-moon fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span
+            onClick={async () => {
+              let data = await this.props.client.query({
+                query: gql`
+                  query {
+                    testing_fetchSSOTestConfig
+                  }
+                `,
+                fetchPolicy: "network-only"
+              });
+              let sites = data.data.testing_fetchSSOTestConfig.map(site => ({
+                ...site,
+                options: null
+              }));
+              this.setState({ sites });
+            }}
+            title="Load Remote Test Config (no options)">
+            <i className="fal fa-rocket fa-2x" style={{ padding: "8px" }} />
+          </span>
+          <span style={{ display: "inline-block", marginLeft: "30px" }}>
+            <label>
+              Timeout:
+              <br />
+              <input
+                type="number"
+                id="timeoutInput"
+                style={{ width: "45px", textAlign: "right" }}
+                value={this.state.timeout}
+                onChange={e => {
+                  const timeout = parseInt(e.target.value);
+                  this.setState({ timeout });
+                }}
+                min={1}
+                max={3600}
+              />{" "}
+              s
+            </label>
+          </span>
         </div>
 
         <table className="simpletable">
@@ -393,4 +477,4 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 }
 
-export default UniversalLoginTest;
+export default withApollo(UniversalLoginTest);

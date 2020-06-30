@@ -1,12 +1,11 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
-import { concatName, getPreloadScriptPath } from "../../common/functions";
+import { getPreloadScriptPath } from "../../common/functions";
 import UniversalButton from "../universalButtons/universalButton";
-import { User } from "../../interfaces";
+import UserName from "../UserName";
 
 interface Props {
   id: string;
-  unit: User;
   data: {
     email: string;
     external: string;
@@ -19,6 +18,7 @@ interface Props {
     passwordEntered: boolean;
     tries: number;
     company: number;
+    user: string;
   };
 }
 
@@ -34,15 +34,15 @@ class Integration extends React.Component<Props, State> {
   };
 
   render() {
-    const { data, unit } = this.props;
+    const { data } = this.props;
 
     return (
       <React.Fragment>
         <tr className="failed-sso">
-          <td>{concatName(unit)}</td>
+          <td>{data.user && <UserName unitid={data.user} />}</td>
           <td>{data.company}</td>
           <td>{data.name}</td>
-          <td>{data.loginurl}</td>
+          <td style={{ maxWidth: "400px", overflow: "auto" }}>{data.loginurl}</td>
           <td>
             <i className={`fal fa-${data.recaptcha ? "check" : "times"}`} />
           </td>

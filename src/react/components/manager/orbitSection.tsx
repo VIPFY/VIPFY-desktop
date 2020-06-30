@@ -382,11 +382,23 @@ class OrbitSection extends React.Component<Props, State> {
                     }
                   }}
                   modifyValue={value => {
+                    let deletedPrefix = value;
                     if (value.startsWith("https://") || value.startsWith("http://")) {
-                      return value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      return value;
+                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
                     }
+                    let deletedSuffix = deletedPrefix;
+                    if (
+                      this.props.orbit &&
+                      this.props.orbit.options &&
+                      this.props.orbit.options.afterdomain &&
+                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                    ) {
+                      deletedSuffix = deletedPrefix.substring(
+                        0,
+                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                      );
+                    }
+                    return deletedSuffix;
                   }}
                   prefix={
                     this.state.selfhosting ? (

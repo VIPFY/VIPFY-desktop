@@ -79,7 +79,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
           if (isImpersonating) {
             context.addHeaderNotification(
-              `You are impersonating the User ${concatName(clearProps)}`,
+              `You are impersonating the User ${concatName(pureProps)}`,
               {
                 type: "impersonation",
                 key: "impersonator",
