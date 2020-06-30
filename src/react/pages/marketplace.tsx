@@ -81,6 +81,10 @@ class Marketplace extends React.Component<MarketplaceProps> {
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
+            <Card app={DUMMY_APP} showPic={true} />
           </div>
         </SeparatedMarketplaceSection>
 
@@ -88,11 +92,14 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <div className="headline h2" style={{ gridRowStart: 5 }}>
             Headline
           </div>
-          {/* <div className="apps" style={{ gridRowStart: 6 }}>
+          <div className="threesomeGrid" style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
+            <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} />
+            <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} showPic={true} />
             <Card app={DUMMY_APP} showPic={true} />
             <Card app={DUMMY_APP} showPic={true} />
-          </div> */}
+          </div>
         </SeparatedMarketplaceSection>
 
         <span className="searchBar">Search a Service in Marketplace</span>
