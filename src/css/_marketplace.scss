@@ -9,10 +9,14 @@
   padding: 16px 32px 0;
   color: #3b4c5d;
 
-  .evenNumberOfCards {
+  .foursomeGrid {
     display: grid;
     grid-gap: 24px;
-    grid-template-columns: repeat(auto-fit, minmax(216px, 1fr));
+    grid-template-columns: repeat(2, minmax(264px, 1fr));
+
+    @media (min-width: 1240px) {
+      grid-template-columns: repeat(4, minmax(216px, 1fr));
+    }
   }
 
   // adapt once newly designed search box is available

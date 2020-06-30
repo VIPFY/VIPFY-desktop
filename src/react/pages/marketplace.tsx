@@ -76,7 +76,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
             Discover
           </div>
           <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
-          <div className="evenNumberOfCards" style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
+          <div className="foursomeGrid" style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
             <Card app={DUMMY_APP} />
