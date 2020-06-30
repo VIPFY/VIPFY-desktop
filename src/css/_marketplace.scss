@@ -43,19 +43,13 @@
   .headline {
     grid-column: 1 / span 3;
     margin-bottom: -8px;
-    font-weight: 500;
-
-    &.h1 {
-      font-size: 24px;
-    }
-
-    &.h2 {
-      font-size: 22px;
-    }
   }
 
   > hr {
-    grid-column: 1 / span 12;
+    width: 100%;
+    border: none;
+    border-top: 1px solid #c9d1da;
+    grid-column: 1 / -1;
     transform: translateY(8px);
 
     &:first-child {
@@ -65,7 +59,7 @@
 
   .card {
     &.wide {
-      grid-column: 1 / span 12;
+      grid-column: 1 / -1;
     }
   }
 }

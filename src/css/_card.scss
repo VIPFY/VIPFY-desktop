@@ -31,7 +31,8 @@
   }
 
   > hr {
-    transform: scaleY(0.5);
+    border: none;
+    border-top: 1px solid #dfe3eb;
     margin: 0 16px;
 
     &:last-child {

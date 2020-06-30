@@ -1,4 +1,6 @@
-// this needs to be imported first because it is used in the other imported files
+// these need to be imported first
+@import "./reset";
+@import "./elements";
 @import "./constants";
 
 // please add in alphabetical order
