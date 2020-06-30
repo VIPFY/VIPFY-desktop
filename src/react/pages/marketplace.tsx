@@ -72,9 +72,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <SeparatedMarketplaceSection hrGridRowStart={0}>
-          <div className="headline" style={{ gridRowStart: 1 }}>
-            <h1>Discover</h1>
-          </div>
+          <h1 className="headline" style={{ gridRowStart: 1 }}>
+            Discover
+          </h1>
           <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 2 }} />
           <div
             className="multipleOfTFourGrid"
@@ -91,9 +91,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
         </SeparatedMarketplaceSection>
 
         <SeparatedMarketplaceSection hrGridRowStart={4}>
-          <div className="headline" style={{ gridRowStart: 5 }}>
-            <h2>Headline</h2>
-          </div>
+          <h1 className="headline" style={{ gridRowStart: 5 }}>
+            Headline
+          </h1>
           <div
             className="multipleOfThreeGrid"
             style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
