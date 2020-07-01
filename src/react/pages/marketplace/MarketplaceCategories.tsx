@@ -64,36 +64,32 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
         </div>
 
         <div className="marketplaceContent">
-          <SeparatedMarketplaceSection hrGridRowStart={0}>
-            <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 1 }} />
+          <SeparatedMarketplaceSection hrGridRowStart={1}>
+            <h2 className="headline" style={{ gridRowStart: 2 }}>
+              Headline
+            </h2>
             <div
-              className="multipleOfTFourGrid"
-              style={{ gridRowStart: 2, gridColumn: "1 / span 12" }}>
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} showPic={true} />
+              className="multipleOfThreeGrid"
+              style={{ gridRowStart: 3, gridColumn: "1 / span 12" }}>
               <Card app={DUMMY_APP} showPic={true} />
               <Card app={DUMMY_APP} showPic={true} />
               <Card app={DUMMY_APP} showPic={true} />
             </div>
           </SeparatedMarketplaceSection>
 
-          <SeparatedMarketplaceSection hrGridRowStart={3}>
-            <h1 className="headline" style={{ gridRowStart: 4 }}>
+          <SeparatedMarketplaceSection hrGridRowStart={4}>
+            <h2 className="headline" style={{ gridRowStart: 5 }}>
               Headline
-            </h1>
+            </h2>
             <div
-              className="multipleOfThreeGrid"
-              style={{ gridRowStart: 5, gridColumn: "1 / span 12" }}>
+              className="multipleOfFourGrid"
+              style={{ gridRowStart: 6, gridColumn: "1 / span 12" }}>
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} />
             </div>
+            <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 7 }} />
           </SeparatedMarketplaceSection>
         </div>
       </div>

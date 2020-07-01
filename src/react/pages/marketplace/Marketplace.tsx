@@ -6,24 +6,6 @@ import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
-import SeparatedSection from "../../components/marketplace/SeparatedSection";
-
-interface SeparatedMarketplaceSectionProps {
-  hrGridRowStart: number;
-  children: any;
-}
-
-class SeparatedMarketplaceSection extends React.PureComponent<SeparatedMarketplaceSectionProps> {
-  render() {
-    const { children, hrGridRowStart } = this.props;
-
-    return (
-      <SeparatedSection topSeparator={true} hrStyle={{ gridRowStart: hrGridRowStart }}>
-        {children}
-      </SeparatedSection>
-    );
-  }
-}
 
 interface MarketplaceProps {
   history: any;

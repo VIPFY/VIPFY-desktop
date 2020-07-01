@@ -68,7 +68,7 @@
     }
   }
 
-  .multipleOfTFourGrid {
+  .multipleOfFourGrid {
     display: grid;
     grid-gap: 24px;
     grid-template-columns: repeat(4, minmax(216px, 1fr));
