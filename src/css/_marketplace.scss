@@ -1,5 +1,11 @@
 .marketplace {
   background-color: #f5f7f9;
+  padding: 0 32px;
+
+  h1,
+  h2 {
+    grid-column: 1 / span 3;
+  }
 
   @mixin marketplaceGrid {
     display: grid;
@@ -30,28 +36,27 @@
   }
 
   .marketplaceContent {
-    @include marketplaceGrid;
-    grid-template-rows: repeat(5, auto);
-
     > hr {
-      width: 100%;
+      margin: unset;
       border: none;
       border-top: 1px solid #c9d1da;
-      grid-column: 1 / -1;
-      transform: translateY(8px);
 
       &:first-child {
         display: none;
       }
     }
-
-    .headline {
-      margin-bottom: -8px;
-    }
   }
 
   .headline {
-    grid-column: 1 / span 3;
+    padding: 16px 0;
+  }
+
+  .apps {
+    padding-bottom: 32px;
+
+    & > *:not(:last-child) {
+      margin-bottom: 24px;
+    }
   }
 
   .multipleOfThreeGrid {

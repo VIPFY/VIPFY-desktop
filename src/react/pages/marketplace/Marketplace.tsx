@@ -8,9 +8,9 @@ import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import SeparatedSection from "../../components/marketplace/SeparatedSection";
 
-function SeparatedMarketplaceSection(props: { hrGridRowStart: number; children: any }) {
+function SeparatedMarketplaceSection(props: { children: any; className?: string }) {
   return (
-    <SeparatedSection topSeparator={true} hrStyle={{ gridRowStart: props.hrGridRowStart }}>
+    <SeparatedSection topSeparator={true} className={props.className}>
       {props.children}
     </SeparatedSection>
   );
@@ -61,43 +61,30 @@ class Marketplace extends React.Component<MarketplaceProps> {
 
     return (
       <div className="marketplace">
-        <div className="marketplaceHeader">
-          <h1 className="headline" style={{ gridRowStart: 1 }}>
-            Discover
-          </h1>
+        <div className="marketplaceHeader headline">
+          <h1 style={{ gridRowStart: 1 }}>Discover</h1>
           <span className="searchBar">Search a Service in Marketplace</span>
         </div>
 
         <div className="marketplaceContent">
-          <SeparatedMarketplaceSection hrGridRowStart={0}>
-            <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 1 }} />
-            <div
-              className="multipleOfFourGrid"
-              style={{ gridRowStart: 2, gridColumn: "1 / span 12" }}>
+          <SeparatedMarketplaceSection className="apps">
+            <Card app={DUMMY_APP} isWideFormat={true} />
+            <div className="multipleOfFourGrid">
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
             </div>
           </SeparatedMarketplaceSection>
 
-          <SeparatedMarketplaceSection hrGridRowStart={3}>
-            <h2 className="headline" style={{ gridRowStart: 4 }}>
-              Headline
-            </h2>
-            <div
-              className="multipleOfThreeGrid"
-              style={{ gridRowStart: 5, gridColumn: "1 / span 12" }}>
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
-              <Card app={DUMMY_APP} showPic={true} />
+          <SeparatedMarketplaceSection>
+            <h2 className="headline">Headline</h2>
+            <div className="apps">
+              <div className="multipleOfThreeGrid">
+                <Card app={DUMMY_APP} />
+                <Card app={DUMMY_APP} />
+                <Card app={DUMMY_APP} />
+              </div>
             </div>
           </SeparatedMarketplaceSection>
         </div>
