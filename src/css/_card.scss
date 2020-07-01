@@ -1,10 +1,10 @@
 .card {
   border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 1px 1px #00000026;
   border: 1px solid #f4f5f7;
-  color: #3b4c5d;
   font-size: 14px;
-  margin-bottom: 8px;
+  background-color: #fff;
 
   .picHolder {
     position: relative;
@@ -23,28 +23,8 @@
     }
   }
 
-  &.small {
-    min-width: 216px;
-    max-width: 384px;
-  }
-
-  &.medium {
-    min-width: 296px;
-    max-width: 520px;
-  }
-
-  &.large {
-    min-width: 264px;
-    max-width: 792px;
-  }
-
-  &.wide {
-    min-width: 552px;
-    max-width: 1608px;
-
-    .picHolder {
-      padding-top: 26%;
-    }
+  &.wide .picHolder {
+    padding-top: 26%;
   }
 
   &:hover {
@@ -52,12 +32,12 @@
     transform: translateY(-2px);
   }
 
-  hr {
-    border: 1px solid #dfe3eb;
-    transform: scaleY(0.5);
+  > hr {
+    border: none;
+    border-top: 1px solid #dfe3eb;
     margin: 0 16px;
 
-    &:last-of-type {
+    &:last-child {
       display: none;
     }
   }

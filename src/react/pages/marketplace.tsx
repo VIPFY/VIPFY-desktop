@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { fetchApps } from "../queries/products";
 import QueryWrapper from "../common/QueryWrapper";
 import Card from "../components/marketplace/Card";
@@ -7,9 +6,17 @@ import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
-import { app } from "electron";
+import SeparatedSection from "../components/marketplace/SeparatedSection";
 
-interface Props {
+function SeparatedMarketplaceSection(props: { hrGridRowStart: number; children: any }) {
+  return (
+    <SeparatedSection topSeparator={true} hrStyle={{ gridRowStart: props.hrGridRowStart }}>
+      {props.children}
+    </SeparatedSection>
+  );
+}
+
+interface MarketplaceProps {
   history: any;
 }
 
@@ -37,7 +44,7 @@ const DUMMY_APP = {
   ]
 };
 
-class Marketplace extends React.Component<Props> {
+class Marketplace extends React.Component<MarketplaceProps> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -54,38 +61,46 @@ class Marketplace extends React.Component<Props> {
 
     return (
       <div className="marketplace">
-        {/* {sortedApps.map(app => ( */}
-        <>
-          <div>
-            {/* example 1-er Card (always with pic) */}
-            <Card app={DUMMY_APP} format={"wide"} />
-          </div>
-          <div>
-            {/* example 2-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"large"} showPic={true} />
-          </div>
-          <div>
-            {/* example 2-er Card (without pic) */}
-            <Card app={DUMMY_APP} format={"large"} />
-          </div>
-          <div>
-            {/* example 3-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"medium"} showPic={true} />
-          </div>
-          <div>
-            {/* example 3-er Card (without pic) */}
-            <Card app={DUMMY_APP} format={"medium"} />
-          </div>
-          <div>
-            {/* example 4-er Card (with pic) */}
-            <Card app={DUMMY_APP} format={"small"} showPic={true} />
-          </div>
-          <div>
-            {/* example 4-er Card (without pic) */}
-            <Card app={DUMMY_APP} format={"small"} />
-          </div>
-        </>
-        {/* ))} */}
+        <div className="marketplaceHeader">
+          <h1 className="headline" style={{ gridRowStart: 1 }}>
+            Discover
+          </h1>
+          <span className="searchBar">Search a Service in Marketplace</span>
+        </div>
+
+        <div className="marketplaceContent">
+          <SeparatedMarketplaceSection hrGridRowStart={0}>
+            <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 1 }} />
+            <div
+              className="multipleOfFourGrid"
+              style={{ gridRowStart: 2, gridColumn: "1 / span 12" }}>
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+            </div>
+          </SeparatedMarketplaceSection>
+
+          <SeparatedMarketplaceSection hrGridRowStart={3}>
+            <h2 className="headline" style={{ gridRowStart: 4 }}>
+              Headline
+            </h2>
+            <div
+              className="multipleOfThreeGrid"
+              style={{ gridRowStart: 5, gridColumn: "1 / span 12" }}>
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+              <Card app={DUMMY_APP} showPic={true} />
+            </div>
+          </SeparatedMarketplaceSection>
+        </div>
       </div>
     );
   }
