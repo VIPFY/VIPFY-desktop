@@ -6,24 +6,14 @@ import { App } from "../interfaces";
 import { sortApps } from "../common/functions";
 import ErrorPage from "./error";
 import welcomeImage from "../../images/onboarding.png";
-import { app } from "electron";
 import SeparatedSection from "../components/marketplace/SeparatedSection";
 
-interface SeparatedMarketplaceSectionProps {
-  hrGridRowStart: number;
-  children: any;
-}
-
-class SeparatedMarketplaceSection extends React.PureComponent<SeparatedMarketplaceSectionProps> {
-  render() {
-    const { children, hrGridRowStart } = this.props;
-
-    return (
-      <SeparatedSection topSeparator={true} hrStyle={{ gridRowStart: hrGridRowStart }}>
-        {children}
-      </SeparatedSection>
-    );
-  }
+function SeparatedMarketplaceSection(props: { hrGridRowStart: number; children: any }) {
+  return (
+    <SeparatedSection topSeparator={true} hrStyle={{ gridRowStart: props.hrGridRowStart }}>
+      {props.children}
+    </SeparatedSection>
+  );
 }
 
 interface MarketplaceProps {
@@ -82,7 +72,7 @@ class Marketplace extends React.Component<MarketplaceProps> {
           <SeparatedMarketplaceSection hrGridRowStart={0}>
             <Card app={DUMMY_APP} isWideFormat={true} style={{ gridRowStart: 1 }} />
             <div
-              className="multipleOfTFourGrid"
+              className="multipleOfFourGrid"
               style={{ gridRowStart: 2, gridColumn: "1 / span 12" }}>
               <Card app={DUMMY_APP} />
               <Card app={DUMMY_APP} />
@@ -96,9 +86,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
           </SeparatedMarketplaceSection>
 
           <SeparatedMarketplaceSection hrGridRowStart={3}>
-            <h1 className="headline" style={{ gridRowStart: 4 }}>
+            <h2 className="headline" style={{ gridRowStart: 4 }}>
               Headline
-            </h1>
+            </h2>
             <div
               className="multipleOfThreeGrid"
               style={{ gridRowStart: 5, gridColumn: "1 / span 12" }}>

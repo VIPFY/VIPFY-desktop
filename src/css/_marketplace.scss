@@ -60,7 +60,7 @@
     grid-template-columns: repeat(3, minmax(296px, 1fr));
 
     @media (max-width: 1240px) {
-      grid-template-columns: repeat(1, 1fr);
+      grid-template-columns: 1fr;
 
       .picHolder {
         padding-top: 26%;
@@ -68,7 +68,7 @@
     }
   }
 
-  .multipleOfTFourGrid {
+  .multipleOfFourGrid {
     display: grid;
     grid-gap: 24px;
     grid-template-columns: repeat(4, minmax(216px, 1fr));
