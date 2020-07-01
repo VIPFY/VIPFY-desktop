@@ -37,13 +37,8 @@
 
   .marketplaceContent {
     > hr {
-      margin: unset;
       border: none;
       border-top: 1px solid #c9d1da;
-
-      &:first-child {
-        display: none;
-      }
     }
   }
 
