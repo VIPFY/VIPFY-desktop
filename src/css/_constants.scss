@@ -635,6 +635,7 @@ textarea {
 .ReactPasswordStrength-input:not(:focus).is-password-invalid {
   color: #d1462f;
 }
+
 .ReactPasswordStrength-input:focus {
   outline: none;
 }
@@ -654,15 +655,19 @@ textarea {
 .ReactPasswordStrength.is-strength-0 .ReactPasswordStrength-strength-desc {
   color: #d1462f;
 }
+
 .ReactPasswordStrength.is-strength-1 .ReactPasswordStrength-strength-desc {
   color: #d1462f;
 }
+
 .ReactPasswordStrength.is-strength-2 .ReactPasswordStrength-strength-desc {
   color: #57b8ff;
 }
+
 .ReactPasswordStrength.is-strength-3 .ReactPasswordStrength-strength-desc {
   color: #57b8ff;
 }
+
 .ReactPasswordStrength.is-strength-4 .ReactPasswordStrength-strength-desc {
   color: #2fbf71;
 }

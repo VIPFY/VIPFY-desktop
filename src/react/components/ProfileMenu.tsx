@@ -36,6 +36,13 @@ export default (props: Props) => {
     }
   };
 
+  const renderButton = (onClick, labelText, icon) => (
+    <button className="naked-button" onClick={onClick}>
+      <span>{labelText}</span>
+      <i className={`fal fa-${icon}`} />
+    </button>
+  );
+
   return (
     <div
       ref={contextMenuRef}
@@ -44,26 +51,16 @@ export default (props: Props) => {
         left: sidebarOpen ? "210px" : "50px",
         zIndex: 1000
       }}>
-      {/*isadmin && (
-        <button className="naked-button" onClick={() => props.goTo("company")}>
-          <span>Company Settings</span>
-          <i className="fal fa-external-link-alt" />
-        </button>
-      )*/}
-      <button className="naked-button" onClick={() => props.goTo(`profile/${id}`)}>
-        <span>Profile</span>
-        <i className="fal fa-external-link-alt" />
-      </button>
+      {renderButton(() => props.goTo(`profile/${id}`), "Profile", "external-link-alt")}
+
       {props.company == "ff18ee19-b247-45aa-bcab-7b9992a593cd" && (
-        <button className="naked-button" onClick={() => props.goTo("workspace")}>
-          <span>Workspace</span>
-          <i className="fal fa-biohazard" />
-        </button>
+        <React.Fragment>
+          {renderButton(() => props.goTo("workspace"), "Workspace", "biohazard")}
+          {renderButton(() => props.goTo("vacation"), "Vacations", "island-tropical")}
+        </React.Fragment>
       )}
-      <button className="naked-button" onClick={() => logMeOut()}>
-        <span>Log out</span>
-        <i className="fal fa-sign-out-alt" />
-      </button>
+
+      {renderButton(logMeOut, "Log out", "sign-out-alt")}
     </div>
   );
 };
