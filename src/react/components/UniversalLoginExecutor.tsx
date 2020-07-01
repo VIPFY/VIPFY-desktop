@@ -669,6 +669,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   sendResult(resultValues) {
     this.clearTimeout();
+    this.clearProgressTimer();
 
     const takeScreenshot = this.props.takeScreenshot;
 
@@ -730,7 +731,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         direct: true,
         error: false
       });
-      this.clearProgressTimer();
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -748,7 +748,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         this.timeout = false;
         this.progress = 1;
         this.sendResult({ ...this.loginState, loggedIn: false, error: true });
-        this.clearProgressTimer();
       }
     }
 
@@ -756,16 +755,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.timeout = false;
       this.progress = 1;
       this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
-      this.clearProgressTimer();
     }
 
     if (this.progress == 1) {
       if (this.progressHandle) {
         this.clearProgressTimer();
-
-        if (this.timeout) {
-          this.sendResult({ ...this.loginState, loggedIn: false, error: true });
-        }
+        // progress timeout should fire from independent timer
       }
     }
 
