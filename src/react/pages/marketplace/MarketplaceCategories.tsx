@@ -1,13 +1,12 @@
 import * as React from "react";
-import { fetchApps } from "../queries/products";
-import QueryWrapper from "../common/QueryWrapper";
-import Card from "../components/marketplace/Card";
-import { App } from "../interfaces";
-import { sortApps } from "../common/functions";
-import ErrorPage from "./error";
-import welcomeImage from "../../images/onboarding.png";
-import { app } from "electron";
-import SeparatedSection from "../components/marketplace/SeparatedSection";
+import { fetchApps } from "../../queries/products";
+import QueryWrapper from "../../common/QueryWrapper";
+import Card from "../../components/marketplace/Card";
+import { App } from "../../interfaces";
+import { sortApps } from "../../common/functions";
+import ErrorPage from "../error";
+import welcomeImage from "../../../images/onboarding.png";
+import SeparatedSection from "../../components/marketplace/SeparatedSection";
 
 interface SeparatedMarketplaceSectionProps {
   hrGridRowStart: number;
@@ -31,30 +30,16 @@ interface MarketplaceProps {
 }
 
 const DUMMY_APP = {
-  name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
+  name: "Dummy App",
   icon: "Miro/logo.png",
   color: "grey",
   pic: welcomeImage,
   options: { marketplace: true },
-  pros: [
-    "This is the first pro we provide",
-    "This is the second pro",
-    "This is the last pro we provide"
-  ],
-  features: [
-    "Collaboration tools",
-    "Gantt charts",
-    "Cats",
-    "Dogs",
-    "Video chat",
-    "File sharing",
-    "Excel export",
-    "Brain wipe",
-    "And many, many, many more"
-  ]
+  pros: ["Seamlessly integrated", "Organized in a centralized pool", "Available at all times"],
+  features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"]
 };
 
-class Marketplace extends React.Component<MarketplaceProps> {
+class MarketplaceCategories extends React.Component<MarketplaceProps> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -122,4 +107,4 @@ class Marketplace extends React.Component<MarketplaceProps> {
   }
 }
 
-export default Marketplace;
+export default MarketplaceCategories;
