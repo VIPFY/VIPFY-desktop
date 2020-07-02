@@ -552,7 +552,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
       { path: "workspace", component: Workspace },
-      { path: "vacation", component: Vacation, admin: true },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },
