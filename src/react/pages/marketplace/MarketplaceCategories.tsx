@@ -8,12 +8,8 @@ import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
-import SeparatedSection from "../../components/marketplace/SeparatedSection";
 import Tag from "../../common/Tag";
-
-function SeparatedMarketplaceSection(props: { children: any }) {
-  return <SeparatedSection topSeparator={true}>{props.children}</SeparatedSection>;
-}
+import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 
 interface MarketplaceProps {
   history: any;
@@ -85,7 +81,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
           </div>
 
           <div className="marketplaceContent">
-            <SeparatedMarketplaceSection>
+            <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="multipleOfThreeGrid">
@@ -94,9 +90,9 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
                   <Card app={DUMMY_APP} showPic={true} />
                 </div>
               </div>
-            </SeparatedMarketplaceSection>
+            </MarketplaceSection>
 
-            <SeparatedMarketplaceSection>
+            <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="multipleOfFourGrid">
@@ -107,7 +103,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
                 </div>
                 <Card app={DUMMY_APP} isWideFormat={true} />
               </div>
-            </SeparatedMarketplaceSection>
+            </MarketplaceSection>
           </div>
         </div>
       </div>
