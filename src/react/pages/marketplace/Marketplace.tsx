@@ -65,32 +65,34 @@ class Marketplace extends React.Component<MarketplaceProps> {
 
     return (
       <div className="marketplace">
-        <div className="marketplaceHeader headline">
-          <h1 style={{ gridRowStart: 1 }}>Discover</h1>
-          <span className="searchBar">Search a Service in Marketplace</span>
-        </div>
+        <div className="marketplaceContainer">
+          <div className="marketplaceHeader headline">
+            <h1 style={{ gridRowStart: 1 }}>Discover</h1>
+            <span className="searchBar">Search a Service in Marketplace</span>
+          </div>
 
-        <div className="marketplaceContent">
-          <SeparatedMarketplaceSection className="apps" hrStyle={{ display: "none" }}>
-            <Card app={DUMMY_APP} isWideFormat={true} />
-            <div className="multipleOfFourGrid">
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-              <Card app={DUMMY_APP} />
-            </div>
-          </SeparatedMarketplaceSection>
-
-          <SeparatedMarketplaceSection>
-            <h2 className="headline">Headline</h2>
-            <div className="apps">
-              <div className="multipleOfThreeGrid">
+          <div className="marketplaceContent">
+            <SeparatedMarketplaceSection className="apps" hrStyle={{ display: "none" }}>
+              <Card app={DUMMY_APP} isWideFormat={true} />
+              <div className="multipleOfFourGrid">
+                <Card app={DUMMY_APP} />
                 <Card app={DUMMY_APP} />
                 <Card app={DUMMY_APP} />
                 <Card app={DUMMY_APP} />
               </div>
-            </div>
-          </SeparatedMarketplaceSection>
+            </SeparatedMarketplaceSection>
+
+            <SeparatedMarketplaceSection>
+              <h2 className="headline">Headline</h2>
+              <div className="apps">
+                <div className="multipleOfThreeGrid">
+                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} />
+                </div>
+              </div>
+            </SeparatedMarketplaceSection>
+          </div>
         </div>
       </div>
     );

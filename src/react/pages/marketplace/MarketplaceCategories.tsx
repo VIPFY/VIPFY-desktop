@@ -1,4 +1,6 @@
 import * as React from "react";
+import classNames from "classnames";
+
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import Card from "../../components/marketplace/Card";
@@ -7,6 +9,7 @@ import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import SeparatedSection from "../../components/marketplace/SeparatedSection";
+import Tag from "../../common/Tag";
 
 function SeparatedMarketplaceSection(props: { children: any }) {
   return <SeparatedSection topSeparator={true}>{props.children}</SeparatedSection>;
@@ -15,6 +18,21 @@ function SeparatedMarketplaceSection(props: { children: any }) {
 interface MarketplaceProps {
   history: any;
 }
+
+const CATEGORIES = [
+  { name: "Finance", icon: "" },
+  { name: "Developer Tools", icon: "" },
+  { name: "Productivity", icon: "" },
+  { name: "Support", icon: "" },
+  { name: "Social Media", icon: "" },
+  { name: "Sales", icon: "" },
+  { name: "Marketing", icon: "" },
+  { name: "Design", icon: "" },
+  { name: "Business", icon: "" },
+  { name: "Communication", icon: "" },
+  { name: "Management", icon: "" },
+  { name: "Backoffice", icon: "" }
+];
 
 const DUMMY_APP = {
   name: "Dummy App",
@@ -27,6 +45,19 @@ const DUMMY_APP = {
 };
 
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
+  renderCategory(categoryName: string, icon: string) {
+    icon = "fa-star";
+
+    return (
+      <Tag>
+        <span>
+          <span className={classNames("fal", "fa-fw", icon)} />
+          <span className="categoryName">{categoryName}</span>
+        </span>
+      </Tag>
+    );
+  }
+
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -49,18 +80,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <span className="searchBar">Search a Service in Marketplace</span>
 
             <div className="categories">
-              <div>Finance</div>
-              <div>Developer Tools</div>
-              <div>Productivity</div>
-              <div>Support</div>
-              <div>Social Media</div>
-              <div>Sales</div>
-              <div>Marketing</div>
-              <div>Design</div>
-              <div>Business</div>
-              <div>Communication</div>
-              <div>Management</div>
-              <div>Backoffice</div>
+              {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
           </div>
 
