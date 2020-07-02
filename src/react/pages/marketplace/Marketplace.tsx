@@ -14,6 +14,7 @@ interface MarketplaceProps {
 
 const DUMMY_APP = {
   name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
+  id: 123,
   icon: "Miro/logo.png",
   color: "grey",
   pic: welcomeImage,
@@ -37,6 +38,8 @@ const DUMMY_APP = {
 };
 
 class Marketplace extends React.Component<MarketplaceProps> {
+  openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
+
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
 
@@ -56,17 +59,21 @@ class Marketplace extends React.Component<MarketplaceProps> {
         <div className="marketplaceContainer">
           <div className="marketplaceHeader headline">
             <h1 style={{ gridRowStart: 1 }}>Discover</h1>
-            <span className="searchBar">Search a Service in Marketplace</span>
+            <span className="searchBar">Search an App in Marketplace</span>
           </div>
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>
-              <Card app={DUMMY_APP} isWideFormat={true} />
+              <Card
+                app={DUMMY_APP}
+                isWideFormat={true}
+                onClick={() => this.openAppDetails(DUMMY_APP.id)}
+              />
               <div className="multipleOfFourGrid">
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
+                <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
               </div>
             </MarketplaceSection>
 
@@ -74,9 +81,9 @@ class Marketplace extends React.Component<MarketplaceProps> {
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="multipleOfThreeGrid">
-                  <Card app={DUMMY_APP} />
-                  <Card app={DUMMY_APP} />
-                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
                 </div>
               </div>
             </MarketplaceSection>
@@ -85,8 +92,6 @@ class Marketplace extends React.Component<MarketplaceProps> {
       </div>
     );
   }
-
-  openAppDetails = id => this.props.history.push(`/area/marketplace/${id}/`);
 
   render() {
     return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;

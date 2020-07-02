@@ -75,11 +75,14 @@ class Card extends React.PureComponent<CardProps> {
     const headerColor = app.color || "#E9EEF4";
 
     return (
-      <div className={classNames("card", { wide: isWideFormat })} style={style}>
+      <div
+        onClick={this.props.onClick}
+        className={classNames("card", { wide: isWideFormat })}
+        style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">
-              <img src={app.pic} alt="Service Image" className="pic" />
+              <img src={app.pic} alt="App Image" className="pic" />
             </div>
           </div>
         )}
@@ -107,8 +110,8 @@ class Card extends React.PureComponent<CardProps> {
 
         {hasPros && (
           <SeparatedCardSection className="tagsColumn">
-            {app.pros.map(pro => (
-              <div className="pro">
+            {app.pros.map((pro: string, i: number) => (
+              <div className="pro" key={i}>
                 <Tag>
                   <span className="fal fa-plus fa-fw" />
                 </Tag>
@@ -120,8 +123,10 @@ class Card extends React.PureComponent<CardProps> {
 
         {hasFeatures && (
           <SeparatedCardSection className="tagsRow">
-            {app.features.map(feature => (
-              <Tag className="featureTag">{feature}</Tag>
+            {app.features.map((feature: string, i: number) => (
+              <Tag className="featureTag" key={i}>
+                {feature}
+              </Tag>
             ))}
           </SeparatedCardSection>
         )}
