@@ -43,35 +43,52 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
 
     return (
       <div className="marketplace">
-        <div className="marketplaceHeader headline">
-          <h1 style={{ gridRowStart: 1 }}>Categories</h1>
-          <span className="searchBar">Search a Service in Marketplace</span>
-        </div>
+        <div className="marketplaceContainer">
+          <div className="marketplaceHeader headline">
+            <h1 style={{ gridRowStart: 1 }}>Categories</h1>
+            <span className="searchBar">Search a Service in Marketplace</span>
 
-        <div className="marketplaceContent">
-          <SeparatedMarketplaceSection>
-            <h2 className="headline">Headline</h2>
-            <div className="apps">
-              <div className="multipleOfThreeGrid">
-                <Card app={DUMMY_APP} showPic={true} />
-                <Card app={DUMMY_APP} showPic={true} />
-                <Card app={DUMMY_APP} showPic={true} />
-              </div>
+            <div className="categories">
+              <div>Finance</div>
+              <div>Developer Tools</div>
+              <div>Productivity</div>
+              <div>Support</div>
+              <div>Social Media</div>
+              <div>Sales</div>
+              <div>Marketing</div>
+              <div>Design</div>
+              <div>Business</div>
+              <div>Communication</div>
+              <div>Management</div>
+              <div>Backoffice</div>
             </div>
-          </SeparatedMarketplaceSection>
+          </div>
 
-          <SeparatedMarketplaceSection>
-            <h2 className="headline">Headline</h2>
-            <div className="apps">
-              <div className="multipleOfFourGrid">
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
-                <Card app={DUMMY_APP} />
+          <div className="marketplaceContent">
+            <SeparatedMarketplaceSection>
+              <h2 className="headline">Headline</h2>
+              <div className="apps">
+                <div className="multipleOfThreeGrid">
+                  <Card app={DUMMY_APP} showPic={true} />
+                  <Card app={DUMMY_APP} showPic={true} />
+                  <Card app={DUMMY_APP} showPic={true} />
+                </div>
               </div>
-              <Card app={DUMMY_APP} isWideFormat={true} />
-            </div>
-          </SeparatedMarketplaceSection>
+            </SeparatedMarketplaceSection>
+
+            <SeparatedMarketplaceSection>
+              <h2 className="headline">Headline</h2>
+              <div className="apps">
+                <div className="multipleOfFourGrid">
+                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} />
+                  <Card app={DUMMY_APP} />
+                </div>
+                <Card app={DUMMY_APP} isWideFormat={true} />
+              </div>
+            </SeparatedMarketplaceSection>
+          </div>
         </div>
       </div>
     );
