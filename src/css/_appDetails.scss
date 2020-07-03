@@ -7,4 +7,12 @@
       text-decoration: underline;
     }
   }
+
+  .marketplaceContent {
+    > hr {
+      &:last-child {
+        display: none;
+      }
+    }
+  }
 }

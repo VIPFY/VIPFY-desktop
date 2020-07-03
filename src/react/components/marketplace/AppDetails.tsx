@@ -1,4 +1,5 @@
 import * as React from "react";
+import CardSection from "./CardSection";
 
 const DUMMY_APP = {
   name: "Dummy App",
@@ -37,6 +38,13 @@ class AppDetails extends React.Component<AppDetailsProps> {
               Categories / Communication / <span>{DUMMY_APP.name}</span>
             </h4>
             <h1>{DUMMY_APP.name}</h1>
+          </div>
+
+          <div className="header">Here be the header</div>
+
+          <div className="marketplaceContent">
+            <CardSection>Here be a card section</CardSection>
+            <CardSection>Here be another card section</CardSection>
           </div>
         </div>
       </div>
