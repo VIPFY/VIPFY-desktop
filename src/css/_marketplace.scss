@@ -1,62 +1,62 @@
 .marketplace {
+  $gridGap: 24px;
+
+  min-width: 552px;
+  padding: 0 32px;
+
   background-color: #f5f7f9;
 
-  @mixin marketplaceGrid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-gap: 24px;
-    min-width: 552px;
+  .marketplaceContainer {
     max-width: 1608px;
-    margin: auto;
-    padding: 0 32px 16px;
-    color: #3b4c5d;
+    margin: 0 auto;
+  }
+
+  h1 {
+    grid-column: 1 / span 3;
+  }
+
+  // adapt once newly designed search box is available
+  .searchBar {
+    grid-column: 4 / span 6;
+    grid-row-start: 1;
+    margin: 0 auto;
   }
 
   .marketplaceHeader {
-    @include marketplaceGrid;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
     grid-template-rows: auto;
-    padding-top: 16px;
-    background-color: inherit;
+    grid-gap: $gridGap;
+    padding: 16px 32px;
+    color: #3b4c5d;
+    background-color: #f5f7f9;
     position: sticky;
     top: 0;
     z-index: 1;
-
-    // adapt once newly designed search box is available
-    .searchBar {
-      grid-column: 4 / span 6;
-      grid-row-start: 1;
-      margin: 0 auto;
-    }
   }
 
   .marketplaceContent {
-    @include marketplaceGrid;
-    grid-template-rows: repeat(5, auto);
-
     > hr {
-      width: 100%;
       border: none;
       border-top: 1px solid #c9d1da;
-      grid-column: 1 / -1;
-      transform: translateY(8px);
-
-      &:first-child {
-        display: none;
-      }
-    }
-
-    .headline {
-      margin-bottom: -8px;
     }
   }
 
   .headline {
-    grid-column: 1 / span 3;
+    padding: 16px 0;
+  }
+
+  .apps {
+    padding-bottom: 32px;
+
+    & > *:not(:last-child) {
+      margin-bottom: 24px;
+    }
   }
 
   .multipleOfThreeGrid {
     display: grid;
-    grid-gap: 24px;
+    grid-gap: $gridGap;
     grid-template-columns: repeat(3, minmax(296px, 1fr));
 
     @media (max-width: 1240px) {
@@ -70,7 +70,7 @@
 
   .multipleOfFourGrid {
     display: grid;
-    grid-gap: 24px;
+    grid-gap: $gridGap;
     grid-template-columns: repeat(4, minmax(216px, 1fr));
 
     @media (max-width: 1240px) {

@@ -9,7 +9,8 @@ import AppPage from "./apppage";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
-import Marketplace from "./marketplace";
+import Marketplace from "./marketplace/Marketplace";
+import MarketplaceCategories from "./marketplace/MarketplaceCategories";
 import MessageCenter from "./messagecenter";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
@@ -542,7 +543,7 @@ class Area extends React.Component<AreaProps, AreaState> {
         },
         design: 2
       },*/
-      { path: "marketplace", component: Marketplace, admin: true },
+      { path: "marketplace", component: MarketplaceCategories, admin: true },
       { path: "marketplace/:appid/", component: AppPage, admin: true },
       { path: "marketplace/:appid/:action", component: AppPage, admin: true },
       //{ path: "marketplace/order/:appid/:planid", component: Order, admin: true },
