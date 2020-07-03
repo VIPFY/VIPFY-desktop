@@ -1,7 +1,7 @@
 import * as React from "react";
 
 const DUMMY_APP = {
-  name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
+  name: "Dummy App",
   id: 123,
   icon: "Miro/logo.png",
   color: "grey",
@@ -29,9 +29,18 @@ interface AppDetailsProps {}
 
 class AppDetails extends React.Component<AppDetailsProps> {
   render() {
-    console.log(DUMMY_APP);
-
-    return <div className="marketplace"></div>;
+    return (
+      <div className="marketplace">
+        <div className="marketplaceContainer">
+          <div className="headline">
+            <div className="breadCrumbs">
+              Categories / Communication / <span>{DUMMY_APP.name}</span>
+            </div>
+            <h1>{DUMMY_APP.name}</h1>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
