@@ -185,7 +185,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
 
       //TODO: [VIP-1210] Choose account when there are multiple ones
-      //console.log("DOMAIN", app.data.fetchLicenceAssignmentsByDomain);
       if (
         app.data.fetchLicenceAssignmentsByDomain &&
         app.data.fetchLicenceAssignmentsByDomain.length > 0
@@ -487,7 +486,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         `
         )
         .then(e => {
-          //console.log("TESTING", e);
           return e.length > 0;
         });
     } else {
