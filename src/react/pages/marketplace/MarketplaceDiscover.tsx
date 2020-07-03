@@ -8,7 +8,7 @@ import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 
-interface MarketplaceProps {
+interface MarketplaceDiscoverProps {
   history: any;
 }
 
@@ -37,7 +37,7 @@ const DUMMY_APP = {
   ]
 };
 
-class Marketplace extends React.Component<MarketplaceProps> {
+class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
   openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
 
   renderApps(apps: App[]) {
@@ -98,4 +98,4 @@ class Marketplace extends React.Component<MarketplaceProps> {
   }
 }
 
-export default Marketplace;
+export default MarketplaceDiscover;

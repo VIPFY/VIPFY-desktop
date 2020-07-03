@@ -8,7 +8,7 @@ import compose from "lodash.flowright";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
-import Marketplace from "./marketplace/Marketplace";
+import MarketplaceDiscover from "./marketplace/MarketplaceDiscover";
 import MarketplaceCategories from "./marketplace/MarketplaceCategories";
 import MessageCenter from "./messagecenter";
 import AdminDashboard from "../components/admin/Dashboard";
@@ -442,15 +442,15 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "ssotest"
       },
       {
-        label: "Marketplace",
-        location: "marketplace",
+        label: "Marketplace Discover",
+        location: "marketplace/discover",
         icon: "shopping-cart",
         show: config.showMarketplace,
         highlight: "marketplaceelement"
       },
       {
         label: "Marketplace Categ.",
-        location: "marketplaceCategories",
+        location: "marketplace/categories",
         icon: "shopping-cart",
         show: config.showMarketplace,
         highlight: "marketplaceelement"
@@ -538,8 +538,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing, admin: true },
-      { path: "marketplace", component: Marketplace, admin: true },
-      { path: "marketplaceCategories", component: MarketplaceCategories, admin: true },
+      { path: "marketplace/discover", component: MarketplaceDiscover, admin: true },
+      { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
       { path: "marketplace/:appid/", component: AppDetails, admin: true },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
