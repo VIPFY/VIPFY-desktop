@@ -22,7 +22,7 @@
     }
   }
 
-  &.clickable &:hover {
+  &.clickable :hover {
     border-width: 2px;
     transform: translateY(-2px);
     cursor: pointer;
@@ -50,7 +50,7 @@
   }
 
   .tagsRow {
-    display: inline-flex;
+    display: flex;
     flex-flow: row wrap;
     margin: 0 -8px -8px 0;
 

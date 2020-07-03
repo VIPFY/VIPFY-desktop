@@ -24,7 +24,7 @@ class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps
   }
 }
 
-interface CardProps {
+interface AppOverviewCardProps {
   app: App;
   isWideFormat?: boolean;
   showPic?: boolean;
@@ -32,7 +32,7 @@ interface CardProps {
   onClick: () => any;
 }
 
-class Card extends React.PureComponent<CardProps> {
+class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   renderPricingTag(text: string, div?: boolean, className?: string) {
     return (
       <Tag div={div} className={classNames("pricingTag", className)}>
@@ -77,7 +77,7 @@ class Card extends React.PureComponent<CardProps> {
     return (
       <div
         onClick={onClick}
-        className={classNames("card appOverviewCard", { wide: isWideFormat })}
+        className={classNames("card appOverviewCard clickable", { wide: isWideFormat })}
         style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
@@ -135,4 +135,4 @@ class Card extends React.PureComponent<CardProps> {
   }
 }
 
-export default Card;
+export default AppOverviewCard;

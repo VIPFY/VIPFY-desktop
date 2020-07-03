@@ -3,7 +3,7 @@ import classNames from "classnames";
 
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
-import Card from "../../components/marketplace/Card";
+import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
@@ -87,13 +87,16 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="multipleOfThreeGrid">
-                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
-                  <Card
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  />
+                  <AppOverviewCard
                     app={DUMMY_APP}
                     showPic={true}
                     onClick={() => this.openAppDetails(DUMMY_APP.id)}
                   />
-                  <Card
+                  <AppOverviewCard
                     app={DUMMY_APP}
                     showPic={true}
                     onClick={() => this.openAppDetails(DUMMY_APP.id)}
@@ -106,12 +109,24 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="multipleOfFourGrid">
-                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
-                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
-                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
-                  <Card app={DUMMY_APP} onClick={() => this.openAppDetails(DUMMY_APP.id)} />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  />
                 </div>
-                <Card
+                <AppOverviewCard
                   app={DUMMY_APP}
                   isWideFormat={true}
                   onClick={() => this.openAppDetails(DUMMY_APP.id)}
