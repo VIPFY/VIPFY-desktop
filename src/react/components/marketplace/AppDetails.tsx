@@ -31,7 +31,7 @@ class AppDetails extends React.Component<AppDetailsProps> {
   render() {
     return (
       <div className="marketplace">
-        <div className="marketplaceContainer">
+        <div className="marketplaceContainer appDetails">
           <div className="headline">
             <h4 className="breadCrumbs">
               Categories / Communication / <span>{DUMMY_APP.name}</span>

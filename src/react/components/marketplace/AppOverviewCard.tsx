@@ -4,25 +4,7 @@ import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
-import SeparatedSection from "./SeparatedSection";
-
-interface SeparatedCardSectionProps {
-  children: any;
-  className?: string;
-  style?: { [someProps: string]: any };
-}
-
-class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps> {
-  render() {
-    const { className, style, children } = this.props;
-
-    return (
-      <SeparatedSection className={classNames("cardSection", className)} style={style}>
-        {children}
-      </SeparatedSection>
-    );
-  }
-}
+import CardSection from "./CardSection";
 
 interface AppOverviewCardProps {
   app: App;
@@ -88,11 +70,11 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         {renderPic ? (
-          <SeparatedCardSection
+          <CardSection
             className="header"
             style={{ backgroundColor: renderPic ? "white" : headerColor }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial)}
-          </SeparatedCardSection>
+          </CardSection>
         ) : (
           <div
             className="cardSection header"
@@ -102,14 +84,14 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         {!isWideFormat && (
-          <SeparatedCardSection className="tagsRow">
+          <CardSection className="tagsRow">
             {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
             {this.renderPricingTag("19.99$ p.m.")}
-          </SeparatedCardSection>
+          </CardSection>
         )}
 
         {hasPros && (
-          <SeparatedCardSection className="tagsColumn">
+          <CardSection className="tagsColumn">
             {app.pros.map((pro: string, i: number) => (
               <div className="argument pro" key={i}>
                 <Tag>
@@ -118,17 +100,17 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
                 <span>{pro}</span>
               </div>
             ))}
-          </SeparatedCardSection>
+          </CardSection>
         )}
 
         {hasFeatures && (
-          <SeparatedCardSection className="tagsRow">
+          <CardSection className="tagsRow">
             {app.features.map((feature: string, i: number) => (
               <Tag className="featureTag" key={i}>
                 {feature}
               </Tag>
             ))}
-          </SeparatedCardSection>
+          </CardSection>
         )}
       </div>
     );
