@@ -1,0 +1,74 @@
+.appOverviewCard {
+  .picHolder {
+    padding-top: 56%;
+  }
+
+  &.wide .picHolder {
+    padding-top: 26%;
+  }
+
+  .pricingTag {
+    display: flex;
+    background-color: white;
+    border: 1px solid #c9d1da;
+    font-size: 12px;
+    width: 84px;
+    height: 18px;
+  }
+
+  .freeTrialTag {
+    text-transform: uppercase;
+  }
+
+  .tagsRow {
+    .pricingTag {
+      padding: 2px 12px;
+    }
+  }
+
+  .featureTag {
+    background-color: #e9eef4;
+    padding: 5px 12px;
+  }
+
+  .header {
+    display: inline-flex;
+    align-items: center;
+    width: calc(100% - 32px);
+    min-height: 48px;
+
+    .headerItem {
+      display: inline-flex;
+    }
+  }
+
+  .appName {
+    flex-grow: 1;
+    font-weight: 500;
+    padding: 4px 0;
+  }
+
+  .logo {
+    margin-right: 16px;
+  }
+
+  .rating {
+    margin-top: 9px;
+    font-size: 12px;
+
+    .fa-star {
+      color: #3b4c5d;
+    }
+  }
+
+  .headerTags {
+    margin: -4px 0 -4px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .tag:nth-child(2) {
+      margin-top: 8px;
+    }
+  }
+}

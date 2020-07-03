@@ -13,7 +13,7 @@ interface MarketplaceDiscoverProps {
 }
 
 const DUMMY_APP = {
-  name: "Dummy App with an extreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeemely Long Name",
+  name: "Dummy App",
   id: 123,
   icon: "Miro/logo.png",
   color: "grey",

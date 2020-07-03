@@ -66,7 +66,7 @@ class Card extends React.PureComponent<CardProps> {
   }
 
   render() {
-    const { app, isWideFormat, showPic, style } = this.props;
+    const { app, isWideFormat, showPic, style, onClick } = this.props;
 
     const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
@@ -76,8 +76,8 @@ class Card extends React.PureComponent<CardProps> {
 
     return (
       <div
-        onClick={this.props.onClick}
-        className={classNames("card", { wide: isWideFormat })}
+        onClick={onClick}
+        className={classNames("card appOverviewCard", { wide: isWideFormat })}
         style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
@@ -111,7 +111,7 @@ class Card extends React.PureComponent<CardProps> {
         {hasPros && (
           <SeparatedCardSection className="tagsColumn">
             {app.pros.map((pro: string, i: number) => (
-              <div className="pro" key={i}>
+              <div className="argument pro" key={i}>
                 <Tag>
                   <span className="fal fa-plus fa-fw" />
                 </Tag>
