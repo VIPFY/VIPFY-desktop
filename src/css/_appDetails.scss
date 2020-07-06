@@ -8,8 +8,14 @@
     }
   }
 
+  h2 {
+    margin: 16px 0;
+  }
+
   .marketplaceContent {
     > hr {
+      margin-top: 32px;
+
       &:last-child {
         display: none;
       }
