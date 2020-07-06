@@ -19,13 +19,39 @@
       padding: 16px 0;
     }
 
-    .licenseTags {
-      width: 192px;
+    .header {
+      display: flex;
+      justify-content: space-between;
 
-      .tag {
-        height: 32px;
-        border-radius: 8px;
-        font-size: 14px;
+      .logo {
+        margin-right: 24px;
+      }
+
+      .details {
+        flex-grow: 1;
+        display: grid;
+        grid-gap: 16px;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: repeat(3, auto);
+        grid-auto-flow: column;
+        align-items: center;
+        justify-items: flex-start;
+
+        @media (max-width: 1240px) {
+          grid-template-columns: 1fr;
+          grid-template-rows: repeat(6, auto);
+        }
+      }
+
+      .licenseTags {
+        width: 192px;
+        margin-left: 24px;
+
+        .tag {
+          height: 32px;
+          border-radius: 8px;
+          font-size: 14px;
+        }
       }
     }
 
