@@ -18,6 +18,16 @@
     .cardSection {
       padding: 16px 0;
     }
+
+    .licenseTags {
+      width: 192px;
+      height: 32px;
+
+      .tag {
+        border-radius: 8px;
+        font-size: 14px;
+      }
+    }
   }
 
   h2 {
