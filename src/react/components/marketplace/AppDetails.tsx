@@ -211,7 +211,9 @@ class AppDetails extends React.Component<AppDetailsProps> {
                     </div>
                   </div>
                   <div className="licenseTags">
-                    <Tag div={true} style={{ backgroundColor: "#20baa9", color: "white" }}>
+                    <Tag
+                      div={true}
+                      style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
                       Buy new license
                     </Tag>
                     <Tag div={true}>Integrate existing license</Tag>
