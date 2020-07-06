@@ -209,6 +209,9 @@ class AppDetails extends React.Component<AppDetailsProps> {
                       <span className="fal fa-comments-alt fa-fw" />
                       {DUMMY_APP.category}
                     </div>
+                    <div>
+                      <Tag className="pricingTag">{DUMMY_APP.pricing}</Tag>
+                    </div>
                   </div>
                   <div className="licenseTags">
                     <Tag
