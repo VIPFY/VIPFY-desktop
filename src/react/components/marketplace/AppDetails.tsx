@@ -204,10 +204,10 @@ class AppDetails extends React.Component<AppDetailsProps> {
               <div className="card serviceCard">
                 <CardSection className="header" style={{ padding: "24px 0" }}>
                   <div className="headerItem logo">
-                    <ServiceLogo icon={DUMMY_APP.icon} />
+                    <ServiceLogo icon={DUMMY_APP.icon} size={136} />
                   </div>
                   <div className="headerItem details">
-                    <div>{DUMMY_APP.name}</div>
+                    <h3>{DUMMY_APP.name}</h3>
                     <div>
                       <span className="fal fa-comments-alt fa-fw" />
                       {DUMMY_APP.category}
