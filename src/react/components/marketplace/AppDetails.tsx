@@ -2,6 +2,9 @@ import * as React from "react";
 import CardSection from "./CardSection";
 import welcomeImage from "../../../images/onboarding.png";
 import AppOverviewCard from "./AppOverviewCard";
+import ServiceLogo from "../services/ServiceLogo";
+import { showStars } from "../../common/functions";
+import Tag from "../../common/Tag";
 
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },
@@ -181,6 +184,8 @@ class AppDetails extends React.Component<AppDetailsProps> {
   openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
 
   render() {
+    const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
+
     return (
       <div className="marketplace">
         <div className="marketplaceContainer appDetails">
@@ -192,7 +197,40 @@ class AppDetails extends React.Component<AppDetailsProps> {
           </div>
 
           <div className="marketplaceContent">
-            <CardSection>Here be the header card</CardSection>
+            <CardSection>
+              <div className="card serviceCard">
+                <CardSection style={{ padding: "24px 0" }}>
+                  <div className="headerItem logo">
+                    <ServiceLogo icon={DUMMY_APP.icon} />
+                  </div>
+                  <div className="appName">
+                    <div>{DUMMY_APP.name}</div>
+                    <div>
+                      <span className="fal fa-comments-alt fa-fw" />
+                      {DUMMY_APP.category}
+                    </div>
+                  </div>
+                  <div className="licenseTags">
+                    <div>
+                      <Tag div={true} style={{ backgroundColor: "#20baa9", color: "white" }}>
+                        Buy new license
+                      </Tag>
+                      <Tag div={true}>Integrate existing license</Tag>
+                    </div>
+                  </div>
+                </CardSection>
+
+                {hasFeatures && (
+                  <CardSection className="tagsRow">
+                    {DUMMY_APP.features.map((feature: string, i: number) => (
+                      <Tag className="featureTag" key={i}>
+                        {feature}
+                      </Tag>
+                    ))}
+                  </CardSection>
+                )}
+              </div>
+            </CardSection>
             <CardSection>
               <h2>Alternatives</h2>
               <div className="apps">
