@@ -44,6 +44,11 @@
     align-items: center;
     border-radius: 6px;
     font-size: 12px;
+
+    &.neutral {
+      background-color: #e9eef4;
+      color: black;
+    }
   }
 
   .cardSection {

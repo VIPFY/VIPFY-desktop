@@ -232,7 +232,9 @@ class AppDetails extends React.Component<AppDetailsProps> {
                       style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
                       Buy new license
                     </Tag>
-                    <Tag div={true}>Integrate existing license</Tag>
+                    <Tag div={true} className={"neutral"}>
+                      Integrate existing license
+                    </Tag>
                   </div>
                 </CardSection>
 
