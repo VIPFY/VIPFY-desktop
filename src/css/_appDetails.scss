@@ -8,6 +8,10 @@
     }
   }
 
+  .link {
+    color: #3191f0;
+  }
+
   .serviceCard {
     padding: 0 24px;
 
@@ -25,6 +29,26 @@
 
       .logo {
         margin-right: 24px;
+
+        span {
+          &.largeScreen {
+            display: block;
+          }
+
+          &.smallScreen {
+            display: none;
+          }
+
+          @media (max-width: 1240px) {
+            &.largeScreen {
+              display: none;
+            }
+
+            &.smallScreen {
+              display: block;
+            }
+          }
+        }
       }
 
       .details {
@@ -34,8 +58,6 @@
         grid-template-columns: auto minmax(0, 1fr);
         grid-template-rows: repeat(3, auto);
         grid-auto-flow: column;
-        align-items: center;
-        justify-items: flex-start;
 
         @media (max-width: 1240px) {
           grid-template-columns: 1fr;

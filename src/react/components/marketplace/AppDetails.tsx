@@ -204,7 +204,8 @@ class AppDetails extends React.Component<AppDetailsProps> {
               <div className="card serviceCard">
                 <CardSection className="header" style={{ padding: "24px 0" }}>
                   <div className="headerItem logo">
-                    <ServiceLogo icon={DUMMY_APP.icon} size={136} />
+                    <ServiceLogo icon={DUMMY_APP.icon} size={136} className="largeScreen" />
+                    <ServiceLogo icon={DUMMY_APP.icon} size={112} className="smallScreen" />
                   </div>
                   <div className="headerItem details">
                     <h3>{DUMMY_APP.name}</h3>
@@ -220,9 +221,8 @@ class AppDetails extends React.Component<AppDetailsProps> {
                       {DUMMY_APP.languages}
                     </div>
                     {DUMMY_APP.links.map(link => (
-                      <div>
-                        <span className="fal fa-external-link fa-fw" />
-                        {link.title}
+                      <div className="link">
+                        {link.title} <span className="fal fa-external-link fa-fw" />
                       </div>
                     ))}
                   </div>
@@ -241,7 +241,7 @@ class AppDetails extends React.Component<AppDetailsProps> {
                 {hasFeatures && (
                   <CardSection className="tagsRow">
                     {DUMMY_APP.features.map((feature: string, i: number) => (
-                      <Tag className="featureTag" key={i}>
+                      <Tag className="featureTag neutral" key={i}>
                         {feature}
                       </Tag>
                     ))}
