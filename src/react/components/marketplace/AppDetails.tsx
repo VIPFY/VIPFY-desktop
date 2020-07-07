@@ -222,7 +222,8 @@ class AppDetails extends React.Component<AppDetailsProps> {
                     </div>
                     {DUMMY_APP.links.map(link => (
                       <div className="link">
-                        {link.title} <span className="fal fa-external-link fa-fw" />
+                        {link.title}
+                        <span className="fal fa-external-link fa-fw" />
                       </div>
                     ))}
                   </div>
