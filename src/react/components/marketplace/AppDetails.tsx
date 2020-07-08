@@ -259,17 +259,19 @@ class AppDetails extends React.Component<AppDetailsProps> {
 
             <CardSection className="previewSection">
               <h2>Preview</h2>
-              <div>
+              <div className="carousel">
                 <Tag>
                   <span className="fal fa-chevron-left fa-fw" />
                 </Tag>
-                {/* <div>
+                <div className="slider">
                   {DUMMY_APP.pics.map((pic, i) => (
-                    <div key={i} className="card picHolder">
-                      <img src={pic} className="pic" />
+                    <div key={i} className="card">
+                      <div className="picHolder">
+                        <img src={pic} className="pici" />
+                      </div>
                     </div>
                   ))}
-                </div> */}
+                </div>
                 <Tag>
                   <span className="fal fa-chevron-right fa-fw" />
                 </Tag>
