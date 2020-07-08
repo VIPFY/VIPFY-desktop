@@ -96,6 +96,25 @@
     margin: 16px 0;
   }
 
+  .previewSection {
+    .tag {
+      display: inline-block;
+      width: 38px;
+      line-height: 38px;
+      font-size: 12px;
+      border-radius: 50%;
+      border: 1px solid #30475d;
+      box-shadow: 1px;
+      text-align: center;
+      padding: 0;
+      color: #30475d;
+    }
+
+    .picHolder {
+      padding-top: 75%;
+    }
+  }
+
   .marketplaceContent {
     > hr {
       margin-top: 32px;

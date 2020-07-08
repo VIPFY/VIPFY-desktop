@@ -1,9 +1,13 @@
 import * as React from "react";
 import CardSection from "./CardSection";
-import welcomeImage from "../../../images/onboarding.png";
+import dashboard from "../../../images/dashboard.png";
+import forgot_password from "../../../images/forgot_password.png";
+import logo_hell from "../../../images/logo_hell.png";
+import login_new_user from "../../../images/login_new_user.png";
+import logo_dunkel from "../../../images/logo_dunkel.png";
+import onboarding from "../../../images/onboarding.png";
 import AppOverviewCard from "./AppOverviewCard";
 import ServiceLogo from "../services/ServiceLogo";
-import { showStars } from "../../common/functions";
 import Tag from "../../common/Tag";
 
 const APP_ALTERNATIVE_1 = {
@@ -12,7 +16,7 @@ const APP_ALTERNATIVE_1 = {
   name: "Miro",
   icon: "Miro/logo.png",
   color: "lemonchiffon",
-  pic: welcomeImage,
+  pic: onboarding,
   pros: [
     "This is the first pro we provide",
     "This is the second pro",
@@ -27,7 +31,7 @@ const APP_ALTERNATIVE_2 = {
   name: "Dribbble",
   icon: "Dribbble/logo.png",
   color: "pink",
-  pic: welcomeImage,
+  pic: onboarding,
   pros: [
     "This is the first pro we provide",
     "This is the second pro",
@@ -42,7 +46,7 @@ const APP_ALTERNATIVE_3 = {
   name: "Sendgrid",
   icon: "Sendgrid/logo.png",
   color: "lightblue",
-  pic: welcomeImage,
+  pic: onboarding,
   pros: [
     "This is the first pro we provide",
     "This is the second pro",
@@ -64,7 +68,7 @@ const DUMMY_APP = {
     { title: "Support Website", url: "https://www.surveymonkey.com/mp/contact-sales/" }
   ],
   features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"],
-  pics: [welcomeImage, welcomeImage, welcomeImage, welcomeImage, welcomeImage, welcomeImage],
+  pics: [onboarding, dashboard, forgot_password, logo_hell, login_new_user, logo_dunkel],
   description:
     "SurveyMonkey lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin nulla sit amet nisi placerat, ut vestibulum odio faucibus.\nDuis sagittis tellus et facilisis mattis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam erat volutpat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin auctor molestie pulvinar. Vivamus commodo ex nec placerat aliquam.\nNulla eu diam in lectus eleifend tempus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum in mauris quis mi lacinia ultricies. Nullam ullamcorper, orci at convallis volutpat, tortor arcu pulvinar nibh, a tempor ex arcu id eros. Maecenas eleifend viverra laoreet. Nam at erat eget sapien malesuada congue in at nibh. Integer venenatis felis purus, non semper ipsum placerat non. Etiam in vestibulum neque. Etiam eget lacus rutrum, finibus massa id, lacinia mi. Maecenas rutrum ipsum non augue faucibus, sed faucibus dui pharetra.",
   reviews: [
@@ -207,6 +211,7 @@ class AppDetails extends React.Component<AppDetailsProps> {
                     <ServiceLogo icon={DUMMY_APP.icon} size={136} className="largeScreen" />
                     <ServiceLogo icon={DUMMY_APP.icon} size={112} className="smallScreen" />
                   </div>
+
                   <div className="headerItem details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
@@ -227,6 +232,7 @@ class AppDetails extends React.Component<AppDetailsProps> {
                       </div>
                     ))}
                   </div>
+
                   <div className="headerItem licenseTags">
                     <Tag
                       div={true}
@@ -250,6 +256,26 @@ class AppDetails extends React.Component<AppDetailsProps> {
                 )}
               </div>
             </CardSection>
+
+            <CardSection className="previewSection">
+              <h2>Preview</h2>
+              <div>
+                <Tag>
+                  <span className="fal fa-chevron-left fa-fw" />
+                </Tag>
+                {/* <div>
+                  {DUMMY_APP.pics.map((pic, i) => (
+                    <div key={i} className="card picHolder">
+                      <img src={pic} className="pic" />
+                    </div>
+                  ))}
+                </div> */}
+                <Tag>
+                  <span className="fal fa-chevron-right fa-fw" />
+                </Tag>
+              </div>
+            </CardSection>
+
             <CardSection>
               <h2>Alternatives</h2>
               <div className="apps">

@@ -6,22 +6,6 @@
   font-size: 14px;
   background-color: #fff;
 
-  .picHolder {
-    position: relative;
-
-    .pic {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      max-height: 100%;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  }
-
   &.clickable:hover {
     border-width: 2px;
     transform: translateY(-2px);
