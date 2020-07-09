@@ -71,7 +71,7 @@ const DUMMY_APP = {
   features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"],
   pics: [onboarding, dashboard, forgot_password, logo_hell, login_new_user, logo_dunkel],
   description:
-    '<div><div>Product Description</div><p>Asana helps teams manage and coordinate their work by making plans, processes, and responsibilities clear.</p></div><div><div>How do you position yourself against your competitors?</div><p>Teams need a system to orchestrate their work. With Asana, they have a living system where everyone can see, discuss, and execute the team’s priorities. Team members love Asana because it takes the guesswork out of work – they know what they need to do when, and they get recognized for the great work they deliver. Team leaders love Asana because it helps them feel organized and more connected to the work. They can see the team’s plans, track progress, and discuss the work – all in real-time. Asana replaces anxiety and overwhelm with confidence and flow. Customers like to say: “if it’s in Asana, we’ll get it done."</p></div>',
+    '<div><p>SurveyMonkey helps teams manage and coordinate their work by making plans, processes, and responsibilities clear.</p></div><div><div>How do you position yourself against your competitors?</div><p>Teams need a system to orchestrate their work. With Asana, they have a living system where everyone can see, discuss, and execute the team’s priorities. Team members love Asana because it takes the guesswork out of work – they know what they need to do when, and they get recognized for the great work they deliver. Team leaders love Asana because it helps them feel organized and more connected to the work. They can see the team’s plans, track progress, and discuss the work – all in real-time. Asana replaces anxiety and overwhelm with confidence and flow. Customers like to say: “if it’s in Asana, we’ll get it done."</p></div>',
   reviews: [
     {
       reviewer: "First and Last Name",
@@ -292,14 +292,14 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             </CardSection>
 
             {DUMMY_APP.description && (
-              <CardSection>
+              <CardSection className="descriptionSection">
                 <h2>Description</h2>
                 <div
-                  className={classNames({ lineClamp: !descriptionExpanded })}
+                  className={classNames("description", { lineClamp: !descriptionExpanded })}
                   dangerouslySetInnerHTML={{ __html: DUMMY_APP.description }}
                 />
                 {!descriptionExpanded && (
-                  <div onClick={this.expandDescription}>
+                  <div onClick={this.expandDescription} className="showMoreBtn">
                     Show more
                     <span className="fal fa-chevron-down fa-fw" />
                   </div>

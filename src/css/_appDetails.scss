@@ -96,9 +96,27 @@
     margin: 16px 0;
   }
 
-  .lineClamp {
-    height: 5em;
-    overflow: hidden;
+  .descriptionSection {
+    .description {
+      font-family: "Roboto", sans-serif;
+      font-size: 14px;
+      color: #3b4c5d;
+      margin-bottom: 16px;
+    }
+
+    .lineClamp {
+      height: 5em;
+      overflow: hidden;
+    }
+
+    .showMoreBtn {
+      font-size: 14px;
+      color: #55ccbf;
+
+      .fa-chevron-down {
+        margin-left: 8px;
+      }
+    }
   }
 
   .carousel {
