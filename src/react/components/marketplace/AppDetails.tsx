@@ -216,8 +216,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
         </CardSection>
         <CardSection>
           {statistics.map((stat, i) => {
-            const meterStyle = { backgroundColor: color };
-            const measuredStyle = { width: `${stat.percent}%` };
+            const meterStyle = { backgroundColor: `${color}20` };
+            const measuredStyle = { backgroundColor: color, width: `${stat.percent}%` };
 
             return (
               <div key={i}>
@@ -225,7 +225,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   <div className="meter" style={meterStyle}>
                     <div className="measured" style={measuredStyle}></div>
                   </div>
-                  <span className="number">{stat.percent}%</span>
+                  <span>{stat.percent}%</span>
                 </div>
 
                 <div className="characteristic">{stat.characteristic}</div>

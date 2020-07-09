@@ -132,11 +132,11 @@
     }
 
     blockquote {
-      font-size: 14px;
+      font-size: 20px;
     }
   }
 
-  .userGroupStatistics {
+  .userGroupStatisticsSection {
     padding-bottom: -16px;
 
     .statistic {
@@ -147,20 +147,12 @@
       margin-bottom: 4px;
 
       .meter {
-        grid-column-start: 1;
-        height: 24px;
-        opacity: 20%;
         border-radius: 6px;
-        overflow: hidden;
 
         .measured {
-          opacity: 100%;
+          height: 24px;
+          border-radius: 6px;
         }
-      }
-
-      .number {
-        grid-column-start: 2;
-        font-size: 12px;
       }
     }
 
