@@ -96,6 +96,11 @@
     margin: 16px 0;
   }
 
+  .lineClamp {
+    height: 5em;
+    overflow: hidden;
+  }
+
   .carousel {
     display: flex;
     align-items: center;

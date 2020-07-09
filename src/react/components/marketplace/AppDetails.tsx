@@ -1,4 +1,5 @@
 import * as React from "react";
+import classNames from "classnames";
 import CardSection from "./CardSection";
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -70,7 +71,7 @@ const DUMMY_APP = {
   features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"],
   pics: [onboarding, dashboard, forgot_password, logo_hell, login_new_user, logo_dunkel],
   description:
-    "SurveyMonkey lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin nulla sit amet nisi placerat, ut vestibulum odio faucibus.\nDuis sagittis tellus et facilisis mattis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam erat volutpat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin auctor molestie pulvinar. Vivamus commodo ex nec placerat aliquam.\nNulla eu diam in lectus eleifend tempus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum in mauris quis mi lacinia ultricies. Nullam ullamcorper, orci at convallis volutpat, tortor arcu pulvinar nibh, a tempor ex arcu id eros. Maecenas eleifend viverra laoreet. Nam at erat eget sapien malesuada congue in at nibh. Integer venenatis felis purus, non semper ipsum placerat non. Etiam in vestibulum neque. Etiam eget lacus rutrum, finibus massa id, lacinia mi. Maecenas rutrum ipsum non augue faucibus, sed faucibus dui pharetra.",
+    '<div><div>Product Description</div><p>Asana helps teams manage and coordinate their work by making plans, processes, and responsibilities clear.</p></div><div><div>How do you position yourself against your competitors?</div><p>Teams need a system to orchestrate their work. With Asana, they have a living system where everyone can see, discuss, and execute the team’s priorities. Team members love Asana because it takes the guesswork out of work – they know what they need to do when, and they get recognized for the great work they deliver. Team leaders love Asana because it helps them feel organized and more connected to the work. They can see the team’s plans, track progress, and discuss the work – all in real-time. Asana replaces anxiety and overwhelm with confidence and flow. Customers like to say: “if it’s in Asana, we’ll get it done."</p></div>',
   reviews: [
     {
       reviewer: "First and Last Name",
@@ -187,11 +188,23 @@ interface AppDetailsProps {
   history: any;
 }
 
-class AppDetails extends React.Component<AppDetailsProps> {
+interface AppDetailsState {
+  descriptionExpanded: boolean;
+}
+
+class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
+  constructor(props) {
+    super(props);
+    this.state = { descriptionExpanded: false };
+  }
+
   openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
+
+  expandDescription = () => this.setState({ descriptionExpanded: true });
 
   render() {
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
+    const { descriptionExpanded } = this.state;
 
     return (
       <div className="marketplace">
@@ -277,6 +290,22 @@ class AppDetails extends React.Component<AppDetailsProps> {
                 </Tag>
               </div>
             </CardSection>
+
+            {DUMMY_APP.description && (
+              <CardSection>
+                <h2>Description</h2>
+                <div
+                  className={classNames({ lineClamp: !descriptionExpanded })}
+                  dangerouslySetInnerHTML={{ __html: DUMMY_APP.description }}
+                />
+                {!descriptionExpanded && (
+                  <div onClick={this.expandDescription}>
+                    Show more
+                    <span className="fal fa-chevron-down fa-fw" />
+                  </div>
+                )}
+              </CardSection>
+            )}
 
             <CardSection>
               <h2>Alternatives</h2>
