@@ -136,6 +136,40 @@
     }
   }
 
+  .userGroupStatistics {
+    padding-bottom: -16px;
+
+    .statistic {
+      display: grid;
+      grid-template-columns: 1fr 32px;
+      grid-gap: 16px;
+      align-items: center;
+      margin-bottom: 4px;
+
+      .meter {
+        grid-column-start: 1;
+        height: 24px;
+        opacity: 20%;
+        border-radius: 6px;
+        overflow: hidden;
+
+        .measured {
+          opacity: 100%;
+        }
+      }
+
+      .number {
+        grid-column-start: 2;
+        font-size: 12px;
+      }
+    }
+
+    .characteristic {
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+  }
+
   .carousel {
     display: flex;
     align-items: center;

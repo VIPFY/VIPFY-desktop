@@ -91,16 +91,16 @@ const DUMMY_APP = {
   ],
   userGroupStatistics: {
     usersByProfession: [
-      { profession: "Marketing", percent: 38 },
-      { profession: "Business Developer", percent: 17 },
-      { profession: "Designer", percent: 12 },
-      { profession: "Others", percent: 33 }
+      { characteristic: "Marketing", percent: 38 },
+      { characteristic: "Business Developer", percent: 17 },
+      { characteristic: "Designer", percent: 12 },
+      { characteristic: "Others", percent: 33 }
     ],
     usersByIndustry: [
-      { industry: "Marketing and Advertising", percent: 33 },
-      { industry: "Computer Software", percent: 29 },
-      { industry: "Information Technology and Services", percent: 26 },
-      { industry: "Others", percent: 13 }
+      { characteristic: "Marketing and Advertising", percent: 33 },
+      { characteristic: "Computer Software", percent: 29 },
+      { characteristic: "Information Technology and Services", percent: 26 },
+      { characteristic: "Others", percent: 13 }
     ]
   },
   pros: [
@@ -203,6 +203,39 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
   openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
 
   expandDescription = () => this.setState({ descriptionExpanded: true });
+
+  renderStatisticsCard = (
+    headline: string,
+    statistics: { characteristic: string; percent: number }[],
+    color: string
+  ) => {
+    return (
+      <div className="card">
+        <CardSection>
+          <h3>{headline}</h3>
+        </CardSection>
+        <CardSection>
+          {statistics.map((stat, i) => {
+            const meterStyle = { backgroundColor: color };
+            const measuredStyle = { width: `${stat.percent}%` };
+
+            return (
+              <div key={i}>
+                <div className="statistic">
+                  <div className="meter" style={meterStyle}>
+                    <div className="measured" style={measuredStyle}></div>
+                  </div>
+                  <span className="number">{stat.percent}%</span>
+                </div>
+
+                <div className="characteristic">{stat.characteristic}</div>
+              </div>
+            );
+          })}
+        </CardSection>
+      </div>
+    );
+  };
 
   render() {
     const { descriptionExpanded } = this.state;
@@ -329,36 +362,19 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             )}
 
             {DUMMY_APP.userGroupStatistics && (
-              <CardSection>
+              <CardSection className="userGroupStatisticsSection">
                 <h2>User Groups</h2>
                 <div>
-                  {DUMMY_APP.userGroupStatistics.usersByProfession &&
-                    DUMMY_APP.userGroupStatistics.usersByProfession.length && (
-                      <div className="card">
-                        <CardSection>
-                          <h3>Top Professional Groups</h3>
-                        </CardSection>
-                        <CardSection>
-                          {DUMMY_APP.userGroupStatistics.usersByProfession.map((stat, i) => {
-                            <div key={i}>{stat.profession}</div>;
-                          })}
-                        </CardSection>
-                      </div>
-                    )}
-
-                  {DUMMY_APP.userGroupStatistics.usersByIndustry &&
-                    DUMMY_APP.userGroupStatistics.usersByIndustry.length && (
-                      <div className="card">
-                        <CardSection>
-                          <h3>Top Industries</h3>
-                        </CardSection>
-                        <CardSection>
-                          {DUMMY_APP.userGroupStatistics.usersByIndustry.map((stat, i) => (
-                            <div key={i}>{stat.industry}</div>
-                          ))}
-                        </CardSection>
-                      </div>
-                    )}
+                  {this.renderStatisticsCard(
+                    "Top Professional Groups",
+                    DUMMY_APP.userGroupStatistics.usersByProfession,
+                    "#3d89f6"
+                  )}
+                  {this.renderStatisticsCard(
+                    "Top Industries",
+                    DUMMY_APP.userGroupStatistics.usersByIndustry,
+                    "#423ed1"
+                  )}
                 </div>
               </CardSection>
             )}
