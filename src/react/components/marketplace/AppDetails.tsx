@@ -307,25 +307,42 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               </CardSection>
             )}
 
-            <CardSection>
-              <h2>Alternatives</h2>
-              <div className="apps">
-                <div className="multipleOfThreeGrid">
-                  <AppOverviewCard
-                    app={APP_ALTERNATIVE_1}
-                    onClick={() => this.openAppDetails(APP_ALTERNATIVE_1.id)}
-                  />
-                  <AppOverviewCard
-                    app={APP_ALTERNATIVE_2}
-                    onClick={() => this.openAppDetails(APP_ALTERNATIVE_2.id)}
-                  />
-                  <AppOverviewCard
-                    app={APP_ALTERNATIVE_3}
-                    onClick={() => this.openAppDetails(APP_ALTERNATIVE_3.id)}
-                  />
+            {DUMMY_APP.reviews && DUMMY_APP.reviews.length && (
+              <CardSection className="quotesSection">
+                <h2>Quotes</h2>
+                <div className="grid3To1Cols">
+                  {DUMMY_APP.reviews.map((review, i) => (
+                    <div className="card" key={i}>
+                      <CardSection>
+                        <h2>
+                          <blockquote>{review.text}</blockquote>
+                        </h2>
+                      </CardSection>
+                      <CardSection>
+                        {review.reviewer}, {review.industry}
+                      </CardSection>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </CardSection>
+              </CardSection>
+            )}
+
+            {DUMMY_APP.alternatives && DUMMY_APP.alternatives.length && (
+              <CardSection>
+                <h2>Alternatives</h2>
+                <div className="apps">
+                  <div className="grid3To1Cols">
+                    {DUMMY_APP.alternatives.map((alternative, i) => (
+                      <AppOverviewCard
+                        key={i}
+                        app={alternative}
+                        onClick={() => this.openAppDetails(alternative.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </CardSection>
+            )}
           </div>
         </div>
       </div>

@@ -1,3 +1,15 @@
+blockquote {
+  quotes: "\201E""\201D";
+}
+
+blockquote::before {
+  content: open-quote;
+}
+
+blockquote::after {
+  content: close-quote;
+}
+
 h1,
 h2,
 h3,

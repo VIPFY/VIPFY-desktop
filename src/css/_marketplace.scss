@@ -55,7 +55,7 @@
     }
   }
 
-  .multipleOfThreeGrid {
+  .grid3To1Cols {
     display: grid;
     grid-gap: $gridGap;
     grid-template-columns: repeat(3, minmax(296px, 1fr));
@@ -69,7 +69,7 @@
     }
   }
 
-  .multipleOfFourGrid {
+  .grid4To2Cols {
     display: grid;
     grid-gap: $gridGap;
     grid-template-columns: repeat(4, minmax(216px, 1fr));

@@ -69,7 +69,7 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
                 isWideFormat={true}
                 onClick={() => this.openAppDetails(DUMMY_APP.id)}
               />
-              <div className="multipleOfFourGrid">
+              <div className="grid4To2Cols">
                 <AppOverviewCard
                   app={DUMMY_APP}
                   onClick={() => this.openAppDetails(DUMMY_APP.id)}
@@ -92,7 +92,7 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
-                <div className="multipleOfThreeGrid">
+                <div className="grid3To1Cols">
                   <AppOverviewCard
                     app={DUMMY_APP}
                     onClick={() => this.openAppDetails(DUMMY_APP.id)}

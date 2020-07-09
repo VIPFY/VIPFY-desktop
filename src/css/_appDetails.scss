@@ -1,4 +1,6 @@
 .appDetails {
+  color: #3b4c5d;
+
   .breadCrumbs {
     margin-bottom: 8px;
     font-weight: 400;
@@ -100,7 +102,6 @@
     .description {
       font-family: "Roboto", sans-serif;
       font-size: 14px;
-      color: #3b4c5d;
       margin-bottom: 16px;
     }
 
@@ -115,6 +116,18 @@
 
       .fa-chevron-down {
         margin-left: 8px;
+      }
+    }
+  }
+
+  .quotesSection {
+    .card {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+
+      :first-child {
+        flex-grow: 1;
       }
     }
   }
