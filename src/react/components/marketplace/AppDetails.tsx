@@ -89,18 +89,20 @@ const DUMMY_APP = {
       text: "The leading survey software on the market."
     }
   ],
-  usersByProfession: [
-    { profession: "Marketing", percent: 38 },
-    { profession: "Business Developer", percent: 17 },
-    { profession: "Designer", percent: 12 },
-    { profession: "Others", percent: 33 }
-  ],
-  usersByIndustry: [
-    { industry: "Marketing and Advertising", percent: 33 },
-    { industry: "Computer Software", percent: 29 },
-    { industry: "Information Technology and Services", percent: 26 },
-    { industry: "Others", percent: 13 }
-  ],
+  userGroupStatistics: {
+    usersByProfession: [
+      { profession: "Marketing", percent: 38 },
+      { profession: "Business Developer", percent: 17 },
+      { profession: "Designer", percent: 12 },
+      { profession: "Others", percent: 33 }
+    ],
+    usersByIndustry: [
+      { industry: "Marketing and Advertising", percent: 33 },
+      { industry: "Computer Software", percent: 29 },
+      { industry: "Information Technology and Services", percent: 26 },
+      { industry: "Others", percent: 13 }
+    ]
+  },
   pros: [
     "This is the first pro we provide",
     "This is the second pro",
@@ -203,8 +205,9 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
   expandDescription = () => this.setState({ descriptionExpanded: true });
 
   render() {
-    const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
     const { descriptionExpanded } = this.state;
+
+    const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
     return (
       <div className="marketplace">
@@ -238,8 +241,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                       <span className="fal fa-globe fa-fw" />
                       {DUMMY_APP.languages}
                     </div>
-                    {DUMMY_APP.links.map(link => (
-                      <div className="link">
+                    {DUMMY_APP.links.map((link, i) => (
+                      <div className="link" key={i}>
                         {link.title}
                         <span className="fal fa-external-link fa-fw" />
                       </div>
@@ -260,7 +263,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
                 {hasFeatures && (
                   <CardSection className="tagsRow">
-                    {DUMMY_APP.features.map((feature: string, i: number) => (
+                    {DUMMY_APP.features.map((feature, i) => (
                       <Tag className="featureTag neutral" key={i}>
                         {feature}
                       </Tag>
@@ -314,15 +317,48 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {DUMMY_APP.reviews.map((review, i) => (
                     <div className="card" key={i}>
                       <CardSection>
-                        <h2>
-                          <blockquote>{review.text}</blockquote>
-                        </h2>
+                        <blockquote>{review.text}</blockquote>
                       </CardSection>
                       <CardSection>
                         {review.reviewer}, {review.industry}
                       </CardSection>
                     </div>
                   ))}
+                </div>
+              </CardSection>
+            )}
+
+            {DUMMY_APP.userGroupStatistics && (
+              <CardSection>
+                <h2>User Groups</h2>
+                <div>
+                  {DUMMY_APP.userGroupStatistics.usersByProfession &&
+                    DUMMY_APP.userGroupStatistics.usersByProfession.length && (
+                      <div className="card">
+                        <CardSection>
+                          <h3>Top Professional Groups</h3>
+                        </CardSection>
+                        <CardSection>
+                          {DUMMY_APP.userGroupStatistics.usersByProfession.map((stat, i) => {
+                            <div key={i}>{stat.profession}</div>;
+                          })}
+                        </CardSection>
+                      </div>
+                    )}
+
+                  {DUMMY_APP.userGroupStatistics.usersByIndustry &&
+                    DUMMY_APP.userGroupStatistics.usersByIndustry.length && (
+                      <div className="card">
+                        <CardSection>
+                          <h3>Top Industries</h3>
+                        </CardSection>
+                        <CardSection>
+                          {DUMMY_APP.userGroupStatistics.usersByIndustry.map((stat, i) => (
+                            <div key={i}>{stat.industry}</div>
+                          ))}
+                        </CardSection>
+                      </div>
+                    )}
                 </div>
               </CardSection>
             )}
