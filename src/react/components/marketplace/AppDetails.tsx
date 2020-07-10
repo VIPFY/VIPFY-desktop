@@ -238,6 +238,19 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     );
   };
 
+  renderProsAndConsCard = (headline: string, prosCons: string[], cons?: boolean) => {
+    return (
+      <div className="card">
+        <CardSection>
+          <h3>{headline}</h3>
+        </CardSection>
+        <CardSection>
+          <ProsConsList prosCons={prosCons} cons={cons} />
+        </CardSection>
+      </div>
+    );
+  };
+
   render() {
     const { descriptionExpanded } = this.state;
 
@@ -384,27 +397,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               <CardSection>
                 <h2>Pros and Cons</h2>
                 <div className="grid2Cols smGrid1Col">
-                  {DUMMY_APP.pros && (
-                    <div className="card">
-                      <CardSection>
-                        <h3>Pros</h3>
-                      </CardSection>
-                      <CardSection>
-                        <ProsConsList prosCons={DUMMY_APP.pros} />
-                      </CardSection>
-                    </div>
-                  )}
-
-                  {DUMMY_APP.cons && (
-                    <div className="card">
-                      <CardSection>
-                        <h3>Cons</h3>
-                      </CardSection>
-                      <CardSection>
-                        <ProsConsList prosCons={DUMMY_APP.cons} cons={true} />
-                      </CardSection>
-                    </div>
-                  )}
+                  {DUMMY_APP.pros && this.renderProsAndConsCard("Pros", DUMMY_APP.pros)}
+                  {DUMMY_APP.cons && this.renderProsAndConsCard("Cons", DUMMY_APP.cons, true)}
                 </div>
               </CardSection>
             )}
