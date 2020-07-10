@@ -5,7 +5,7 @@
   grid-template-columns: repeat(6, 1fr);
   margin-bottom: 8px;
 
-  @media (max-width: 1240px) {
+  @include sm {
     grid-template-columns: repeat(3, 1fr);
   }
 

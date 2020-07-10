@@ -42,7 +42,7 @@
             display: none;
           }
 
-          @media (max-width: 1240px) {
+          @include sm {
             &.largeScreen {
               display: none;
             }
@@ -63,7 +63,7 @@
         grid-auto-flow: column;
         align-content: center;
 
-        @media (max-width: 1240px) {
+        @include sm {
           grid-template-rows: repeat(6, auto);
         }
 

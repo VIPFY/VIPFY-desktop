@@ -60,7 +60,7 @@
     grid-gap: $gridGap;
     grid-template-columns: repeat(3, minmax(296px, 1fr));
 
-    @media (max-width: 1240px) {
+    @include sm {
       grid-template-columns: 1fr;
 
       .picHolder {
@@ -74,7 +74,7 @@
     grid-gap: $gridGap;
     grid-template-columns: repeat(4, minmax(216px, 1fr));
 
-    @media (max-width: 1240px) {
+    @include sm {
       grid-template-columns: repeat(2, minmax(264px, 1fr));
     }
   }
