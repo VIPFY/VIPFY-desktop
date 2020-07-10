@@ -213,4 +213,35 @@
       margin-bottom: 16px;
     }
   }
+
+  .plans {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 240px;
+
+    .card {
+      display: flex;
+
+      > div {
+        padding: 16px 24px;
+      }
+    }
+
+    .centeredSection {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .price {
+      background-color: #d0f3ef;
+    }
+
+    .features {
+      flex: 2 2 0;
+    }
+  }
 }

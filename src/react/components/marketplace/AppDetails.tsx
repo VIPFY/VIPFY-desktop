@@ -123,18 +123,24 @@ const DUMMY_APP = {
   plans: [
     {
       packageName: "Standard Monthly",
-      price: "$39 USD / month",
+      price: 39,
+      currency: "USD",
+      pricePer: "/ Month",
       features: ["20 surveys", "5 questions per survey"]
     },
     {
       packageName: "Advantage Monthly",
-      price: "$36 USD / month",
+      price: 36,
+      currency: "USD",
+      pricePer: "/ Month",
       priceDetails: "Pay 432 $ annually",
       features: ["20 surveys", "5 questions per survey"]
     },
     {
       packageName: "Premier Annual",
-      price: "$99 USD / month",
+      price: 99,
+      currency: "USD",
+      pricePer: "/ Month",
       priceDetails: "Pay 1188 $ annually",
       features: [
         "Unlimited numbers of surveys",
@@ -145,7 +151,9 @@ const DUMMY_APP = {
     },
     {
       packageName: "Team Advantage",
-      price: "$30 USD / user / month",
+      price: 430,
+      currency: "USD",
+      pricePer: " / User / Month",
       priceDetails: "Starting at 3 users, billed annually",
       features: [
         "Unlimited numbers of surveys",
@@ -157,7 +165,9 @@ const DUMMY_APP = {
     },
     {
       packageName: "Team Premier",
-      price: "$75 USD / user / month",
+      price: 1975,
+      currency: "USD",
+      pricePer: "/ User / Month",
       priceDetails: "Starting at 3 users, billed annually",
       features: [
         "Unlimited numbers of surveys",
@@ -248,6 +258,35 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
           <ProsConsList prosCons={prosCons} cons={cons} />
         </CardSection>
       </div>
+    );
+  };
+
+  renderPlan = plan => {
+    return (
+      <>
+        <div className="centeredSection">
+          <h1>{plan.packageName}</h1>
+        </div>
+        <div className="centeredSection price">
+          {plan.price && (
+            <>
+              <div>
+                {plan.price}
+                {plan.currency}
+              </div>
+              <hr />
+              <div>{plan.pricePer}</div>
+            </>
+          )}
+          {plan.priceDetails && (
+            <>
+              <hr />
+              <div>{plan.priceDetails}</div>
+            </>
+          )}
+        </div>
+        <div className="features">Unlimited everything</div>
+      </>
     );
   };
 
@@ -399,6 +438,19 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <div className="grid2Cols smGrid1Col">
                   {DUMMY_APP.pros && this.renderProsAndConsCard("Pros", DUMMY_APP.pros)}
                   {DUMMY_APP.cons && this.renderProsAndConsCard("Cons", DUMMY_APP.cons, true)}
+                </div>
+              </CardSection>
+            )}
+
+            {DUMMY_APP.plans && DUMMY_APP.plans.length && (
+              <CardSection>
+                <h2>Plans</h2>
+                <div className="plans">
+                  {DUMMY_APP.plans.map((plan, i) => (
+                    <div className="card" key={i}>
+                      {this.renderPlan(plan)}
+                    </div>
+                  ))}
                 </div>
               </CardSection>
             )}
