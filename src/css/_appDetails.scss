@@ -14,6 +14,16 @@
     color: #3191f0;
   }
 
+  .marketplaceContent {
+    > hr {
+      margin-top: 32px;
+
+      &:last-child {
+        display: none;
+      }
+    }
+  }
+
   .serviceCard {
     margin-top: 8px;
     padding: 0 24px;
@@ -98,6 +108,48 @@
     margin: 16px 0;
   }
 
+  .carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .tag {
+      display: inline-block;
+      min-width: 38px;
+      line-height: 38px;
+      font-size: 12px;
+      border-radius: 50%;
+      border: 1px solid #30475d;
+      box-shadow: 1px;
+      text-align: center;
+      padding: 0;
+      color: #30475d;
+    }
+
+    .picHolder {
+      padding-top: 75%;
+    }
+
+    .slider {
+      display: grid;
+      grid-gap: 24px;
+      grid-auto-flow: column;
+      margin: 0 24px;
+
+      .pici {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        max-height: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  }
+
   .descriptionSection {
     .description {
       font-family: "Roboto", sans-serif;
@@ -165,58 +217,6 @@
     .characteristic {
       font-size: 12px;
       margin-bottom: 16px;
-    }
-  }
-
-  .carousel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .tag {
-      display: inline-block;
-      min-width: 38px;
-      line-height: 38px;
-      font-size: 12px;
-      border-radius: 50%;
-      border: 1px solid #30475d;
-      box-shadow: 1px;
-      text-align: center;
-      padding: 0;
-      color: #30475d;
-    }
-
-    .picHolder {
-      padding-top: 75%;
-    }
-
-    .slider {
-      display: grid;
-      grid-gap: 24px;
-      grid-auto-flow: column;
-      margin: 0 24px;
-
-      .pici {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        max-height: 100%;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-      }
-    }
-  }
-
-  .marketplaceContent {
-    > hr {
-      margin-top: 32px;
-
-      &:last-child {
-        display: none;
-      }
     }
   }
 }
