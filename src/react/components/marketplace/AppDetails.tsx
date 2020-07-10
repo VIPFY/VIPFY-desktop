@@ -379,6 +379,47 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               </CardSection>
             )}
 
+            {(DUMMY_APP.pros || DUMMY_APP.cons) && (
+              <CardSection>
+                <h2>Pros and Cons</h2>
+                {DUMMY_APP.pros && (
+                  <div className="card">
+                    <CardSection>
+                      <h3>Pros</h3>
+                    </CardSection>
+                    <CardSection>
+                      {DUMMY_APP.pros.map((pro, i) => (
+                        <div className="argument pro" key={i}>
+                          <Tag>
+                            <span className="fal fa-plus fa-fw" />
+                          </Tag>
+                          <span>{pro}</span>
+                        </div>
+                      ))}
+                    </CardSection>
+                  </div>
+                )}
+
+                {DUMMY_APP.cons && (
+                  <div className="card">
+                    <CardSection>
+                      <h3>Cons</h3>
+                    </CardSection>
+                    <CardSection>
+                      {DUMMY_APP.cons.map((con, i) => (
+                        <div className="argument con" key={i}>
+                          <Tag>
+                            <span className="fal fa-minus fa-fw" />
+                          </Tag>
+                          <span>{con}</span>
+                        </div>
+                      ))}
+                    </CardSection>
+                  </div>
+                )}
+              </CardSection>
+            )}
+
             {DUMMY_APP.alternatives && DUMMY_APP.alternatives.length && (
               <CardSection>
                 <h2>Alternatives</h2>
