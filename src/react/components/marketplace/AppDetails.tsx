@@ -10,6 +10,7 @@ import onboarding from "../../../images/onboarding.png";
 import AppOverviewCard from "./AppOverviewCard";
 import ServiceLogo from "../services/ServiceLogo";
 import Tag from "../../common/Tag";
+import ProsConsList from "./ProsConsList";
 
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },
@@ -49,7 +50,7 @@ const APP_ALTERNATIVE_3 = {
   color: "lightblue",
   pic: onboarding,
   pros: [
-    "This is the first pro we provide",
+    "This is the first pro we provide, and it is a very complicated explanation.",
     "This is the second pro",
     "This is the last pro we provide"
   ],
@@ -389,14 +390,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                         <h3>Pros</h3>
                       </CardSection>
                       <CardSection>
-                        {DUMMY_APP.pros.map((pro, i) => (
-                          <div className="argument pro" key={i}>
-                            <Tag>
-                              <span className="fal fa-plus fa-fw" />
-                            </Tag>
-                            <span>{pro}</span>
-                          </div>
-                        ))}
+                        <ProsConsList prosCons={DUMMY_APP.pros} />
                       </CardSection>
                     </div>
                   )}
@@ -407,14 +401,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                         <h3>Cons</h3>
                       </CardSection>
                       <CardSection>
-                        {DUMMY_APP.cons.map((con, i) => (
-                          <div className="argument con" key={i}>
-                            <Tag>
-                              <span className="fal fa-minus fa-fw" />
-                            </Tag>
-                            <span>{con}</span>
-                          </div>
-                        ))}
+                        <ProsConsList prosCons={DUMMY_APP.cons} cons={true} />
                       </CardSection>
                     </div>
                   )}

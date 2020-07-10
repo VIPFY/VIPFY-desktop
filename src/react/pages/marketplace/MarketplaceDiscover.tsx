@@ -20,7 +20,7 @@ const DUMMY_APP = {
   pic: welcomeImage,
   options: { marketplace: true },
   pros: [
-    "This is the first pro we provide",
+    "This is the first pro we provide, and it is a very complicated explanation.",
     "This is the second pro",
     "This is the last pro we provide"
   ],

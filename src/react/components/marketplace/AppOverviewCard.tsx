@@ -5,6 +5,7 @@ import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 import CardSection from "./CardSection";
+import ProsConsList from "./ProsConsList";
 
 interface AppOverviewCardProps {
   app: App;
@@ -91,15 +92,8 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         {hasPros && (
-          <CardSection className="tagsColumn">
-            {app.pros.map((pro: string, i: number) => (
-              <div className="argument pro" key={i}>
-                <Tag>
-                  <span className="fal fa-plus fa-fw" />
-                </Tag>
-                <span>{pro}</span>
-              </div>
-            ))}
+          <CardSection>
+            <ProsConsList prosCons={app.pros} />
           </CardSection>
         )}
 
