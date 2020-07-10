@@ -195,6 +195,10 @@
       display: grid;
       grid-gap: 24px;
       grid-template-columns: 1fr 1fr;
+
+      @include sm {
+        grid-template-columns: 1fr;
+      }
     }
 
     .statistic {
