@@ -216,7 +216,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
         </CardSection>
         <CardSection>
           {statistics.map((stat, i) => {
-            const meterStyle = { backgroundColor: `${color}20` };
+            const meterStyle = { backgroundColor: `${color}33` };
             const measuredStyle = { backgroundColor: color, width: `${stat.percent}%` };
 
             return (
@@ -368,12 +368,12 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {this.renderStatisticsCard(
                     "Top Professional Groups",
                     DUMMY_APP.userGroupStatistics.usersByProfession,
-                    "#3d89f6"
+                    "#423ed1"
                   )}
                   {this.renderStatisticsCard(
                     "Top Industries",
                     DUMMY_APP.userGroupStatistics.usersByIndustry,
-                    "#423ed1"
+                    "#3d89f6"
                   )}
                 </div>
               </CardSection>
