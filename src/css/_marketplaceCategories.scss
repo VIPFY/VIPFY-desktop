@@ -1,13 +1,7 @@
 .categories {
   grid-column: 1 / -1;
   grid-row-start: 2;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
   margin-bottom: 8px;
-
-  @include sm {
-    grid-template-columns: repeat(3, 1fr);
-  }
 
   .tag {
     display: flex;

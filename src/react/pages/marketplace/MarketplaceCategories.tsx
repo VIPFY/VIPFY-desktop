@@ -77,7 +77,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <h1 style={{ gridRowStart: 1 }}>Categories</h1>
             <span className="searchBar">Search an App in Marketplace</span>
 
-            <div className="categories">
+            <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
           </div>
@@ -86,7 +86,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
-                <div className="grid3To1Cols">
+                <div className="grid3Cols smGrid1Col">
                   <AppOverviewCard
                     app={DUMMY_APP}
                     onClick={() => this.openAppDetails(DUMMY_APP.id)}
@@ -108,7 +108,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
-                <div className="grid4To2Cols">
+                <div className="grid4Cols smGrid2Cols">
                   <AppOverviewCard
                     app={DUMMY_APP}
                     onClick={() => this.openAppDetails(DUMMY_APP.id)}

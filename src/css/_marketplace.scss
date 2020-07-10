@@ -1,11 +1,64 @@
 .marketplace {
-  $gridGap: 24px;
-
   min-height: 100%;
   min-width: 552px;
   padding: 0 32px;
-
   background-color: #f5f7f9;
+
+  $gridGap: 24px;
+
+  @mixin grid {
+    display: grid;
+    grid-gap: $gridGap;
+  }
+
+  .grid2Cols {
+    @include grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grid3Cols {
+    @include grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .grid4Cols {
+    @include grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .grid6Cols {
+    @include grid;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .smGrid1Col {
+    @include grid;
+    @include sm {
+      grid-template-columns: 1fr;
+
+      .picHolder {
+        padding-top: 26%;
+      }
+    }
+  }
+
+  .smGrid2Cols {
+    @include grid;
+    @include sm {
+      grid-template-columns: repeat(2, 1fr);
+
+      .picHolder {
+        padding-top: 26%;
+      }
+    }
+  }
+
+  .smGrid3Cols {
+    @include grid;
+    @include sm {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 
   .marketplaceContainer {
     max-width: 1608px;
@@ -52,30 +105,6 @@
 
     & > *:not(:last-child) {
       margin-bottom: 24px;
-    }
-  }
-
-  .grid3To1Cols {
-    display: grid;
-    grid-gap: $gridGap;
-    grid-template-columns: repeat(3, minmax(296px, 1fr));
-
-    @include sm {
-      grid-template-columns: 1fr;
-
-      .picHolder {
-        padding-top: 26%;
-      }
-    }
-  }
-
-  .grid4To2Cols {
-    display: grid;
-    grid-gap: $gridGap;
-    grid-template-columns: repeat(4, minmax(216px, 1fr));
-
-    @include sm {
-      grid-template-columns: repeat(2, minmax(264px, 1fr));
     }
   }
 

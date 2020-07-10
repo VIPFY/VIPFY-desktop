@@ -346,7 +346,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             {DUMMY_APP.reviews && DUMMY_APP.reviews.length && (
               <CardSection className="quotesSection">
                 <h2>Quotes</h2>
-                <div className="grid3To1Cols">
+                <div className="grid3Cols smGrid1Col">
                   {DUMMY_APP.reviews.map((review, i) => (
                     <div className="card" key={i}>
                       <CardSection>
@@ -364,7 +364,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             {DUMMY_APP.userGroupStatistics && (
               <CardSection className="userGroupStatisticsSection">
                 <h2>User Groups</h2>
-                <div>
+                <div className="grid2Cols smGrid1Col">
                   {this.renderStatisticsCard(
                     "Top Professional Groups",
                     DUMMY_APP.userGroupStatistics.usersByProfession,
@@ -382,41 +382,43 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             {(DUMMY_APP.pros || DUMMY_APP.cons) && (
               <CardSection>
                 <h2>Pros and Cons</h2>
-                {DUMMY_APP.pros && (
-                  <div className="card">
-                    <CardSection>
-                      <h3>Pros</h3>
-                    </CardSection>
-                    <CardSection>
-                      {DUMMY_APP.pros.map((pro, i) => (
-                        <div className="argument pro" key={i}>
-                          <Tag>
-                            <span className="fal fa-plus fa-fw" />
-                          </Tag>
-                          <span>{pro}</span>
-                        </div>
-                      ))}
-                    </CardSection>
-                  </div>
-                )}
+                <div className="grid2Cols smGrid1Col">
+                  {DUMMY_APP.pros && (
+                    <div className="card">
+                      <CardSection>
+                        <h3>Pros</h3>
+                      </CardSection>
+                      <CardSection>
+                        {DUMMY_APP.pros.map((pro, i) => (
+                          <div className="argument pro" key={i}>
+                            <Tag>
+                              <span className="fal fa-plus fa-fw" />
+                            </Tag>
+                            <span>{pro}</span>
+                          </div>
+                        ))}
+                      </CardSection>
+                    </div>
+                  )}
 
-                {DUMMY_APP.cons && (
-                  <div className="card">
-                    <CardSection>
-                      <h3>Cons</h3>
-                    </CardSection>
-                    <CardSection>
-                      {DUMMY_APP.cons.map((con, i) => (
-                        <div className="argument con" key={i}>
-                          <Tag>
-                            <span className="fal fa-minus fa-fw" />
-                          </Tag>
-                          <span>{con}</span>
-                        </div>
-                      ))}
-                    </CardSection>
-                  </div>
-                )}
+                  {DUMMY_APP.cons && (
+                    <div className="card">
+                      <CardSection>
+                        <h3>Cons</h3>
+                      </CardSection>
+                      <CardSection>
+                        {DUMMY_APP.cons.map((con, i) => (
+                          <div className="argument con" key={i}>
+                            <Tag>
+                              <span className="fal fa-minus fa-fw" />
+                            </Tag>
+                            <span>{con}</span>
+                          </div>
+                        ))}
+                      </CardSection>
+                    </div>
+                  )}
+                </div>
               </CardSection>
             )}
 
@@ -424,7 +426,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               <CardSection>
                 <h2>Alternatives</h2>
                 <div className="apps">
-                  <div className="grid3To1Cols">
+                  <div className="grid3Cols smGrid1Col">
                     {DUMMY_APP.alternatives.map((alternative, i) => (
                       <AppOverviewCard
                         key={i}
