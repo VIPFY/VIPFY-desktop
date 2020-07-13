@@ -268,22 +268,24 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
           <h1>{plan.packageName}</h1>
         </div>
         <div className="centeredSection price">
-          {plan.price && (
-            <>
-              <div>
-                {plan.price}
-                {plan.currency}
-              </div>
-              <hr />
-              <div>{plan.pricePer}</div>
-            </>
-          )}
-          {plan.priceDetails && (
-            <>
-              <hr />
-              <div>{plan.priceDetails}</div>
-            </>
-          )}
+          <div>
+            {plan.price && (
+              <>
+                <div>
+                  {plan.price}
+                  {plan.currency}
+                </div>
+                <hr />
+                <div>{plan.pricePer}</div>
+              </>
+            )}
+            {plan.priceDetails && (
+              <>
+                <hr />
+                <div>{plan.priceDetails}</div>
+              </>
+            )}
+          </div>
         </div>
         <div className="features">Unlimited everything</div>
       </>
