@@ -176,7 +176,9 @@ const DUMMY_APP = {
         "1,000 responses per month",
         "24/7 customer support via email",
         "Quizzes with custom feedback",
-        "Custom logo, color and survey URL"
+        "Custom logo, color and survey URL",
+        "Quizzes with custom feedback",
+        "Quizzes with custom feedback"
       ]
     },
     {
@@ -191,12 +193,116 @@ const DUMMY_APP = {
         "Quizzes with custom feedback",
         "Custom logo, color and survey URL",
         "Data exports (CSV, PDF, PPT, XLS)",
+        "Data exports (CSV, PDF, PPT, XLS)",
+        "Data exports (CSV, PDF, PPT, XLS)",
+        "Data exports (CSV, PDF, PPT, XLS)",
+        "Data exports (CSV, PDF, PPT, XLS)",
+        "Data exports (CSV, PDF, PPT, XLS)",
         "And even more!"
       ]
     }
   ],
   alternatives: [APP_ALTERNATIVE_1, APP_ALTERNATIVE_2, APP_ALTERNATIVE_3]
 };
+
+interface Plan {
+  packageName: string;
+  price?: string;
+  currency?: string;
+  pricePer?: string;
+  priceDetails?: string;
+  features: string[];
+}
+
+interface PlanSectionProps {
+  plan: Plan;
+}
+
+interface PlanSectionState {
+  tooManyFeatures: boolean;
+  showingAllFeatures: boolean;
+}
+
+class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
+  SHOW_MAX = 8;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      tooManyFeatures: props.plan.features.length > this.SHOW_MAX,
+      showingAllFeatures: props.plan.features.length <= this.SHOW_MAX
+    };
+  }
+
+  toggleShowMoreOrLess = () => {
+    this.setState({ showingAllFeatures: !this.state.showingAllFeatures });
+  };
+
+  render() {
+    const { plan } = this.props;
+    const { showingAllFeatures, tooManyFeatures } = this.state;
+
+    const features = [];
+
+    for (
+      let i = 0;
+      i < plan.features.length && (showingAllFeatures || i < this.SHOW_MAX - 1);
+      i++
+    ) {
+      features.push(
+        <li key={i}>
+          <span>{plan.features[i]}</span>
+        </li>
+      );
+    }
+
+    return (
+      <>
+        <div className="centeredSection">
+          <h1>{plan.packageName}</h1>
+        </div>
+        <div className="centeredSection pricing">
+          <div className="centeredPricing">
+            {plan.price && (
+              <>
+                <SeparatedSection>
+                  <div className="price">
+                    <div className="priceNumber">{plan.price}</div>
+                    <div className="priceCurrency">{plan.currency}</div>
+                  </div>
+                </SeparatedSection>
+                <SeparatedSection>
+                  <div>{plan.pricePer}</div>
+                </SeparatedSection>
+              </>
+            )}
+            {plan.priceDetails && (
+              <SeparatedSection>
+                <div>{plan.priceDetails}</div>
+              </SeparatedSection>
+            )}
+          </div>
+        </div>
+        <div className="features">
+          <div>
+            <ul>{features}</ul>
+            {tooManyFeatures && (
+              <div onClick={this.toggleShowMoreOrLess} className="toggleBtn">
+                {showingAllFeatures ? "Show less" : "Show more"}
+                <span
+                  className={classNames("fal", "fa-fw", {
+                    "fa-chevron-down": !showingAllFeatures,
+                    "fa-chevron-up": showingAllFeatures
+                  })}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </>
+    );
+  }
+}
 
 interface AppDetailsProps {
   history: any;
@@ -259,47 +365,6 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
           <ProsConsList prosCons={prosCons} cons={cons} />
         </CardSection>
       </div>
-    );
-  };
-
-  renderPlan = plan => {
-    return (
-      <>
-        <div className="centeredSection">
-          <h1>{plan.packageName}</h1>
-        </div>
-        <div className="centeredSection pricing">
-          <div className="centeredPricing">
-            {plan.price && (
-              <>
-                <SeparatedSection>
-                  <div className="price">
-                    <div className="priceNumber">{plan.price}</div>
-                    <div className="priceCurrency">{plan.currency}</div>
-                  </div>
-                </SeparatedSection>
-                <SeparatedSection>
-                  <div>{plan.pricePer}</div>
-                </SeparatedSection>
-              </>
-            )}
-            {plan.priceDetails && (
-              <SeparatedSection>
-                <div>{plan.priceDetails}</div>
-              </SeparatedSection>
-            )}
-          </div>
-        </div>
-        <div className="features">
-          <ul>
-            {plan.features.map((feature, i) => (
-              <li key={i}>
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </>
     );
   };
 
@@ -401,7 +466,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   dangerouslySetInnerHTML={{ __html: DUMMY_APP.description }}
                 />
                 {!descriptionExpanded && (
-                  <div onClick={this.expandDescription} className="showMoreBtn">
+                  <div onClick={this.expandDescription} className="toggleBtn">
                     Show more
                     <span className="fal fa-chevron-down fa-fw" />
                   </div>
@@ -461,7 +526,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <div className="plans">
                   {DUMMY_APP.plans.map((plan, i) => (
                     <div className="card" key={i}>
-                      {this.renderPlan(plan)}
+                      <PlanSection plan={plan} />
                     </div>
                   ))}
                 </div>

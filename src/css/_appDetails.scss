@@ -108,6 +108,15 @@
     margin: 16px 0;
   }
 
+  .toggleBtn {
+    font-size: 14px;
+    color: #55ccbf;
+
+    .fal {
+      margin-left: 8px;
+    }
+  }
+
   .carousel {
     display: flex;
     align-items: center;
@@ -161,15 +170,6 @@
       height: 5em;
       overflow: hidden;
     }
-
-    .showMoreBtn {
-      font-size: 14px;
-      color: #55ccbf;
-
-      .fa-chevron-down {
-        margin-left: 8px;
-      }
-    }
   }
 
   .quotesSection {
@@ -218,7 +218,7 @@
     display: grid;
     grid-gap: 8px;
     grid-template-columns: 1fr;
-    grid-auto-rows: 240px;
+    grid-auto-rows: minmax(240px, auto);
 
     .card {
       display: flex;
@@ -226,6 +226,10 @@
       > div {
         padding: 16px 24px;
       }
+    }
+
+    .toggleBtn {
+      margin-top: 8px;
     }
 
     ul {
