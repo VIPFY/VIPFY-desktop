@@ -240,13 +240,39 @@
       margin: 0 auto;
       position: relative;
 
-      > h1 {
+      > * {
         text-align: center;
       }
     }
 
-    .price {
+    .pricing {
       background-color: #d0f3ef;
+
+      .price {
+        display: flex;
+        margin-bottom: -8px;
+        justify-content: center;
+
+        .priceNumber {
+          font-size: 47px;
+        }
+
+        .priceCurrency {
+          margin: 0 0 33px 4px;
+        }
+      }
+
+      .centeredPricing {
+        > hr {
+          border: none;
+          border-top: 1px solid;
+          margin: 8px 0;
+
+          &:last-child {
+            display: none;
+          }
+        }
+      }
     }
 
     .features {

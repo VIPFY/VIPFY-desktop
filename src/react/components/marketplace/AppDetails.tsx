@@ -11,6 +11,7 @@ import AppOverviewCard from "./AppOverviewCard";
 import ServiceLogo from "../services/ServiceLogo";
 import Tag from "../../common/Tag";
 import ProsConsList from "./ProsConsList";
+import SeparatedSection from "./SeparatedSection";
 
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },
@@ -123,14 +124,14 @@ const DUMMY_APP = {
   plans: [
     {
       packageName: "Standard Monthly",
-      price: 39,
+      price: "39",
       currency: "USD",
       pricePer: "/ Month",
       features: ["20 surveys", "5 questions per survey"]
     },
     {
       packageName: "Advantage Monthly",
-      price: 36,
+      price: "36",
       currency: "USD",
       pricePer: "/ Month",
       priceDetails: "Pay 432 $ annually",
@@ -138,7 +139,7 @@ const DUMMY_APP = {
     },
     {
       packageName: "Premier Annual",
-      price: 99,
+      price: "99.99",
       currency: "USD",
       pricePer: "/ Month",
       priceDetails: "Pay 1188 $ annually",
@@ -151,7 +152,7 @@ const DUMMY_APP = {
     },
     {
       packageName: "Team Advantage",
-      price: 430,
+      price: "430",
       currency: "USD",
       pricePer: " / User / Month",
       priceDetails: "Starting at 3 users, billed annually",
@@ -165,8 +166,8 @@ const DUMMY_APP = {
     },
     {
       packageName: "Team Premier",
-      price: 1975,
-      currency: "USD",
+      price: "15,99",
+      currency: "EUR",
       pricePer: "/ User / Month",
       priceDetails: "Starting at 3 users, billed annually",
       features: [
@@ -267,23 +268,25 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
         <div className="centeredSection">
           <h1>{plan.packageName}</h1>
         </div>
-        <div className="centeredSection price">
-          <div>
+        <div className="centeredSection pricing">
+          <div className="centeredPricing">
             {plan.price && (
               <>
-                <div>
-                  {plan.price}
-                  {plan.currency}
-                </div>
-                <hr />
-                <div>{plan.pricePer}</div>
+                <SeparatedSection>
+                  <div className="price">
+                    <div className="priceNumber">{plan.price}</div>
+                    <div className="priceCurrency">{plan.currency}</div>
+                  </div>
+                </SeparatedSection>
+                <SeparatedSection>
+                  <div>{plan.pricePer}</div>
+                </SeparatedSection>
               </>
             )}
             {plan.priceDetails && (
-              <>
-                <hr />
+              <SeparatedSection>
                 <div>{plan.priceDetails}</div>
-              </>
+              </SeparatedSection>
             )}
           </div>
         </div>
