@@ -447,7 +447,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {DUMMY_APP.pics.map((pic, i) => (
                     <div key={i} className="card">
                       <div className="picHolder">
-                        <img src={pic} className="pici" />
+                        <img src={pic} className="servicePreviewPic" />
                       </div>
                     </div>
                   ))}
