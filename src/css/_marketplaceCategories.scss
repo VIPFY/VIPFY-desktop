@@ -1,0 +1,34 @@
+.categories {
+  grid-column: 1 / -1;
+  grid-row-start: 2;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  margin-bottom: 8px;
+
+  @media (max-width: 1240px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .tag {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0 12px;
+    height: 40px;
+
+    &:hover {
+      background-color: white;
+    }
+
+    .fa-fw {
+      font-size: 18px;
+      color: #3b4c5d;
+      margin-right: 8px;
+    }
+
+    .categoryName {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}

@@ -4,32 +4,31 @@ import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
+import SeparatedSection from "./SeparatedSection";
 
-interface CardSectionProps {
+interface SeparatedCardSectionProps {
+  children: any;
   className?: string;
   style?: { [someProps: string]: any };
-  children: any;
 }
 
-class CardSection extends React.PureComponent<CardSectionProps> {
+class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps> {
   render() {
     const { className, style, children } = this.props;
 
     return (
-      <>
-        <div className={classNames("cardSection", className)} style={style}>
-          {children}
-        </div>
-        <hr />
-      </>
+      <SeparatedSection className={classNames("cardSection", className)} style={style}>
+        {children}
+      </SeparatedSection>
     );
   }
 }
 
 interface CardProps {
   app: App;
-  format: "small" | "medium" | "large" | "wide";
+  isWideFormat?: boolean;
   showPic?: boolean;
+  style?: { [someProps: string]: any };
   onClick: () => any;
 }
 
@@ -42,10 +41,33 @@ class Card extends React.PureComponent<CardProps> {
     );
   }
 
-  render() {
-    const { app, format, showPic } = this.props;
+  renderMainInfo(isWideFormat: boolean, hasFreeTrial: boolean) {
+    return (
+      <>
+        <div className="headerItem logo">
+          <ServiceLogo icon={this.props.app.icon} />
+        </div>
+        <div className="headerItem appName">
+          <div>
+            {this.props.app.name}
+            <p className="rating">{showStars(4, 5)}</p>
+          </div>
+        </div>
+        {isWideFormat && (
+          <div className="headerItem headerTags">
+            <div>
+              {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
+              {this.renderPricingTag("19.99$ p.m.", true)}
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
 
-    const isWideFormat = format === "wide";
+  render() {
+    const { app, isWideFormat, showPic, style } = this.props;
+
     const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
@@ -53,7 +75,7 @@ class Card extends React.PureComponent<CardProps> {
     const headerColor = app.color || "#E9EEF4";
 
     return (
-      <div className={classNames("card", format)}>
+      <div className={classNames("card", { wide: isWideFormat })} style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">
@@ -62,37 +84,29 @@ class Card extends React.PureComponent<CardProps> {
           </div>
         )}
 
-        <CardSection
-          className="header"
-          style={{ backgroundColor: renderPic ? "white" : headerColor }}>
-          <div className="headerItem logo">
-            <ServiceLogo icon={app.icon} />
+        {renderPic ? (
+          <SeparatedCardSection
+            className="header"
+            style={{ backgroundColor: renderPic ? "white" : headerColor }}>
+            {this.renderMainInfo(isWideFormat, hasFreeTrial)}
+          </SeparatedCardSection>
+        ) : (
+          <div
+            className="cardSection header"
+            style={{ backgroundColor: renderPic ? "white" : headerColor }}>
+            {this.renderMainInfo(isWideFormat, hasFreeTrial)}
           </div>
-          <div className="headerItem appName">
-            <div>
-              {app.name}
-              <p className="rating">{showStars(4, 5)}</p>
-            </div>
-          </div>
-          {isWideFormat && (
-            <div className="headerItem headerTags">
-              <div>
-                {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
-                {this.renderPricingTag("19.99$ p.m.", true)}
-              </div>
-            </div>
-          )}
-        </CardSection>
+        )}
 
         {!isWideFormat && (
-          <CardSection className="tagsRow">
+          <SeparatedCardSection className="tagsRow">
             {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
             {this.renderPricingTag("19.99$ p.m.")}
-          </CardSection>
+          </SeparatedCardSection>
         )}
 
         {hasPros && (
-          <CardSection className="tagsColumn">
+          <SeparatedCardSection className="tagsColumn">
             {app.pros.map(pro => (
               <div className="pro">
                 <Tag>
@@ -101,15 +115,15 @@ class Card extends React.PureComponent<CardProps> {
                 <span>{pro}</span>
               </div>
             ))}
-          </CardSection>
+          </SeparatedCardSection>
         )}
 
         {hasFeatures && (
-          <CardSection className="tagsRow">
+          <SeparatedCardSection className="tagsRow">
             {app.features.map(feature => (
               <Tag className="featureTag">{feature}</Tag>
             ))}
-          </CardSection>
+          </SeparatedCardSection>
         )}
       </div>
     );
