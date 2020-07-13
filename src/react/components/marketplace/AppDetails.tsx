@@ -290,7 +290,15 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             )}
           </div>
         </div>
-        <div className="features">Unlimited everything</div>
+        <div className="features">
+          <ul>
+            {plan.features.map((feature, i) => (
+              <li key={i}>
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </>
     );
   };

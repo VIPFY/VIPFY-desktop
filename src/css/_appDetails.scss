@@ -228,6 +228,29 @@
       }
     }
 
+    ul {
+      list-style-type: none;
+
+      li {
+        margin-bottom: 5px;
+        line-height: 1.5em;
+        height: auto;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &::before {
+          font-size: 70px;
+          vertical-align: middle;
+          content: "\00b7";
+          color: #20baa9;
+          display: inline-block;
+          margin-right: 5px;
+        }
+      }
+    }
+
     .centeredSection {
       flex: 1 1 0;
       display: flex;
