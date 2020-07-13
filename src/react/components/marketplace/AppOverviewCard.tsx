@@ -4,27 +4,10 @@ import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
-import SeparatedSection from "./SeparatedSection";
+import CardSection from "./CardSection";
+import ProsConsList from "./ProsConsList";
 
-interface SeparatedCardSectionProps {
-  children: any;
-  className?: string;
-  style?: { [someProps: string]: any };
-}
-
-class SeparatedCardSection extends React.PureComponent<SeparatedCardSectionProps> {
-  render() {
-    const { className, style, children } = this.props;
-
-    return (
-      <SeparatedSection className={classNames("cardSection", className)} style={style}>
-        {children}
-      </SeparatedSection>
-    );
-  }
-}
-
-interface CardProps {
+interface AppOverviewCardProps {
   app: App;
   isWideFormat?: boolean;
   showPic?: boolean;
@@ -32,7 +15,7 @@ interface CardProps {
   onClick: () => any;
 }
 
-class Card extends React.PureComponent<CardProps> {
+class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   renderPricingTag(text: string, div?: boolean, className?: string) {
     return (
       <Tag div={div} className={classNames("pricingTag", className)}>
@@ -66,7 +49,7 @@ class Card extends React.PureComponent<CardProps> {
   }
 
   render() {
-    const { app, isWideFormat, showPic, style } = this.props;
+    const { app, isWideFormat, showPic, style, onClick } = this.props;
 
     const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
@@ -75,21 +58,24 @@ class Card extends React.PureComponent<CardProps> {
     const headerColor = app.color || "#E9EEF4";
 
     return (
-      <div className={classNames("card", { wide: isWideFormat })} style={style}>
+      <div
+        onClick={onClick}
+        className={classNames("card appOverviewCard clickable", { wide: isWideFormat })}
+        style={style}>
         {renderPic && (
           <div className="cardSection" style={{ backgroundColor: headerColor }}>
             <div className="picHolder">
-              <img src={app.pic} alt="Service Image" className="pic" />
+              <img src={app.pic} alt="App Image" className="pic" />
             </div>
           </div>
         )}
 
         {renderPic ? (
-          <SeparatedCardSection
+          <CardSection
             className="header"
             style={{ backgroundColor: renderPic ? "white" : headerColor }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial)}
-          </SeparatedCardSection>
+          </CardSection>
         ) : (
           <div
             className="cardSection header"
@@ -99,35 +85,30 @@ class Card extends React.PureComponent<CardProps> {
         )}
 
         {!isWideFormat && (
-          <SeparatedCardSection className="tagsRow">
+          <CardSection className="tagsRow">
             {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
             {this.renderPricingTag("19.99$ p.m.")}
-          </SeparatedCardSection>
+          </CardSection>
         )}
 
         {hasPros && (
-          <SeparatedCardSection className="tagsColumn">
-            {app.pros.map(pro => (
-              <div className="pro">
-                <Tag>
-                  <span className="fal fa-plus fa-fw" />
-                </Tag>
-                <span>{pro}</span>
-              </div>
-            ))}
-          </SeparatedCardSection>
+          <CardSection>
+            <ProsConsList prosCons={app.pros} />
+          </CardSection>
         )}
 
         {hasFeatures && (
-          <SeparatedCardSection className="tagsRow">
-            {app.features.map(feature => (
-              <Tag className="featureTag">{feature}</Tag>
+          <CardSection className="tagsRow">
+            {app.features.map((feature: string, i: number) => (
+              <Tag className="featureTag neutral" key={i}>
+                {feature}
+              </Tag>
             ))}
-          </SeparatedCardSection>
+          </CardSection>
         )}
       </div>
     );
   }
 }
 
-export default Card;
+export default AppOverviewCard;
