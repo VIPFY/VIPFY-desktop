@@ -15,10 +15,13 @@ interface Props {
 
 const header = document.getElementById("header-react")!;
 
-export default (props: Props) => ReactDOM.createPortal(<Tabs {...props} />, header);
+//export default (props: Props) => ReactDOM.createPortal(<Tabs {...props} />, header);
 
 const Tabs = (props: Props) => (
   <ul id="titlebar-tabs">
+    {
+      //TODO: [VIP-1211] Opening an assignment twice and than close it. It will reopen
+    }
     {props.tabs.length > 0 &&
       props.tabs.map((view, key) => (
         <Tab

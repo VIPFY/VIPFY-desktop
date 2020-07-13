@@ -340,7 +340,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   renderLink = (
-    { label, location, icon, show, highlight }: SidebarLinks,
+    { label, location, icon, show, highlight, strict }: SidebarLinks,
     addRenderElement,
     disabled
   ) => {
@@ -354,8 +354,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     if (
-      this.props.location.pathname.startsWith(`/area/${location}`) ||
-      `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
+      (strict
+        ? this.props.location.pathname == `/area/${location}`
+        : this.props.location.pathname.startsWith(`/area/${location}`)) ||
+      (location.startsWith("admin") &&
+        `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`))
     ) {
       cssClass += " sidebar-active";
       buttonClass += " selected";
@@ -410,7 +413,22 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     const sidebarLinks = [
+      ,
+      /*{
+        label: "The Web",
+        location: "browser/browser",
+        icon: "globe",
+        show: true,
+        highlight: "browserelement",
+        strict: true
+      },
       {
+        label: "Add Credentials",
+        location: "integrations",
+        icon: "store",
+        show: true,
+        highlight: "pluselement"
+      }*/ /* {
         label: "Dashboard",
         location: "dashboard",
         icon: "home",
@@ -422,7 +440,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "messagecenter",
         icon: "envelope",
         show: config.showMessageCenter
-      },
+      },*/
       /*{
         label: "Marketplace",
         location: "marketplace",
@@ -430,7 +448,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         show: config.showMarketplace,
         highlight: "marketplaceelement"
       },*/
-      {
+      /* {
         label: "Add Credentials",
         location: "integrations",
         icon: "plus",
@@ -442,6 +460,20 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "domains",
         icon: "atlas",
         show: config.showDomains
+      }*/
+      {
+        label: "Open Service",
+        location: "dashboard",
+        icon: "plus",
+        show: true,
+        highlight: "dashboardelement"
+      },
+      {
+        label: "Add Credentials",
+        location: "integrations",
+        icon: "store",
+        show: true,
+        highlight: "pluselement"
       }
     ];
 
@@ -590,7 +622,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
             className={`sidebar${sidebarOpen ? "" : "-small"} ${
               this.props.impersonation ? "sidebar-impersonate" : ""
             }`}
-            style={{ gridTemplateRows: `129px 1fr ${this.props.isadmin ? "185px" : "145px"}` }}
+            style={{ gridTemplateRows: `88px 1fr ${this.props.isadmin ? "185px" : "145px"}` }}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
             {/*<div className={`sidebar original${sidebarOpen ? "" : "-small"}`}>*/}
             <div className="sidebar-nav-icon">
@@ -611,7 +643,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
               </Tooltip>
             </div>
             <div>
-              <Tooltip
+              {/*<Tooltip
                 className="sidebar-tooltip"
                 distance={8}
                 arrowSize={5}
@@ -619,7 +651,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 content={<div style={{ width: "75px" }}>VIPFY</div>}
                 direction="right">
                 <div className="VIPFYLogo"></div>
-              </Tooltip>
+              </Tooltip>*/}
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement, false))}
               <div className="divider" />
             </div>
@@ -630,14 +662,22 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 setInstance={this.props.setInstance}
                 sidebarOpen={sidebarOpen}
                 openInstances={this.props.openInstances}
+                openServices={this.props.openServices}
+                showService={this.props.showService}
                 licences={
-                  filteredLicences /*.filter(
+                  licences
+                  /*filteredLicences .filter(
                   ({ tags }) => tags.length < 1 || !tags.includes("vacation")
                 )*/
                 }
                 viewID={this.props.viewID}
                 impersonation={this.props.impersonation}
+                maybeAddHighlightReference={this.maybeAddHighlightReference}
+                addRenderElement={context.addRenderElement}
+                goTo={this.goTo}
+                location={this.props.location}
               />
+              <div></div>
 
               {/* Temporary licences */}
               {/*<SidebarApps

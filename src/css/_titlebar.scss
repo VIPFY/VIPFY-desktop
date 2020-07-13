@@ -1,7 +1,7 @@
 #titlebar {
   position: fixed;
   display: grid;
-  grid-template-columns: 138px 102px calc(100% - 138px - 240px) 138px;
+  grid-template-columns: 1fr 138px;
   grid-template-rows: 32px;
   width: 100%;
   background: #1c2935;
@@ -11,7 +11,7 @@
   -webkit-app-region: drag;
 
   &-logo {
-    display: grid;
+    display: flex;
     align-items: center;
 
     &-img {
@@ -19,20 +19,25 @@
       background-position: center;
       background-repeat: no-repeat;
       background-size: contain;
-      height: 24px;
-      width: 24px;
+      height: 11px;
+      width: 13px;
       margin-left: 12px;
+    }
+
+    &-lettering {
+      font-family: "Roboto";
+      margin-left: 4px;
+      font-size: 13px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
     }
 
     #versionnumber {
       font-family: "Roboto";
-      margin-left: 22px;
+      margin-left: 4px;
+      font-size: 13px;
     }
-  }
-
-  &-tabs {
-    height: 100%;
-    display: flex;
   }
 
   .active {
@@ -42,71 +47,6 @@
       &:hover {
         background-color: #44596c;
       }
-    }
-  }
-  .tabSeperator {
-    width: 1px;
-    height: 24px;
-    margin-top: 4px;
-  }
-}
-
-.titlebar-tab {
-  @include hide-overflowing-text;
-  -webkit-app-region: no-drag;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  position: relative;
-  align-items: center;
-  transition: all 300ms ease-in-out;
-
-  flex-grow: 1;
-  max-width: 250px;
-  min-width: 32px;
-  font-size: 13px;
-  border-radius: 4px 4px 0px 0px;
-  cursor: pointer;
-  flex: 1;
-
-  &:hover {
-    background-color: #253647;
-  }
-
-  img {
-    grid-area: icon;
-    width: 16px;
-    height: 16px;
-    object-fit: cover;
-    background-color: white;
-    border-radius: 2px;
-    margin-left: 8px;
-  }
-
-  div {
-    max-width: calc(100% - 50px);
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    margin-left: 5px;
-    font-family: "Roboto";
-  }
-
-  i {
-    cursor: pointer;
-    position: absolute;
-    right: 8px;
-    height: 12px;
-    width: 12px;
-    font-size: 8px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    line-height: 12px;
-    border-radius: 2px;
-
-    &:hover {
-      background-color: #30475d;
     }
   }
 }
@@ -124,7 +64,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 42px;
     height: 100%;
     user-select: none;
     cursor: default;
@@ -156,25 +96,5 @@
 
   #restore-button {
     display: none;
-  }
-}
-#header-arrows {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0px 20px;
-  grid-column: 2;
-
-  .historyButton {
-    height: 20px;
-    width: 20px;
-    border-radius: 2px;
-    line-height: 16px;
-    -webkit-app-region: no-drag;
-    transition: 200ms background-color;
-    font-size: 12px;
-    &:hover {
-      background-color: #253647;
-    }
   }
 }

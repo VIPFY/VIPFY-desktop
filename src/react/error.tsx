@@ -30,7 +30,7 @@ class OuterErrorBoundary extends React.Component<Props, State> {
       return React.Children.only(this.props.children);
     } else {
       return (
-        <div style={{ width: "100vw", height: "calc(100vh - 32px", overflowY: "scroll" }}>
+        <div className="errorPageMain">
           <div id="outer-error-page">
             <h1>Sorry an error occurred!</h1>
             <img

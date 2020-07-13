@@ -27,7 +27,7 @@ import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
-import Tabs from "../components/Tabs";
+//import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
@@ -39,7 +39,7 @@ import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
-import HistoryButtons from "../components/HistoryButtons";
+//import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import ServiceIntegrator from "../components/admin/ServiceIntegrator";
@@ -63,6 +63,7 @@ import Workspace from "./Workspace";
 //import PaymentMethod from "./billing/paymentMethod";
 import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
+import Browser from "./browser";
 
 interface AreaProps {
   id: string;
@@ -97,6 +98,8 @@ interface AreaState {
   adminOpen: boolean;
   consentPopup: boolean;
   allowSkip: boolean;
+  openServices: string[];
+  showService: string | null;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -113,7 +116,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     activeTab: null,
     adminOpen: false,
     consentPopup: false,
-    allowSkip: false
+    allowSkip: false,
+    openServices: [],
+    showService: null
   };
 
   componentDidMount = async () => {
@@ -128,13 +133,20 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   moveTo = path => {
     if (!path.startsWith("app")) {
-      this.setState({ viewID: -1 });
+      this.setState({ viewID: -1, showService: null });
     }
     this.props.moveTo(path);
   };
 
-  setApp = (assignmentId: number) => {
-    if (this.state.openInstances[assignmentId]) {
+  setApp = (assignmentId: string) => {
+    if (!this.state.openServices.find(os => os == assignmentId)) {
+      this.setState(oldstate => {
+        return { ...oldstate, openServices: [...oldstate.openServices, assignmentId] };
+      });
+    }
+    this.setState({ showService: assignmentId });
+    this.props.history.push(`/area/browser/${assignmentId}`);
+    /*if (this.state.openInstances[assignmentId]) {
       this.setState(prevState => {
         const newstate = {
           ...prevState,
@@ -144,11 +156,11 @@ class Area extends React.Component<AreaProps, AreaState> {
         };
         return newstate;
       });
-      this.props.history.push(`/area/app/${assignmentId}`);
+      this.props.history.push(`/area/browser/${assignmentId}`);
     } else {
       this.addWebview(assignmentId, true);
-      this.props.history.push(`/area/app/${assignmentId}`);
-    }
+      this.props.history.push(`/area/browser/${assignmentId}`);
+    }*/
   };
 
   setDomain = (boughtplan: number, domain: string) => {
@@ -496,6 +508,14 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.closeInstance(viewID, licenceID);
   };
 
+  closeBrowser(assignmentId, moveTo) {
+    this.setState(oldstate => {
+      const openServices = oldstate.openServices.filter(os => os != assignmentId) || [];
+      return { openServices };
+    });
+    this.moveTo(moveTo);
+  }
+
   printBreadcrumbs = (headline, breadcrumbs) => {
     const bc: JSX.Element[] = [];
 
@@ -576,6 +596,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
       { path: "company", component: CompanyDetails, admin: true },
       { path: "admin/inboundemails", component: InboundEmails, admin: true }
+      //{ path: "browser", component: Browser }
+      //{ path: "browser/:assignmentid", component: Browser },
+      //{ path: "browser/:serviceid", component: Browser }
     ];
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
@@ -592,6 +615,37 @@ class Area extends React.Component<AreaProps, AreaState> {
         </div>
       );
     }
+
+    const browserlist: JSX.Element[] = [];
+    let marginLeft = 64;
+    if (sidebarOpen) {
+      marginLeft += 176;
+    }
+    this.state.openServices.forEach(o =>
+      browserlist.push(
+        <div
+          key={o}
+          style={{
+            visibility: this.state.showService == o ? "visible" : "hidden",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            width: "100%",
+            height: "100%"
+          }}>
+          <Browser
+            setApp={this.setApp}
+            toggleAdmin={this.toggleAdmin}
+            adminOpen={this.state.adminOpen}
+            moveTo={this.moveTo}
+            assignmentId={o}
+            visible={this.state.showService == o}
+            closeBrowser={(a, b) => this.closeBrowser(a, b)}
+            {...this.props}
+          />
+        </div>
+      )
+    );
 
     return (
       <AppContext.Consumer>
@@ -624,6 +678,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   viewID={this.state.viewID}
                                   views={this.state.webviews}
                                   openInstances={this.state.openInstances}
+                                  openServices={this.state.openServices}
+                                  showService={this.state.showService}
                                   toggleSidebar={this.toggleSidebar}
                                   setInstance={this.setInstance}
                                   {...this.props}
@@ -697,7 +753,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           </Query>
                         )}
                       />
-                      <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
+                      {/*<Route render={() => <HistoryButtons viewID={this.state.viewID} />} />*/}
                       <Switch>
                         <Route
                           exact
@@ -826,6 +882,26 @@ class Area extends React.Component<AreaProps, AreaState> {
                           }}
                         />
                         <Route
+                          exact
+                          path="/area/browser/:assignmentid"
+                          render={props => {
+                            if (this.state.showService != props.match.params.assignmentid) {
+                              this.setApp(props.match.params.assignmentid);
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
+                          exact
+                          path="/area/browser"
+                          render={props => {
+                            if (this.state.showService != "browser") {
+                              this.setApp("browser");
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
                           key={"ERRORELSE"}
                           render={() => (
                             <div
@@ -837,12 +913,23 @@ class Area extends React.Component<AreaProps, AreaState> {
                           )}
                         />
                       </Switch>
-                      <ViewHandler
+                      <div
+                        id="viewHandler"
+                        className={`marginLeft ${this.props.sidebarOpen && "sidebar-open"}`}
+                        style={{
+                          visibility: this.state.showService !== null ? "visible" : "hidden",
+                          position: "relative",
+                          height: this.state.showService !== null ? undefined : "1px",
+                          overflow: this.state.showService !== null ? undefined : "hidden"
+                        }}>
+                        {browserlist}
+                      </div>
+                      {/*<ViewHandler
                         showView={this.state.viewID}
                         views={this.state.webviews}
                         sidebarOpen={sidebarOpen}
-                      />
-                      <Tabs
+                      />*/}
+                      {/*<Tabs
                         tabs={this.state.webviews}
                         setInstance={this.setInstance}
                         viewID={this.state.viewID}
@@ -851,7 +938,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                         handleDragEnd={this.handleDragEnd}
                         handleDragLeave={this.handleDragLeave}
                         handleClose={this.handleClose}
-                      />
+                      />*/}
                       {this.props.needspasswordchange &&
                         !localStorage.getItem("impersonator-token") && (
                           <ForcedPasswordChange email={this.props.emails[0].email} />

@@ -9,7 +9,7 @@ interface State {}
 
 const header = document.getElementById("header-arrows")!;
 
-export default (props: Props) => ReactDOM.createPortal(<HistoryButtons {...props} />, header);
+//export default (props: Props) => ReactDOM.createPortal(<HistoryButtons {...props} />, header);
 
 class HistoryButtons extends React.Component<Props, State> {
   backFunction() {

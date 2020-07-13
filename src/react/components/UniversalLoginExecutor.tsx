@@ -40,6 +40,9 @@ interface Props {
   webviewId?: number;
   modifyFields?: Object;
   licenceID?: string;
+  openNewTab?: Function;
+  setUrl?: Function;
+  didFailLoad?: Function;
 }
 
 interface State {
@@ -128,7 +131,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       if (props[key] != nextProps[key] && typeof props[key] != "function") {
         if (
           (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
-          (props[key].fetchNotifications &&
+          (props[key] &&
+            props[key].fetchNotifications &&
             props[key].fetchNotifications.length == nextProps[key].fetchNotifications.length)
         ) {
           const array = Array.isArray(props[key]) ? props[key] : props[key].fetchNotifications;
@@ -158,6 +162,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   onNewWindow = async e => {
+    console.log("onNewWindow");
+    if (this.props.openNewTab && e.url.indexOf("wchat") == -1) {
+      this.props.openNewTab(e.url);
+      return;
+    }
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
     const app = await this.props.client.query({
@@ -271,10 +280,29 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                 this.props.showLoadingScreen(false);
                 this.setState({ solve401: {} });
               }
+              if (this.props.setUrl) {
+                // console.log("OutPAGE", e);
+                this.props.setUrl(e.url);
+              }
+            }}
+            onDidNavigateInPage={e => {
+              if (this.props.setUrl) {
+                //console.log("INPAGE", e);
+                this.props.setUrl(e.url);
+              }
             }}
             onPageTitleUpdated={title =>
               this.props.setViewTitle && this.props.setViewTitle(title.title)
             }
+            onDidFailLoad={e => this.props.didFailLoad && this.props.didFailLoad(e)}
+            /* onLoadCommit={e => console.log("onLoadCommit", e)}
+            onDidFinishLoad={e => console.log("onDidFinishLoad", e)}
+            onDidFailLoad={e => console.log("onDidFailLoad", e)}
+            onDidFrameFinishLoad={e => console.log("onDidFrameFinishLoad", e)}
+            onDidStartLoading={e => console.log("onDidStartLoading", e)}
+            onDidStopLoading={e => console.log("onDidStopLoading", e)}
+            onDomReady={e => console.log("onDomReady", e)}
+            onUpdateTargetUrl={e => console.log("onUpdateTargetUrl", e)}*/
           />
           {this.state.multipleChoose != null && (
             <PopupBase small={true}>
@@ -692,10 +720,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           }
 
           this.sentResult = true;
-          this.props.setResult(
-            { ...this.loginState, ...resultValues, loggedIn: false, error: false },
-            ""
-          );
+          if (this.props.setResult) {
+            this.props.setResult(
+              { ...this.loginState, ...resultValues, loggedIn: false, error: false },
+              ""
+            );
+          }
         }, this.screenshotDelay);
       }
     } else {
@@ -857,35 +887,37 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           } else {
             throw new Error("unknown string");
           }
-          for await (const c of text) {
+          if (text) {
+            for await (const c of text) {
+              if (this.loginState.unloaded) {
+                return;
+              }
+              const shift = c.toLowerCase() != c;
+              const modifiers = shift ? ["shift"] : [];
+              w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+              w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+              await this.modifiedSleep(Math.random() * 20 + 50);
+              if (this.loginState.unloaded) {
+                return;
+              }
+              w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+              this.progress += 0.2 / text.length;
+              await this.modifiedSleep(Math.random() * 30 + 200);
+            }
+            await this.modifiedSleep(500);
             if (this.loginState.unloaded) {
               return;
             }
-            const shift = c.toLowerCase() != c;
-            const modifiers = shift ? ["shift"] : [];
-            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
-            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
-            await this.modifiedSleep(Math.random() * 20 + 50);
-            if (this.loginState.unloaded) {
-              return;
+            w.send("formFieldFilled");
+            if (e.args[0] == "domain") {
+              this.loginState.domainEnteredEnd = true;
+            } else if (e.args[0] == "username") {
+              this.loginState.emailEnteredEnd = true;
+            } else if (e.args[0] == "password") {
+              this.loginState.passwordEnteredEnd = true;
+            } else {
+              throw new Error("unknown string");
             }
-            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            this.progress += 0.2 / text.length;
-            await this.modifiedSleep(Math.random() * 30 + 200);
-          }
-          await this.modifiedSleep(500);
-          if (this.loginState.unloaded) {
-            return;
-          }
-          w.send("formFieldFilled");
-          if (e.args[0] == "domain") {
-            this.loginState.domainEnteredEnd = true;
-          } else if (e.args[0] == "username") {
-            this.loginState.emailEnteredEnd = true;
-          } else if (e.args[0] == "password") {
-            this.loginState.passwordEnteredEnd = true;
-          } else {
-            throw new Error("unknown string");
           }
         }
         break;

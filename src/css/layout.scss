@@ -7,6 +7,7 @@
 @import "./authentication";
 @import "./billing";
 @import "./buttons";
+@import "./browser";
 @import "./card";
 @import "./creditCards";
 @import "./dashboard";
@@ -2857,7 +2858,7 @@ progress[value] {
 }
 
 .errorScreen {
-  height: calc(100vh - 32px);
+  height: calc(100vh - 24px);
   width: 100%;
   display: flex;
   justify-content: center;
@@ -2894,7 +2895,7 @@ progress[value] {
   display: none;
   position: absolute;
   right: 0;
-  top: 32px;
+  top: 24px;
   height: 32px;
   width: 600px;
   background: lightgrey;

@@ -118,7 +118,7 @@ class SidebarLink extends React.Component<Props, State> {
     if (active) {
       cssClass += " sidebar-active";
     }
-    if (openInstances[licence.id]) {
+    if (this.props.selected) {
       buttonClass += " selected";
     }
 
@@ -163,7 +163,7 @@ class SidebarLink extends React.Component<Props, State> {
                 <span className="white-background" />
                 <ServiceLogo icon={licence.boughtplanid.planid.appid.icon} size={32}>
                   {openInstances[licence.id] && <i className="fa fa-circle active-app" />}
-                  {multipleOrbits ? (
+                  {multipleOrbits && (
                     <span className="active-user">
                       <div
                         className="tiny-profile-pic"
@@ -171,8 +171,6 @@ class SidebarLink extends React.Component<Props, State> {
                         {label.substring(0, 1)}
                       </div>
                     </span>
-                  ) : (
-                    ""
                   )}
                 </ServiceLogo>
               </div>

@@ -18,7 +18,7 @@ export default function TeamName(props: {
   `;
 
   return (
-    <Query query={fetchTeamName} variables={{ teamid }}>
+    <Query<WorkAround, WorkAround> query={fetchTeamName} variables={{ teamid }}>
       {({ loading, error, data }) => {
         console.log("FETCHING TEAM", loading, error, data);
         if (loading) {
