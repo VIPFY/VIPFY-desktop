@@ -7,9 +7,22 @@
   background-color: #fff;
 
   &.clickable:hover {
-    border-width: 2px;
-    transform: translateY(-2px);
+    box-shadow: 0 3px 4px #00000026;
     cursor: pointer;
+  }
+
+  > hr {
+    border: none;
+    border-top: 1px solid #dfe3eb;
+    margin: 0 16px;
+
+    &:last-child {
+      display: none;
+    }
+  }
+
+  .cardSection {
+    padding: 16px;
   }
 
   .picHolder {
@@ -28,16 +41,6 @@
     }
   }
 
-  > hr {
-    border: none;
-    border-top: 1px solid #dfe3eb;
-    margin: 0 16px;
-
-    &:last-child {
-      display: none;
-    }
-  }
-
   .tag {
     display: flex;
     justify-content: center;
@@ -51,10 +54,6 @@
     }
   }
 
-  .cardSection {
-    padding: 16px;
-  }
-
   .tagsRow {
     display: flex;
     flex-flow: row wrap;
@@ -62,19 +61,6 @@
 
     .tag {
       margin: 0 8px 8px 0;
-      text-transform: uppercase;
     }
-  }
-
-  .featureTag {
-    padding: 5px 12px;
-  }
-
-  .pricingTag {
-    height: 20px;
-    padding: 1px 12px;
-    border: 1px solid #c9d1da;
-    background-color: white;
-    font-size: 12px;
   }
 }
