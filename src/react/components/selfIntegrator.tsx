@@ -41,7 +41,6 @@ class SelfIntegrator extends React.Component<Props, State> {
   }
 
   async onIpcMessage(e): Promise<void> {
-    //console.log("IPC called", e.channel);
     switch (e.channel) {
       case "hello":
         this.webview = e.target;
@@ -50,7 +49,6 @@ class SelfIntegrator extends React.Component<Props, State> {
         break;
       case "sendMessage":
         console.log("startMessage");
-        //console.log(e.channel); //, e.args[0], e.args[1], e.args[2], e.args[3], e.args[4],
         let i = 0;
         while (e.args[i] != null) {
           console.log(e.args[i]);
@@ -60,22 +58,9 @@ class SelfIntegrator extends React.Component<Props, State> {
         break;
 
       case "sendEvent":
-        /*console.log(
-          "SendEvent doing",
-          e.args[0],
-          e.args[1],
-          e.args[2],
-          e.args[3],
-          e.args[4],
-          e.args[5],
-          e.args[6],
-          e.args[7],
-          e.args[8]
-        );*/
         this.setState(oldstate => {
           let plan = oldstate.trackedPlan;
           let id = Math.round(Math.random() * 10000000000);
-          id = Math.round(Math.random() * 10000000000);
           while (
             plan.findIndex(element => {
               return element.args.id == id;
@@ -90,7 +75,6 @@ class SelfIntegrator extends React.Component<Props, State> {
               plan[plan.length - 1].args.document == e.args[8]
             )
           ) {
-            //console.log("LC", e.args[0].toLowerCase());
             switch (e.args[0].toLowerCase()) {
               case "input":
                 plan.push({
@@ -135,29 +119,13 @@ class SelfIntegrator extends React.Component<Props, State> {
           }
           return oldstate;
         });
-        //console.log("SendEvent finished");
         break;
 
       case "updateDivList":
         console.log("cancel of selection");
-        //this.updateDivList();
         break;
 
       case "Hide Element triggered":
-        console.log(
-          "\n 1.: ",
-          e.args[0],
-          "\n 2.: ",
-          e.args[1],
-          "\n 3.: ",
-          e.args[2],
-          "\n 4.: ",
-          e.args[3],
-          "\n 5.: ",
-          e.args[4],
-          "\n 6.: ",
-          e.args[5]
-        );
         break;
 
       case "startScroll":
@@ -195,40 +163,7 @@ class SelfIntegrator extends React.Component<Props, State> {
       case "click":
         {
           console.log("CLICKED", e);
-          /*let w = e.target;
-          if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 1", this.loginState.executing, currentexe);
-            break;
-          }
-          w.sendInputEvent({ type: "mouseMove", x: e.args[0], y: e.args[1] });
-          await sleep(Math.random() * 30 + 200);
-          if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 2", this.loginState.executing, currentexe);
-            break;
-          }
-          console.log("mouseDown", currentexe);
-          w.sendInputEvent({
-            type: "mouseDown",
-            x: e.args[0],
-            y: e.args[1],
-            button: "left",
-            clickCount: 1
-          });
-          await sleep(Math.random() * 30 + 50);
-          if (this.loginState.executing != currentexe) {
-            console.log("BREAKOUT 3", this.loginState.executing, currentexe);
-            break;
-          }
-          console.log("mouseUp", currentexe);
-          w.sendInputEvent({
-            type: "mouseUp",
-            x: e.args[0],
-            y: e.args[1],
-            button: "left",
-            clickCount: 1
-          });
-          await sleep(Math.random() * 30 + 200);
-          w.send("clicked");*/
+          
         }
         break;
       case "recaptcha":
@@ -322,15 +257,6 @@ class SelfIntegrator extends React.Component<Props, State> {
 
       case "loaded":
         this.webview!.send("startTracking", {});
-        //console.log("loaded", this.state);
-        /*this.setState(oldstate => {
-          if (!oldstate.loaded && oldstate.webviewReady && oldstate.url != "about:blank") {
-            console.log("START TRACKING");
-            return { ...oldstate, loaded: true };
-          } else {
-            return oldstate;
-          }
-        });*/
         break;
 
       case "trackingStarted":
@@ -366,7 +292,6 @@ class SelfIntegrator extends React.Component<Props, State> {
   }
 
   handleSiteChange(e) {
-    console.log("SITE CHANGE", e, this.state);
     if (!e.url.includes("google")) {
       // so if webview is not google then track it.
       this.state.cantrack = true;
