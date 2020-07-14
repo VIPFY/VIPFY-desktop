@@ -62,6 +62,7 @@ import { AppContext } from "../common/functions";
 import Workspace from "./Workspace";
 import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
+import AddCustomServicePage from "./addCustomService";
 import AppDetails from "../components/marketplace/AppDetails";
 
 interface AreaProps {

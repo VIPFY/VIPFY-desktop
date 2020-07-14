@@ -669,9 +669,13 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     return "data:image/webp;base64," + buffer.toString("base64");
   }
 
-  sendResult(resultValues) {
-    this.clearTimeout();
-    this.clearProgressTimer();
+  sendResult(resultValues, useContinueExecute = true) {
+    if (!this.props.continueExecute && useContinueExecute) {
+      this.timeout = false;
+      this.progress = 1;
+      this.clearProgressTimer();
+      this.clearTimeout();
+    }
 
     const takeScreenshot = this.props.takeScreenshot;
 
@@ -725,8 +729,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     }
 
     if (this.props.loggedIn) {
-      this.timeout = false;
-      this.progress = 1;
       this.sendResult({
         ...this.loginState,
         loggedIn: true,
@@ -747,21 +749,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     ) {
       await sleep(100);
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
-        if (!this.props.continueExecute) {
-          this.timeout = false;
-          this.progress = 1;
-          this.clearProgressTimer();
-        }
         this.sendResult({ ...this.loginState, loggedIn: false, error: true });
       }
     }
 
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      if (!this.props.continueExecute) {
-        this.timeout = false;
-        this.progress = 1;
-        this.clearProgressTimer();
-      }
       this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
     }
 
@@ -848,15 +840,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           this.loginState.unloaded = false;
 
           if (this.webview && (await this.isLoggedIn(this.webview))) {
-            if (!this.props.continueExecute) {
-              this.timeout = false;
-              this.progress = 1;
-              this.clearProgressTimer();
-            }
-            this.props.setResult(
-              { ...this.loginState, loggedIn: true, error: false, direct: true },
-              ""
-            );
+            this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
           }
         }
         break;
@@ -922,15 +906,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       case "getLoginData":
         {
           if (await this.isLoggedIn(e.target)) {
-            if (!this.props.continueExecute) {
-              this.timeout = false;
-              this.progress = 1;
-              this.clearProgressTimer();
-            }
-            this.props.setResult(
-              { ...this.loginState, loggedIn: true, error: false, direct: true },
-              ""
-            );
+            this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
 
             return; //we are done with login
           }
@@ -999,9 +975,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           this.progress = 1;
           this.clearProgressTimer();
           const loggedIn = await this.isLoggedIn(e.target);
-          this.props.setResult(
+          this.sendResult(
             { ...this.loginState, loggedIn, executeEnd: true, currentUrl: e.target.src },
-            ""
+            false
           );
           return; //we are done with login
           break;
