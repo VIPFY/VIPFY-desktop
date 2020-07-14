@@ -6,6 +6,9 @@ interface Props {
   data: any;
   subscribeToMore: Function;
   adminOpen?: boolean;
+
+  moveTo?: Function;
+  isadmin: boolean;
 }
 interface State {
   initialLoad: boolean;
@@ -58,7 +61,8 @@ class FloatingNotifications extends React.Component<Props, State> {
               element: (
                 <FloatingNotification
                   key={newNot.id}
-                  title="Status Update"
+                  notificationId={newNot.id}
+                  title={newNot.title || "Status Update"}
                   vipfyTask={{
                     icon: newNot.icon,
                     name: "VIPFY"
@@ -72,6 +76,8 @@ class FloatingNotifications extends React.Component<Props, State> {
                     this.forceUpdate();
                   }}
                   {...(newNot.options ? newNot.options : {})}
+                  moveTo={this.props.moveTo}
+                  isadmin={this.props.isadmin}
                 />
               )
             });
@@ -89,7 +95,7 @@ class FloatingNotifications extends React.Component<Props, State> {
                 element: (
                   <FloatingNotification
                     key={updateElement.data.id}
-                    title="Status Update"
+                    title={updateNot.title || "Status Update"}
                     vipfyTask={{
                       icon: updateNot.icon || updateElement.data.icon,
                       name: "VIPFY"
@@ -104,6 +110,8 @@ class FloatingNotifications extends React.Component<Props, State> {
                     }}
                     {...updateElement.data.options}
                     {...updateNot.options}
+                    moveTo={this.props.moveTo}
+                    isadmin={this.props.isadmin}
                   />
                 )
               };
