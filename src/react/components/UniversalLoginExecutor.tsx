@@ -895,10 +895,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             this.loginState.emailEnteredEnd = true;
           } else if (e.args[0] == "password") {
             this.loginState.passwordEnteredEnd = true;
-          } else {
-            if (!e.args[1]) {
-              throw new Error("unknown string");
-            }
+          } else if (!e.args[1]) {
+            throw new Error("unknown string");
           }
         }
         break;
