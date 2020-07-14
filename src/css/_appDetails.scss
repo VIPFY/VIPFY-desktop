@@ -117,33 +117,13 @@
     }
   }
 
-  .carousel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .tag {
-      display: inline-block;
-      min-width: 38px;
-      line-height: 38px;
-      font-size: 12px;
-      border-radius: 50%;
-      border: 1px solid #30475d;
-      box-shadow: 1px;
-      text-align: center;
-      padding: 0;
-      color: #30475d;
+  .previewSection {
+    .card {
+      padding: 16px;
     }
 
     .picHolder {
       padding-top: 75%;
-    }
-
-    .slider {
-      display: grid;
-      grid-gap: 24px;
-      grid-auto-flow: column;
-      margin: 0 24px;
 
       .servicePreviewPic {
         position: absolute;

@@ -444,22 +444,14 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
             <CardSection className="previewSection">
               <h2>Preview</h2>
-              <div className="carousel">
-                <Tag>
-                  <span className="fal fa-chevron-left fa-fw" />
-                </Tag>
-                <div className="slider">
-                  {DUMMY_APP.pics.map((pic, i) => (
-                    <div key={i} className="card">
-                      <div className="picHolder">
-                        <img src={pic} className="servicePreviewPic" />
-                      </div>
+              <div className="grid3Cols">
+                {DUMMY_APP.pics.map((pic, i) => (
+                  <div key={i} className="card">
+                    <div className="picHolder">
+                      <img src={pic} className="servicePreviewPic" />
                     </div>
-                  ))}
-                </div>
-                <Tag>
-                  <span className="fal fa-chevron-right fa-fw" />
-                </Tag>
+                  </div>
+                ))}
               </div>
             </CardSection>
 
