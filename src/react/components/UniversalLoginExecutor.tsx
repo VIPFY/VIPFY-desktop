@@ -729,12 +729,14 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     }
 
     if (this.props.loggedIn) {
-      this.sendResult({
+      await this.sendResult({
         ...this.loginState,
         loggedIn: true,
         direct: true,
         error: false
       });
+      this.progressCallbackRunning = false;
+      return;
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -749,12 +751,16 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     ) {
       await sleep(100);
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
-        this.sendResult({ ...this.loginState, loggedIn: false, error: true });
+        await this.sendResult({ ...this.loginState, loggedIn: false, error: true });
+        this.progressCallbackRunning = false;
+        return;
       }
     }
 
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
+      await this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
+      this.progressCallbackRunning = false;
+      return;
     }
 
     if (this.progress == 1) {
