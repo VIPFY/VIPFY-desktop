@@ -1,5 +1,8 @@
 import * as React from "react";
 import classNames from "classnames";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+
 import CardSection from "./CardSection";
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -318,6 +321,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     this.state = { descriptionExpanded: false };
   }
 
+  RATINGS_COLORS = ["#1c8db0", "#ffd57b", "#a9b531", "#f69d3d"];
+
   openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
 
   expandDescription = () => this.setState({ descriptionExpanded: true });
@@ -439,22 +444,14 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
             <CardSection className="previewSection">
               <h2>Preview</h2>
-              <div className="carousel">
-                <Tag>
-                  <span className="fal fa-chevron-left fa-fw" />
-                </Tag>
-                <div className="slider">
-                  {DUMMY_APP.pics.map((pic, i) => (
-                    <div key={i} className="card">
-                      <div className="picHolder">
-                        <img src={pic} className="servicePreviewPic" />
-                      </div>
+              <div className="grid3Cols">
+                {DUMMY_APP.pics.map((pic, i) => (
+                  <div key={i} className="card">
+                    <div className="picHolder">
+                      <img src={pic} className="servicePreviewPic" />
                     </div>
-                  ))}
-                </div>
-                <Tag>
-                  <span className="fal fa-chevron-right fa-fw" />
-                </Tag>
+                  </div>
+                ))}
               </div>
             </CardSection>
 
@@ -516,6 +513,37 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <div className="grid2Cols smGrid1Col">
                   {DUMMY_APP.pros && this.renderProsAndConsCard("Pros", DUMMY_APP.pros)}
                   {DUMMY_APP.cons && this.renderProsAndConsCard("Cons", DUMMY_APP.cons, true)}
+                </div>
+              </CardSection>
+            )}
+
+            {DUMMY_APP.ratings && (
+              <CardSection>
+                <h2>Ratings</h2>
+                <div className="grid4Cols smGrid2Cols">
+                  {DUMMY_APP.ratings.map((rating, i) => (
+                    <div className="card" key={i}>
+                      <CardSection>
+                        <h3>{rating.aspect}</h3>
+                      </CardSection>
+                      <CardSection>
+                        <div className="rating">
+                          <CircularProgressbar
+                            value={rating.rating * 10}
+                            text={"" + rating.rating}
+                            strokeWidth={15}
+                            styles={buildStyles({
+                              strokeLinecap: "butt",
+                              textSize: "13px",
+                              textColor: "#3b4c5d",
+                              pathColor: this.RATINGS_COLORS[i % 4],
+                              trailColor: this.RATINGS_COLORS[i % 4] + "33"
+                            })}
+                          />
+                        </div>
+                      </CardSection>
+                    </div>
+                  ))}
                 </div>
               </CardSection>
             )}
