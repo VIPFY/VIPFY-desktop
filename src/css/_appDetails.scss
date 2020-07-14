@@ -214,6 +214,14 @@
     }
   }
 
+  .rating {
+    margin-bottom: 8px;
+
+    .CircularProgressbar-text {
+      dominant-baseline: central;
+    }
+  }
+
   .plans {
     display: grid;
     grid-gap: 8px;
