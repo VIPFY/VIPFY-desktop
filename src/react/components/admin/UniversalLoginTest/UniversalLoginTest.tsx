@@ -248,8 +248,11 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
   }
 
   renderTestResult(result: TestResult) {
+    const { screenshot, ...cleanedResult } = result;
     const rendering = (color: string, iconName: string) => (
-      <span style={{ color }}>{this.renderTestResultIcon(iconName)}</span>
+      <span style={{ color }} title={JSON.stringify(cleanedResult)}>
+        {this.renderTestResultIcon(iconName)}
+      </span>
     );
 
     if (result.skipped) {
