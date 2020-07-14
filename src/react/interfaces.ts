@@ -246,6 +246,8 @@ export interface LoginResult {
   passwordEnteredEnd?: boolean;
   domainEnteredEnd?: boolean;
   step?: number;
+  executeEnd?: boolean;
+  currentUrl?: string;
 }
 
 export interface TestResult {

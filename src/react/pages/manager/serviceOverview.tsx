@@ -14,6 +14,7 @@ import AssignServiceToUser from "../../components/manager/universal/adding/assig
 import moment from "moment";
 import DeleteService from "../../components/manager/deleteService";
 import { AppContext } from "../../common/functions";
+import { WorkAround } from "../../interfaces";
 
 interface Props {
   moveTo: Function;
@@ -330,7 +331,9 @@ class ServiceOverview extends React.Component<Props, State> {
               )}
             </AppContext.Consumer>
           </div>
-          <Query pollInterval={60 * 10 * 1000 + 900} query={COMPANY_SERVICES_OPTIONS}>
+          <Query<WorkAround, WorkAround>
+            pollInterval={60 * 10 * 1000 + 900}
+            query={COMPANY_SERVICES_OPTIONS}>
             {({ loading, error, data }) => {
               if (loading) {
                 return (
@@ -385,7 +388,7 @@ class ServiceOverview extends React.Component<Props, State> {
                 //sortselection
                 switch (this.state.sort) {
                   case "Name":
-                    interservices.sort(function(a, b) {
+                    interservices.sort(function (a, b) {
                       let nameA = a.app.name.toUpperCase();
                       let nameB = b.app.name.toUpperCase();
                       if (nameA < nameB) {
@@ -465,6 +468,7 @@ class ServiceOverview extends React.Component<Props, State> {
                           <h1>Choose Service</h1>
                           <AssignServiceToUser
                             continue={app => app && this.props.moveTo(`lmanager/${app.id}`)}
+                            moveTo={this.props.moveTo}
                           />
                           <UniversalButton
                             innerRef={el => addRenderElement({ key: "cancel", element: el })}

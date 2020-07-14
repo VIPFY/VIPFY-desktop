@@ -243,8 +243,8 @@ class UniversalDropDownInput extends React.Component<Props, State> {
             className="resultHolder"
             style={
               this.props.noFixed
-                ? { marginTop: "10px", width: this.props.width || "400px" }
-                : { marginTop: "10px", position: "fixed", width: this.props.width || "400px" }
+                ? { marginTop: "35px", width: this.props.width || "400px" }
+                : { marginTop: "35px", position: "fixed", width: this.props.width || "400px" }
             }>
             {numresults == 0 ? (
               <div
@@ -290,7 +290,7 @@ class UniversalDropDownInput extends React.Component<Props, State> {
       <div
         className="universalLabelInput"
         style={Object.assign(
-          {},
+          { height: "30px", position: "relative" },
           this.props.width ? { width: this.props.width } : {},
           this.props.styles || {}
         )}>
@@ -336,12 +336,10 @@ class UniversalDropDownInput extends React.Component<Props, State> {
             {this.props.label}
           </label>
         )}
-        {this.props.errorEvaluation && this.state.notypeing ? (
+        {this.props.errorEvaluation && this.state.notypeing && (
           <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
             {this.props.errorhint}
           </div>
-        ) : (
-          ""
         )}
         {this.state.code == "" && this.showResults()}
         {this.state.code != "" && this.props.showIcon && this.props.showIcon(this.state.fullvalue)}

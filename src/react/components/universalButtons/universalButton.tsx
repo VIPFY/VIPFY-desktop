@@ -13,6 +13,7 @@ interface Props {
   form?: string;
   className?: string;
   tabIndex?: number;
+  customButtonStyles?: Object;
 }
 
 interface State {
@@ -63,7 +64,11 @@ class UniversalButton extends React.Component<Props, State> {
           className={`cleanup universalCoverButton ${this.props.className}`}
           onClick={e => this.click(e)}
           style={
-            this.props.customStyles ? {} : { width: this.props.label.length > 6 ? undefined : 90 }
+            this.props.customButtonStyles
+              ? this.props.customButtonStyles
+              : this.props.customStyles
+              ? {}
+              : { width: this.props.label.length > 6 ? undefined : 90 }
           }
           tabIndex={this.props.tabIndex}>
           <div
