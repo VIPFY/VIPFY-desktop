@@ -282,7 +282,6 @@ class SelfIntegrator extends React.Component<Props, State> {
     }
   }
   handleNewWindow(e) {
-    console.log("NEW WINDOW", e);
     this.setState({ urlBevorChange: e.target.src, url: e.url });
   }
   handleClosing(e) {
@@ -292,7 +291,9 @@ class SelfIntegrator extends React.Component<Props, State> {
   }
 
   handleSiteChange(e) {
-    if (!e.url.includes("google")) {
+    if (e.url.includes("google")) {
+    return
+    }
       // so if webview is not google then track it.
       this.state.cantrack = true;
       this.setState({
@@ -301,7 +302,7 @@ class SelfIntegrator extends React.Component<Props, State> {
         divList: [],
         test: false
       });
-    }
+    
   }
 
   didFailLoad(e) {
@@ -344,7 +345,6 @@ class SelfIntegrator extends React.Component<Props, State> {
   }
 
   searchOnGoogle() {
-    console.log("search on google triggered");
     this.setState({
       url: "https://www.google.com/search?q=" + encodeURIComponent(this.props.loginUrl)
     });
