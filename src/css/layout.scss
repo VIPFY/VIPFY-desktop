@@ -135,7 +135,7 @@ li {
 }
 
 #App {
-  color: #253647; //#333 durch #253647 √ºberall ersetzen
+  color: #253647; //#333 durch #253647 Åberall ersetzen
   font-family: "Roboto", sans-serif;
   background-color: white;
   height: calc(100vh - 32px);
@@ -143,7 +143,7 @@ li {
 }
 
 #DevTools {
-  color: #253647; //#333 durch #253647 √ºberall ersetzen
+  color: #253647; //#333 durch #253647 Åberall ersetzen
   font-family: "Roboto", sans-serif;
   width: 0;
   background-color: white;
@@ -2841,17 +2841,14 @@ progress[value] {
       border-bottom: 1px solid #2a3642;
     }
   }
-  .breadcrumbSeperator {
-    margin-left: 4px;
-    margin-right: 4px;
+  .breadcrumbSeparator {
+    margin: 0px 4px;
   }
 }
 
 .pageHeading {
-  margin-top: 7px;
-  margin-bottom: 24px;
-  font-size: 24px;
+  margin: 7px 0px 24px;
   line-height: 32px;
   color: #3b4c5d;
-  font-size: bold;
+  font-size: 24px;
 }
