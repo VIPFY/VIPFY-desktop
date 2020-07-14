@@ -1,0 +1,28 @@
+.categories {
+  grid-column: 1 / -1;
+  grid-row-start: 2;
+  margin-bottom: 8px;
+
+  .tag {
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    padding: 0 12px;
+    height: 40px;
+
+    &:hover {
+      background-color: white;
+    }
+
+    .fa-fw {
+      font-size: 18px;
+      color: #3b4c5d;
+      margin-right: 8px;
+    }
+
+    .categoryName {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
+}

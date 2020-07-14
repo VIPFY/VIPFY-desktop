@@ -5,11 +5,11 @@ import { ipcRenderer } from "electron";
 import { Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 
-import AppPage from "./apppage";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
-import Marketplace from "./marketplace";
+import MarketplaceDiscover from "./marketplace/MarketplaceDiscover";
+import MarketplaceCategories from "./marketplace/MarketplaceCategories";
 import MessageCenter from "./messagecenter";
 import AdminDashboard from "../components/admin/Dashboard";
 import ServiceCreation from "../components/admin/ServiceCreation";
@@ -54,17 +54,15 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
-//import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
 import Workspace from "./Workspace";
-//import PaymentMethod from "./billing/paymentMethod";
 import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
-import AddCustomServicePage from "./addCustomService";
+import AppDetails from "../components/marketplace/AppDetails";
 
 interface AreaProps {
   id: string;
@@ -456,8 +454,15 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "ssotest"
       },
       {
-        label: "Marketplace",
-        location: "marketplace",
+        label: "Marketplace Discover",
+        location: "marketplace/discover",
+        icon: "shopping-cart",
+        show: config.showMarketplace,
+        highlight: "marketplaceelement"
+      },
+      {
+        label: "Marketplace Categ.",
+        location: "marketplace/categories",
         icon: "shopping-cart",
         show: config.showMarketplace,
         highlight: "marketplaceelement"
@@ -546,16 +551,16 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing, admin: true },
-      { path: "marketplace", component: Marketplace, admin: true },
-      { path: "marketplace/:appid/", component: AppPage, admin: true },
-      { path: "marketplace/:appid/:action", component: AppPage, admin: true },
+      { path: "marketplace/discover", component: MarketplaceDiscover, admin: true },
+      { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
+      { path: "marketplace/:appid/", component: AppDetails, admin: true },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
       { path: "support", component: SupportPage },
       { path: "error", component: ErrorPage },
       { path: "workspace", component: Workspace },
-      { path: "vacation", component: Vacation, admin: true },
+      { path: "vacation", component: Vacation },
       { path: "admin", component: AdminDashboard, admin: true },
       { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
       { path: "admin/service-creation", component: ServiceCreation, admin: true },

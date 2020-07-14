@@ -1,4 +1,5 @@
 import * as React from "react";
+import sharp from "sharp";
 import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
 import { LoginResult } from "../interfaces";
@@ -664,8 +665,13 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     }
   }
 
+  webpBufferToDataUrl(buffer) {
+    return "data:image/webp;base64," + buffer.toString("base64");
+  }
+
   sendResult(resultValues) {
     this.clearTimeout();
+    this.clearProgressTimer();
 
     const takeScreenshot = this.props.takeScreenshot;
 
@@ -684,8 +690,16 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
           const image = await webview.getWebContents().capturePage();
           const size = image.getSize();
-          const resized = image.resize({ width: size.width / 2, height: size.height / 2 });
-          this.props.setResult(resultValues, resized.toDataURL());
+
+          this.props.setResult(
+            resultValues,
+            this.webpBufferToDataUrl(
+              await sharp(image.toPNG())
+                .resize(size.width / 2)
+                .webp({ quality: 80 })
+                .toBuffer()
+            )
+          );
         }, this.screenshotDelay);
       } else {
         setTimeout(() => {
@@ -719,7 +733,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         direct: true,
         error: false
       });
-      this.clearProgressTimer();
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -755,10 +768,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     if (this.progress == 1) {
       if (this.progressHandle) {
         this.clearProgressTimer();
-
-        if (this.timeout) {
-          this.sendResult({ ...this.loginState, loggedIn: false, error: true });
-        }
+        // progress timeout should fire from independent timer
       }
     }
 

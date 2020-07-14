@@ -38,6 +38,16 @@ $vipfy-shadow: 1px 3px 4px 0px #78787866;
 $vipfy_bigradius: 6px;
 $vipfy_smallradius: 3px;
 
+// Max. width for small screens
+$screen-sm-max: 1240px;
+
+// 1240px screen width and less
+@mixin sm {
+  @media (max-width: #{$screen-sm-max}) {
+    @content;
+  }
+}
+
 @for $x from 20 through 80 {
   .box#{$x} {
     height: #{$x}px;
@@ -176,11 +186,6 @@ $rccs-valid-font-size: 0.4rem;
     background: grey;
     cursor: not-allowed;
   }
-}
-
-* {
-  margin: 0;
-  padding: 0;
 }
 
 .collapsible {
@@ -636,6 +641,7 @@ textarea {
 .ReactPasswordStrength-input:not(:focus).is-password-invalid {
   color: #d1462f;
 }
+
 .ReactPasswordStrength-input:focus {
   outline: none;
 }
@@ -655,15 +661,19 @@ textarea {
 .ReactPasswordStrength.is-strength-0 .ReactPasswordStrength-strength-desc {
   color: #d1462f;
 }
+
 .ReactPasswordStrength.is-strength-1 .ReactPasswordStrength-strength-desc {
   color: #d1462f;
 }
+
 .ReactPasswordStrength.is-strength-2 .ReactPasswordStrength-strength-desc {
   color: #57b8ff;
 }
+
 .ReactPasswordStrength.is-strength-3 .ReactPasswordStrength-strength-desc {
   color: #57b8ff;
 }
+
 .ReactPasswordStrength.is-strength-4 .ReactPasswordStrength-strength-desc {
   color: #2fbf71;
 }

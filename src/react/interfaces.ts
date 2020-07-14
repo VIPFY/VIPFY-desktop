@@ -255,6 +255,7 @@ export interface TestResult {
   passed?: boolean;
   timedOut?: boolean;
   screenshot?: string;
+  loginResult?: LoginResult;
 }
 
 export interface Expired_Plan {
