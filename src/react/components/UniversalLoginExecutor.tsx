@@ -862,13 +862,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               text = this.props.password + "\u000d";
             }
             this.loginState.passwordEntered = true;
-          } else {
-            if (e.args[1]) {
+          } else if (e.args[1]) {
               text = e.args[0];
             } else {
               throw new Error("unknown string");
             }
-          }
+          
           for await (const c of text) {
             if (this.loginState.unloaded) {
               return;
@@ -980,9 +979,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             false
           );
           return; //we are done with login
-          break;
         }
-        break;
     }
   }
 }
