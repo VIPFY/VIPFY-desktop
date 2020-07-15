@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import Collapsible from "../../common/Collapsible";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../printEmployeeSquare";
 import UserName from "../../components/UserName";
 import LoadingDiv from "../../components/LoadingDiv";
 import {

@@ -17,7 +17,7 @@ import UniversalDropDownInput from "../../components/universalForms/universalDro
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { concatName, getMyUnitId } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../../components/printEmployeeSquare";
 import { createEncryptedLicenceKeyObject } from "../../common/licences";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../queries/billing";
 

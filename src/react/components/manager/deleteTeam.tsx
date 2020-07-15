@@ -9,7 +9,7 @@ import moment, { now } from "moment";
 import Calendar from "react-calendar";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
-import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../printEmployeeSquare";
 import { concatName } from "../../common/functions";
 
 interface Props {
