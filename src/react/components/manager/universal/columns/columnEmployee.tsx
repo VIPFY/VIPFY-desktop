@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../../../printEmployeeSquare";
 
 interface Props {
   checkFunction: Function;

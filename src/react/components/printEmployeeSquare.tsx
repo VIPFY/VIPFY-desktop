@@ -1,6 +1,6 @@
 import * as React from "react";
-import { getBgImageUser } from "../../../../common/images";
-import { concatName } from "../../../../common/functions";
+import { getBgImageUser } from "../common/images";
+import { concatName } from "../common/functions";
 
 interface Props {
   employee: any;

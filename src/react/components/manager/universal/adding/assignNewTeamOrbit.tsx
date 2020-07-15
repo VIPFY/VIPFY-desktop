@@ -1,7 +1,7 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import AssignServiceToUser from "./assignServiceToUser";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../../../printEmployeeSquare";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";

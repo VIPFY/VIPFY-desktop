@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "./squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../../printEmployeeSquare";
 import moment from "moment";
 import { concatName } from "../../../common/functions";
 import PopupBase from "../../../popups/universalPopups/popupBase";

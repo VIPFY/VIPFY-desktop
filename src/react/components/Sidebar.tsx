@@ -11,7 +11,7 @@ import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
-import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "./printEmployeeSquare";
 import ProfileMenu from "./ProfileMenu";
 import {
   FETCH_EMPLOYEES,

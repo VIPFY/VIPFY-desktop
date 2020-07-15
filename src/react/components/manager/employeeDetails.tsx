@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../printEmployeeSquare";
 import RemoveTeamMember from "./removeTeamMember";
 import { concatName } from "../../common/functions";
 

@@ -6,7 +6,7 @@ import { Mutation, withApollo } from "react-apollo";
 import { showStars, filterError } from "../../common/functions";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./graphqlOperations";
 import UserName from "../UserName";
-import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../printEmployeeSquare";
 import IconButton from "../../common/IconButton";
 import SecurityPopup from "../../pages/manager/securityPopup";
 import { SecurityUser } from "../../interfaces";

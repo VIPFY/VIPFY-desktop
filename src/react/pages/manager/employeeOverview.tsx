@@ -1,15 +1,14 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
+import { Query } from "react-apollo";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import gql from "graphql-tag";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import PrintEmployeeSquare from "../../components/printEmployeeSquare";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
@@ -179,7 +178,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                 //Sortselection
                 switch (this.state.sort) {
                   case "Name":
-                    interemployees.sort(function(a, b) {
+                    interemployees.sort(function (a, b) {
                       let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
                       let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
                       if (nameA < nameB) {
@@ -201,7 +200,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                     });
                     break;
                   case "Status":
-                    interemployees.sort(function(a, b) {
+                    interemployees.sort(function (a, b) {
                       let onA = a.isonline;
                       let onB = b.isonline;
                       if (onA && !onB) {
