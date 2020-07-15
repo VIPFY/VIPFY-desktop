@@ -612,6 +612,12 @@
   .noBottomMargin {
     margin-bottom: 0px !important;
   }
+
+  .managerSquare {
+    width: 32px;
+    height: 32px;
+  }
+
   .managerBigSquare {
     width: 96px;
     height: 96px;
@@ -715,8 +721,6 @@
 }
 
 .managerSquare {
-  width: 32px;
-  height: 32px;
   border-radius: 4px;
   float: left;
   margin-top: 12px;
@@ -733,6 +737,7 @@
     margin-left: 8px;
   }
 }
+
 .deleteEmployeeBox {
   position: absolute;
   top: 8px;
