@@ -6,7 +6,7 @@ import { Mutation, withApollo } from "react-apollo";
 import { showStars, filterError } from "../../common/functions";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./graphqlOperations";
 import UserName from "../UserName";
-import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import IconButton from "../../common/IconButton";
 import SecurityPopup from "../../pages/manager/securityPopup";
 import { SecurityUser } from "../../interfaces";
@@ -68,7 +68,7 @@ class UserSecurityRow extends React.Component<Props, State> {
     return (
       <tr onClick={() => this.setState(prevState => ({ showEdit: !prevState.showEdit }))}>
         <td colSpan={2} className="data-recording-sensitive">
-          <PrintEmployeeSquare employee={user.unitid} />
+          <EmployeePicture employee={user.unitid} />
           <div className="name">
             <UserName unitid={user.id} />
           </div>

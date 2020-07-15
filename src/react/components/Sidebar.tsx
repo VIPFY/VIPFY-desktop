@@ -11,7 +11,7 @@ import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
-import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "./EmployeePicture";
 import ProfileMenu from "./ProfileMenu";
 import {
   FETCH_EMPLOYEES,
@@ -758,12 +758,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
                     content={<UserName unitid={this.props.id} />}
                     direction="right">
                     <div className="naked-button sidebarButton" id="profileOpener">
-                      <PrintEmployeeSquare
+                      <EmployeePicture
                         hideTitle={true}
                         size={32}
                         className="managerSquare small-profile-pic"
                         employee={this.props}
-                        styles={{ marginTop: "0px", borderRadius: "32px", fontSize: "12px" }}
+                        style={{ marginTop: "0px", borderRadius: "32px", fontSize: "12px" }}
                       />
                     </div>
                   </Tooltip>

@@ -12,7 +12,7 @@ import { getBgImageUser } from "../common/images";
  *
  * @example <UserPicture unitid="adsfas-asfasdfadsf-asdfasd" size={inline} /> James
  *
- * @deprecated use printEmployeeSquare instead
+ * @deprecated use EmployeePicture instead
  *
  * @returns {JSX.Element}
  */

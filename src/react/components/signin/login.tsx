@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import Store from "electron-store";
-import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import welcomeBack from "../../../images/welcome_back.png";
 
 interface Props {
@@ -79,7 +79,7 @@ class Login extends React.Component<Props, State> {
                 />
               ) : (
                 <div className="preloggedFullname">
-                  <PrintEmployeeSquare employee={user} className="accountBullet" size={20} />
+                  <EmployeePicture employee={user} className="accountBullet" size={20} />
                   <button
                     title="Click to update your Email"
                     className="naked-button"

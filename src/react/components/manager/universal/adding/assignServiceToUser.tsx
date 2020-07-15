@@ -1,15 +1,12 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
-import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../../queries/products";
 import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
 import SelfSavingIllustrated from "../../../../popups/universalPopups/SelfSavingIllustrated";
-import { BrowserView } from "electron";
 import { WorkAround } from "../../../../interfaces";
 
 interface Props {

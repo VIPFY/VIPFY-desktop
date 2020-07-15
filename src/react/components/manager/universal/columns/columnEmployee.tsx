@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import EmployeePicture from "../../../EmployeePicture";
 
 interface Props {
   checkFunction: Function;
@@ -76,7 +76,7 @@ class ColumnEmployees extends React.Component<Props, State> {
           break;
         } else {
           employeesArray.push(
-            <PrintEmployeeSquare
+            <EmployeePicture
               key={`employee-${employee.id}`}
               employee={employee}
               overlayFunction={this.props.overlayFunction}
