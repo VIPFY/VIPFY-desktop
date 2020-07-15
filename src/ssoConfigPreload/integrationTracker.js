@@ -14,9 +14,9 @@ var listeners = [];
 
 const asktypes = ["input", "textbox"];
 
-(function() {
+(function () {
   Element.prototype._addEventListener = Element.prototype.addEventListener;
-  Element.prototype.addEventListener = function(a, b, c) {
+  Element.prototype.addEventListener = function (a, b, c) {
     console.log("Element.prototype.addEventListener");
     if (c == undefined) c = false;
     this._addEventListener(a, b, c);
@@ -26,13 +26,13 @@ const asktypes = ["input", "textbox"];
     this.eventListenerList[a].push({ listener: b, useCapture: c });
   };
 
-  Element.prototype.getEventListeners = function(a) {
+  Element.prototype.getEventListeners = function (a) {
     console.log("Element.prototype.getEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) return this.eventListenerList;
     return this.eventListenerList[a];
   };
-  Element.prototype.clearEventListeners = function(a) {
+  /*Element.prototype.clearEventListeners = function (a) {
     console.log("Element.prototype.clearEventListener");
     if (!this.eventListenerList) this.eventListenerList = {};
     if (a == undefined) {
@@ -45,10 +45,10 @@ const asktypes = ["input", "textbox"];
       var ev = el[i];
       this.removeEventListener(a, ev.listener, ev.useCapture);
     }
-  };
+  };*/
 
   Element.prototype._removeEventListener = Element.prototype.removeEventListener;
-  Element.prototype.removeEventListener = function(a, b, c) {
+  Element.prototype.removeEventListener = function (a, b, c) {
     console.log("Element.prototype.removeEventListener");
     if (c == undefined) c = false;
     this._removeEventListener(a, b, c);
@@ -70,7 +70,7 @@ const asktypes = ["input", "textbox"];
 })();
 
 Object.defineProperty(String.prototype, "includesAny", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (this.indexOf(search) !== -1) {
         return true;
@@ -81,7 +81,7 @@ Object.defineProperty(String.prototype, "includesAny", {
 });
 
 Object.defineProperty(String.prototype, "includesAnyRegExp", {
-  value: function(searches) {
+  value: function (searches) {
     for (const search of searches) {
       if (search.test(this)) {
         return true;
@@ -276,7 +276,7 @@ function findAllIframes(doc, remove) {
 
 var config = { attributes: true, childList: true, subtree: true };
 
-var callback1 = function(mutationsList, observer) {
+var callback1 = function (mutationsList, observer) {
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
       mutation.addedNodes.forEach(node => {
@@ -294,7 +294,7 @@ var callback1 = function(mutationsList, observer) {
   }
 };
 
-var callback2 = function(mutationsList, observer) {
+var callback2 = function (mutationsList, observer) {
   //console.log("Callback2 called");
   for (var mutation of mutationsList) {
     if (mutation.type == "childList") {
@@ -340,7 +340,6 @@ const attributesSelector = [
   "data-callback",
   "data-name",
   "class",
-  "value",
   "alt",
   "data-testid",
   "href",
@@ -351,6 +350,7 @@ const attributesSelector = [
 
 function findTarget(event, iframe) {
   ipcRenderer.sendToHost("aktualisiereDivList");
+  console.log("TESTING", bot);
   if (bot) {
     return;
   }
@@ -378,10 +378,10 @@ function findTarget(event, iframe) {
     const listenersers = button.getEventListeners();
     //ipcRenderer.sendToHost("sendMessage", button, listeners);
     listeners.push([event.target, listenersers]); //
-    button.clearEventListeners();
+    //button.clearEventListeners();
     button.addEventListener("click", e => {
       console.log("listener added");
-      e.preventDefault();
+      //e.preventDefault();
       return false;
     });
     console.log("Events Cleared");
@@ -522,7 +522,7 @@ function findTarget(event, iframe) {
     { x: rect.x, y: rect.y },
     iselector
   );
-  event.target.disabled = true;
+  //event.target.disabled = true;
   console.log("buttons disabled");
 }
 
@@ -658,12 +658,12 @@ window.addEventListener("load", async () => {
 });
 
 ipcRenderer.once("startTracking", () => {
-  window.addEventListener("scroll", function(e) {
+  window.addEventListener("scroll", function (e) {
     ipcRenderer.sendToHost("startScroll", window.scrollY);
   });
 });
 
-ipcRenderer.on("startTracking", () => {
+ipcRenderer.on("startTracking", ({ useable }) => {
   console.log("START TRACKING");
   //remove Listeners first in case they already exist (no doubles);
   document.removeEventListener("click", findTarget, true);
@@ -813,7 +813,7 @@ const attributes = [
 function filterDom(includesAny, excludesAll) {
   includesAny = includesAny.map(i => new RegExp(i));
   excludesAll = excludesAll.map(i => new RegExp(i));
-  return function(element) {
+  return function (element) {
     if (!element.hasAttributes()) {
       return false;
     }

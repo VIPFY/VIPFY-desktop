@@ -246,6 +246,8 @@ export interface LoginResult {
   passwordEnteredEnd?: boolean;
   domainEnteredEnd?: boolean;
   step?: number;
+  executeEnd?: boolean;
+  currentUrl?: string;
 }
 
 export interface TestResult {
@@ -253,6 +255,7 @@ export interface TestResult {
   passed?: boolean;
   timedOut?: boolean;
   screenshot?: string;
+  loginResult?: LoginResult;
 }
 
 export interface Expired_Plan {

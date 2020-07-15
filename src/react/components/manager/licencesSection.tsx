@@ -41,7 +41,7 @@ class LicencesSection extends React.Component<Props, State> {
           let appArray: JSX.Element[] = [];
 
           if (data.fetchUserLicenceAssignments) {
-            data.fetchUserLicenceAssignments.sort(function(a, b) {
+            data.fetchUserLicenceAssignments.sort(function (a, b) {
               let nameA = a.boughtplanid.alias
                 ? a.boughtplanid.alias.toUpperCase()
                 : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
@@ -128,6 +128,7 @@ class LicencesSection extends React.Component<Props, State> {
                     close={() => this.setState({ add: false })}
                     employee={this.props.employee}
                     refetch={refetch}
+                    moveTo={this.props.moveTo}
                   />
                 )}
               </div>

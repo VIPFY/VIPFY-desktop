@@ -25,7 +25,7 @@ class ServiceSection extends React.Component<Props, State> {
     if (this.props.team.services) {
       interservices = this.props.team.services.filter(e => e.endtime == null || e.endtime < now());
 
-      interservices.sort(function(a, b) {
+      interservices.sort(function (a, b) {
         let nameA = a.planid.appid.name.toUpperCase();
         let nameB = b.planid.appid.name.toUpperCase();
         if (nameA < nameB) {
@@ -95,7 +95,11 @@ class ServiceSection extends React.Component<Props, State> {
           {serviceArray}
         </div>
         {this.state.add && (
-          <AssignNewTeamOrbit team={this.props.team} close={() => this.setState({ add: false })} />
+          <AssignNewTeamOrbit
+            team={this.props.team}
+            close={() => this.setState({ add: false })}
+            moveTo={this.props.moveTo}
+          />
         )}
       </div>
     );

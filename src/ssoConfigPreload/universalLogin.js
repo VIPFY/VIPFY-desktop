@@ -178,33 +178,54 @@ ipcRenderer.once("getModifyFields", (e, key) => {
 
 async function modifyFields(elements) {
   while (true) {
-    for (i = 0; i < elements.hide.length; i++) {
-      var element = elements.hide[i];
-      var selectedElement = document.querySelector(element.selector);
-      if (selectedElement) {
-        var i = 0;
-        while (i < element.parentlevel) {
-          selectedElement = selectedElement.parentNode;
-          i++;
+    if (elements.hide) {
+      for (i = 0; i < elements.hide.length; i++) {
+        var element = elements.hide[i];
+        var selectedElement = document.querySelector(element.selector);
+        if (selectedElement) {
+          var i = 0;
+          while (i < element.parentlevel) {
+            selectedElement = selectedElement.parentNode;
+            i++;
+          }
+          var parent = selectedElement.parentNode;
+          parent.removeChild(selectedElement);
         }
-        var parent = selectedElement.parentNode;
-        parent.removeChild(selectedElement);
       }
     }
-    for (i = 0; i < elements.replace.length; i++) {
-      var element = elements.replace[i];
-      var selectedElement = document.querySelector(element.selector);
-      if (selectedElement) {
-        var i = 0;
-        while (i < element.parentlevel) {
-          selectedElement = selectedElement.parentNode;
-          i++;
+    if (elements.replace) {
+      for (i = 0; i < elements.replace.length; i++) {
+        var element = elements.replace[i];
+        var selectedElement = document.querySelector(element.selector);
+        if (selectedElement) {
+          var i = 0;
+          while (i < element.parentlevel) {
+            selectedElement = selectedElement.parentNode;
+            i++;
+          }
+          if (!selectedElement.cloned) {
+            var clonedElement = selectedElement.cloneNode(true);
+            clonedElement.addEventListener("click", e => redirectClick(e, element));
+            clonedElement.cloned = true;
+            selectedElement.parentNode.replaceChild(clonedElement, selectedElement);
+          }
         }
-        if (!selectedElement.cloned) {
-          var clonedElement = selectedElement.cloneNode(true);
-          clonedElement.addEventListener("click", e => redirectClick(e, element));
-          clonedElement.cloned = true;
-          selectedElement.parentNode.replaceChild(clonedElement, selectedElement);
+      }
+    }
+    if (elements.tracking) {
+      for (i = 0; i < elements.tracking.length; i++) {
+        var element = elements.tracking[i];
+        var selectedElement = document.querySelector(element.selector);
+        if (selectedElement) {
+          var i = 0;
+          while (i < element.parentlevel) {
+            selectedElement = selectedElement.parentNode;
+            i++;
+          }
+          if (!selectedElement.tracking) {
+            clonedElement.addEventListener("click", e => trackingClick(e, element));
+            clonedElement.tracking = true;
+          }
         }
       }
     }
@@ -219,6 +240,10 @@ function redirectClick(e, element) {
   ipcRenderer.sendToHost("redirectClick", element.action);
 }
 
+function trackingClick(e, element) {
+  ipcRenderer.sendToHost("trackingClick", element.action);
+}
+
 /*
 if (document.readyState === "complete") {
   start();
@@ -226,7 +251,7 @@ if (document.readyState === "complete") {
   window.addEventListener("DOMContentLoaded", start, false);
 }*/
 
-async function fillFormField(target, content) {
+async function fillFormField(target, content, value) {
   //console.log("FILL", target, content);
   if (stopped) throw new Error("abort");
   //target.focus();
@@ -239,7 +264,12 @@ async function fillFormField(target, content) {
       resolve();
     })
   );
-  ipcRenderer.sendToHost("fillFormField", content);
+  console.log("CV", content, value);
+  if (value) {
+    ipcRenderer.sendToHost("fillFormField", value, true);
+  } else {
+    ipcRenderer.sendToHost("fillFormField", content);
+  }
   return p;
 }
 
@@ -791,7 +821,11 @@ async function recaptchaClick(recap) {
 
 async function execute(operations, mainexecute = false) {
   let doc;
+  console.log("OPERATIONS", operations);
   for ({ operation, args = {} } of operations) {
+    if (mainexecute && operation) {
+      ipcRenderer.sendToHost("executeStep");
+    }
     if (args.documents) {
       doc = document;
       args.documents.forEach(thisdoc => {
@@ -824,7 +858,7 @@ async function execute(operations, mainexecute = false) {
         break;
       case "fill":
         //console.log("fill", doc.querySelector(args.selector), args.fillkey);
-        await fillFormField(doc.querySelector(args.selector), args.fillkey);
+        await fillFormField(doc.querySelector(args.selector), args.fillkey, args.value);
         break;
       case "solverecaptcha":
         //console.log("solverecaptcha", doc.querySelector(args.selector));
@@ -896,9 +930,9 @@ async function execute(operations, mainexecute = false) {
         }
         break;
     }
-    if (mainexecute && operation) {
-      ipcRenderer.sendToHost("executeStep");
-    }
+  }
+  if (mainexecute) {
+    ipcRenderer.sendToHost("executeEnd");
   }
   return;
 }

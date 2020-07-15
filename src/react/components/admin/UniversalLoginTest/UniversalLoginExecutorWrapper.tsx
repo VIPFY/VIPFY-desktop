@@ -108,6 +108,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
           const testResult = {
             passed: this.isPassed(test, loginResult),
             timedOut: loginResult.timedOut,
+            loginResult,
             screenshot
           };
           this.setResult(currentTestIndex, testResult);

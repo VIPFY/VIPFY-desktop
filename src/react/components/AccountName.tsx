@@ -27,7 +27,7 @@ export default function AccountName(props: {
           return <span />;
         }
 
-        if (error) {
+        if (error && (!data || !data.fetchLicence)) {
           return <span>(can't fetch account data)</span>;
         }
 

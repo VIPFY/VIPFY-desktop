@@ -17,6 +17,7 @@ import LoadingPopup from "../popups/loadingPopup";
 import draftToHtml from "draftjs-to-html";
 import { ErrorComp } from "../common/functions";
 import { subDomainValidation } from "../common/validation";
+import CreateOrbit from "../components/manager/universal/adding/orbit";
 
 export type AppPageProps = {
   employees: number;
@@ -50,6 +51,7 @@ export type AppPageState = {
   popupProps: object;
   popupPropsold: object;
   popupInfo: string;
+  create: Boolean;
 };
 
 const WRITE_REVIEW = gql`
@@ -105,7 +107,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     popupHeading: "",
     popupProps: {},
     popupPropsold: {},
-    popupInfo: ""
+    popupInfo: "",
+    create: false
   };
 
   showPopup = type => {
@@ -128,12 +131,13 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     });
 
   buyApp = plan => {
-    this.showPopup({
+    this.props.moveTo(`marketplace/order/${this.props.match.params.appid}/${plan.id}`);
+    /*this.showPopup({
       type: "Check Buying",
       acceptFunction: this.buyAppAccepted,
       plan,
       history: this.props.history
-    });
+    });*/
   };
 
   buyAppAccepted = async (planid, features, price, planinputs) => {
@@ -346,66 +350,6 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     }
   }
 
-  registerExternal = (name, needssubdomain) => {
-    const fields = [
-      {
-        name: "username",
-        type: "text",
-        label: `Please add the username at ${name}`,
-        icon: "user",
-        required: true,
-        placeholder: `Username at ${name}`
-      },
-      {
-        name: "password",
-        type: "password",
-        label: `Please add the password at ${name}`,
-        icon: "key",
-        required: true,
-        placeholder: `Password at ${name}`
-      }
-    ];
-
-    if (needssubdomain) {
-      fields.push({
-        name: "loginurl",
-        type: "subDomain",
-        label: `Please add a subdomain for ${name}`,
-        icon: "globe",
-        required: true,
-        placeholder: `${name}.domain.com`,
-        validate: subDomainValidation
-      });
-    }
-
-    this.setState({
-      popup: true,
-      popupBody: GenericInputForm,
-      popupHeading: "Add External App",
-      popupInfo: `Please enter your Account data from ${name}.
-      You will then be able to login to the App via Vipfy.`,
-      popupProps: {
-        fields,
-        defaultValues: needssubdomain ? { protocol: "https" } : null,
-        submittingMessage: "Adding external Account...",
-        successMessage: `${name} successfully added`,
-        handleSubmit: async values => {
-          try {
-            const loginurl = `${values.protocol}://${values.loginurl}`;
-
-            // await this.props.addExternalApp({
-            //   variables: { ...values, loginurl, appid: this.props.match.params.appid }
-            // });
-
-            return true;
-          } catch (error) {
-            throw error;
-          }
-        }
-      }
-    });
-  };
-
   render() {
     let cssClass = "paddingPage";
     if (this.props.chat - open) {
@@ -416,6 +360,19 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
     }
 
     if (this.props.product.fetchAppById && !this.props.productPlans.loading) {
+      const plans = this.props.productPlans.fetchPlans;
+      plans.sort((a, b) => {
+        let nameA = a.name.toUpperCase();
+        let nameB = b.name.toUpperCase();
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+        // namen müssen gleich sein
+        return 0;
+      });
       let appDetails = this.props.product.fetchAppById;
       return (
         <div className={cssClass}>
@@ -431,28 +388,36 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             <div
               className="appHeaderGallery"
               style={{
-                backgroundImage: `url(https://storage.googleapis.com/vipfy-imagestore-01/${
-                  appDetails.name
-                }/${appDetails.images[this.state.imageindex]})`
+                backgroundImage:
+                  appDetails.images &&
+                  `url(https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${
+                    appDetails.images[this.state.imageindex]
+                  })`
               }}>
               <div className="galleryDots">
-                {this.showgallerydots(appDetails.images.length, this.state.imageindex)}
+                {appDetails.images &&
+                  this.showgallerydots(appDetails.images.length, this.state.imageindex)}
               </div>
               <div
                 className="galleryLeft"
-                onClick={() => this.gallerymove(0, 0, appDetails.images.length)}>
+                onClick={() =>
+                  appDetails.images && this.gallerymove(0, 0, appDetails.images.length)
+                }>
                 <span className="fas fa-angle-left" />
               </div>
               <div
                 className="galleryRight"
-                onClick={() => this.gallerymove(0, 1, appDetails.images.length)}>
+                onClick={() =>
+                  appDetails.images && this.gallerymove(0, 1, appDetails.images.length)
+                }>
                 <span className="fas fa-angle-right" />
               </div>
             </div>
             <AppHeaderInfos
               appDetails={appDetails}
-              allPlans={this.props.productPlans.fetchPlans}
+              allPlans={plans}
               buyApp={this.buyApp}
+              handleOutside={a => this.setState(a)}
             />
           </div>
 
@@ -497,13 +462,24 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               <button
                 className="button-external"
                 type="button"
-                onClick={() => this.registerExternal(appDetails.name, appDetails.needssubdomain)}>
+                onClick={() =>
+                  this.setState({
+                    create: true
+                  })
+                }>
                 <i className="fas fa-boxes" /> Add as External
               </button>
             </div>
           </div>
-          {this.props.productPlans.fetchPlans[0] && this.props.isadmin ? (
-            <PlanHolder onClickFunction={this.buyApp} plans={this.props.productPlans.fetchPlans} />
+          {plans[0] && this.props.isadmin ? (
+            <PlanHolder
+              onClickFunction={plan =>
+                plan.options && plan.options.external
+                  ? this.setState({ create: true })
+                  : this.buyApp(plan)
+              }
+              plans={plans}
+            />
           ) : (
             ""
           )}
@@ -550,6 +526,9 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
             />
           ) : (
             ""
+          )}
+          {this.state.create && (
+            <CreateOrbit service={appDetails} close={() => this.setState({ create: false })} />
           )}
         </div>
       );

@@ -33,7 +33,7 @@
     position: absolute;
     background: $vipfy_mainColor;
     width: 192px;
-    height: 100%;
+    height: calc(100% - 35px);
     z-index: 200;
     transition: all 600ms ease;
     color: white;
