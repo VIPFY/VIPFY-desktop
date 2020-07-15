@@ -3,18 +3,19 @@ import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-import CardSection from "./CardSection";
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
 import logo_hell from "../../../images/logo_hell.png";
 import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
-import AppOverviewCard from "./AppOverviewCard";
-import ServiceLogo from "../services/ServiceLogo";
+
 import Tag from "../../common/Tag";
+import ServiceLogo from "../services/ServiceLogo";
+import CardSection from "../CardSection";
+import SeparatedSection from "../SeparatedSection";
+import AppOverviewCard from "./AppOverviewCard";
 import ProsConsList from "./ProsConsList";
-import SeparatedSection from "./SeparatedSection";
 
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },

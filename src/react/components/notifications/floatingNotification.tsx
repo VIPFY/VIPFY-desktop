@@ -5,9 +5,7 @@ import { shell } from "electron";
 import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import { getMyUnitId } from "../../common/functions";
-import UserName from "../UserName";
-import ChargeFailed from "../billing/chargeFailed";
+// import ChargeFailed from "../billing/chargeFailed";
 import { renderNotificatonMessage } from "../../common/functions";
 import RequestedIntegrationNotification from "./requestedIntegrationNotification";
 interface Props {
