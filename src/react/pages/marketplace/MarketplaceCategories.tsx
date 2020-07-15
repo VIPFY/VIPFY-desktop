@@ -41,7 +41,7 @@ const DUMMY_APP = {
 };
 
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
-  openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
 
   renderCategory(categoryName: string, icon: string) {
     icon = "fa-star";
@@ -87,19 +87,16 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="grid3Cols smGrid1Col">
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
                   <AppOverviewCard
                     app={DUMMY_APP}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                    showPic={true}
+                    onClick={() => this.goToApp(DUMMY_APP.id)}
                   />
                   <AppOverviewCard
                     app={DUMMY_APP}
                     showPic={true}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    showPic={true}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                    onClick={() => this.goToApp(DUMMY_APP.id)}
                   />
                 </div>
               </div>
@@ -109,27 +106,15 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
               <h2 className="headline">Headline</h2>
               <div className="apps">
                 <div className="grid4Cols smGrid2Cols">
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    onClick={() => this.openAppDetails(DUMMY_APP.id)}
-                  />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
                 </div>
                 <AppOverviewCard
                   app={DUMMY_APP}
                   isWideFormat={true}
-                  onClick={() => this.openAppDetails(DUMMY_APP.id)}
+                  onClick={() => this.goToApp(DUMMY_APP.id)}
                 />
               </div>
             </MarketplaceSection>

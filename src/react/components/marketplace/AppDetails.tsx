@@ -126,6 +126,7 @@ const DUMMY_APP = {
   ],
   plans: [
     {
+      id: 1,
       packageName: "Standard Monthly",
       price: "39",
       currency: "USD",
@@ -133,6 +134,7 @@ const DUMMY_APP = {
       features: ["20 surveys", "5 questions per survey"]
     },
     {
+      id: 2,
       packageName: "Advantage Monthly",
       price: "36",
       currency: "USD",
@@ -141,6 +143,7 @@ const DUMMY_APP = {
       features: ["20 surveys", "5 questions per survey"]
     },
     {
+      id: 3,
       packageName: "Premier Annual",
       price: "99.99",
       currency: "USD",
@@ -154,6 +157,7 @@ const DUMMY_APP = {
       ]
     },
     {
+      id: 4,
       packageName: "Team Advantage",
       price: "430",
       currency: "USD",
@@ -168,6 +172,7 @@ const DUMMY_APP = {
       ]
     },
     {
+      id: 5,
       packageName: "Team Premier",
       price: "15,99",
       currency: "EUR",
@@ -185,6 +190,7 @@ const DUMMY_APP = {
       ]
     },
     {
+      id: 6,
       packageName: "Enterprise",
       priceDetails:
         "Powerful admin tools, integrations and collaboration features for your organization.",
@@ -323,7 +329,10 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
   RATINGS_COLORS = ["#1c8db0", "#ffd57b", "#a9b531", "#f69d3d"];
 
-  openAppDetails = (id: number) => this.props.history.push(`/area/marketplace/${id}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
+
+  goToCheckout = (appId: number, planId: number) =>
+    this.props.history.push(`/area/marketplace/app/${appId}/plan/${planId}`);
 
   expandDescription = () => this.setState({ descriptionExpanded: true });
 
@@ -553,7 +562,10 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Plans</h2>
                 <div className="plans">
                   {DUMMY_APP.plans.map((plan, i) => (
-                    <div className="card" key={i}>
+                    <div
+                      className="card clickable"
+                      key={i}
+                      onClick={() => this.goToCheckout(DUMMY_APP.id, plan.id)}>
                       <PlanSection plan={plan} />
                     </div>
                   ))}
@@ -570,7 +582,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                       <AppOverviewCard
                         key={i}
                         app={alternative}
-                        onClick={() => this.openAppDetails(alternative.id)}
+                        onClick={() => this.goToApp(alternative.id)}
                       />
                     ))}
                   </div>

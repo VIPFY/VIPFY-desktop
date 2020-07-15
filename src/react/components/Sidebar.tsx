@@ -423,13 +423,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
         icon: "envelope",
         show: config.showMessageCenter
       },
-      /*{
-        label: "Marketplace",
-        location: "marketplace",
-        icon: "shopping-cart",
-        show: config.showMarketplace,
-        highlight: "marketplaceelement"
-      },*/
       {
         label: "Add Credentials",
         location: "integrations",
