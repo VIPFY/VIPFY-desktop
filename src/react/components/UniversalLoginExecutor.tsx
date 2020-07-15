@@ -729,12 +729,14 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     }
 
     if (this.props.loggedIn) {
-      this.sendResult({
+      await this.sendResult({
         ...this.loginState,
         loggedIn: true,
         direct: true,
         error: false
       });
+      this.progressCallbackRunning = false;
+      return;
     }
     this.progressCallbackRunning = true;
     this.progress += this.progressStep;
@@ -749,12 +751,16 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     ) {
       await sleep(100);
       if (!this.props.noError && (await this.isErrorIn(this.webview))) {
-        this.sendResult({ ...this.loginState, loggedIn: false, error: true });
+        await this.sendResult({ ...this.loginState, loggedIn: false, error: true });
+        this.progressCallbackRunning = false;
+        return;
       }
     }
 
     if (this.webview && (await this.isLoggedIn(this.webview))) {
-      this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
+      await this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
+      this.progressCallbackRunning = false;
+      return;
     }
 
     if (this.progress == 1) {
@@ -839,7 +845,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         {
           this.loginState.unloaded = false;
 
-          if (this.webview && (await this.isLoggedIn(this.webview))) {
+          if (
+            !this.loginState.passwordEntered &&
+            this.webview &&
+            (await this.isLoggedIn(this.webview))
+          ) {
             this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
           }
         }
@@ -902,7 +912,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         break;
       case "getLoginData":
         {
-          if (await this.isLoggedIn(e.target)) {
+          if (!this.loginState.passwordEntered && (await this.isLoggedIn(e.target))) {
             this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
 
             return; //we are done with login
@@ -966,8 +976,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         console.log("REDIRECT CLICK", e.args[0], e.args[1]);
         break;
       }
-      case "executeEnd":
-        {
+      case "executeEnd": {
           this.timeout = false;
           this.progress = 1;
           this.clearProgressTimer();
