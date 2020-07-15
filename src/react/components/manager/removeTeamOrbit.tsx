@@ -9,7 +9,7 @@ import gql from "graphql-tag";
 import moment, { now } from "moment";
 import { concatName } from "../../common/functions";
 import Calendar from "react-calendar";
-import PrintEmployeeSquare from "../printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import PrintTeamSquare from "./universal/squares/printTeamSquare";
 
 interface Props {
@@ -366,13 +366,11 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                     }}>
                     |
                   </span>
-                  <PrintEmployeeSquare
+                  <EmployeePicture
                     employee={assignment && assignment.unitid}
                     size={24}
-                    styles={{
+                    style={{
                       lineHeight: "24px",
-                      width: "24px",
-                      height: "24px",
                       fontSize: "13px",
                       marginTop: "0px",
                       marginLeft: "0px"

@@ -7,14 +7,14 @@ interface Props {
   className?: string;
   size?: number;
   hideTitle?: boolean;
-  styles?: Object;
+  style?: Object;
   overlayFunction?: Function;
   onClick?: Function;
   fake?: Boolean;
 }
 
 export default (props: Props) => {
-  let { className, employee, hideTitle, overlayFunction, size, fake, onClick, styles } = props;
+  let { className, employee, hideTitle, overlayFunction, size, fake, onClick, style } = props;
 
   const getShort = employee => {
     let short = "";
@@ -33,7 +33,7 @@ export default (props: Props) => {
         key="fake"
         title="Loading"
         className={className || "managerSquare"}
-        style={{ backgroundColor: "#F2F2F2", ...styles }}></div>
+        style={{ backgroundColor: "#F2F2F2", ...style }}></div>
     );
   }
 
@@ -56,7 +56,7 @@ export default (props: Props) => {
     <div
       title={hideTitle ? null : name}
       className={className || "managerSquare"}
-      style={{ width: finalSize, height: finalSize, ...backgroundStyle, ...styles }}
+      style={{ width: finalSize, height: finalSize, ...backgroundStyle, ...style }}
       onClick={() => {
         if (onClick) {
           onClick();

@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "../../printEmployeeSquare";
+import EmployeePicture from "../../EmployeePicture";
 import moment from "moment";
 import { concatName } from "../../../common/functions";
 import PopupBase from "../../../popups/universalPopups/popupBase";
@@ -56,7 +56,7 @@ class ShowAndDeleteEmployee extends React.Component<Props, State> {
           position: "relative"
         }}>
         <span style={{ lineHeight: "24px", width: "84px" }}></span>
-        <PrintEmployeeSquare
+        <EmployeePicture
           employee={this.props.employee}
           overlayFunction={e => {
             if (e.endtime != 8640000000000000) {
@@ -78,10 +78,8 @@ class ShowAndDeleteEmployee extends React.Component<Props, State> {
             }
           }}
           size={24}
-          styles={{
+          style={{
             lineHeight: "24px",
-            width: "24px",
-            height: "24px",
             fontSize: "13px",
             marginTop: "0px",
             marginLeft: "0px"

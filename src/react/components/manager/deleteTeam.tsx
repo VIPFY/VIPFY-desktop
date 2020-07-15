@@ -9,7 +9,7 @@ import moment, { now } from "moment";
 import Calendar from "react-calendar";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
-import PrintEmployeeSquare from "../printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import { concatName } from "../../common/functions";
 
 interface Props {
@@ -205,13 +205,11 @@ class DeleteTeam extends React.Component<Props, State> {
                   width: "calc(100% - 84px)",
                   display: "flex"
                 }}>
-                <PrintEmployeeSquare
+                <EmployeePicture
                   employee={e}
                   size={24}
-                  styles={{
+                  style={{
                     lineHeight: "24px",
-                    width: "24px",
-                    height: "24px",
                     fontSize: "13px",
                     marginTop: "0px",
                     marginLeft: "0px"

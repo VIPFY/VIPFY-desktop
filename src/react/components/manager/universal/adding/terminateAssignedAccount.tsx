@@ -1,6 +1,6 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import PrintEmployeeSquare from "../../../printEmployeeSquare";
+import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../universalButtons/universalButton";
@@ -68,13 +68,11 @@ class TerminateAssignedAccount extends React.Component<Props, State> {
         <h1>Terminate Assignment</h1>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-          <PrintEmployeeSquare
+          <EmployeePicture
             employee={this.props.employee}
             size={24}
-            styles={{
+            style={{
               lineHeight: "24px",
-              width: "24px",
-              height: "24px",
               fontSize: "13px",
               marginTop: "0px",
               marginLeft: "0px"
