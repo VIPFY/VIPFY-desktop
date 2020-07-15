@@ -8,7 +8,7 @@ import AddEmployeePersonalData from "../../components/manager/addEmployeePersona
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
-import PrintEmployeeSquare from "../../components/printEmployeeSquare";
+import EmployeePicture from "../../components/EmployeePicture";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
@@ -54,7 +54,7 @@ class EmployeeOverview extends React.Component<Props, State> {
         <div className="tableRow" key={`trl-${index}`}>
           <div className="tableMain">
             <div className="tableColumnBig" style={{ width: "20%" }}>
-              <PrintEmployeeSquare employee={{}} fake={true} />
+              <EmployeePicture employee={{}} fake={true} />
               <span className="name" />
             </div>
             <div className="tableColumnSmall" style={{ width: "10%" }}>
@@ -316,7 +316,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                           onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
                           <div className="tableMain">
                             <div className="tableColumnBig" style={{ width: "20%" }}>
-                              <PrintEmployeeSquare employee={employee} className="managerSquare" />
+                              <EmployeePicture employee={employee} className="managerSquare" />
                               <span className="name" title={concatName(employee)}>
                                 {employee.firstname} {employee.lastname}
                               </span>

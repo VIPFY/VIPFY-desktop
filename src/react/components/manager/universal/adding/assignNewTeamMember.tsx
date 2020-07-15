@@ -1,6 +1,6 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import PrintEmployeeSquare from "../../../printEmployeeSquare";
+import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
@@ -222,13 +222,11 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 position: "relative"
               }}>
               <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
-              <PrintEmployeeSquare
+              <EmployeePicture
                 employee={this.state.employee}
                 size={24}
-                styles={{
+                style={{
                   lineHeight: "24px",
-                  width: "24px",
-                  height: "24px",
                   fontSize: "13px",
                   marginTop: "0px",
                   marginLeft: "0px"

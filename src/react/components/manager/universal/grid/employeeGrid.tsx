@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import EmployeePicture from "../../../EmployeePicture";
 import { FETCH_EMPLOYEES } from "../../../../queries/departments";
-import { WorkAround } from "../../../../interfaces";
 
 interface Props {
   search: string;
@@ -54,7 +53,7 @@ class EmployeeGrid extends React.Component<Props, State> {
             draggable={true}
             onDragStart={() => this.setState({ dragdelete: employee })}
             onClick={() => this.props.onChange({ action: "remove", content: employee })}>
-            <PrintEmployeeSquare className="image" employee={employee} size={88} />
+            <EmployeePicture className="image" employee={employee} size={88} />
             <div
               className="name"
               title={`${employee.firstname} ${employee.lastname}`}>{`${employee.firstname} ${employee.lastname}`}</div>
@@ -164,7 +163,7 @@ class EmployeeGrid extends React.Component<Props, State> {
                   onClick={() =>
                     available && this.props.onChange({ action: "add", content: employee })
                   }>
-                  <PrintEmployeeSquare employee={employee} className="image" size={88} />
+                  <EmployeePicture employee={employee} className="image" size={88} />
                   <div
                     className="name"
                     title={`${employee.firstname} ${employee.lastname}`}>{`${employee.firstname} ${employee.lastname}`}</div>

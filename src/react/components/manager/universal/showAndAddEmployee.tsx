@@ -1,5 +1,5 @@
 import * as React from "react";
-import moment, { now } from "moment";
+import moment from "moment";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import Calendar from "react-calendar";
 import UniversalButton from "../../universalButtons/universalButton";
@@ -9,7 +9,7 @@ import gql from "graphql-tag";
 import UniversalDropDownInput from "../../universalForms/universalDropdownInput";
 import { fetchDepartmentsData } from "../../../queries/departments";
 import { concatName } from "../../../common/functions";
-import PrintEmployeeSquare from "./squares/printEmployeeSquare";
+import EmployeePicture from "../../EmployeePicture";
 import AddEmployeePersonalData from "../addEmployeePersonalData";
 import { createLicenceKeyFragmentForUser } from "../../../common/licences";
 
@@ -198,13 +198,11 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                       position: "relative"
                     }}>
                     <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-                    <PrintEmployeeSquare
+                    <EmployeePicture
                       employee={this.state.user}
                       size={24}
-                      styles={{
+                      style={{
                         lineHeight: "24px",
-                        width: "24px",
-                        height: "24px",
                         fontSize: "13px",
                         marginTop: "0px",
                         marginLeft: "0px"

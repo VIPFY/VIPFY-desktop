@@ -5,7 +5,7 @@ import { Query, Mutation } from "react-apollo";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import { WorkAround, User } from "../interfaces";
-import PrintEmployeeSquare from "../components/manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../components/EmployeePicture";
 import UniversalButton from "../components/universalButtons/universalButton";
 
 const FETCH_VIPFY_OFFICE = gql`
@@ -64,7 +64,7 @@ const Workspace = (props: Props) => {
             });
           }
         }}>
-        <PrintEmployeeSquare employee={props.employees.find(({ id }) => id == userID)} />
+        <EmployeePicture employee={props.employees.find(({ id }) => id == userID)} />
       </label>
     </React.Fragment>
   );
