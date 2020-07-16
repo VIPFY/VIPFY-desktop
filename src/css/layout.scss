@@ -1,5 +1,4 @@
 // these need to be imported first, in exactly this order
-@import "./v2_layout";
 @import "./constants";
 
 // please add in alphabetical order
@@ -2845,3 +2844,5 @@ progress[value] {
   color: #3b4c5d;
   font-size: 24px;
 }
+
+@import "./v2_layout";
