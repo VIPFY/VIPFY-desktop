@@ -38,16 +38,6 @@ $vipfy-shadow: 1px 3px 4px 0px #78787866;
 $vipfy_bigradius: 6px;
 $vipfy_smallradius: 3px;
 
-// Max. width for small screens
-$screen-sm-max: 1240px;
-
-// 1240px screen width and less
-@mixin sm {
-  @media (max-width: #{$screen-sm-max}) {
-    @content;
-  }
-}
-
 @for $x from 20 through 80 {
   .box#{$x} {
     height: #{$x}px;
