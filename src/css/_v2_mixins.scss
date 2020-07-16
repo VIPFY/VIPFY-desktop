@@ -1,0 +1,6 @@
+// 1240px screen width and less
+@mixin sm {
+  @media (max-width: #{$screen-sm-max}) {
+    @content;
+  }
+}
