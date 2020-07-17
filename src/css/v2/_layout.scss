@@ -1,10 +1,8 @@
-// these must be imported first of all!
+// these must be imported first
 @import "./reset";
-@import "./constants";
-
-// these must be imported before the rest
-@import "./mixins";
 @import "./elements";
+@import "./constants";
+@import "./mixins";
 @import "./util";
 
 // please add in alphabetical order
