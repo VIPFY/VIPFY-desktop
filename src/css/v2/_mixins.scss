@@ -4,3 +4,8 @@
     @content;
   }
 }
+
+@mixin grid {
+  display: grid;
+  grid-gap: $gridGap;
+}
