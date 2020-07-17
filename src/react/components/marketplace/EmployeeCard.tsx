@@ -1,5 +1,6 @@
 import * as React from "react";
 import { App } from "electron";
+import { concatName } from "../../common/functions";
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 
@@ -11,10 +12,9 @@ const DUMMY_USER = {
   id: "582a705d-d650-4727-8db6-28d231b465dd",
   firstname: "Magdalena",
   middlename: "Swetlana",
-  lastname: "von der Klauss",
+  lastname: "von Hohenzollern",
   title: "Prof. Dr. rer. nat.",
-  profilepicture: "",
-  // profilepicture: "profilepictures/26022020-b4wav-blob",
+  profilepicture: "profilepictures/26022020-b4wav-blob",
   emails: ["magdalena.klauss@vipfy.store"],
   addresses: [{ address: { city: "Saarbrücken" } }],
   phones: ["+49 176 21 31 41 51"],
@@ -32,16 +32,15 @@ const DUMMY_USER = {
 class EmployeeCard extends React.Component<EmployeeCardProps> {
   render() {
     return (
-      <div className="card">
-        <CardSection>
-          <div className="pic">
-            <EmployeePicture
-              size={40}
-              employee={DUMMY_USER}
-              style={{ marginTop: "0", borderRadius: "20px", fontSize: "14px" }}
-            />
-          </div>
-          <div></div>
+      <div className="card employeeCard">
+        <CardSection className="header">
+          <EmployeePicture
+            className="pic"
+            size={40}
+            employee={DUMMY_USER}
+            style={{ marginTop: "0", borderRadius: "20px", fontSize: "14px" }}
+          />
+          <div className="title">{concatName(DUMMY_USER)}</div>
         </CardSection>
         <CardSection>
           <div />

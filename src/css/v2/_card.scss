@@ -11,6 +11,23 @@
     cursor: pointer;
   }
 
+  .header {
+    display: flex;
+    align-items: center;
+
+    .pic {
+      display: flex;
+      margin-right: 16px;
+    }
+
+    .title {
+      display: flex;
+      flex-grow: 1;
+      font-weight: 500;
+      padding: 4px 0;
+    }
+  }
+
   > hr {
     border: none;
     border-top: 1px solid #dfe3eb;

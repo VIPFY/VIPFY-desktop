@@ -27,17 +27,17 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   renderMainInfo(isWideFormat: boolean, hasFreeTrial: boolean) {
     return (
       <>
-        <div className="headerItem logo">
+        <div className="pic">
           <ServiceLogo icon={this.props.app.icon} />
         </div>
-        <div className="headerItem appName">
+        <div className="title">
           <div>
             {this.props.app.name}
             <p className="rating">{showStars(4, 5)}</p>
           </div>
         </div>
         {isWideFormat && (
-          <div className="headerItem headerTags">
+          <div className="headerTags tags">
             <div>
               {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
               {this.renderPricingTag("19.99$ p.m.", true)}

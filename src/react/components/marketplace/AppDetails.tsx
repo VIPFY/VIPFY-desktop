@@ -402,12 +402,12 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             <CardSection>
               <div className="card serviceCard">
                 <CardSection className="header" style={{ padding: "24px 0" }}>
-                  <div className="headerItem logo">
+                  <div className="pic">
                     <ServiceLogo icon={DUMMY_APP.icon} size={136} className="largeScreen" />
                     <ServiceLogo icon={DUMMY_APP.icon} size={112} className="smallScreen" />
                   </div>
 
-                  <div className="headerItem details">
+                  <div className="title details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
                       <span className="fal fa-comments-alt fa-fw" />
@@ -428,7 +428,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                     ))}
                   </div>
 
-                  <div className="headerItem licenseTags">
+                  <div className="licenseTags">
                     <Tag
                       div={true}
                       style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
