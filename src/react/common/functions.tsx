@@ -124,20 +124,7 @@ export const ErrorComp = props => (
 );
 
 export const concatName = ({ firstname, middlename, lastname }) => {
-  let name = firstname;
-  if (!name) {
-    name = middlename;
-  } else if (middlename) {
-    name += " ";
-    name += middlename;
-  }
-  if (!name) {
-    name = lastname;
-  } else if (lastname) {
-    name += " ";
-    name += lastname;
-  }
-  return name;
+  return [firstname, middlename, lastname].join(" ");
 };
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
