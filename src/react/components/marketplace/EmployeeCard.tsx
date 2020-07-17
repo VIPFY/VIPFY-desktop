@@ -1,6 +1,7 @@
 import * as React from "react";
 import { App } from "electron";
 import { concatName } from "../../common/functions";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 
@@ -41,6 +42,9 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
             style={{ marginTop: "0", borderRadius: "20px", fontSize: "14px" }}
           />
           <div className="title">{concatName(DUMMY_USER)}</div>
+          <div>
+            <UniversalCheckbox liveValue={() => {}}></UniversalCheckbox>
+          </div>
         </CardSection>
         <CardSection>
           <div />

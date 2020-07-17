@@ -26,6 +26,10 @@
       font-weight: 500;
       padding: 4px 0;
     }
+
+    > :last-child {
+      align-self: flex-start;
+    }
   }
 
   > hr {
