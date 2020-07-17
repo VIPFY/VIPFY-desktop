@@ -53,7 +53,7 @@ export default (props: Props) => {
       title={hideTitle ? null : name}
       className={className || "managerSquare"}
       style={{
-        width: finalSize,
+        minWidth: finalSize,
         height: finalSize,
         ...backgroundStyle,
         ...style

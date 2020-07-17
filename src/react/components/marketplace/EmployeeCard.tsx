@@ -1,57 +1,90 @@
 import * as React from "react";
-import { App } from "electron";
 import { concatName } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
+import Tag from "../../common/Tag";
+import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
+import ServiceLogo from "../services/ServiceLogo";
 
 interface EmployeeCardProps {
-  employee?: { apps: App[] };
+  employee: any;
+  hideDetails?: boolean;
+  hideTeams?: boolean;
+  hideServices?: boolean;
 }
-
-const DUMMY_USER = {
-  id: "582a705d-d650-4727-8db6-28d231b465dd",
-  firstname: "Magdalena",
-  middlename: "Swetlana",
-  lastname: "von Hohenzollern",
-  title: "Prof. Dr. rer. nat.",
-  profilepicture: "profilepictures/26022020-b4wav-blob",
-  emails: ["magdalena.klauss@vipfy.store"],
-  addresses: [{ address: { city: "Saarbrücken" } }],
-  phones: ["+49 176 21 31 41 51"],
-  position: "Developer",
-  assignments: [
-    "168f1353-1807-4795-ae85-93f2d52e9f2d",
-    "1a13b2a7-3ed2-426f-9f94-b8e9f2c943ea",
-    "1aedd7ef-96df-400e-bf40-81a2369abe9e",
-    "6ce6d54e-4d68-4973-87a4-90eaa4e04c86",
-    "aa1fc808-1198-4209-b861-30cbb7ac3609",
-    "f2d670f6-dafb-4d4a-8496-7e2226d56e99"
-  ]
-};
 
 class EmployeeCard extends React.Component<EmployeeCardProps> {
   render() {
+    const { employee, hideDetails, hideServices, hideTeams } = this.props;
+
     return (
       <div className="card employeeCard">
         <CardSection className="header">
           <EmployeePicture
             className="pic"
             size={40}
-            employee={DUMMY_USER}
+            employee={employee}
             style={{ marginTop: "0", borderRadius: "20px", fontSize: "14px" }}
           />
-          <div className="title">{concatName(DUMMY_USER)}</div>
+
+          <div className="title">{concatName(employee)}</div>
+
           <div>
             <UniversalCheckbox liveValue={() => {}}></UniversalCheckbox>
           </div>
         </CardSection>
-        <CardSection>
-          <div />
-        </CardSection>
-        <CardSection>
-          <div />
-        </CardSection>
+
+        {!hideDetails && (
+          <CardSection className="details">
+            {employee.position && (
+              <>
+                <span className="fal fa-fw fa-user" />
+                <span>{employee.position}</span>
+              </>
+            )}
+
+            {employee.emails && employee.emails[0] && (
+              <>
+                <span className="fal fa-fw fa-envelope" />
+                <span>{employee.emails[0]}</span>
+              </>
+            )}
+
+            {employee.phones && employee.phones[0] && (
+              <>
+                <span className="fal fa-fw fa-phone" />
+                <span>{employee.phones[0]}</span>
+              </>
+            )}
+
+            {employee.addresses &&
+              employee.addresses[0] &&
+              employee.addresses[0].address &&
+              employee.addresses[0].address.city && (
+                <>
+                  <span className="fal fa-fw fa-location-arrow" />
+                  <span>{employee.addresses[0].address.city}</span>
+                </>
+              )}
+          </CardSection>
+        )}
+
+        {!hideTeams && (
+          <CardSection className="tagsRow">
+            {employee.teams.map((team, i) => (
+              <Tag key={i}>{team}</Tag>
+            ))}
+          </CardSection>
+        )}
+
+        {!hideServices && (
+          <CardSection className="serviceLogosRow">
+            {employee.assignments.map((service, i) => (
+              <ServiceLogo icon={service.icon} size={24} key={i} />
+            ))}
+          </CardSection>
+        )}
       </div>
     );
   }
