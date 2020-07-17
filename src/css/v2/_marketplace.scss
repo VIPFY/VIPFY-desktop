@@ -4,62 +4,6 @@
   padding: 0 32px;
   background-color: #f5f7f9;
 
-  $gridGap: 24px;
-
-  @mixin grid {
-    display: grid;
-    grid-gap: $gridGap;
-  }
-
-  .grid2Cols {
-    @include grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid3Cols {
-    @include grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .grid4Cols {
-    @include grid;
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  .grid6Cols {
-    @include grid;
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .smGrid1Col {
-    @include grid;
-    @include sm {
-      grid-template-columns: 1fr;
-
-      .picHolder {
-        padding-top: 26%;
-      }
-    }
-  }
-
-  .smGrid2Cols {
-    @include grid;
-    @include sm {
-      grid-template-columns: repeat(2, 1fr);
-
-      .picHolder {
-        padding-top: 26%;
-      }
-    }
-  }
-
-  .smGrid3Cols {
-    @include grid;
-    @include sm {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
   .marketplaceContainer {
     max-width: 1608px;
     margin: 0 auto;

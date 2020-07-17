@@ -1,17 +1,12 @@
-// these need to be imported first
-@import "./reset";
-@import "./elements";
+// these need to be imported first, in exactly this order
 @import "./constants";
 
 // please add in alphabetical order
 @import "./admin";
-@import "./appDetails";
-@import "./appOverviewCard";
 @import "./app-accordion";
 @import "./authentication";
 @import "./billing";
 @import "./buttons";
-@import "./card";
 @import "./creditCards";
 @import "./dashboard";
 @import "./dataForms";
@@ -25,11 +20,8 @@
 @import "./headerNotifications";
 @import "./macosx";
 @import "./manager";
-@import "./marketplace";
-@import "./marketplaceCategories";
 @import "./messages";
 @import "./popup";
-@import "./prosConsList";
 @import "./security";
 @import "./sidebar";
 @import "./statistics";
@@ -135,7 +127,7 @@ li {
 }
 
 #App {
-  color: #253647; //#333 durch #253647 Åberall ersetzen
+  color: #253647; //#333 durch #253647 ersetzen
   font-family: "Roboto", sans-serif;
   background-color: white;
   height: calc(100vh - 32px);
@@ -143,7 +135,7 @@ li {
 }
 
 #DevTools {
-  color: #253647; //#333 durch #253647 Åberall ersetzen
+  color: #253647; //#333 durch #253647 ersetzen
   font-family: "Roboto", sans-serif;
   width: 0;
   background-color: white;
@@ -2852,3 +2844,5 @@ progress[value] {
   color: #3b4c5d;
   font-size: 24px;
 }
+
+@import "./v2/layout";

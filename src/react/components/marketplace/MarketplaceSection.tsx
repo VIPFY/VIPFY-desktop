@@ -1,5 +1,5 @@
 import * as React from "react";
-import SeparatedSection from "./SeparatedSection";
+import SeparatedSection from "../SeparatedSection";
 
 export default function MarketplaceSection(props: {
   children: any;

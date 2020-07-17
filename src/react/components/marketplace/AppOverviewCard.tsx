@@ -4,7 +4,7 @@ import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
-import CardSection from "./CardSection";
+import CardSection from "../CardSection";
 import ProsConsList from "./ProsConsList";
 
 interface AppOverviewCardProps {
