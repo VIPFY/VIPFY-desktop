@@ -16,15 +16,11 @@ interface Props {
 export default (props: Props) => {
   let { className, employee, hideTitle, overlayFunction, size, fake, onClick, style } = props;
 
-  const getShort = employee => {
-    let short = "";
-    if (employee.firstname) {
-      short += employee.firstname.slice(0, 1);
-    }
-    if (employee.lastname) {
-      short += employee.lastname.slice(0, 1);
-    }
-    return short;
+  const getInitials = employee => {
+    return (employee.firstname + " " + employee.lastname.split(" "))
+      .match(/\b(\w)/g)
+      .join("")
+      .toUpperCase();
   };
 
   if (fake) {
@@ -56,13 +52,18 @@ export default (props: Props) => {
     <div
       title={hideTitle ? null : name}
       className={className || "managerSquare"}
-      style={{ width: finalSize, height: finalSize, ...backgroundStyle, ...style }}
-      onClick={() => {
-        if (onClick) {
-          onClick();
-        }
-      }}>
-      {employee.profilepicture ? "" : getShort(employee)}
+      style={{
+        width: finalSize,
+        height: finalSize,
+        ...backgroundStyle,
+        ...style
+      }}
+      onClick={() => onClick && onClick()}>
+      {!employee.profilepicture && (
+        <span style={{ lineHeight: finalSize + "px", verticalAlign: "middle" }}>
+          {getInitials(employee)}
+        </span>
+      )}
       {overlayFunction && overlayFunction(employee)}
     </div>
   );

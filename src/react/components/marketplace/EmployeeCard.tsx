@@ -1,6 +1,6 @@
 import * as React from "react";
 import { App } from "electron";
-import CardSection from "./CardSection";
+import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 
 interface EmployeeCardProps {
@@ -13,7 +13,8 @@ const DUMMY_USER = {
   middlename: "Swetlana",
   lastname: "von der Klauss",
   title: "Prof. Dr. rer. nat.",
-  profilepicture: "profilepictures/26022020-b4wav-blob",
+  profilepicture: "",
+  // profilepicture: "profilepictures/26022020-b4wav-blob",
   emails: ["magdalena.klauss@vipfy.store"],
   addresses: [{ address: { city: "Saarbrücken" } }],
   phones: ["+49 176 21 31 41 51"],
