@@ -24,7 +24,7 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-template-rows: auto;
-    grid-gap: $gridGap;
+    grid-gap: $grid-gap;
     padding: 16px 32px;
     color: #3b4c5d;
     background-color: #f5f7f9;
@@ -66,7 +66,7 @@
     height: 20px;
     padding: 1px 12px;
     border: 1px solid #c9d1da;
-    background-color: white;
+    background-color: $white;
     font-size: 12px;
   }
 
