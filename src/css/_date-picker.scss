@@ -92,7 +92,7 @@ $date-padding-sides: 16px;
 
         &::after {
           @extend .day:hover::after;
-          background: $vipfy-primary-color !important;
+          background: $primarygreen !important;
           color: #ffffffff !important;
           box-shadow: none !important;
         }

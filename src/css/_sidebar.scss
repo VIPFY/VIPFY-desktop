@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: $sidebar-background;
+  background-color: $darkgrey-lighter;
   height: 100%;
   z-index: 300;
   float: left;
@@ -176,15 +176,15 @@
     overflow: visible;
 
     &:hover {
-      background: #26394a;
+      background: $darkgrey-light;
     }
 
     &.active {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
 
     &.selected {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
 
     &:disabled {
@@ -251,7 +251,7 @@
   }
 
   .hold {
-    border: solid $vipfy-primary-color 1px;
+    border: solid $primarygreen 1px;
     opacity: 0.3;
     transition: all 300ms ease-in-out;
   }
@@ -384,7 +384,7 @@
       z-index: -1;
       position: absolute;
       left: -5px;
-      background: #30475dff;
+      background: ($darkgrey-lighter) ff;
       box-shadow: 0 2px 2px #00000029;
       border-radius: 4px;
     }
@@ -400,7 +400,7 @@
         padding: 0.5rem 10px;
 
         &:hover {
-          background-color: $vipfy-primary-color;
+          background-color: $primarygreen;
         }
       }
     }
@@ -451,7 +451,7 @@
     position: relative;
 
     & > .itemHolder {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
   }
 
@@ -803,7 +803,7 @@
 }
 
 .sidebar-neu {
-  background-color: $sidebar-background;
+  background-color: $darkgrey-lighter;
   height: 100%;
   z-index: 300;
   float: left;
@@ -850,12 +850,12 @@
     overflow: visible;
 
     &:hover {
-      background: #26394a;
+      background: $darkgrey-light;
       box-shadow: 0 2px 2px #00000029;
     }
 
     &.selected {
-      background: #30475daa;
+      background: ($darkgrey-lighter) aa;
       box-shadow: 0 2px 2px #00000029;
     }
   }

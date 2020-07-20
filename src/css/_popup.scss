@@ -171,7 +171,7 @@ $modal-wh: 50%;
   height: 8px;
   width: 100%;
   position: absolute;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   bottom: 0;
   left: 0;
 }
@@ -369,7 +369,7 @@ $modal-wh: 50%;
 }
 
 .circeSave {
-  $brand-success: #20baa9;
+  $brand-success: $primarygreen;
   $brand-error: #db4d3f;
   $loader-size: 7em;
   $check-height: $loader-size/2;
