@@ -89,7 +89,7 @@
       &:hover {
         cursor: pointer;
         background-color: $vipfy-primary-color;
-        border-color: #fff;
+        border-color: $white;
         transform: translate(3px, -3px);
       }
 
@@ -100,7 +100,7 @@
 
     .disabled {
       background: #bbb;
-      color: #fff;
+      color: $white;
     }
 
     .hidden {

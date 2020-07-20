@@ -1,4 +1,5 @@
 // these need to be imported first, in exactly this order
+@import "./v2/constants";
 @import "./constants";
 
 // please add in alphabetical order
@@ -129,7 +130,7 @@ li {
 #App {
   color: #253647; //#333 durch #253647 ersetzen
   font-family: "Roboto", sans-serif;
-  background-color: white;
+  background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
 }
@@ -138,7 +139,7 @@ li {
   color: #253647; //#333 durch #253647 ersetzen
   font-family: "Roboto", sans-serif;
   width: 0;
-  background-color: white;
+  background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
 }
@@ -163,7 +164,7 @@ li {
 
 .formError {
   background-color: #771a1c;
-  color: white;
+  color: $white;
   font-size: 0.7em;
   font-weight: bold;
   line-height: 2em;
@@ -292,7 +293,7 @@ li {
   height: 18em;
   width: 18em;
   margin: 1em;
-  background-color: white;
+  background-color: $white;
   box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   border-radius: 3px;
@@ -354,7 +355,7 @@ li {
 .planHolder {
   overflow-x: scroll;
   margin-top: 3rem;
-  background-color: white;
+  background-color: $white;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   border-radius: 10px;
 }
@@ -389,7 +390,7 @@ li {
 .commentOverviewBlock {
   padding: 10px;
   overflow: auto;
-  background-color: white;
+  background-color: $white;
   border-radius: 10px;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin: 0.5rem;
@@ -410,7 +411,7 @@ li {
 .detail-comment {
   padding: 10px;
   overflow: auto;
-  background-color: white;
+  background-color: $white;
   border-radius: 10px;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin: 0.5rem;
@@ -517,7 +518,7 @@ li {
 }
 .appHeaderInfos {
   width: 15rem;
-  background-color: white;
+  background-color: $white;
   position: relative;
   border-radius: 0px 10px 10px 0px;
 }
@@ -555,7 +556,7 @@ li {
   background-color: #20baa9;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin-top: 0.25rem;
-  color: white;
+  color: $white;
   font-weight: bold;
   transition: all 0.6s ease-in-out;
   &:hover {
@@ -578,7 +579,7 @@ li {
 }
 
 .app-description {
-  background-color: white;
+  background-color: $white;
   border-radius: 0.25rem;
   display: flex;
   min-height: 15rem;
@@ -586,7 +587,7 @@ li {
   border-radius: 10px;
   box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
   background-image: radial-gradient(farthest-corner at 0px 100%, #20baa9 0%, #117f91 100%);
-  color: white;
+  color: $white;
 
   &-item {
     padding: 1rem;
@@ -635,7 +636,7 @@ li {
   line-height: 20rem;
   padding-left: 1rem;
   background-image: linear-gradient(to left, transparent 0%, #253647 100%);
-  color: white;
+  color: $white;
   cursor: pointer;
   transition: 0.3s;
   opacity: 0.5;
@@ -650,7 +651,7 @@ li {
   padding-right: 1rem;
   text-align: right;
   background-image: linear-gradient(to right, transparent 0%, #253647 100%);
-  color: white;
+  color: $white;
   cursor: pointer;
   transition: 0.3s;
   opacity: 0.5;
@@ -664,11 +665,11 @@ li {
 .addHolderAll {
   width: 11rem;
   height: auto;
-  background-color: white;
+  background-color: $white;
   position: absolute;
   z-index: 1000;
   min-width: 15rem;
-  background-color: white;
+  background-color: $white;
   top: 2.5rem;
   margin: 0.125rem 0 0;
   background-clip: padding-box;
@@ -728,7 +729,7 @@ option {
 }
 .inputBox {
   padding: 0.25rem;
-  background-color: white;
+  background-color: $white;
   border: 1px solid #aaa;
   min-width: 15rem;
   padding-left: 0.5rem;
@@ -776,14 +777,14 @@ option {
 }
 .tabActive {
   background-color: #357aa5;
-  color: white;
+  color: $white;
 }
 .journeyHolder {
   position: relative;
   margin: 2rem;
 }
 .journeyHeader {
-  color: white;
+  color: $white;
   font-size: 1.25rem;
   text-align: center;
 }
@@ -792,7 +793,7 @@ option {
   border: solid white;
   border-radius: 50%;
   text-align: center;
-  color: white;
+  color: $white;
   height: 6rem;
   display: flex;
   align-items: center;
@@ -899,7 +900,7 @@ option {
   padding: 0.2rem;
   padding-left: 0.4rem;
   padding-right: 0.4rem;
-  color: white;
+  color: $white;
   border-radius: 3px;
   display: inline-block;
   font-size: 0.8rem;
@@ -935,7 +936,7 @@ option {
   background-color: #20baa9;
   margin: 0.5rem;
   padding: 0.5rem;
-  color: white;
+  color: $white;
   border-radius: 3px;
   display: inline-block;
   border: none;
@@ -961,7 +962,7 @@ option {
   background-color: #c73544;
   margin: 0.5rem;
   padding: 0.5rem;
-  color: white;
+  color: $white;
   border-radius: 3px;
   display: inline-block;
   border: none;
@@ -1028,7 +1029,7 @@ option {
     box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
     h2 {
       background-color: #20baa9;
-      color: white;
+      color: $white;
     }
   }
 
@@ -1037,7 +1038,7 @@ option {
     position: relative;
     border: 1px solid #c8c8c8;
     border-radius: 0.5rem;
-    background: white;
+    background: $white;
     margin: 1rem;
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
@@ -1064,7 +1065,7 @@ option {
       background: #20baa9;
       text-decoration: none;
       padding: 1rem;
-      color: white;
+      color: $white;
       position: relative;
       overflow: hidden;
       transition: all 0.3s ease-in-out;
@@ -1079,7 +1080,7 @@ option {
         width: 60%;
         height: 300%;
         transform: rotate(-30deg);
-        background: white;
+        background: $white;
         opacity: 0.3;
         transition: all 0.3s ease-in-out;
       }
@@ -1091,7 +1092,7 @@ option {
         right: 0;
         font-size: 2rem;
         padding: 1rem;
-        color: white;
+        color: $white;
         opacity: 0;
         transition: all 0.3s ease-in-out;
         font-family: "Lato";
@@ -1320,7 +1321,7 @@ option {
 .presideHolder {
   width: 40rem;
   height: 21rem;
-  background-color: white;
+  background-color: $white;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
@@ -1364,7 +1365,7 @@ option {
       left: 33rem;
       top: 2rem;
       font-size: 5rem;
-      color: white;
+      color: $white;
       width: 5rem;
       height: 5rem;
       background-image: $newlogo-small;
@@ -1468,7 +1469,7 @@ option {
       padding: 0.5rem;
       border-radius: 3px;
       background-color: #117f91;
-      color: white;
+      color: $white;
       box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
       cursor: pointer;
       &_ToRegister {
@@ -1481,7 +1482,7 @@ option {
         padding: 0.5rem;
         border-radius: 3px;
         background-color: #20baa9;
-        color: white;
+        color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
         display: flex;
@@ -1495,7 +1496,7 @@ option {
         padding: 0.5rem;
         border-radius: 3px;
         background-color: #20baa9;
-        color: white;
+        color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
       }
@@ -1506,7 +1507,7 @@ option {
         padding: 0.5rem;
         border-radius: 3px;
         background-color: #117f91;
-        color: white;
+        color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
       }
@@ -1521,7 +1522,7 @@ option {
         padding: 0.5rem;
         border-radius: 3px;
         background-color: $vipfy-primary-color;
-        color: white;
+        color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
         display: flex;
@@ -1549,10 +1550,10 @@ option {
       position: absolute;
       left: 7rem;
       &active {
-        background-color: white;
+        background-color: $white;
       }
       &done {
-        background-color: white;
+        background-color: $white;
       }
     }
     .registerButtons {
@@ -1576,7 +1577,7 @@ option {
           margin: 0.5rem;
           border-radius: 3px;
           background-color: #20baa9;
-          color: white;
+          color: $white;
           box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
           cursor: pointer;
         }
@@ -1636,7 +1637,7 @@ option {
   background-color: #20baa9;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin-top: 0.25rem;
-  color: white;
+  color: $white;
   font-weight: bold;
   transition: all 0.6s ease-in-out;
   border: none;
@@ -1669,7 +1670,7 @@ option {
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin: 0.5rem;
   margin-top: 0.75rem;
-  color: white;
+  color: $white;
   font-weight: bold;
   transition: all 0.6s ease-in-out;
   border: none;
@@ -1707,7 +1708,7 @@ option {
     font-size: 0;
     padding: 0.25rem;
     background-color: $vipfy-primary-color;
-    color: #fff;
+    color: $white;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
@@ -1722,7 +1723,7 @@ option {
     font-size: 0.75rem;
     padding: 0.25rem;
     background-color: $vipfy-primary-color;
-    color: #fff;
+    color: $white;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
     text-transform: uppercase;
@@ -1786,7 +1787,7 @@ option {
 }
 
 .genericHolder {
-  background: #fff;
+  background: $white;
   box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
   margin: auto;
   border-radius: 3px;
@@ -1866,7 +1867,7 @@ option {
     bottom: 0;
     position: absolute;
     width: 100%;
-    color: white;
+    color: $white;
     text-align: center;
 
     i {
@@ -1885,7 +1886,7 @@ option {
 .genericButton {
   background-color: #20baa9;
   border-radius: 3px;
-  color: white;
+  color: $white;
   padding: 9px;
   display: flex;
   align-items: center;
@@ -2102,7 +2103,7 @@ progress[value] {
 }
 
 .appIntegration {
-  background: #fff;
+  background: $white;
   box-shadow: 1px 3px 4px 0px rgba(0, 0, 0, 0.2);
   margin: auto;
   max-width: 60rem;
@@ -2159,7 +2160,7 @@ progress[value] {
   height: 100%;
 
   &-holder {
-    background: white;
+    background: $white;
     width: 968px - 62px * 2;
     height: 618px - 62px * 2;
     padding: 62px;
@@ -2228,7 +2229,7 @@ progress[value] {
 }
 
 .tutorialPopup {
-  background-color: white;
+  background-color: $white;
   color: #253647;
   z-index: 20000;
   border-radius: 10px;
@@ -2237,7 +2238,7 @@ progress[value] {
   width: 500px;
 
   .tutorialCloseButton {
-    color: #fff;
+    color: $white;
     cursor: pointer;
     font-size: 15px;
     font-weight: bold;
@@ -2298,7 +2299,7 @@ progress[value] {
       border-radius: 3px;
       box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
       transition: all 0.6s ease-in-out;
-      color: white;
+      color: $white;
     }
 
     .back-button {
@@ -2325,7 +2326,7 @@ progress[value] {
   border-radius: 3px;
   margin: 2px;
   transition: all 0.5s ease-in;
-  color: white;
+  color: $white;
   display: block;
   &:hover {
     background-color: #34b3a4;
@@ -2347,7 +2348,7 @@ progress[value] {
     position: absolute;
     pointer-events: none;
     border-color: rgba(15, 213, 9, 0);
-    border-right-color: white;
+    border-right-color: $white;
     border-width: 15px;
     margin-top: 10px;
   }
@@ -2366,7 +2367,7 @@ progress[value] {
     position: absolute;
     pointer-events: none;
     border-color: rgba(15, 213, 9, 0);
-    border-bottom-color: white;
+    border-bottom-color: $white;
     border-width: 15px;
     margin-left: 10px;
   }
@@ -2385,7 +2386,7 @@ progress[value] {
     position: absolute;
     pointer-events: none;
     border-color: rgba(15, 213, 9, 0);
-    border-bottom-color: white;
+    border-bottom-color: $white;
     border-width: 15px;
     margin-right: 10px;
   }
@@ -2400,8 +2401,8 @@ progress[value] {
     padding: 0.5em 1em;
     background-color: transparent;
     border: 0;
-    color: #fff;
-    border-bottom: 2px solid #fff;
+    color: $white;
+    border-bottom: 2px solid $white;
     width: 200px;
     transition: all 0.4s ease-in-out;
     outline: none;
@@ -2410,7 +2411,7 @@ progress[value] {
   label {
     font-family: "Roboto", sans-serif;
     position: absolute;
-    color: #fff;
+    color: $white;
     top: 0;
     left: 0;
     font-size: 1em;
@@ -2422,7 +2423,7 @@ progress[value] {
 .flying-label {
   font-size: 0.8em !important;
   top: -1.4em !important;
-  color: white !important;
+  color: $white !important;
 }
 
 .editLicenceHolder {
@@ -2444,7 +2445,7 @@ progress[value] {
   border-radius: 3px;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   transition: all 0.6s ease-in-out;
-  color: white;
+  color: $white;
 }
 .back-button {
   background-color: #253647;
@@ -2509,7 +2510,7 @@ progress[value] {
   &.high {
     &.useable {
       background-color: #20baa9;
-      color: #fff;
+      color: $white;
       transition: background-color 200ms ease-in-out;
       &:hover {
         background-color: #37c8ba;
@@ -2536,7 +2537,7 @@ progress[value] {
       transition: color 200ms ease-in-out;
       &:hover {
         background-color: #20baa9;
-        color: white;
+        color: $white;
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
       .universalCoverButton:focus > & {
@@ -2607,22 +2608,22 @@ progress[value] {
 
   &.warn {
     background-color: #ffc15d;
-    color: white;
+    color: $white;
   }
 
   &.error {
     background-color: $vipfy-cancel-color;
-    color: white;
+    color: $white;
   }
 
   &.info1 {
     background-color: #3e576e;
-    color: white;
+    color: $white;
   }
 
   &.info2 {
     background-color: $vipfy-primary-color;
-    color: white;
+    color: $white;
   }
 
   &.info3 {
@@ -2631,7 +2632,7 @@ progress[value] {
 
   &.info4 {
     background-color: $vipfy-normaltext;
-    color: white;
+    color: $white;
   }
 
   &.info5 {
@@ -2641,7 +2642,7 @@ progress[value] {
 
   &.info6 {
     background-color: #9c13bc;
-    color: white;
+    color: $white;
   }
 }
 
@@ -2704,7 +2705,7 @@ progress[value] {
     }
   }
   .resultHolder {
-    background-color: white;
+    background-color: $white;
     position: relative;
     z-index: 1000;
     border: 1px solid $vipfy-grey;
