@@ -11,11 +11,12 @@ import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
 
 import Tag from "../../common/Tag";
-import ServiceLogo from "../services/ServiceLogo";
-import CardSection from "../CardSection";
-import SeparatedSection from "../SeparatedSection";
-import AppOverviewCard from "./AppOverviewCard";
-import ProsConsList from "./ProsConsList";
+import ServiceLogo from "../../components/services/ServiceLogo";
+import CardSection from "../../components/CardSection";
+import SeparatedSection from "../../components/SeparatedSection";
+import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
+import ProsConsList from "../../components/marketplace/ProsConsList";
+import PageHeader from "../../components/PageHeader";
 
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },
@@ -391,12 +392,11 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer appDetails">
-          <div className="headline">
+          <PageHeader title={DUMMY_APP.name}>
             <h4 className="breadCrumbs">
               Categories / Communication / <span>{DUMMY_APP.name}</span>
             </h4>
-            <h1>{DUMMY_APP.name}</h1>
-          </div>
+          </PageHeader>
 
           <div className="marketplaceContent">
             <CardSection>

@@ -16,15 +16,17 @@ interface PageHeaderProps {
   showBreadCrumbs?: boolean;
   buttonConfig?: ButtonConfig;
   searchConfig?: SearchConfig;
+  children?: any;
 }
 
 class PageHeader extends React.PureComponent<PageHeaderProps> {
   render() {
-    const { title } = this.props;
+    const { title, children } = this.props;
 
     return (
       <div className="pageHeader">
         <h1>{title}</h1>
+        {children}
       </div>
     );
   }
