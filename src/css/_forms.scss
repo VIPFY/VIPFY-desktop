@@ -123,8 +123,8 @@
       opacity: 1;
       border: 1.5px solid #c8ccd4;
       border-radius: 2px;
-      color: white;
-      background-color: white;
+      color: $white;
+      background-color: $white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -363,7 +363,7 @@
       margin-left: 1rem;
 
       .generic-form-checkbox {
-        color: #fff;
+        color: $white;
       }
     }
   }
@@ -438,7 +438,7 @@
     &:disabled {
       color: hsl(60, 3%, 62%);
       border-bottom-color: #f5f5f5;
-      background: #fff;
+      background: $white;
     }
 
     &-error {
@@ -588,7 +588,7 @@
 }
 
 .resultHolder {
-  background-color: white;
+  background-color: $white;
   position: absolute;
   z-index: 1000;
   border: 1px solid $vipfy-grey;

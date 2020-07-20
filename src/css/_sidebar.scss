@@ -3,7 +3,7 @@
   height: 100%;
   z-index: 300;
   float: left;
-  color: #fff;
+  color: $white;
   user-select: none;
   width: 240px;
   border-radius: 0 16px 16px 0;
@@ -36,7 +36,7 @@
     height: calc(100% - 35px);
     z-index: 200;
     transition: all 600ms ease;
-    color: white;
+    color: $white;
     left: 224px;
     top: 32px;
     overflow: auto;
@@ -115,7 +115,7 @@
     height: 1px;
     margin-left: 16px;
     margin-right: 16px;
-    background: #fff;
+    background: $white;
   }
 
   &-tooltip {
@@ -486,7 +486,7 @@
     text-align: center;
     border-radius: 16px;
     background-color: #ff6f61;
-    color: #ffffff;
+    color: $white;
     position: absolute;
   }
 
@@ -506,7 +506,7 @@
 .sidebar-search {
   @extend .sidebar-link-caption;
   margin-left: 0px;
-  color: #fff;
+  color: $white;
   outline: none;
   border: 0;
   background-image: none;
@@ -551,7 +551,7 @@
 }
 
 .white-background {
-  background: #fff;
+  background: $white;
   height: 32px;
   width: 32px;
   position: absolute;
@@ -574,7 +574,7 @@
     background: $vipfy-vacation-blue;
     transform: rotate(44deg);
     z-index: 1;
-    color: #fff;
+    color: $white;
   }
 }
 
@@ -694,7 +694,7 @@
   border-radius: 4px;
   z-index: 1000;
   width: 24rem;
-  background-color: white;
+  background-color: $white;
   margin: 0.125rem 0 0;
   background-clip: padding-box;
   border: 1px solid #e9ecef;
@@ -807,7 +807,7 @@
   height: 100%;
   z-index: 300;
   float: left;
-  color: #fff;
+  color: $white;
   user-select: none;
   display: grid;
   grid-template-rows: 32px calc(100% - 128px) 48px 32px;

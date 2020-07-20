@@ -16,7 +16,7 @@ $modal-wh: 50%;
 
 #popup {
   opacity: 0;
-  background-color: #fff;
+  background-color: $white;
   min-height: 25%;
   max-height: 75%;
   position: relative;
@@ -50,7 +50,7 @@ $modal-wh: 50%;
     position: absolute;
     width: 100%;
     top: -2.2rem;
-    color: #fff;
+    color: $white;
     display: flex;
     padding-bottom: 0.2rem;
     border-bottom: 0.2rem solid;
@@ -69,7 +69,7 @@ $modal-wh: 50%;
   }
 
   &-close-button {
-    color: #fff;
+    color: $white;
     cursor: pointer;
     font-size: 15px;
     font-weight: bold;
@@ -127,7 +127,7 @@ $modal-wh: 50%;
 .universalPopup {
   width: 100%;
   max-width: 71rem;
-  background: white;
+  background: $white;
   box-shadow: $vipfy-lightshadow;
   border-radius: $vipfy_bigradius;
   position: relative;
@@ -345,7 +345,7 @@ $modal-wh: 50%;
       top: -16px;
       right: 30px;
       width: 120px;
-      background-color: white;
+      background-color: $white;
       padding: 5px;
       font-family: "Roboto";
       display: none;
