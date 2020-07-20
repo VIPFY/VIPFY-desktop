@@ -7,6 +7,7 @@ import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
+import PageHeader from "../../components/PageHeader";
 
 interface MarketplaceDiscoverProps {
   history: any;
@@ -57,10 +58,7 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <div className="marketplaceHeader headline">
-            <h1 style={{ gridRowStart: 1 }}>Discover</h1>
-            <span className="searchBar">Search an App in Marketplace</span>
-          </div>
+          <PageHeader title="Discover" searchConfig={{ text: "Search an App in Marketplace" }} />
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>

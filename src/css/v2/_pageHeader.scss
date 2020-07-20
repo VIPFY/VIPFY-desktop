@@ -1,0 +1,12 @@
+.pageHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 16px 32px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  grid-gap: $grid-gap;
+  color: $midgrey-light;
+  background-color: $lightgrey-lightest;
+}
