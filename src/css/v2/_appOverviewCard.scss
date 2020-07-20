@@ -1,4 +1,8 @@
 .appOverviewCard {
+  .cardSection:first-child {
+    background-color: $lightgrey-lighter;
+  }
+
   .picHolder {
     padding-top: 56%;
   }

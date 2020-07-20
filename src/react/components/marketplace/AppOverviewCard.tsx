@@ -55,7 +55,6 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
     const hasPros = app.pros && !!app.pros.length;
     const hasFeatures = app.features && !!app.features.length;
     const hasFreeTrial = Math.random() < 0.5;
-    const headerColor = app.color || "#E9EEF4";
 
     return (
       <div
@@ -63,7 +62,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         className={classNames("card appOverviewCard clickable", { wide: isWideFormat })}
         style={style}>
         {renderPic && (
-          <div className="cardSection" style={{ backgroundColor: headerColor }}>
+          <div className="cardSection" style={{ backgroundColor: app.color }}>
             <div className="picHolder">
               <img src={app.pic} alt="App Image" className="pic" />
             </div>
@@ -71,15 +70,11 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         {renderPic ? (
-          <CardSection
-            className="header"
-            style={{ backgroundColor: renderPic ? "white" : headerColor }}>
+          <CardSection className="header">
             {this.renderMainInfo(isWideFormat, hasFreeTrial)}
           </CardSection>
         ) : (
-          <div
-            className="cardSection header"
-            style={{ backgroundColor: renderPic ? "white" : headerColor }}>
+          <div className="cardSection header" style={{ backgroundColor: app.color }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial)}
           </div>
         )}
