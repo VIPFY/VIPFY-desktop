@@ -64,6 +64,7 @@ import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
 import AddCustomServicePage from "./addCustomService";
 import AppDetails from "../components/marketplace/AppDetails";
+import Checkout from "./marketplace/Checkout";
 
 interface AreaProps {
   id: string;
@@ -455,18 +456,16 @@ class Area extends React.Component<AreaProps, AreaState> {
         highlight: "ssotest"
       },
       {
-        label: "Marketplace Discover",
-        location: "marketplace/discover",
-        icon: "shopping-cart",
+        label: "Marketplace",
+        location: "marketplace",
         show: config.showMarketplace,
-        highlight: "marketplaceelement"
+        highlight: "marketplace"
       },
       {
-        label: "Marketplace Categ.",
+        label: "Market Categories",
         location: "marketplace/categories",
-        icon: "shopping-cart",
         show: config.showMarketplace,
-        highlight: "marketplaceelement"
+        highlight: "marketplace"
       }
     ]
   };
@@ -552,9 +551,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing, admin: true },
-      { path: "marketplace/discover", component: MarketplaceDiscover, admin: true },
+      { path: "marketplace", component: MarketplaceDiscover, admin: true },
       { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
-      { path: "marketplace/:appid/", component: AppDetails, admin: true },
+      { path: "marketplace/app/:appid", component: AppDetails, admin: true },
+      { path: "marketplace/app/:appid/plan/:planid", component: Checkout, admin: true },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },

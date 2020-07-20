@@ -22,7 +22,7 @@ class ServiceLogo extends React.PureComponent<Props> {
         style={{
           backgroundImage: icon && getBgImageApp(icon, finalSize),
           height: finalSize,
-          width: finalSize
+          minWidth: finalSize
         }}>
         {children}
       </span>
