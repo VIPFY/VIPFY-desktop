@@ -9,15 +9,15 @@
 
   &.pro {
     .tag {
-      color: #1b9a8b;
+      color: $primarygreen;
       background-color: #d6f2ef;
     }
   }
 
   &.con {
     .tag {
-      color: #e85a3f;
-      background-color: #ffaf9f;
+      color: $red-darker;
+      background-color: $red-lighter;
     }
   }
 
@@ -27,7 +27,7 @@
     min-width: 24px;
     height: 24px;
     font-size: 14px;
-    color: white;
+    color: $white;
 
     > .span {
       font-size: 12px;

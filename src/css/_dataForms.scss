@@ -4,7 +4,7 @@ $fullWidth: 904px;
   width: $fullWidth;
   height: 536px;
   padding: 32px 32px 48px 32px;
-  background-color: white;
+  background-color: $white;
   position: relative;
   border-radius: 8px;
   box-shadow: 0 4px 5px rgba(#000000, 0.14);
@@ -203,7 +203,7 @@ $fullWidth: 904px;
       margin-bottom: 5px;
       background-size: cover;
       background-position: center;
-      color: white;
+      color: $white;
       text-align: center;
     }
   }
@@ -242,7 +242,7 @@ $fullWidth: 904px;
         margin-top: 21px;
         background-size: cover;
         background-position: center;
-        color: white;
+        color: $white;
         text-align: center;
       }
 

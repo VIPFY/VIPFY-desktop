@@ -2,10 +2,10 @@
   transition: all 300ms ease-in-out;
   transform: translate(10px, 10px);
   background: $vipfy-primary;
-  color: white;
+  color: $white;
 
   .preferred {
-    color: white;
+    color: $white;
   }
 }
 
@@ -65,7 +65,7 @@
 .vipfy-plan {
   cursor: pointer;
   padding: 52px 32px;
-  background: white;
+  background: $white;
   border-radius: 16px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.16);
   margin-bottom: 56px;
@@ -131,7 +131,7 @@
 
   .preferred {
     font-style: italic;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
   }
 
   &-current {

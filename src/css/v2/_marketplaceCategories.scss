@@ -11,12 +11,12 @@
     height: 40px;
 
     &:hover {
-      background-color: white;
+      background-color: $white;
     }
 
     .fa-fw {
       font-size: 18px;
-      color: #3b4c5d;
+      color: $midgrey-light;
       margin-right: 8px;
     }
 
