@@ -36,7 +36,7 @@
   }
 
   .active {
-    background-color: #30475d;
+    background-color: $darkgrey-lighter;
 
     i {
       &:hover {
@@ -106,7 +106,7 @@
     border-radius: 2px;
 
     &:hover {
-      background-color: #30475d;
+      background-color: $darkgrey-lighter;
     }
   }
 }

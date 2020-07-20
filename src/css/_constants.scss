@@ -4,14 +4,12 @@ $newlogo: url("../images/Vipfy-white.svg");
 $logo_white: url("../images/logo_hell.png");
 $sidebar-width: 240px;
 $sidebar-margin: 8px;
-$sidebar-background: #30475d;
 $fullworking-background: #f5f5f5;
-$vipfy-primary-color: #20baa9;
 $vipfy-secondary-color: #117f91;
 $vipfy-cancel-color: #c73544;
 $vipfy-primary: linear-gradient(to right, rgb(32, 186, 169) 0%, rgb(17, 127, 145) 100%);
 $vipfy-secondary: linear-gradient(to right, #c73544 0%, #991b78 100%);
-$feedback: rgba(#20baa9, 0.57);
+$feedback: rgba($primarygreen, 0.57);
 $feedback-secondary: rgba(#c73544, 0.57);
 $hover: #117f91;
 $hover-secondary: #991b78;
@@ -30,7 +28,6 @@ $vipfy-negative: #df3f19;
 $vipfy-infoblue: #5145e3;
 $vipfy-infolightblue: #2d84e6;
 $vipfy-vacation-blue: #5da2ff;
-$vipfy-buttongreen: #20baa9;
 $vipfy-buttondarkgreen: #1697a5;
 $vipfy-lightshadow: 1px 3px 4px 0px #78787833;
 $vipfy-shadow: 1px 3px 4px 0px #78787866;
@@ -127,7 +124,7 @@ $rccs-valid-font-size: 0.4rem;
 
 @mixin vipfy-button($padding: 0) {
   @include flex-system(center, center);
-  background: $vipfy-primary-color;
+  background: $primarygreen;
   border: 0;
   color: $white;
   cursor: pointer;
@@ -354,7 +351,7 @@ $rccs-valid-font-size: 0.4rem;
 
     &:checked + .slider::before {
       transform: translateX(26px);
-      background-color: $vipfy-primary-color;
+      background-color: $primarygreen;
     }
   }
 
@@ -424,7 +421,7 @@ $rccs-valid-font-size: 0.4rem;
     bottom: 0;
     left: 0;
     height: 2px;
-    background: $vipfy-primary-color;
+    background: $primarygreen;
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 300ms ease-in;
@@ -459,7 +456,7 @@ $rccs-valid-font-size: 0.4rem;
 
     &:checked + .slider-equal::before {
       transform: translateX(26px);
-      background-color: $vipfy-primary-color;
+      background-color: $primarygreen;
     }
   }
 
@@ -481,7 +478,7 @@ $rccs-valid-font-size: 0.4rem;
       height: 16px;
       width: 16px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
-      background-color: $vipfy-primary-color;
+      background-color: $primarygreen;
       transition: 0.4s;
       border-radius: 50%;
     }
@@ -601,7 +598,7 @@ textarea {
   }
 
   &:focus-within label {
-    color: $vipfy-primary-color;
+    color: $primarygreen;
   }
 }
 
@@ -705,5 +702,5 @@ textarea {
 
 .fa-star,
 .fa-star-half {
-  color: $vipfy-primary-color;
+  color: $primarygreen;
 }

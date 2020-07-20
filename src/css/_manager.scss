@@ -382,7 +382,7 @@
   .mHeading {
     font-size: 20px;
     .active {
-      color: #20baa9;
+      color: $primarygreen;
     }
     .inactive {
       color: #f5f5f5;
@@ -715,7 +715,7 @@
       border-radius: 6px;
     }
     .current {
-      background-color: #20baa9;
+      background-color: $primarygreen;
     }
   }
 }

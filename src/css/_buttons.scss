@@ -134,7 +134,7 @@
 }
 
 .newButton {
-  background-image: linear-gradient(to right, $vipfy-secondary-color 0%, $vipfy-primary-color 100%);
+  background-image: linear-gradient(to right, $vipfy-secondary-color 0%, $primarygreen 100%);
   color: $white;
   padding: 0.25rem;
   box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
@@ -152,7 +152,7 @@
   padding: 10px;
   border-radius: 40px;
   height: 40px;
-  background-color: $vipfy-primary-color;
+  background-color: $primarygreen;
 
   &:hover {
     .search-text {
@@ -162,7 +162,7 @@
 
     .search-button {
       background: $white;
-      color: $vipfy-primary-color;
+      color: $primarygreen;
     }
   }
 
@@ -172,7 +172,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: $vipfy-primary-color;
+    background: $primarygreen;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -201,6 +201,6 @@
 
   .search-button {
     background: $white;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
   }
 }

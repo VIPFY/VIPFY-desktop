@@ -553,7 +553,7 @@ li {
   cursor: pointer;
   font-size: 0.8rem;
   border-radius: 3px;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin-top: 0.25rem;
   color: $white;
@@ -586,7 +586,7 @@ li {
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
-  background-image: radial-gradient(farthest-corner at 0px 100%, #20baa9 0%, #117f91 100%);
+  background-image: radial-gradient(farthest-corner at 0px 100%, $primarygreen 0%, #117f91 100%);
   color: $white;
 
   &-item {
@@ -684,7 +684,7 @@ select {
   width: 100%;
   color: #333;
   font-family: "Roboto";
-  border-bottom: 1px solid #20baa9;
+  border-bottom: 1px solid $primarygreen;
 }
 select:focus {
   outline: none;
@@ -895,7 +895,7 @@ option {
 }
 .lawlink {
   cursor: pointer;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   margin: 0.2rem;
   padding: 0.2rem;
   padding-left: 0.4rem;
@@ -933,7 +933,7 @@ option {
 }
 .checkoutButton {
   cursor: pointer;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   margin: 0.5rem;
   padding: 0.5rem;
   color: $white;
@@ -1028,7 +1028,7 @@ option {
   .featured-table {
     box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
     h2 {
-      background-color: #20baa9;
+      background-color: $primarygreen;
       color: $white;
     }
   }
@@ -1054,7 +1054,7 @@ option {
       color: #a0a0a0;
     }
     &__price {
-      color: #20baa9;
+      color: $primarygreen;
       padding: 1rem;
       margin: auto;
       font-size: 2rem;
@@ -1062,7 +1062,7 @@ option {
     }
     &__button {
       display: block;
-      background: #20baa9;
+      background: $primarygreen;
       text-decoration: none;
       padding: 1rem;
       color: $white;
@@ -1242,7 +1242,7 @@ option {
       .inputNew {
         width: 4rem;
         border: none;
-        border-bottom: 1px solid #20baa9;
+        border-bottom: 1px solid $primarygreen;
         text-align: center;
         font-family: "Montserrat", sans-serif !important;
         margin-left: 0.5rem;
@@ -1293,7 +1293,7 @@ option {
 .double-bounce2 {
   -webkit-animation-delay: -1s;
   animation-delay: -1s;
-  background-color: #20baa9;
+  background-color: $primarygreen;
 }
 
 @-webkit-keyframes sk-bounce {
@@ -1356,7 +1356,7 @@ option {
       height: 0;
       border-left: 20rem solid transparent;
       border-right: 20rem solid transparent;
-      border-top: 20rem solid #20baa9;
+      border-top: 20rem solid $primarygreen;
       position: absolute;
       left: 20rem;
     }
@@ -1434,7 +1434,7 @@ option {
         padding-bottom: 0;
         width: 20em;
         margin-left: 0.5rem;
-        border-bottom: 1px solid #20baa9;
+        border-bottom: 1px solid $primarygreen;
 
         &:focus {
           outline: 0;
@@ -1481,7 +1481,7 @@ option {
         right: 0;
         padding: 0.5rem;
         border-radius: 3px;
-        background-color: #20baa9;
+        background-color: $primarygreen;
         color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
@@ -1495,7 +1495,7 @@ option {
         right: 1rem;
         padding: 0.5rem;
         border-radius: 3px;
-        background-color: #20baa9;
+        background-color: $primarygreen;
         color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
@@ -1521,7 +1521,7 @@ option {
         right: 0;
         padding: 0.5rem;
         border-radius: 3px;
-        background-color: $vipfy-primary-color;
+        background-color: $primarygreen;
         color: $white;
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
@@ -1576,7 +1576,7 @@ option {
           padding: 0.25rem;
           margin: 0.5rem;
           border-radius: 3px;
-          background-color: #20baa9;
+          background-color: $primarygreen;
           color: $white;
           box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
           cursor: pointer;
@@ -1634,7 +1634,7 @@ option {
   cursor: pointer;
   font-size: 0.8rem;
   border-radius: 3px;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin-top: 0.25rem;
   color: $white;
@@ -1666,7 +1666,7 @@ option {
   cursor: pointer;
   font-size: 0.8rem;
   border-radius: 3px;
-  background-color: #20baa9;
+  background-color: $primarygreen;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   margin: 0.5rem;
   margin-top: 0.75rem;
@@ -1691,7 +1691,7 @@ option {
   border-radius: 9px;
   top: -3px;
   right: -3px;
-  color: #20baa9;
+  color: $primarygreen;
   font-size: 8px;
 }
 
@@ -1707,7 +1707,7 @@ option {
     width: 12rem;
     font-size: 0;
     padding: 0.25rem;
-    background-color: $vipfy-primary-color;
+    background-color: $primarygreen;
     color: $white;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -1722,7 +1722,7 @@ option {
     width: 12rem;
     font-size: 0.75rem;
     padding: 0.25rem;
-    background-color: $vipfy-primary-color;
+    background-color: $primarygreen;
     color: $white;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -1779,7 +1779,7 @@ option {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: $vipfy-primary-color;
+    background-color: $primarygreen;
     border-radius: 0.5em;
     padding: 0.5em;
     cursor: pointer;
@@ -1808,7 +1808,7 @@ option {
     cursor: pointer;
 
     &:hover > .button-hide {
-      color: #20baa9;
+      color: $primarygreen;
     }
 
     .button-hide {
@@ -1822,7 +1822,7 @@ option {
       right: 40px;
 
       &:hover {
-        color: #20baa9;
+        color: $primarygreen;
       }
     }
   }
@@ -1884,7 +1884,7 @@ option {
 }
 
 .genericButton {
-  background-color: #20baa9;
+  background-color: $primarygreen;
   border-radius: 3px;
   color: $white;
   padding: 9px;
@@ -2089,13 +2089,13 @@ progress[value] {
   width: 206px;
 
   &::-webkit-progress-bar {
-    background: rgba($vipfy-primary-color, 0.4);
+    background: rgba($primarygreen, 0.4);
     border-radius: 2px;
     box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.3);
   }
 
   &::-webkit-progress-value {
-    background-color: $vipfy-primary-color;
+    background-color: $primarygreen;
     border-radius: 2px;
     background-size: 35px 20px, 100% 100%, 100% 100%;
     transition: all 100ms ease-in-out;
@@ -2509,7 +2509,7 @@ progress[value] {
 
   &.high {
     &.useable {
-      background-color: #20baa9;
+      background-color: $primarygreen;
       color: $white;
       transition: background-color 200ms ease-in-out;
       &:hover {
@@ -2531,12 +2531,12 @@ progress[value] {
 
   &.medium {
     &.useable {
-      border: 1px solid #20baa9;
-      color: #20baa9;
+      border: 1px solid $primarygreen;
+      color: $primarygreen;
       transition: background-color 200ms ease-in-out;
       transition: color 200ms ease-in-out;
       &:hover {
-        background-color: #20baa9;
+        background-color: $primarygreen;
         color: $white;
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
@@ -2555,14 +2555,14 @@ progress[value] {
 
   &.low {
     &.useable {
-      color: #20baa9;
+      color: $primarygreen;
       font-weight: 500;
       transition: background-color 200ms ease-in-out;
       &:hover {
-        background-color: rgba(#20baa9, 0.1);
+        background-color: rgba($primarygreen, 0.1);
       }
       .universalCoverButton:focus > & {
-        background-color: rgba(#20baa9, 0.1);
+        background-color: rgba($primarygreen, 0.1);
       }
     }
 
@@ -2622,7 +2622,7 @@ progress[value] {
   }
 
   &.info2 {
-    background-color: $vipfy-primary-color;
+    background-color: $primarygreen;
     color: $white;
   }
 
@@ -2743,7 +2743,7 @@ progress[value] {
     margin-bottom: 20px;
 
     span {
-      color: $vipfy-primary-color;
+      color: $primarygreen;
       transition: all 300ms ease-in-out;
 
       &:hover {
@@ -2753,7 +2753,7 @@ progress[value] {
   }
 
   .promo-success {
-    color: $vipfy-primary-color;
+    color: $primarygreen;
     font-style: italic;
     display: flex;
 
@@ -2795,7 +2795,7 @@ progress[value] {
       background-color: rgba(0, 0, 0, 0.1);
     }
     &.active {
-      border-bottom: 2px solid #30475d;
+      border-bottom: 2px solid $darkgrey-lighter;
     }
   }
 }
@@ -2819,7 +2819,7 @@ progress[value] {
   margin-top: 24px;
   font-size: 14px;
   line-height: 19px;
-  color: #3b4c5d;
+  color: $midgrey-light;
   border-bottom: 1px solid transparent;
   .breadcrumb {
     cursor: pointer;
@@ -2827,7 +2827,7 @@ progress[value] {
       color: #2a3642;
     }
     &:focus {
-      border-bottom: 1px solid #20baa9;
+      border-bottom: 1px solid $primarygreen;
     }
     &.current {
       cursor: normal;
@@ -2842,7 +2842,7 @@ progress[value] {
 .pageHeading {
   margin: 7px 0px 24px;
   line-height: 32px;
-  color: #3b4c5d;
+  color: $midgrey-light;
   font-size: 24px;
 }
 

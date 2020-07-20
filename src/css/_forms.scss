@@ -57,7 +57,7 @@
   }
 
   .generic-submit-button {
-    @include generic-button($vipfy-primary-color, $vipfy-secondary-color, $feedback) i {
+    @include generic-button($primarygreen, $vipfy-secondary-color, $feedback) i {
       margin-right: 3px;
     }
   }
@@ -139,8 +139,8 @@
       }
       &Active {
         @extend .checkboxSquare;
-        background-color: #20baa9;
-        border: 1.5px solid #20baa9;
+        background-color: $primarygreen;
+        border: 1.5px solid $primarygreen;
         & > i {
           opacity: 1;
         }
@@ -294,14 +294,14 @@
 
     &:focus {
       outline: none;
-      border-bottom: 1px solid $vipfy-primary-color;
+      border-bottom: 1px solid $primarygreen;
     }
 
     &:focus + label {
       top: 7px;
       left: unset;
       font-size: 0.7rem;
-      color: $vipfy-primary-color;
+      color: $primarygreen;
     }
   }
 
@@ -310,14 +310,14 @@
   }
 
   .valid {
-    border-bottom: 1px solid $vipfy-primary-color;
+    border-bottom: 1px solid $primarygreen;
   }
 
   .valid + label {
     top: 7px;
     left: unset;
     font-size: 0.7rem;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
   }
 
   label {
@@ -390,7 +390,7 @@
     }
 
     .success {
-      color: $vipfy-primary-color;
+      color: $primarygreen;
     }
 
     .error {
@@ -411,7 +411,7 @@
   &-label-active {
     transform: translateY(-12px);
     font-size: 10px;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
     transition: all 200ms ease-in-out;
   }
 
@@ -431,7 +431,7 @@
     &:focus,
     &-active {
       @extend .vipfy-input;
-      border-bottom-color: $vipfy-primary-color;
+      border-bottom-color: $primarygreen;
       transition: all 200ms ease-in-out;
     }
 
@@ -662,6 +662,6 @@
 
   &:hover {
     background-color: rgb(233, 248, 246);
-    color: #20baa9;
+    color: $primarygreen;
   }
 }

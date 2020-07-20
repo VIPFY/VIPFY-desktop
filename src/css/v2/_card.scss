@@ -13,7 +13,7 @@
 
   > hr {
     border: none;
-    border-top: 1px solid #dfe3eb;
+    border-top: 1px solid $lightgrey-dark;
     margin: 0 16px;
 
     &:last-child {
@@ -49,7 +49,7 @@
     font-size: 12px;
 
     &.neutral {
-      background-color: #e9eef4;
+      background-color: $lightgrey-lighter;
       color: black;
     }
   }

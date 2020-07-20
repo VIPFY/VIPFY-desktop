@@ -1,5 +1,5 @@
 .appDetails {
-  color: #3b4c5d;
+  color: $midgrey-light;
 
   .breadCrumbs {
     margin-bottom: 8px;
@@ -237,7 +237,7 @@
           font-size: 70px;
           vertical-align: middle;
           content: "\00b7";
-          color: #20baa9;
+          color: $primarygreen;
           display: inline-block;
           margin-right: 5px;
         }
@@ -262,7 +262,7 @@
     }
 
     .pricing {
-      background-color: #d0f3ef;
+      background-color: $primarygreen-light;
 
       .price {
         display: flex;
