@@ -15,6 +15,10 @@
     flex-grow: 1;
   }
 
+  .children {
+    display: block;
+  }
+
   .pageHeaderButton {
     background-color: $primarygreen;
     color: $white;

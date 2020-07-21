@@ -48,7 +48,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             />
           )}
         </div>
-        {children}
+        <div className="children">{children}</div>
       </div>
     );
   }

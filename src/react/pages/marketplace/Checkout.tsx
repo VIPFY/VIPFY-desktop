@@ -4,11 +4,11 @@ import PageHeader from "../../components/PageHeader";
 
 const DUMMY_USER = {
   id: "582a705d-d650-4727-8db6-28d231b465dd",
-  firstname: "Magdalena",
+  firstname: "Magdalena-Anna",
   middlename: "Swetlana",
-  lastname: "von Hohenzollern",
+  lastname: "von Schmiggel-Pullewupp-Hohenzollern",
   title: "Prof. Dr. rer. nat.",
-  profilepicture: "profilepictures/26022020-b4wav-blob",
+  profilepicture: "",
   emails: ["magdalena.klauss@vipfy.store"],
   addresses: [{ address: { city: "Saarbrücken" } }],
   phones: ["+49 176 21 31 41 51"],

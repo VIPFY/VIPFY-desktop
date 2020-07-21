@@ -29,10 +29,15 @@ export default (props: Props) => {
 
     initials = name
       ? name
+          .replace("-", " ")
           .match(/\b(\w)/g)
           .join("")
           .toUpperCase()
       : "?";
+
+    if (initials.length > 3) {
+      initials = initials.charAt(0) + initials.slice(-2);
+    }
   }
 
   if (fake) {
@@ -60,13 +65,22 @@ export default (props: Props) => {
       className={className || "managerSquare"}
       style={{
         minWidth: finalSize,
+        width: finalSize,
         height: finalSize,
         ...backgroundStyle,
         ...style
       }}
       onClick={() => onClick && onClick()}>
       {!employee.profilepicture && (
-        <span style={{ lineHeight: finalSize + "px", verticalAlign: "middle" }}>{initials}</span>
+        <span
+          style={{
+            width: finalSize,
+            lineHeight: finalSize + "px",
+            verticalAlign: "middle",
+            textAlign: "center"
+          }}>
+          {initials}
+        </span>
       )}
       {overlayFunction && overlayFunction(employee)}
     </div>
