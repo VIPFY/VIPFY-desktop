@@ -13,26 +13,6 @@
     grid-column: 1 / span 3;
   }
 
-  // adapt once newly designed search box is available
-  .searchBar {
-    grid-column: 4 / span 6;
-    grid-row-start: 1;
-    margin: 0 auto;
-  }
-
-  .marketplaceHeader {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: auto;
-    grid-gap: $grid-gap;
-    padding: 16px 32px;
-    color: $midgrey-light;
-    background-color: $lightgrey-lightest;
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-
   .marketplaceContent {
     > hr {
       border: none;

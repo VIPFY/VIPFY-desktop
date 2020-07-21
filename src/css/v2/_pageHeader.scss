@@ -1,0 +1,27 @@
+.pageHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: 0 -4px;
+  padding: 16px 4px;
+  color: $midgrey-light;
+  background-color: $lightgrey-lightest;
+
+  > div {
+    display: flex;
+  }
+
+  h1 {
+    flex-grow: 1;
+  }
+
+  .children {
+    display: block;
+  }
+
+  .pageHeaderButton {
+    background-color: $primarygreen;
+    color: $white;
+    margin-left: 16px;
+  }
+}

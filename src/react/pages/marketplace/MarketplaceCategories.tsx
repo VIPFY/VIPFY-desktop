@@ -10,6 +10,7 @@ import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import Tag from "../../common/Tag";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
+import PageHeader from "../../components/PageHeader";
 
 interface MarketplaceProps {
   history: any;
@@ -48,10 +49,10 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
 
     return (
       <Tag key={categoryName}>
-        <span>
-          <span className={classNames("fal", "fa-fw", icon)} />
-          <span className="categoryName">{categoryName}</span>
-        </span>
+        <>
+          <div className={classNames("fal", "fa-fw", icon)} />
+          <div className="categoryName">{categoryName}</div>
+        </>
       </Tag>
     );
   }
@@ -73,14 +74,11 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <div className="marketplaceHeader headline">
-            <h1 style={{ gridRowStart: 1 }}>Categories</h1>
-            <span className="searchBar">Search an App in Marketplace</span>
-
+          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
-          </div>
+          </PageHeader>
 
           <div className="marketplaceContent">
             <MarketplaceSection>

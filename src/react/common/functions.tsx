@@ -124,7 +124,7 @@ export const ErrorComp = props => (
 );
 
 export const concatName = ({ firstname, middlename, lastname }) => {
-  return [firstname, middlename, lastname].join(" ");
+  return [firstname, middlename, lastname].filter(Boolean).join(" ");
 };
 
 export const JsxJoin = (list: JSX.Element[], seperator: JSX.Element): JSX.Element[] => {
