@@ -16,12 +16,19 @@ interface Props {
 export default (props: Props) => {
   let { className, employee, hideTitle, overlayFunction, size, fake, onClick, style } = props;
 
-  const getInitials = employee => {
-    return (employee.firstname + " " + employee.lastname.split(" "))
-      .match(/\b(\w)/g)
-      .join("")
-      .toUpperCase();
-  };
+  // handle state before login, where employee isn't available yet
+  if (!employee) {
+    employee = {};
+  }
+
+  const name = concatName(employee);
+
+  const initials = !name
+    ? ""
+    : name
+        .match(/\b(\w)/g)
+        .join("")
+        .toUpperCase();
 
   if (fake) {
     return (
@@ -33,13 +40,7 @@ export default (props: Props) => {
     );
   }
 
-  if (!employee) {
-    // handle employee == null for renders without data (happens in login)
-    employee = { firstname: "", lastname: "" };
-  }
-
   const finalSize = size || 32;
-  const name = concatName(employee);
 
   const backgroundStyle = employee.profilepicture
     ? {
@@ -60,9 +61,7 @@ export default (props: Props) => {
       }}
       onClick={() => onClick && onClick()}>
       {!employee.profilepicture && (
-        <span style={{ lineHeight: finalSize + "px", verticalAlign: "middle" }}>
-          {getInitials(employee)}
-        </span>
+        <span style={{ lineHeight: finalSize + "px", verticalAlign: "middle" }}>{initials}</span>
       )}
       {overlayFunction && overlayFunction(employee)}
     </div>
