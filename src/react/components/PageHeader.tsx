@@ -30,11 +30,20 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   }
 
   render() {
-    const { title, children, buttonConfig } = this.props;
+    const { showBreadCrumbs, title, children, buttonConfig } = this.props;
     const { loading } = this.state;
 
     return (
       <div className="pageHeader">
+        {showBreadCrumbs && (
+          <div className="breadCrumbs">
+            <span className="breadCrumb">Categories</span>
+            <span>{" / "}</span>
+            <span className="breadCrumb">Communication</span>
+            <span>{" / "}</span>
+            <span className="breadCrumb">Bla</span>
+          </div>
+        )}
         <div>
           <h1>{title}</h1>
           {buttonConfig && (

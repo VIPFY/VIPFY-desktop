@@ -392,11 +392,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer appDetails">
-          <PageHeader title={DUMMY_APP.name}>
-            <h4 className="breadCrumbs">
-              Categories / Communication / <span>{DUMMY_APP.name}</span>
-            </h4>
-          </PageHeader>
+          <PageHeader title={DUMMY_APP.name} />
 
           <div className="marketplaceContent">
             <CardSection>
