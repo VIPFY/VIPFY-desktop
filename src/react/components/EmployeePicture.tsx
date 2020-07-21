@@ -27,7 +27,7 @@ export default (props: Props) => {
   if (employee) {
     name = concatName(employee);
 
-    initials = name.trim()
+    initials = name
       ? name
           .match(/\b(\w)/g)
           .join("")
