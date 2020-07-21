@@ -18,17 +18,22 @@ export default (props: Props) => {
 
   // handle state before login, where employee isn't available yet
   if (!employee) {
-    employee = {};
+    employee = { firstname: "", lastname: "" };
   }
 
-  const name = concatName(employee);
+  let initials = "";
+  let name = "";
 
-  const initials = !name
-    ? ""
-    : name
-        .match(/\b(\w)/g)
-        .join("")
-        .toUpperCase();
+  if (employee) {
+    name = concatName(employee);
+
+    initials = name.trim()
+      ? name
+          .match(/\b(\w)/g)
+          .join("")
+          .toUpperCase()
+      : "?";
+  }
 
   if (fake) {
     return (
