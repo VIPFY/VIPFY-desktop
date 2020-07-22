@@ -6,7 +6,6 @@
   color: $white;
   user-select: none;
   width: 240px;
-  //border-radius: 0 16px 16px 0;
   transition: width 600ms ease;
   position: relative;
 
@@ -29,7 +28,6 @@
   }
 
   &-adminpanel {
-    //border-radius: 0 16px 16px 0;
     position: absolute;
     background: $vipfy_mainColor;
     width: 192px;

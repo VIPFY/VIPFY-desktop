@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import classNames from "classnames";
 interface Props {
   icon: string;
   onClick?: Function;
@@ -46,9 +46,11 @@ class BrowserNavigationButton extends React.Component<Props, State> {
     return (
       <div className="browserNavigationButton" style={{ position: "relative" }} ref={this.wrapper}>
         <button
-          className={`cleanup browserNavigationButton ${
+          className={classNames(
+            "cleanup",
+            "browserNavigationButton",
             this.state.active ? "active" : this.props.disabled ? "disabled" : "useable"
-          }`}
+          )}
           onClick={async e => {
             if (this.props.onClick) {
               e.stopPropagation();

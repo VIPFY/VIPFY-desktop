@@ -1,19 +1,19 @@
 import * as React from "react";
+import { v4 as uuid } from "uuid";
+import { withApollo, graphql } from "react-apollo";
+import compose from "lodash.flowright";
+import gql from "graphql-tag";
+import { parse } from "url";
+import psl from "psl";
 import BrowserNavigationButton from "../components/universalButtons/browserNavigationButton";
 import BrowserTab from "../components/browserTab";
 import BrowserOverflowTab from "../components/browserOverflowTab";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
 import { me } from "../queries/auth";
-import { v4 as uuid } from "uuid";
-import { withApollo, graphql } from "react-apollo";
-import compose from "lodash.flowright";
-import gql from "graphql-tag";
 import { decryptLicenceKey } from "../common/passwords";
 import LoadingDiv from "../components/LoadingDiv";
 import PopupBase from "../popups/universalPopups/popupBase";
 import UniversalButton from "../components/universalButtons/universalButton";
-import { parse } from "url";
-import psl from "psl";
 
 interface Props {
   updateMyConfig: Function;
@@ -34,11 +34,9 @@ interface State {
     url: string;
     active: boolean;
     history: string[];
-    historymarker: number;
-    sethistory?: string | undefined;
+    historyMarker: number;
+    setHistory?: string | undefined;
   }[];
-  //overflowing: boolean;
-  searchAttempts: number;
   searchUrl: string;
   drag: boolean;
 
@@ -76,8 +74,6 @@ const UPDATE_LICENCE_SPEED = gql`
 class Browser extends React.Component<Props, State> {
   state = {
     tabs: [],
-    // overflowing: false,
-    searchAttempts: 0,
     searchUrl: "",
     drag: false,
     interaction: null,
@@ -166,7 +162,7 @@ class Browser extends React.Component<Props, State> {
             url: loginurl,
             active: true,
             history: [loginurl],
-            historymarker: 0
+            historyMarker: 0
           });
         } else {
           updatedtabs.find(t => t.active).url = loginurl;
@@ -187,7 +183,7 @@ class Browser extends React.Component<Props, State> {
             url: "https://google.com",
             active: true,
             history: ["https://google.com"],
-            historymarker: 0
+            historyMarker: 0
           });
 
           return {
@@ -241,25 +237,26 @@ class Browser extends React.Component<Props, State> {
   };
 
   sendTimeSpent = (newTimeSpent?: number) => {
-    if (this.props.assignmentId && this.props.assignmentId != "browser") {
-      if (!newTimeSpent) {
-        newTimeSpent = 0;
-      }
-      let timeSpent = this.state.timeSpent;
-      this.setState({ timeSpent: newTimeSpent });
-      const minutes = timeSpent + 1;
-      // no need to await this, let apollo do this whenever
-      this.props.client.mutate({
-        mutation: gql`
-          mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
-            trackMinutesSpent(assignmentid: $licenceid, minutes: $minutes) {
-              ok
-            }
-          }
-        `,
-        variables: { licenceid: this.props.assignmentId, minutes: minutes }
-      });
+    if (!this.props.assignmentId || this.props.assignmentId === "browser") {
+      return;
     }
+    if (!newTimeSpent) {
+      newTimeSpent = 0;
+    }
+    let timeSpent = this.state.timeSpent;
+    this.setState({ timeSpent: newTimeSpent });
+    const minutes = timeSpent + 1;
+    // no need to await this, let apollo do this whenever
+    this.props.client.mutate({
+      mutation: gql`
+        mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
+          trackMinutesSpent(assignmentid: $licenceid, minutes: $minutes) {
+            ok
+          }
+        }
+      `,
+      variables: { licenceid: this.props.assignmentId, minutes: minutes }
+    });
   };
 
   closeTab(id, forceBrowserClose = false) {
@@ -303,7 +300,7 @@ class Browser extends React.Component<Props, State> {
             url: "https://google.com",
             active: true,
             history: ["https://google.com"],
-            historymarker: 0
+            historyMarker: 0
           });
           return {
             ...oldstate,
@@ -334,7 +331,7 @@ class Browser extends React.Component<Props, State> {
             url: url,
             active: directlyopen,
             history: [url],
-            historymarker: 0
+            historyMarker: 0
           });
         }
       });
@@ -345,7 +342,7 @@ class Browser extends React.Component<Props, State> {
           url: url,
           active: directlyopen,
           history: [url],
-          historymarker: 0
+          historyMarker: 0
         });
       }
       return {
@@ -358,31 +355,27 @@ class Browser extends React.Component<Props, State> {
   tabClick(id) {
     this.setState(oldstate => {
       const updatedTabs = oldstate.tabs.map(t => {
-        if (t.id == id) {
-          return { ...t, active: true };
-        } else {
-          return { ...t, active: false };
-        }
+        return { ...t, active: t.id === id };
       });
       return { ...oldstate, tabs: updatedTabs };
     });
   }
 
   goBack() {
-    if (
+    const hasForwardHistoryInTab =
       this.state.tabs.find(t => t.active) &&
       this.state.tabs.find(t => t.active).history.length > 1 &&
       this.state.tabs.find(t => t.active).history.length !=
-        this.state.tabs.find(t => t.active).historymarker + 1
-    ) {
+        this.state.tabs.find(t => t.active).historyMarker + 1;
+    if (hasForwardHistoryInTab) {
       this.setState(oldstate => {
         const updatedTabs = oldstate.tabs.map(a => {
           if (a.active) {
             return {
               ...a,
-              url: a.history[a.history.length - a.historymarker - 2],
-              historymarker: a.historymarker + 1,
-              sethistory: a.history[a.history.length - a.historymarker - 2]
+              url: a.history[a.history.length - a.historyMarker - 2],
+              historyMarker: a.historyMarker + 1,
+              setHistory: a.history[a.history.length - a.historyMarker - 2]
             };
           } else {
             return a;
@@ -398,16 +391,16 @@ class Browser extends React.Component<Props, State> {
     if (
       this.state.tabs.find(t => t.active) &&
       this.state.tabs.find(t => t.active).history.length > 1 &&
-      this.state.tabs.find(t => t.active).historymarker > 0
+      this.state.tabs.find(t => t.active).historyMarker > 0
     ) {
       this.setState(oldstate => {
         const updatedTabs = oldstate.tabs.map(a => {
           if (a.active) {
             return {
               ...a,
-              url: a.history[a.history.length - a.historymarker],
-              historymarker: a.historymarker - 1,
-              sethistory: a.history[a.history.length - a.historymarker]
+              url: a.history[a.history.length - a.historyMarker],
+              historyMarker: a.historyMarker - 1,
+              setHistory: a.history[a.history.length - a.historyMarker]
             };
           } else {
             return a;
@@ -421,30 +414,22 @@ class Browser extends React.Component<Props, State> {
   reload(id) {
     if (document.querySelector(`#browserWindowTab-${id} webview`)) {
       document.querySelector(`#browserWindowTab-${id} webview`).reload();
-      //.loadUrl("javascript:window.location.reload( true )");
     } else {
       console.log("WEBVIEW NOT FOUND");
     }
   }
 
   trySiteLoading = (id, url, error = false) => {
-    //console.log("TRY SIDE LOADING");
     if (url != this.state.tabs.find(t => t.id == id).url) {
+      // If valid url or localhosturl than update tab directly
       if (
         /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm.test(
           url
         ) ||
         url.startsWith("localhost")
       ) {
-        // console.log("TRY SIDE LOADING 1");
         this.setState(oldstate => {
-          const updatedTabs = oldstate.tabs.map(t => {
-            if (t.id == id) {
-              return { ...t, url };
-            } else {
-              return t;
-            }
-          });
+          const updatedTabs = oldstate.tabs.map(t => (t.id == id ? { ...t, url } : t));
           return {
             ...oldstate,
             tabs: updatedTabs
@@ -453,21 +438,10 @@ class Browser extends React.Component<Props, State> {
       }
       let searchvalue = "";
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        //console.log("TRY SIDE LOADING 2");
-        //console.log("searchdinger", this.state.searchAttempts);
-        if (this.state.searchAttempts == 0) {
-          searchvalue = "https://" + url;
-          //this.setState({ searchAttempts: 1 });
-        } else if (this.state.searchAttempts == 1) {
-          searchvalue = "http://" + url;
-          this.setState({ searchAttempts: 2 });
-        } else {
-          searchvalue = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
-        }
+        searchvalue = "https://" + url;
       } else {
         searchvalue = url;
       }
-      //console.log("SEARCH VALUE", searchvalue);
       this.maybeOpenOutside(searchvalue, url, id);
       this.setUrl(id, searchvalue, true);
     } else if (error) {
@@ -500,18 +474,15 @@ class Browser extends React.Component<Props, State> {
       }
     });
 
-    console.log("SIDE LOADING", url, this.props.assignmentId, assignments);
-    if (
-      assignments.data.fetchLicenceAssignmentsByDomain &&
-      assignments.data.fetchLicenceAssignmentsByDomain.length == 1
-    ) {
+    if (!assignments.data.fetchLicenceAssignmentsByDomain) {
+      return;
+    }
+
+    if (assignments.data.fetchLicenceAssignmentsByDomain.length == 1) {
       this.props.setApp(assignments.data.fetchLicenceAssignmentsByDomain[0].id);
       this.closeTab(tabId);
     }
-    if (
-      assignments.data.fetchLicenceAssignmentsByDomain &&
-      assignments.data.fetchLicenceAssignmentsByDomain.length > 1
-    ) {
+    if (assignments.data.fetchLicenceAssignmentsByDomain.length > 1) {
       this.setState({
         selectAccount: {
           tabId,
@@ -531,8 +502,8 @@ class Browser extends React.Component<Props, State> {
           `${a.url}/` != url &&
           a.history[a.history.length - 1] != url
         ) {
-          if (a.sethistory == url) {
-            return { ...a, sethistory: undefined };
+          if (a.setHistory == url) {
+            return { ...a, setHistory: undefined };
           }
           if (seturl) {
             return {
@@ -543,10 +514,10 @@ class Browser extends React.Component<Props, State> {
             return {
               ...a,
               history:
-                a.historymarker > 0
-                  ? [...a.history.splice(0, a.history.length - a.historymarker), url]
+                a.historyMarker > 0
+                  ? [...a.history.splice(0, a.history.length - a.historyMarker), url]
                   : [...a.history, url],
-              historymarker: 0
+              historyMarker: 0
             };
           }
         } else {
@@ -559,7 +530,7 @@ class Browser extends React.Component<Props, State> {
   }
 
   showDragOptions() {
-    //console.log(document.querySelector(".browserTab").clientWidth);
+    //Not uses right now - but ideas for later (drag and drop tabs)
 
     const dropzones = [];
     const tabWidth = document.querySelector(".browserTab").clientWidth;
@@ -602,54 +573,53 @@ class Browser extends React.Component<Props, State> {
   }
 
   changeBookmark = async (url, title) => {
-    if (this.props.config) {
-      try {
-        if (
-          this.props.config.bookmarks &&
-          this.props.config.bookmarks.browser &&
-          this.props.config.bookmarks.browser.find(b => b.url == url)
-        ) {
-          const updatedbookmarks = [];
-          //remove bookmark
-          this.props.config.bookmarks.browser.forEach(b => {
-            if (b.url != url) {
-              updatedbookmarks.push(b);
-            }
-          });
-          await this.props.updateMyConfig({
-            variables: {
-              config: {
-                bookmarks: {
-                  ...this.props.config.bookmarks,
-                  browser: updatedbookmarks
-                }
-              }
-            }
-          });
-        } else {
-          await this.props.updateMyConfig({
-            variables: {
-              config: {
-                bookmarks: {
-                  ...this.props.config.bookmarks,
-                  browser: [
-                    ...(this.props.config.bookmarks && this.props.config.bookmarks.browser
-                      ? this.props.config.bookmarks.browser
-                      : []),
-                    { url, title }
-                  ]
-                }
-              }
-            }
-            // refetchQueries: [{ query: me }]
-          });
-        }
-      } catch (err) {
-        console.log(err);
-        throw Error(err);
-      }
-    } else {
+    if (!this.props.config) {
       throw Error("No CONFIG for user");
+    }
+    try {
+      if (
+        this.props.config.bookmarks &&
+        this.props.config.bookmarks[this.props.assignmentId || "browser"] &&
+        this.props.config.bookmarks[this.props.assignmentId || "browser"].find(b => b.url == url)
+      ) {
+        const updatedbookmarks = [];
+        //remove bookmark
+        this.props.config.bookmarks[this.props.assignmentId || "browser"].forEach(b => {
+          if (b.url != url) {
+            updatedbookmarks.push(b);
+          }
+        });
+        await this.props.updateMyConfig({
+          variables: {
+            config: {
+              bookmarks: {
+                ...this.props.config.bookmarks,
+                [this.props.assignmentId || "browser"]: updatedbookmarks
+              }
+            }
+          }
+        });
+      } else {
+        await this.props.updateMyConfig({
+          variables: {
+            config: {
+              bookmarks: {
+                ...this.props.config.bookmarks,
+                [this.props.assignmentId || "browser"]: [
+                  ...(this.props.config.bookmarks &&
+                  this.props.config.bookmarks[this.props.assignmentId || "browser"]
+                    ? this.props.config.bookmarks[this.props.assignmentId || "browser"]
+                    : []),
+                  { url, title }
+                ]
+              }
+            }
+          }
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      throw Error(err);
     }
   };
 
@@ -671,12 +641,6 @@ class Browser extends React.Component<Props, State> {
     setTimeout(() => this.setState({ errorRecheck: true }), 5000);
   }
   render() {
-    //console.log("PROPS", this.props);
-    if (this.props.match && this.props.match.params) {
-      if (this.props.assignmentId) {
-        //Fetch Login-URL and Credentials
-      }
-    }
     const tabElements: JSX.Element[] = [];
     const overflowTabElements: JSX.Element[] = [];
     this.state.tabs.forEach(t => {
@@ -694,11 +658,13 @@ class Browser extends React.Component<Props, State> {
           isBookmark={
             this.props.config &&
             this.props.config.bookmarks &&
-            this.props.config.bookmarks.browser?.find(b => b.url == t.url)
+            this.props.config.bookmarks[this.props.assignmentId || "browser"]?.find(
+              b => b.url == t.url
+            )
           }
           url={t.url}
           setUrl={url => {
-            this.setState({ searchUrl: url, searchAttempts: 0 });
+            this.setState({ searchUrl: url });
             this.trySiteLoading(t.id, url);
           }}
           dragStart={() => setTimeout(() => this.setState({ drag: true }), 100)}
@@ -852,7 +818,7 @@ class Browser extends React.Component<Props, State> {
           )}
           {this.state.errorRecheck && (
             <PopupBase small={true} buttonStyles={{ justifyContent: "flex-start" }}>
-              <h2>Please help us to improve</h2>
+              <h2>Please help us improve</h2>
               <p style={{ marginTop: "24px" }}>Have you found a reason for the failed login?</p>
               <div style={{ display: "flex", flexDirection: "column" }}>
                 <UniversalButton
@@ -972,8 +938,12 @@ class Browser extends React.Component<Props, State> {
     );
 
     const bookmarkElements: JSX.Element[] = [];
-    if (this.props.config && this.props.config.bookmarks && this.props.config.bookmarks.browser) {
-      this.props.config.bookmarks.browser.forEach(b =>
+    if (
+      this.props.config &&
+      this.props.config.bookmarks &&
+      this.props.config.bookmarks[this.props.assignmentId || "browser"]
+    ) {
+      this.props.config.bookmarks[this.props.assignmentId || "browser"].forEach(b =>
         bookmarkElements.push(
           <BrowserOverflowTab
             key={`browserOverflowTab-${b.url}`}
@@ -995,7 +965,7 @@ class Browser extends React.Component<Props, State> {
                 this.state.tabs.find(t => t.active) &&
                 this.state.tabs.find(t => t.active).history.length > 1 &&
                 this.state.tabs.find(t => t.active).history.length !=
-                  this.state.tabs.find(t => t.active).historymarker + 1
+                  this.state.tabs.find(t => t.active).historyMarker + 1
               )
             }
             onClick={() => this.goBack()}
@@ -1006,7 +976,7 @@ class Browser extends React.Component<Props, State> {
               !(
                 this.state.tabs.find(t => t.active) &&
                 this.state.tabs.find(t => t.active).history.length > 1 &&
-                this.state.tabs.find(t => t.active).historymarker > 0
+                this.state.tabs.find(t => t.active).historyMarker > 0
               )
             }
             onClick={() => this.goForward()}
@@ -1018,8 +988,8 @@ class Browser extends React.Component<Props, State> {
             iconClass={
               this.props.config &&
               this.props.config.bookmarks &&
-              this.props.config.bookmarks.browser &&
-              this.props.config.bookmarks.browser.length > 0 &&
+              this.props.config.bookmarks[this.props.assignmentId || "browser"] &&
+              this.props.config.bookmarks[this.props.assignmentId || "browser"].length > 0 &&
               "fas fa-bookmark"
             }
           />
@@ -1027,7 +997,6 @@ class Browser extends React.Component<Props, State> {
             <div className="browserTabHolder" ref={r => (this.tabHolder = r)}>
               {tabElements}
             </div>
-            {/*this.state.drag && this.showDragOptions()*/}
           </div>
           <BrowserNavigationButton icon="plus" onClick={() => this.openNewTab({})} />
           {overflowTabElements.length > 0 ? (
@@ -1054,7 +1023,6 @@ class Browser extends React.Component<Props, State> {
                   type="high"
                   customStyles={{ marginTop: "16px" }}
                   onClick={() => {
-                    console.log("TEST", sa.assignmentId, this.state.selectAccount.tabId);
                     this.props.setApp(sa.assignmentId);
                     this.closeTab(this.state.selectAccount.tabId);
                     this.setState({ selectAccount: null });

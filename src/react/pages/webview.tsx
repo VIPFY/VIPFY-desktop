@@ -344,7 +344,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                       : context.isActive
                       ? { height: "calc(100vh - 32px - 40px - 1px)" }
                       : { height: "calc(100vh - 32px - 1px)" }
-                    //{ height: "100px" }
                   }
                 />
               )}
@@ -411,9 +410,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   progress={progress => this.setState({ progress })}
                   speed={this.state.loginspeed || 1}
                   style={
-                    context.isActive
-                      ? { height: "calc(100vh - 24px - 40px)" }
-                      : { height: "calc(100vh - 24px)" }
+                    is.macOS()
+                      ? context.isActive
+                        ? { height: "calc(100vh - 24px - 40px)" }
+                        : { height: "calc(100vh - 24px)" }
+                      : context.isActive
+                      ? { height: "calc(100vh - 32px - 40px)" }
+                      : { height: "calc(100vh - 32px)" }
                   }
                   interactionHappenedCallback={() => {
                     let interactions = this.state.interactions;

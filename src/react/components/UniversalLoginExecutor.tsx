@@ -189,10 +189,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
     const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      //TODO HISTORY
-      //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
-
-      //TODO: [VIP-1210] Choose account when there are multiple ones
       if (
         app.data.fetchLicenceAssignmentsByDomain &&
         app.data.fetchLicenceAssignmentsByDomain.length > 0
@@ -283,13 +279,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                 this.setState({ solve401: {} });
               }
               if (this.props.setUrl) {
-                // console.log("OutPAGE", e);
                 this.props.setUrl(e.url);
               }
             }}
             onDidNavigateInPage={e => {
               if (this.props.setUrl) {
-                //console.log("INPAGE", e);
                 this.props.setUrl(e.url);
               }
             }}
@@ -297,14 +291,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               this.props.setViewTitle && this.props.setViewTitle(title.title)
             }
             onDidFailLoad={e => this.props.didFailLoad && this.props.didFailLoad(e)}
-            /* onLoadCommit={e => console.log("onLoadCommit", e)}
-            onDidFinishLoad={e => console.log("onDidFinishLoad", e)}
-            onDidFailLoad={e => console.log("onDidFailLoad", e)}
-            onDidFrameFinishLoad={e => console.log("onDidFrameFinishLoad", e)}
-            onDidStartLoading={e => console.log("onDidStartLoading", e)}
-            onDidStopLoading={e => console.log("onDidStopLoading", e)}
-            onDomReady={e => console.log("onDomReady", e)}
-            onUpdateTargetUrl={e => console.log("onUpdateTargetUrl", e)}*/
           />
           {this.state.multipleChoose != null && (
             <PopupBase small={true}>
@@ -721,8 +707,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           const image = await webview.getWebContents().capturePage();
           const size = image.getSize();
 
-          const imgurl = null;
-          /*size.width == 0
+          const imgurl =
+            size.width == 0
               ? null
               : this.webpBufferToDataUrl(
                   await sharp(image.toPNG())
@@ -730,7 +716,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                     .webp({ quality: 80 })
                     .toBuffer()
                 );
-*/
+
           this.props.setResult(resultValues, imgurl);
         }, this.screenshotDelay);
       } else {

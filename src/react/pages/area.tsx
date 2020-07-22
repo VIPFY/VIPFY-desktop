@@ -26,9 +26,6 @@ import Security from "./security";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
-//import TestingBilling from "../components/admin/testingbilling";
-import ViewHandler from "./viewhandler";
-//import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
@@ -40,7 +37,6 @@ import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
-//import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import ServiceIntegrator from "../components/admin/ServiceIntegrator";
@@ -148,22 +144,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
     this.setState({ showService: assignmentId });
     this.props.history.push(`/area/browser/${assignmentId}`);
-    /*if (this.state.openInstances[assignmentId]) {
-      this.setState(prevState => {
-        const newstate = {
-          ...prevState,
-          app: assignmentId,
-          licenceID: assignmentId,
-          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
-        };
-        return newstate;
-      });
-      this.props.history.push(`/area/browser/${assignmentId}`);
-    } else {
-      console.log("SET APP", assignmentId);
-      this.addWebview(assignmentId, true);
-      this.props.history.push(`/area/browser/${assignmentId}`);
-    }*/
   };
 
   setDomain = (boughtplan: number, domain: string) => {
@@ -263,13 +243,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     }));
   };
 
-  /*  setInstanceUrl = (viewID: number, url: string) => {
-    const view = this.state.webviews.find(view => view.key == viewID);
-    view.view.props.forceUrl = url;
-  }; */
-
   closeInstance = (viewID: number, licenceID: number) => {
-    console.log("CLOSE", viewID, licenceID, this.state.webviews);
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -290,13 +264,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
-          console.log(
-            "TEST",
-            prevState.webviews[position],
-            prevState.webviews[0],
-            prevState.webviews.length - 1,
-            prevState.openInstances
-          );
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -517,7 +484,6 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   handleClose = (viewID: number, licenceID: number) => {
     this.setState(prevState => {
-      console.log("TEST", prevState.webviews, viewID, licenceID);
       const webviews = prevState.webviews.filter(view => view.key != viewID);
 
       return { webviews };
@@ -765,7 +731,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                           </Query>
                         )}
                       />
-                      {/*<Route render={() => <HistoryButtons viewID={this.state.viewID} />} />*/}
                       <Switch>
                         <Route
                           exact
@@ -947,21 +912,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                         }}>
                         {browserlist}
                       </div>
-                      {/*<ViewHandler
-                        showView={this.state.viewID}
-                        views={this.state.webviews}
-                        sidebarOpen={sidebarOpen}
-                      />*/}
-                      {/*<Tabs
-                        tabs={this.state.webviews}
-                        setInstance={this.setInstance}
-                        viewID={this.state.viewID}
-                        handleDragStart={this.handleDragStart}
-                        handleDragOver={this.handleDragOver}
-                        handleDragEnd={this.handleDragEnd}
-                        handleDragLeave={this.handleDragLeave}
-                        handleClose={this.handleClose}
-                      />*/}
                       {this.props.needspasswordchange &&
                         !localStorage.getItem("impersonator-token") && (
                           <ForcedPasswordChange email={this.props.emails[0].email} />
