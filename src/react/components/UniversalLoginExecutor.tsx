@@ -721,8 +721,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           const image = await webview.getWebContents().capturePage();
           const size = image.getSize();
 
-          const imgurl =
-            size.width == 0
+          const imgurl = null;
+          /*size.width == 0
               ? null
               : this.webpBufferToDataUrl(
                   await sharp(image.toPNG())
@@ -730,7 +730,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                     .webp({ quality: 80 })
                     .toBuffer()
                 );
-
+*/
           this.props.setResult(resultValues, imgurl);
         }, this.screenshotDelay);
       } else {
@@ -907,32 +907,37 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           } else {
             throw new Error("unknown string");
           }
-
-          for await (const c of text) {
-            if (this.loginState.unloaded) {
-              return;
+          if (text) {
+            for await (const c of text) {
+              if (this.loginState.unloaded) {
+                return;
+              }
+              const shift = c.toLowerCase() != c;
+              const modifiers = shift ? ["shift"] : [];
+              w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+              w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+              await this.modifiedSleep(Math.random() * 20 + 50);
+              if (this.loginState.unloaded) {
+                return;
+              }
+              w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+              this.progress += 0.2 / text.length;
+              await this.modifiedSleep(Math.random() * 30 + 200);
             }
             await this.modifiedSleep(500);
             if (this.loginState.unloaded) {
               return;
             }
-            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            this.progress += 0.2 / text.length;
-            await this.modifiedSleep(Math.random() * 30 + 200);
-          }
-          await this.modifiedSleep(500);
-          if (this.loginState.unloaded) {
-            return;
-          }
-          w.send("formFieldFilled");
-          if (e.args[0] == "domain") {
-            this.loginState.domainEnteredEnd = true;
-          } else if (e.args[0] == "username") {
-            this.loginState.emailEnteredEnd = true;
-          } else if (e.args[0] == "password") {
-            this.loginState.passwordEnteredEnd = true;
-          } else if (!e.args[1]) {
-            throw new Error("unknown string");
+            w.send("formFieldFilled");
+            if (e.args[0] == "domain") {
+              this.loginState.domainEnteredEnd = true;
+            } else if (e.args[0] == "username") {
+              this.loginState.emailEnteredEnd = true;
+            } else if (e.args[0] == "password") {
+              this.loginState.passwordEnteredEnd = true;
+            } else {
+              throw new Error("unknown string");
+            }
           }
         }
         break;
