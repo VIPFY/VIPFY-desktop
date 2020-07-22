@@ -429,12 +429,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     }));
   };
 
-  setInstance = viewID => {
-    const licenceID = this.state.webviews.find(e => e.key == viewID).licenceID;
-    this.setState({ app: licenceID, licenceID, viewID });
-    this.props.history.push(`/area/app/${licenceID}`);
-  };
-
   closeInstance = (viewID: number, licenceID: number) => {
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
