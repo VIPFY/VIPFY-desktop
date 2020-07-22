@@ -18,9 +18,11 @@ import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
 
+const DUMMY_ID = 1;
+
 const APP_ALTERNATIVE_1 = {
   options: { marketplace: true },
-  id: 1234,
+  id: DUMMY_ID + 1,
   name: "Miro",
   icon: "Miro/logo.png",
   color: "lemonchiffon",
@@ -35,7 +37,7 @@ const APP_ALTERNATIVE_1 = {
 
 const APP_ALTERNATIVE_2 = {
   options: { marketplace: true },
-  id: 1234,
+  id: DUMMY_ID + 2,
   name: "Dribbble",
   icon: "Dribbble/logo.png",
   color: "pink",
@@ -50,7 +52,7 @@ const APP_ALTERNATIVE_2 = {
 
 const APP_ALTERNATIVE_3 = {
   options: { marketplace: true },
-  id: 1234,
+  id: DUMMY_ID + 3,
   name: "Sendgrid",
   icon: "Sendgrid/logo.png",
   color: "lightblue",
@@ -65,7 +67,7 @@ const APP_ALTERNATIVE_3 = {
 
 const DUMMY_APP = {
   options: { marketplace: true },
-  id: 123,
+  id: DUMMY_ID,
   name: "Survey Monkey",
   icon: "Miro/logo.png",
   category: "Communication",
@@ -323,21 +325,24 @@ interface AppDetailsState {
   descriptionExpanded: boolean;
 }
 
+const RATINGS_COLORS = ["#1c8db0", "#ffd57b", "#a9b531", "#f69d3d"];
+
 class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
   constructor(props) {
     super(props);
     this.state = { descriptionExpanded: false };
   }
 
-  RATINGS_COLORS = ["#1c8db0", "#ffd57b", "#a9b531", "#f69d3d"];
+  getParentPath = () => {
+    const child = this.props.history.location.pathname;
+    return child.substring(0, child.lastIndexOf("/"));
+  };
 
-  goToApp = (appId: number) =>
-    this.props.history.push(this.props.history.location.pathname + "/" + appId);
+  goToApp = (appId: number) => this.props.history.push(this.getParentPath() + "/" + appId);
 
-  goToCheckout = (planId: number) =>
-    this.props.history.push(
-      this.props.history.location.pathname + "/" + DUMMY_APP.id + "/" + planId
-    );
+  goToCheckout = (planId: number) => {
+    this.props.history.push(this.props.history.location.pathname + "/" + planId);
+  };
 
   expandDescription = () => this.setState({ descriptionExpanded: true });
 
@@ -545,8 +550,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                               strokeLinecap: "butt",
                               textSize: "13px",
                               textColor: "#3b4c5d",
-                              pathColor: this.RATINGS_COLORS[i % 4],
-                              trailColor: this.RATINGS_COLORS[i % 4] + "33"
+                              pathColor: RATINGS_COLORS[i % 4],
+                              trailColor: RATINGS_COLORS[i % 4] + "33"
                             })}
                           />
                         </div>

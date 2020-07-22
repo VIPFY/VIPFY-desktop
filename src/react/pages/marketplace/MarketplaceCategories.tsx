@@ -44,7 +44,7 @@ const DUMMY_APP = {
 };
 
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/categories/${appId}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/categories/${appId}`);
 
   renderCategory(categoryName: string, icon: string) {
     icon = "fa-star";

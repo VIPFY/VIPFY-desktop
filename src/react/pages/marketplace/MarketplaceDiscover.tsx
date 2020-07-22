@@ -39,7 +39,7 @@ const DUMMY_APP = {
 };
 
 class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/${appId}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/${appId}`);
 
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
