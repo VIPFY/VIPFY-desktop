@@ -414,14 +414,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     const sidebarLinks = [
       ,
-      {
-        label: "The Web",
-        location: "browser/browser",
-        icon: "globe",
-        show: true,
-        highlight: "browserelement",
-        strict: true
-      } /* {
+      /* {
         label: "Dashboard",
         location: "dashboard",
         icon: "home",
@@ -446,8 +439,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "domains",
         icon: "atlas",
         show: config.showDomains
-      }*/,
-      {
+      }*/ {
         label: "Open Service",
         location: "dashboard",
         icon: "plus",
