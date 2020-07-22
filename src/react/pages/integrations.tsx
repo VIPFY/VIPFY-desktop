@@ -7,7 +7,7 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import PopupSSO from "../popups/universalPopups/PopupSSO";
 import AppCardIntegrations from "../components/services/appCardIntegrations";
 import SelfSaving from "../popups/universalPopups/SelfSavingIllustrated";
-import { SSO } from "../interfaces";
+import { SSO, WorkAround } from "../interfaces";
 import { ErrorComp } from "../common/functions";
 
 export type AppPageState = {
@@ -27,7 +27,7 @@ class Integrations extends React.Component<{}, AppPageState> {
 
   render() {
     return (
-      <Query query={fetchApps}>
+      <Query<WorkAround, WorkAround> query={fetchApps}>
         {({ data, loading, error }) => {
           if (loading) {
             return <LoadingDiv />;
@@ -92,7 +92,9 @@ class Integrations extends React.Component<{}, AppPageState> {
                 <button
                   type="button"
                   className="button-external"
-                  onClick={() => this.setState({ popupSSO: true })}>
+                  onClick={() =>
+                    /*this.setState({ popupSSO: true })*/ this.props.moveTo("addcustomservice")
+                  }>
                   <i className="fal fa-universal-access" />
                   <span>Add your own Service</span>
                 </button>

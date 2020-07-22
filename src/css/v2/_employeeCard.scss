@@ -1,0 +1,20 @@
+.employeeCard {
+  color: $midgrey-light;
+
+  .details {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: min-content 1fr;
+    font-size: 12px;
+  }
+
+  .serviceLogosRow {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 0 -4px -4px 0;
+
+    > * {
+      margin: 0 4px 4px 0;
+    }
+  }
+}

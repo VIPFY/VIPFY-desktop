@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.13.16",
+  "version": "0.15.0",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
@@ -44,6 +44,10 @@
     {
       "name": "Stanimir Iglev",
       "email": "stanimir.iglev@vipfy.store"
+    },
+    {
+      "name": "Eva Kiszka",
+      "email": "eva.kiszka@vipfy.store"
     }
   ],
   "license": "proprietary",
@@ -120,6 +124,7 @@
     "react-apexcharts": "^1.3.7",
     "react-apollo": "^3.1.5",
     "react-calendar": "^2.19.2",
+    "react-circular-progressbar": "^2.0.3",
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.13.1",
     "react-draft-wysiwyg": "^1.14.5",

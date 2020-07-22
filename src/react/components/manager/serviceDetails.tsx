@@ -195,13 +195,15 @@ class ServiceDetails extends React.Component<Props, State> {
           {this.props.isadmin && (
             <div className="editOptions">
               <i className="fal fa-link editbuttons" />
-              <i
-                className="fal fa-trash-alt editbuttons"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.setState({ terminate: true });
-                }}
-              />
+              {(!e.options || !e.options.private) && (
+                <i
+                  className="fal fa-trash-alt editbuttons"
+                  onClick={e => {
+                    e.stopPropagation();
+                    this.setState({ terminate: true });
+                  }}
+                />
+              )}
             </div>
           )}
         </div>

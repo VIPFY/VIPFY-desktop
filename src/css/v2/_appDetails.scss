@@ -1,0 +1,299 @@
+.appDetails {
+  color: $midgrey-light;
+
+  .breadCrumbs {
+    margin-bottom: 8px;
+    font-weight: 400;
+
+    span {
+      text-decoration: underline;
+    }
+  }
+
+  .link {
+    color: #3191f0;
+  }
+
+  .marketplaceContent {
+    > hr {
+      margin-top: 32px;
+
+      &:last-child {
+        display: none;
+      }
+    }
+  }
+
+  .serviceCard {
+    margin-top: 8px;
+    padding: 0 24px;
+
+    > hr {
+      margin: 0;
+    }
+
+    .cardSection {
+      padding: 16px 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+
+      .pic {
+        margin-right: 24px;
+
+        span {
+          &.largeScreen {
+            display: block;
+          }
+
+          &.smallScreen {
+            display: none;
+          }
+
+          @include sm {
+            &.largeScreen {
+              display: none;
+            }
+
+            &.smallScreen {
+              display: block;
+            }
+          }
+        }
+      }
+
+      .details {
+        flex-grow: 1;
+        display: grid;
+        grid-gap: 16px;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: repeat(3, 24px);
+        grid-auto-flow: column;
+        align-content: center;
+        align-items: center;
+
+        @include sm {
+          grid-template-rows: repeat(6, auto);
+        }
+
+        .fa-comments-alt,
+        .fa-globe {
+          margin-right: 8px;
+        }
+
+        .fa-external-link {
+          margin-left: 8px;
+        }
+      }
+
+      .licenseTags {
+        width: 192px;
+        margin-left: 24px;
+
+        .tag {
+          height: 32px;
+          border-radius: 8px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .pricingTag {
+      width: 144px;
+    }
+  }
+
+  h2 {
+    margin: 16px 0;
+  }
+
+  .toggleBtn {
+    font-size: 14px;
+    color: #55ccbf;
+
+    .fal {
+      margin-left: 8px;
+    }
+  }
+
+  .previewSection {
+    .card {
+      padding: 16px;
+    }
+
+    .picHolder {
+      padding-top: 75%;
+
+      .servicePreviewPic {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        max-height: 100%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  }
+
+  .descriptionSection {
+    .description {
+      font-family: "Roboto", sans-serif;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .lineClamp {
+      height: 5em;
+      overflow: hidden;
+    }
+  }
+
+  .quotesSection {
+    .card {
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+
+      :first-child {
+        flex-grow: 1;
+      }
+    }
+
+    blockquote {
+      font-size: 20px;
+    }
+  }
+
+  .userGroupStatisticsSection {
+    padding-bottom: -16px;
+
+    .statistic {
+      display: grid;
+      grid-template-columns: 1fr 32px;
+      grid-gap: 16px;
+      align-items: center;
+      margin-bottom: 4px;
+
+      .meter {
+        border-radius: 6px;
+
+        .measured {
+          height: 24px;
+          border-radius: 6px;
+        }
+      }
+    }
+
+    .characteristic {
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .rating {
+    margin-bottom: 8px;
+
+    .CircularProgressbar-text {
+      dominant-baseline: central;
+    }
+  }
+
+  .plans {
+    display: grid;
+    grid-gap: 8px;
+    grid-template-columns: 1fr;
+    grid-auto-rows: minmax(240px, auto);
+
+    .card {
+      display: flex;
+
+      > div {
+        padding: 16px 24px;
+      }
+    }
+
+    .toggleBtn {
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style-type: none;
+
+      li {
+        margin-bottom: 5px;
+        line-height: 1.5em;
+        height: auto;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        &::before {
+          font-size: 70px;
+          vertical-align: middle;
+          content: "\00b7";
+          color: $primarygreen;
+          display: inline-block;
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .centeredSection {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+      height: auto;
+      margin: 0 auto;
+      position: relative;
+
+      > * {
+        text-align: center;
+      }
+    }
+
+    .pricing {
+      background-color: $primarygreen-light;
+
+      .price {
+        display: flex;
+        margin-bottom: -8px;
+        justify-content: center;
+
+        .priceNumber {
+          font-size: 47px;
+        }
+
+        .priceCurrency {
+          margin: 0 0 33px 4px;
+        }
+      }
+
+      .centeredPricing {
+        > hr {
+          border: none;
+          border-top: 1px solid;
+          margin: 8px 0;
+
+          &:last-child {
+            display: none;
+          }
+        }
+      }
+    }
+
+    .features {
+      flex: 2 2 0;
+    }
+  }
+}

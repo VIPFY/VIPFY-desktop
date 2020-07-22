@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import RemoveTeamMember from "./removeTeamMember";
 import { concatName } from "../../common/functions";
 
@@ -60,7 +60,7 @@ class EmployeeDetails extends React.Component<Props, State> {
       <div className="tableRow" onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
         <div className="tableMain">
           <div className="tableColumnSmall">
-            <PrintEmployeeSquare employee={employee} />
+            <EmployeePicture employee={employee} />
             <span className="name" title={concatName(employee)}>
               {employee.firstname} {employee.lastname}
             </span>

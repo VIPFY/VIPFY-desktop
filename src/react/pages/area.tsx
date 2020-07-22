@@ -5,11 +5,10 @@ import { ipcRenderer } from "electron";
 import { Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 
-import AppPage from "./apppage";
 import Billing from "./billing";
 import Dashboard from "./dashboard";
 import Domains from "./domains";
-import Marketplace from "./marketplace/Marketplace";
+import MarketplaceDiscover from "./marketplace/MarketplaceDiscover";
 import MarketplaceCategories from "./marketplace/MarketplaceCategories";
 import MessageCenter from "./messagecenter";
 import AdminDashboard from "../components/admin/Dashboard";
@@ -27,6 +26,7 @@ import Security from "./security";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
+//import TestingBilling from "../components/admin/testingbilling";
 import ViewHandler from "./viewhandler";
 //import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
@@ -54,17 +54,18 @@ import ServiceOverview from "./manager/serviceOverview";
 import ServiceDetails from "./manager/serviceDetails";
 import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
-//import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
 import Workspace from "./Workspace";
-//import PaymentMethod from "./billing/paymentMethod";
 import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
 import Browser from "./browser";
+import AddCustomServicePage from "./addCustomService";
+import AppDetails from "./marketplace/AppDetails";
+import Checkout from "./marketplace/Checkout";
 
 interface AreaProps {
   id: string;
@@ -159,6 +160,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       });
       this.props.history.push(`/area/browser/${assignmentId}`);
     } else {
+      console.log("SET APP", assignmentId);
       this.addWebview(assignmentId, true);
       this.props.history.push(`/area/browser/${assignmentId}`);
     }*/
@@ -191,6 +193,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
+    console.log("ADDWEBVIEW", licenceID, this.state);
     this.setState(prevState => {
       const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
       const l = {
@@ -266,6 +269,7 @@ class Area extends React.Component<AreaProps, AreaState> {
   }; */
 
   closeInstance = (viewID: number, licenceID: number) => {
+    console.log("CLOSE", viewID, licenceID, this.state.webviews);
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -286,6 +290,13 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
+          console.log(
+            "TEST",
+            prevState.webviews[position],
+            prevState.webviews[0],
+            prevState.webviews.length - 1,
+            prevState.openInstances
+          );
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -458,9 +469,14 @@ class Area extends React.Component<AreaProps, AreaState> {
       {
         label: "Marketplace",
         location: "marketplace",
-        icon: "shopping-cart",
         show: config.showMarketplace,
-        highlight: "marketplaceelement"
+        highlight: "marketplace"
+      },
+      {
+        label: "Market Categories",
+        location: "marketplace/categories",
+        show: config.showMarketplace,
+        highlight: "marketplace"
       }
     ]
   };
@@ -501,6 +517,7 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   handleClose = (viewID: number, licenceID: number) => {
     this.setState(prevState => {
+      console.log("TEST", prevState.webviews, viewID, licenceID);
       const webviews = prevState.webviews.filter(view => view.key != viewID);
 
       return { webviews };
@@ -553,20 +570,10 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "messagecenter", component: MessageCenter },
       { path: "messagecenter/:person", component: MessageCenter },
       { path: "billing", component: Billing, admin: true },
-      /*{
-        path: "paymentdata/paymentmethod",
-        component: PaymentMethod,
-        admin: true,
-        addprops: {
-          breadcrumbs: [{ text: "Payment Data", link: "billing" }],
-          heading: "Payment Method"
-        },
-        design: 2
-      },*/
-      { path: "marketplace", component: MarketplaceCategories, admin: true },
-      { path: "marketplace/:appid/", component: AppPage, admin: true },
-      { path: "marketplace/:appid/:action", component: AppPage, admin: true },
-      //{ path: "marketplace/order/:appid/:planid", component: Order, admin: true },
+      { path: "marketplace", component: MarketplaceDiscover, admin: true },
+      { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
+      { path: "marketplace/app/:appid", component: AppDetails, admin: true },
+      { path: "marketplace/app/:appid/plan/:planid", component: Checkout, admin: true },
       { path: "integrations", component: Integrations },
       { path: "usage", component: UsageStatistics, admin: true },
       { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
@@ -583,7 +590,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "admin/email-integration/:emailid", component: LoginIntegrator, admin: true },
       { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
       { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
-      //{ path: "admin/testingbilling", component: TestingBilling, admin: true },
       { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
       { path: "ssoconfig", component: SsoConfigurator, admin: true },
       { path: "ssotest", component: SsoTester, admin: true },
@@ -596,10 +602,15 @@ class Area extends React.Component<AreaProps, AreaState> {
       { path: "dmanager/:teamid", component: TeamDetails, admin: true },
       { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
       { path: "company", component: CompanyDetails, admin: true },
-      { path: "admin/inboundemails", component: InboundEmails, admin: true }
-      //{ path: "browser", component: Browser }
-      //{ path: "browser/:assignmentid", component: Browser },
-      //{ path: "browser/:serviceid", component: Browser }
+      { path: "admin/inboundemails", component: InboundEmails, admin: true },
+      { path: "addcustomservice", component: AddCustomServicePage, greybackground: true },
+      {
+        path: "manager/addcustomservice/:appname",
+        component: AddCustomServicePage,
+        greybackground: true,
+        manager: true,
+        admin: true
+      }
     ];
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
@@ -770,79 +781,90 @@ class Area extends React.Component<AreaProps, AreaState> {
                           render={() => <SupportPage {...this.state} fromErrorPage={true} />}
                         />
 
-                        {routes.map(({ path, component, admin, addprops, design }) => {
-                          const RouteComponent = component;
-                          let marginLeft = 64;
-                          if (admin) {
-                            marginLeft += 176;
-                          }
-                          if (sidebarOpen) {
-                            marginLeft += 176;
-                          }
-                          if (admin && !this.props.isadmin) {
-                            return;
-                          } else {
-                            return (
-                              <Route
-                                key={path}
-                                exact
-                                path={`/area/${path}`}
-                                render={props => (
-                                  <div
-                                    className={`full-working ${chatOpen ? "chat-open" : ""}`}
-                                    style={{ marginLeft: `${marginLeft}px` }}>
-                                    <ResizeAware>
-                                      {admin && (
-                                        <div
-                                          className={`sidebar-adminpanel${
-                                            sidebarOpen ? "" : " small"
-                                          }`}
-                                          ref={element =>
-                                            context.addRenderElement({
-                                              key: "adminSideBar",
-                                              element
-                                            })
-                                          }>
-                                          <div className="adminHeadline">ADMIN PANEL</div>
-                                          <ul>
-                                            {Object.keys(this.categories).map(categorie =>
-                                              this.rendercategories(
-                                                this.categories,
-                                                categorie,
-                                                context.addRenderElement
-                                              )
+                        {routes.map(
+                          ({
+                            path,
+                            component,
+                            admin,
+                            addprops,
+                            design,
+                            greybackground,
+                            manager
+                          }) => {
+                            const RouteComponent = component;
+                            let marginLeft = 64;
+                            if (admin) {
+                              marginLeft += 176;
+                            }
+                            if (sidebarOpen) {
+                              marginLeft += 176;
+                            }
+                            if (admin && !this.props.isadmin) {
+                              return;
+                            } else {
+                              return (
+                                <Route
+                                  key={path}
+                                  exact
+                                  path={`/area/${path}`}
+                                  render={props => (
+                                    <div
+                                      className={`full-working ${chatOpen ? "chat-open" : ""}`}
+                                      style={{ marginLeft: `${marginLeft}px` }}>
+                                      <ResizeAware>
+                                        {admin && (
+                                          <div
+                                            className={`sidebar-adminpanel${
+                                              sidebarOpen ? "" : " small"
+                                            }`}
+                                            ref={element =>
+                                              context.addRenderElement({
+                                                key: "adminSideBar",
+                                                element
+                                              })
+                                            }>
+                                            <div className="adminHeadline">ADMIN PANEL</div>
+                                            <ul>
+                                              {Object.keys(this.categories).map(categorie =>
+                                                this.rendercategories(
+                                                  this.categories,
+                                                  categorie,
+                                                  context.addRenderElement
+                                                )
+                                              )}
+                                            </ul>
+                                          </div>
+                                        )}
+                                        {addprops && addprops.heading && (
+                                          <div className="breadcrumbs">
+                                            {this.printBreadcrumbs(
+                                              addprops.heading,
+                                              addprops.breadcrumbs
                                             )}
-                                          </ul>
-                                        </div>
-                                      )}
-                                      {addprops && addprops.heading && (
-                                        <div className="breadcrumbs">
-                                          {this.printBreadcrumbs(
-                                            addprops.heading,
-                                            addprops.breadcrumbs
-                                          )}
-                                        </div>
-                                      )}
-                                      {addprops && addprops.heading && (
-                                        <div className="pageHeading">{addprops.heading}</div>
-                                      )}
-                                      <RouteComponent
-                                        setApp={this.setApp}
-                                        toggleAdmin={this.toggleAdmin}
-                                        adminOpen={this.state.adminOpen}
-                                        moveTo={this.moveTo}
-                                        {...addprops}
-                                        {...this.props}
-                                        {...props}
-                                        licences={licences}
-                                      />
-                                    </ResizeAware>
-                                  </div>
-                                )}
-                              />
-                            );
+                                          </div>
+                                        )}
+                                        {addprops && addprops.heading && (
+                                          <div className="pageHeading">{addprops.heading}</div>
+                                        )}
+                                        <RouteComponent
+                                          setApp={this.setApp}
+                                          toggleAdmin={this.toggleAdmin}
+                                          adminOpen={this.state.adminOpen}
+                                          moveTo={this.moveTo}
+                                          {...addprops}
+                                          {...this.props}
+                                          {...props}
+                                          licences={licences}
+                                          manager={manager}
+                                        />
+                                      </ResizeAware>
+                                    </div>
+                                  )}
+                                />
+                              );
+                            }
                           }
-                        })}
+                        )}
 
                         <Route
                           exact

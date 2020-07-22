@@ -1,0 +1,37 @@
+.argument {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &.pro {
+    .tag {
+      color: $primarygreen;
+      background-color: #d6f2ef;
+    }
+  }
+
+  &.con {
+    .tag {
+      color: $red-darker;
+      background-color: $red-lighter;
+    }
+  }
+
+  .tag {
+    padding: 0;
+    margin-right: 8px;
+    min-width: 24px;
+    height: 24px;
+    font-size: 14px;
+    color: $white;
+
+    > .span {
+      font-size: 12px;
+      width: 12px;
+    }
+  }
+}

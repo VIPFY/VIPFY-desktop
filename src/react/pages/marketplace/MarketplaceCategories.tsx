@@ -3,13 +3,14 @@ import classNames from "classnames";
 
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
-import Card from "../../components/marketplace/Card";
+import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import Tag from "../../common/Tag";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
+import PageHeader from "../../components/PageHeader";
 
 interface MarketplaceProps {
   history: any;
@@ -41,15 +42,17 @@ const DUMMY_APP = {
 };
 
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
+
   renderCategory(categoryName: string, icon: string) {
     icon = "fa-star";
 
     return (
-      <Tag>
-        <span>
-          <span className={classNames("fal", "fa-fw", icon)} />
-          <span className="categoryName">{categoryName}</span>
-        </span>
+      <Tag key={categoryName}>
+        <>
+          <div className={classNames("fal", "fa-fw", icon)} />
+          <div className="categoryName">{categoryName}</div>
+        </>
       </Tag>
     );
   }
@@ -71,23 +74,28 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <div className="marketplaceHeader headline">
-            <h1 style={{ gridRowStart: 1 }}>Categories</h1>
-            <span className="searchBar">Search a Service in Marketplace</span>
-
-            <div className="categories">
+          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
+            <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
-          </div>
+          </PageHeader>
 
           <div className="marketplaceContent">
             <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
-                <div className="multipleOfThreeGrid">
-                  <Card app={DUMMY_APP} showPic={true} />
-                  <Card app={DUMMY_APP} showPic={true} />
-                  <Card app={DUMMY_APP} showPic={true} />
+                <div className="grid3Cols smGrid1Col">
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    showPic={true}
+                    onClick={() => this.goToApp(DUMMY_APP.id)}
+                  />
+                  <AppOverviewCard
+                    app={DUMMY_APP}
+                    showPic={true}
+                    onClick={() => this.goToApp(DUMMY_APP.id)}
+                  />
                 </div>
               </div>
             </MarketplaceSection>
@@ -95,13 +103,17 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <MarketplaceSection>
               <h2 className="headline">Headline</h2>
               <div className="apps">
-                <div className="multipleOfFourGrid">
-                  <Card app={DUMMY_APP} />
-                  <Card app={DUMMY_APP} />
-                  <Card app={DUMMY_APP} />
-                  <Card app={DUMMY_APP} />
+                <div className="grid4Cols smGrid2Cols">
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
                 </div>
-                <Card app={DUMMY_APP} isWideFormat={true} />
+                <AppOverviewCard
+                  app={DUMMY_APP}
+                  isWideFormat={true}
+                  onClick={() => this.goToApp(DUMMY_APP.id)}
+                />
               </div>
             </MarketplaceSection>
           </div>
@@ -109,8 +121,6 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
       </div>
     );
   }
-
-  openAppDetails = id => this.props.history.push(`/area/marketplace/${id}/`);
 
   render() {
     return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;

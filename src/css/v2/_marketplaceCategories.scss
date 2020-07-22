@@ -1,13 +1,5 @@
 .categories {
-  grid-column: 1 / -1;
-  grid-row-start: 2;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  margin-bottom: 8px;
-
-  @media (max-width: 1240px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  margin: 24px 0 8px;
 
   .tag {
     display: flex;
@@ -17,12 +9,12 @@
     height: 40px;
 
     &:hover {
-      background-color: white;
+      background-color: $white;
     }
 
     .fa-fw {
       font-size: 18px;
-      color: #3b4c5d;
+      color: $midgrey-light;
       margin-right: 8px;
     }
 

@@ -1,9 +1,9 @@
 .sidebar {
-  background-color: $sidebar-background;
+  background-color: $darkgrey-lighter;
   height: 100%;
   z-index: 300;
   float: left;
-  color: #fff;
+  color: $white;
   user-select: none;
   width: 240px;
   //border-radius: 0 16px 16px 0;
@@ -36,7 +36,7 @@
     height: calc(100% - 32px);
     z-index: 200;
     transition: all 600ms ease;
-    color: white;
+    color: $white;
     left: 224px;
     top: 32px;
     overflow: auto;
@@ -115,7 +115,7 @@
     height: 1px;
     margin-left: 16px;
     margin-right: 16px;
-    background: #fff;
+    background: $white;
   }
 
   &-tooltip {
@@ -176,15 +176,15 @@
     overflow: visible;
 
     &:hover {
-      background: #26394a;
+      background: $darkgrey-light;
     }
 
     &.active {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
 
     &.selected {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
 
     &:disabled {
@@ -251,7 +251,7 @@
   }
 
   .hold {
-    border: solid $vipfy-primary-color 1px;
+    border: solid $primarygreen 1px;
     opacity: 0.3;
     transition: all 300ms ease-in-out;
   }
@@ -384,7 +384,7 @@
       z-index: -1;
       position: absolute;
       left: -5px;
-      background: #30475dff;
+      background: ($darkgrey-lighter) ff;
       box-shadow: 0 2px 2px #00000029;
       border-radius: 4px;
     }
@@ -400,7 +400,7 @@
         padding: 0.5rem 10px;
 
         &:hover {
-          background-color: $vipfy-primary-color;
+          background-color: $primarygreen;
         }
       }
     }
@@ -451,7 +451,7 @@
     position: relative;
 
     & > .itemHolder {
-      background: #1e2e3b;
+      background: $darkgrey-dark;
     }
   }
 
@@ -486,7 +486,7 @@
     text-align: center;
     border-radius: 16px;
     background-color: #ff6f61;
-    color: #ffffff;
+    color: $white;
     position: absolute;
   }
 
@@ -506,7 +506,7 @@
 .sidebar-search {
   @extend .sidebar-link-caption;
   margin-left: 0px;
-  color: #fff;
+  color: $white;
   outline: none;
   border: 0;
   background-image: none;
@@ -551,7 +551,7 @@
 }
 
 .white-background {
-  background: #fff;
+  background: $white;
   height: 32px;
   width: 32px;
   position: absolute;
@@ -574,7 +574,7 @@
     background: $vipfy-vacation-blue;
     transform: rotate(44deg);
     z-index: 1;
-    color: #fff;
+    color: $white;
   }
 }
 
@@ -694,7 +694,7 @@
   border-radius: 4px;
   z-index: 1000;
   width: 24rem;
-  background-color: white;
+  background-color: $white;
   margin: 0.125rem 0 0;
   background-clip: padding-box;
   border: 1px solid #e9ecef;
@@ -803,11 +803,11 @@
 }
 
 .sidebar-neu {
-  background-color: $sidebar-background;
+  background-color: $darkgrey-lighter;
   height: 100%;
   z-index: 300;
   float: left;
-  color: #fff;
+  color: $white;
   user-select: none;
   display: grid;
   grid-template-rows: 32px calc(100% - 128px) 48px 32px;
@@ -850,12 +850,12 @@
     overflow: visible;
 
     &:hover {
-      background: #26394a;
+      background: $darkgrey-light;
       box-shadow: 0 2px 2px #00000029;
     }
 
     &.selected {
-      background: #30475daa;
+      background: ($darkgrey-lighter) aa;
       box-shadow: 0 2px 2px #00000029;
     }
   }

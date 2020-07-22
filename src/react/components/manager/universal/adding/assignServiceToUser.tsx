@@ -1,18 +1,17 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
-import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
 import { fetchApps } from "../../../../queries/products";
 import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
 import SelfSavingIllustrated from "../../../../popups/universalPopups/SelfSavingIllustrated";
-import { BrowserView } from "electron";
+import { WorkAround } from "../../../../interfaces";
 
 interface Props {
   continue: Function;
+  moveTo: Function;
 }
 
 interface State {
@@ -36,17 +35,17 @@ class AssignServiceToUser extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={fetchApps}>
+      <Query<WorkAround, WorkAround> query={fetchApps}>
         {({ loading, error, data }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           let apps = data.allApps;
 
-          apps.sort(function(a, b) {
+          apps.sort(function (a, b) {
             let nameA = a.name.toUpperCase(); // ignore upper and lowercase
             let nameB = b.name.toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
@@ -134,7 +133,12 @@ class AssignServiceToUser extends React.Component<Props, State> {
                   startvalue={this.state.service ? this.state.service + "" : ""}
                   livecode={c => this.props.continue(apps.find(a => a.id == c))}
                   noresults="Integrate as new service"
-                  noresultsClick={v => this.setState({ popupSSO: true, appname: v })}
+                  noresultsClick={
+                    v =>
+                      this.props.moveTo(
+                        `manager/addcustomservice/${encodeURIComponent(v)}`
+                      ) /*this.setState({ popupSSO: true, appname: v })*/
+                  }
                   fewResults={true}
                 />
               </div>

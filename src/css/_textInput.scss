@@ -1,0 +1,70 @@
+.universalLabel {
+  font-size: 12px;
+  padding-bottom: 4px;
+  color: $midgrey-light;
+  display: block;
+}
+.passwordIcon {
+  width: 20px;
+  text-align: center;
+  margin: 0px 16px;
+}
+.universalLabelInput {
+  display: flex;
+  border: solid 1px $lightgrey-darker;
+  border-radius: 8px;
+  &:hover {
+    border-color: $lightgrey-darkest;
+    color: #2a3642;
+  }
+  &:focus-within {
+    border-color: $primarygreen;
+    color: #2a3642;
+  }
+}
+
+.universalTextInput {
+  color: $midgrey-light;
+  text-align: left;
+  font-family: "Roboto";
+  padding: 0px 16px;
+  user-select: none;
+
+  &:disabled {
+    border-color: $lightgrey-light;
+    color: $midgrey-dark;
+    &:hover {
+      border-color: $lightgrey-light;
+      color: $midgrey-dark;
+    }
+    .universalLabel {
+      color: $midgrey-dark;
+    }
+    .universalHelperText {
+      color: $midgrey-dark;
+    }
+  }
+}
+
+.textField {
+  &.disabled {
+    border-color: $lightgrey-light;
+    color: $midgrey-dark;
+    &:hover {
+      border-color: $lightgrey-light;
+      color: $midgrey-dark;
+    }
+    .universalLabel {
+      color: $midgrey-dark;
+    }
+    .universalHelperText {
+      color: $midgrey-dark;
+    }
+  }
+}
+
+.universalHelperText {
+  font-size: 12px;
+  padding-top: 4px;
+  color: $midgrey-light;
+}

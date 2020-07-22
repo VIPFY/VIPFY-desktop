@@ -1,7 +1,7 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import AssignServiceToUser from "./assignServiceToUser";
-import PrintEmployeeSquare from "../squares/printEmployeeSquare";
+import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
@@ -95,13 +95,11 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                 display: "flex",
                 alignItems: "center"
               }}>
-              <PrintEmployeeSquare
+              <EmployeePicture
                 employee={e}
                 size={24}
-                styles={{
+                style={{
                   lineHeight: "24px",
-                  width: "24px",
-                  height: "24px",
                   fontSize: "13px",
                   marginTop: "0px",
                   marginLeft: "0px"
@@ -147,13 +145,11 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                   display: "flex",
                   alignItems: "center"
                 }}>
-                <PrintEmployeeSquare
+                <EmployeePicture
                   employee={e}
                   size={24}
-                  styles={{
+                  style={{
                     lineHeight: "24px",
-                    width: "24px",
-                    height: "24px",
                     fontSize: "13px",
                     marginTop: "0px",
                     marginLeft: "0px"
@@ -282,7 +278,10 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
             )}
           </>
         ) : (
-          <AssignServiceToUser continue={s => this.setState({ service: s })} />
+          <AssignServiceToUser
+            continue={s => this.setState({ service: s })}
+            moveTo={this.props.moveTo}
+          />
         )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />

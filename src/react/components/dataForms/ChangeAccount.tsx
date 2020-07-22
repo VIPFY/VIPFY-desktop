@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import Store from "electron-store";
-import PrintEmployeeSquare from "../manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 
 interface Props {
   addMachineUser: Function;
@@ -47,7 +47,7 @@ class ChangeAccount extends React.Component<Props, State> {
     const store = new Store();
     if (store.has("accounts")) {
       this.accounts = store.get("accounts");
-      this.accounts.sort(function(a, b) {
+      this.accounts.sort(function (a, b) {
         let nameA = a.fullname.toUpperCase();
         let nameB = b.fullname.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -90,7 +90,7 @@ class ChangeAccount extends React.Component<Props, State> {
                 onMouseEnter={() => this.setState({ hover: a.email })}
                 onMouseLeave={() => this.setState({ hover: "" })}
                 onClick={() => this.props.selectAccount(a.email)}>
-                <PrintEmployeeSquare employee={a} className="accountHolderBullet" size={20} />
+                <EmployeePicture employee={a} className="accountHolderBullet" size={20} />
                 <div
                   className="accountHolderText"
                   style={{ paddingTop: "11px", maxWidth: "210px" }}>

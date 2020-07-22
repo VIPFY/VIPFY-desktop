@@ -1,0 +1,48 @@
+.appOverviewCard {
+  .cardSection:first-child {
+    background-color: $lightgrey-lighter;
+  }
+
+  .picHolder {
+    padding-top: 56%;
+  }
+
+  &.wide .picHolder {
+    padding-top: 26%;
+  }
+
+  .pricingTag {
+    width: 84px;
+  }
+
+  .tagsRow {
+    .pricingTag {
+      padding: 2px 12px;
+    }
+  }
+
+  .header {
+    width: calc(100% - 32px);
+    min-height: 48px;
+  }
+
+  .rating {
+    margin-top: 9px;
+    font-size: 12px;
+
+    .fa-star {
+      color: $midgrey-light;
+    }
+  }
+
+  .headerTags {
+    margin: -4px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .tag:nth-child(2) {
+      margin-top: 8px;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+blockquote {
+  quotes: "\201E""\201D";
+}
+
+blockquote::before {
+  content: open-quote;
+}
+
+blockquote::after {
+  content: close-quote;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+h3 {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+h4 {
+  font-size: 14px;
+  line-height: 16px;
+}

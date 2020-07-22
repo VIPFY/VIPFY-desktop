@@ -57,7 +57,7 @@
   }
 
   .generic-submit-button {
-    @include generic-button($vipfy-primary-color, $vipfy-secondary-color, $feedback) i {
+    @include generic-button($primarygreen, $vipfy-secondary-color, $feedback) i {
       margin-right: 3px;
     }
   }
@@ -123,8 +123,8 @@
       opacity: 1;
       border: 1.5px solid #c8ccd4;
       border-radius: 2px;
-      color: white;
-      background-color: white;
+      color: $white;
+      background-color: $white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -139,8 +139,8 @@
       }
       &Active {
         @extend .checkboxSquare;
-        background-color: #20baa9;
-        border: 1.5px solid #20baa9;
+        background-color: $primarygreen;
+        border: 1.5px solid $primarygreen;
         & > i {
           opacity: 1;
         }
@@ -294,14 +294,14 @@
 
     &:focus {
       outline: none;
-      border-bottom: 1px solid $vipfy-primary-color;
+      border-bottom: 1px solid $primarygreen;
     }
 
     &:focus + label {
       top: 7px;
       left: unset;
       font-size: 0.7rem;
-      color: $vipfy-primary-color;
+      color: $primarygreen;
     }
   }
 
@@ -310,14 +310,14 @@
   }
 
   .valid {
-    border-bottom: 1px solid $vipfy-primary-color;
+    border-bottom: 1px solid $primarygreen;
   }
 
   .valid + label {
     top: 7px;
     left: unset;
     font-size: 0.7rem;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
   }
 
   label {
@@ -363,7 +363,7 @@
       margin-left: 1rem;
 
       .generic-form-checkbox {
-        color: #fff;
+        color: $white;
       }
     }
   }
@@ -390,7 +390,7 @@
     }
 
     .success {
-      color: $vipfy-primary-color;
+      color: $primarygreen;
     }
 
     .error {
@@ -411,7 +411,7 @@
   &-label-active {
     transform: translateY(-12px);
     font-size: 10px;
-    color: $vipfy-primary-color;
+    color: $primarygreen;
     transition: all 200ms ease-in-out;
   }
 
@@ -431,14 +431,14 @@
     &:focus,
     &-active {
       @extend .vipfy-input;
-      border-bottom-color: $vipfy-primary-color;
+      border-bottom-color: $primarygreen;
       transition: all 200ms ease-in-out;
     }
 
     &:disabled {
       color: hsl(60, 3%, 62%);
       border-bottom-color: #f5f5f5;
-      background: #fff;
+      background: $white;
     }
 
     &-error {
@@ -529,66 +529,6 @@
     }
   }
 }
-
-.universalLabelInput {
-  position: relative;
-  width: calc(30rem - 80px);
-  overflow: hidden;
-
-  &.scrollable {
-    overflow-x: scroll;
-    &::-webkit-scrollbar-thumb {
-      background: #20baa9;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f5f5f5;
-    }
-    &::-webkit-scrollbar {
-      height: 5px;
-      width: 300px;
-    }
-  }
-}
-.universalTextInput {
-  width: calc(30rem - 80px);
-  font-size: 16px;
-  font-weight: 300;
-  border-bottom: 1px solid;
-  letter-spacing: 0.02em;
-  line-height: 31px;
-  cursor: auto;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-  &:focus {
-    border-bottom-color: $vipfy-primary-color;
-  }
-  &:focus + .universalLabel {
-    top: -24px;
-    font-size: 12px;
-    color: $vipfy-primary-color;
-  }
-  &[value]:not([value=""]) + .universalLabel {
-    top: -24px;
-    font-size: 12px;
-  }
-}
-.universalLabel {
-  position: absolute;
-  line-height: 32px;
-  letter-spacing: 0.02em;
-  cursor: initial;
-  font-size: 16px;
-  font-weight: 300;
-  transition: all 200ms ease-in-out;
-  left: 0;
-  top: 0;
-  &.disabled {
-    color: #f5f5f5;
-  }
-}
 .fieldsSeperator {
   width: 375px;
   height: 56px;
@@ -596,9 +536,10 @@
 .inputInsideButton {
   position: absolute;
   right: 0px;
-  top: 4px;
+  top: 0px;
   font-size: 16px;
-  line-height: 24px;
+  line-height: 30px;
+  margin-right: 4px;
   width: 24px;
   text-align: center;
   border-radius: 3px;
@@ -647,7 +588,7 @@
 }
 
 .resultHolder {
-  background-color: white;
+  background-color: $white;
   position: absolute;
   z-index: 1000;
   border: 1px solid $vipfy-grey;
@@ -721,6 +662,6 @@
 
   &:hover {
     background-color: rgb(233, 248, 246);
-    color: #20baa9;
+    color: $primarygreen;
   }
 }

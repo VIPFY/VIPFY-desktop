@@ -11,7 +11,7 @@ import { FETCH_DOMAINS } from "../components/domains/graphql";
 import { FETCH_CARDS } from "../queries/billing";
 import SidebarApps from "./SidebarApps";
 import UserName from "./UserName";
-import PrintEmployeeSquare from "./manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "./EmployeePicture";
 import ProfileMenu from "./ProfileMenu";
 import {
   FETCH_EMPLOYEES,
@@ -414,21 +414,14 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     const sidebarLinks = [
       ,
-      /*{
+      {
         label: "The Web",
         location: "browser/browser",
         icon: "globe",
         show: true,
         highlight: "browserelement",
         strict: true
-      },
-      {
-        label: "Add Credentials",
-        location: "integrations",
-        icon: "store",
-        show: true,
-        highlight: "pluselement"
-      }*/ /* {
+      } /* {
         label: "Dashboard",
         location: "dashboard",
         icon: "home",
@@ -440,15 +433,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "messagecenter",
         icon: "envelope",
         show: config.showMessageCenter
-      },*/
-      /*{
-        label: "Marketplace",
-        location: "marketplace",
-        icon: "shopping-cart",
-        show: config.showMarketplace,
-        highlight: "marketplaceelement"
-      },*/
-      /* {
+      },
+      {
         label: "Add Credentials",
         location: "integrations",
         icon: "plus",
@@ -460,7 +446,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
         location: "domains",
         icon: "atlas",
         show: config.showDomains
-      }*/
+      }*/,
       {
         label: "Open Service",
         location: "dashboard",
@@ -798,12 +784,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
                     content={<UserName unitid={this.props.id} />}
                     direction="right">
                     <div className="naked-button sidebarButton" id="profileOpener">
-                      <PrintEmployeeSquare
+                      <EmployeePicture
                         hideTitle={true}
                         size={32}
                         className="managerSquare small-profile-pic"
                         employee={this.props}
-                        styles={{ marginTop: "0px", borderRadius: "32px", fontSize: "12px" }}
+                        style={{ marginTop: "0px", borderRadius: "32px", fontSize: "12px" }}
                       />
                     </div>
                   </Tooltip>

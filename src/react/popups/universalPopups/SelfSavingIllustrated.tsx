@@ -17,7 +17,7 @@ import UniversalDropDownInput from "../../components/universalForms/universalDro
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { concatName, getMyUnitId } from "../../common/functions";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../../components/EmployeePicture";
 import { createEncryptedLicenceKeyObject } from "../../common/licences";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../queries/billing";
 
@@ -465,13 +465,11 @@ class SelfSaving extends React.Component<Props, State> {
                               justifyContent: "space-between"
                             }}>
                             <div>
-                              <PrintEmployeeSquare
+                              <EmployeePicture
                                 employee={this.state.user}
                                 size={24}
-                                styles={{
+                                style={{
                                   lineHeight: "24px",
-                                  width: "24px",
-                                  height: "24px",
                                   fontSize: "13px",
                                   marginTop: "0px",
                                   marginLeft: "0px"

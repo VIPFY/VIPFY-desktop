@@ -3,14 +3,13 @@ import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { fetchTeam } from "../../queries/departments";
-import { Mutation, graphql } from "react-apollo";
+import { graphql } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import moment, { now } from "moment";
 import { concatName } from "../../common/functions";
-import DeletePopup from "../../popups/universalPopups/deletePopup";
 import Calendar from "react-calendar";
-import PrintEmployeeSquare from "./universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import PrintTeamSquare from "./universal/squares/printTeamSquare";
 
 interface Props {
@@ -367,13 +366,11 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                     }}>
                     |
                   </span>
-                  <PrintEmployeeSquare
+                  <EmployeePicture
                     employee={assignment && assignment.unitid}
                     size={24}
-                    styles={{
+                    style={{
                       lineHeight: "24px",
-                      width: "24px",
-                      height: "24px",
                       fontSize: "13px",
                       marginTop: "0px",
                       marginLeft: "0px"

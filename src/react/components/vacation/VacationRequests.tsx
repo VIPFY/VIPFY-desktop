@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Query } from "react-apollo";
 import Collapsible from "../../common/Collapsible";
-import PrintEmployeeSquare from "../../components/manager/universal/squares/printEmployeeSquare";
+import EmployeePicture from "../EmployeePicture";
 import UserName from "../../components/UserName";
 import LoadingDiv from "../../components/LoadingDiv";
 import {
@@ -111,7 +111,7 @@ const VacationRequestRow = ({ employee }) => {
       onClick={() => setShowInfo(info => (info = !info))}
       className={`accordion ${showInfo ? "show-shadow" : ""}`}>
       <span className="user-holder">
-        <PrintEmployeeSquare key={`employee-${employee.id}`} employee={employee} />
+        <EmployeePicture key={`employee-${employee.id}`} employee={employee} />
         <UserName unitid={employee.id} />
       </span>
       {employee.vacationDaysPerYear && employee.vacationDaysPerYear[currentYear] ? (

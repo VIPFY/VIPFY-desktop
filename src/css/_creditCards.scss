@@ -13,16 +13,16 @@ $rccs-cvc-font-family: Consolas, Courier, monospace !default;
 $rccs-cvc-color: #222 !default;
 
 $rccs-shadow: 0 0 20px rgba(#000, 0.2) !default;
-$rccs-light-text-color: #fff !default;
+$rccs-light-text-color: $white !default;
 $rccs-dark-text-color: #555 !default;
 $rccs-stripe-bg-color: #2a1d16 !default;
 $rccs-signature-background: repeating-linear-gradient(
   0.1deg,
-  #fff 20%,
-  #fff 40%,
+  $white 20%,
+  $white 40%,
   #fea 40%,
   #fea 44%,
-  #fff 44%
+  $white 44%
 ) !default;
 
 $rccs-default-background: linear-gradient(25deg, #939393, #717171) !default;
@@ -34,8 +34,8 @@ $rccs-animate-background: true;
 /** ISSUERS **/
 $rccs-amex-background: linear-gradient(25deg, #308c67, #a3f2cf) !default;
 $rccs-dankort-background: linear-gradient(25deg, #ccc, #999) !default;
-$rccs-dinersclub-background: linear-gradient(25deg, #fff, #eee) !default;
-$rccs-discover-background: linear-gradient(25deg, #fff, #eee) !default;
+$rccs-dinersclub-background: linear-gradient(25deg, $white, #eee) !default;
+$rccs-discover-background: linear-gradient(25deg, $white, #eee) !default;
 $rccs-mastercard-background: linear-gradient(25deg, #f37b26, #fdb731) !default;
 $rccs-visa-background: linear-gradient(25deg, #0f509e, #1399cd) !default;
 $rccs-elo-background: linear-gradient(25deg, #211c18, #aaa7a2) !default;

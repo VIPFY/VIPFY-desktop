@@ -5,7 +5,9 @@ import { shell } from "electron";
 import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import UniversalButton from "../universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
+// import ChargeFailed from "../billing/chargeFailed";
 import { renderNotificatonMessage } from "../../common/functions";
+import RequestedIntegrationNotification from "./requestedIntegrationNotification";
 interface Props {
   disabled?: boolean;
   service?: any;
@@ -18,9 +20,13 @@ interface Props {
   autoclose?: number | boolean;
   failed: boolean | null;
   client: any;
+  moveTo?: Function;
+  notificationId?: string;
+  isadmin: boolean;
 }
 interface State {
   popup: JSX.Element | null;
+  notificationType?: string | null;
 }
 class FloatingNotification extends React.Component<Props, State> {
   state = { popup: null };
@@ -37,6 +43,7 @@ class FloatingNotification extends React.Component<Props, State> {
   }
 
   executeNotificationAction(action) {
+    console.log("ACTION", action);
     if (!action || !action.action) {
       return;
     }
@@ -73,6 +80,8 @@ class FloatingNotification extends React.Component<Props, State> {
           </PopupBase>
         )
       });
+    } else if (action.action == "OPENEMAIL" && this.props.moveTo) {
+      this.props.moveTo(`admin/email-integration/${action.emailid}`);
     } else {
       this.setState({
         popup: (
@@ -101,16 +110,18 @@ class FloatingNotification extends React.Component<Props, State> {
   }
 
   render() {
+    console.log("TESTING", this.props);
     return (
       <div
         className={`floatingNotification ${this.props.disabled ? "disabled" : "useable"} ${
           this.props.failed ? "failed" : ""
         }`}>
-        {!this.props.disabled && (
-          <div className="closeButton" onClick={() => this.props.close()}>
-            <i className="fal fa-times"></i>
-          </div>
-        )}
+        {!this.props.disabled ||
+          ((this.props.closeable || this.props.closeable == undefined) && (
+            <div className="closeButton" onClick={() => this.props.close()}>
+              <i className="fal fa-times"></i>
+            </div>
+          ))}
         <div
           className="header"
           style={(this.props.vipfyTask && this.props.vipfyTask.headerStyles) || {}}>
@@ -168,6 +179,15 @@ class FloatingNotification extends React.Component<Props, State> {
             </div>
           )}
           {this.state.popup}
+          {this.props.notificationType == "BillingError" && (
+            <ChargeFailed
+              clientSecret={this.props.clientSecret}
+              paymentMethodId={this.props.paymentMethodId}
+            />
+          )}
+          {this.props.notificationType == "RequestedIntegration" && (
+            <RequestedIntegrationNotification {...this.props} />
+          )}
         </div>
       </div>
     );

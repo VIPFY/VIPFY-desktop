@@ -10,7 +10,7 @@
     height: 40px;
     position: sticky;
     top: 0px;
-    background-color: white;
+    background-color: $white;
     z-index: 1000;
     padding: 10px;
     margin-bottom: 22px;
@@ -243,7 +243,7 @@
         line-height: 16px;
         text-align: center;
         font-size: 10px;
-        color: white;
+        color: $white;
       }
 
       .editOptions {
@@ -286,7 +286,7 @@
       font-size: 100px;
       line-height: 200px;
       text-align: center;
-      color: white;
+      color: $white;
       font-weight: bold;
     }
 
@@ -298,7 +298,7 @@
       bottom: 0;
       position: absolute;
       width: 100%;
-      color: white;
+      color: $white;
       text-align: center;
       display: flex;
       justify-content: center;
@@ -319,7 +319,7 @@
       text-align: center;
       font-size: 44px;
       line-height: 88px;
-      color: white;
+      color: $white;
 
       .imagehover {
         font-size: 16px;
@@ -339,7 +339,7 @@
     font-size: 10px;
     margin-left: 16px;
     margin-top: 8px;
-    color: white;
+    color: $white;
   }
   .percentage {
     width: 24px;
@@ -382,7 +382,7 @@
   .mHeading {
     font-size: 20px;
     .active {
-      color: #20baa9;
+      color: $primarygreen;
     }
     .inactive {
       color: #f5f5f5;
@@ -451,7 +451,7 @@
       grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
       grid-gap: 16px 8px;
       .space {
-        background-color: white;
+        background-color: $white;
         box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.14);
         width: 104px;
         height: 120px;
@@ -513,7 +513,7 @@
           font-size: 43px;
           font-weight: 700;
           line-height: 88px;
-          color: white;
+          color: $white;
           text-align: center;
 
           background-position: center;
@@ -612,6 +612,13 @@
   .noBottomMargin {
     margin-bottom: 0px !important;
   }
+
+  .managerSquare {
+    width: 32px;
+    min-width: 32px;
+    height: 32px;
+  }
+
   .managerBigSquare {
     width: 96px;
     height: 96px;
@@ -621,7 +628,7 @@
     line-height: 96px;
     text-align: center;
     font-size: 46px;
-    color: white;
+    color: $white;
     font-weight: 500;
     background-color: #5d76ff;
     background-position: center;
@@ -643,7 +650,7 @@
       bottom: 0;
       position: absolute;
       width: 100%;
-      color: white;
+      color: $white;
       text-align: center;
       display: flex;
       justify-content: center;
@@ -709,21 +716,19 @@
       border-radius: 6px;
     }
     .current {
-      background-color: #20baa9;
+      background-color: $primarygreen;
     }
   }
 }
 
 .managerSquare {
-  width: 32px;
-  height: 32px;
   border-radius: 4px;
   float: left;
   margin-top: 12px;
   line-height: 32px;
   text-align: center;
   font-size: 16px;
-  color: white;
+  color: $white;
   font-weight: 500;
   background-color: #5d76ff;
   background-position: center;
@@ -733,6 +738,7 @@
     margin-left: 8px;
   }
 }
+
 .deleteEmployeeBox {
   position: absolute;
   top: 8px;
@@ -743,7 +749,7 @@
   line-height: 46px;
   text-align: center;
   font-size: 23px;
-  color: white;
+  color: $white;
   font-weight: 500;
   background-color: #5d76ff;
   border: 1px solid #253647;
@@ -753,7 +759,7 @@
 }
 
 .whitetext {
-  color: white;
+  color: $white;
 }
 
 .editable {

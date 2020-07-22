@@ -5,7 +5,7 @@
   grid-template-rows: 32px;
   width: 100%;
   background: #1c2935;
-  color: #fff;
+  color: $white;
   top: 0;
   z-index: 1000;
   -webkit-app-region: drag;
@@ -41,7 +41,7 @@
   }
 
   .active {
-    background-color: #30475d;
+    background-color: $darkgrey-lighter;
 
     i {
       &:hover {
