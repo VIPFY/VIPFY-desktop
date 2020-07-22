@@ -331,10 +331,13 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
   RATINGS_COLORS = ["#1c8db0", "#ffd57b", "#a9b531", "#f69d3d"];
 
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
+  goToApp = (appId: number) =>
+    this.props.history.push(this.props.history.location.pathname + "/" + appId);
 
-  goToCheckout = (appId: number, planId: number) =>
-    this.props.history.push(`/area/marketplace/app/${appId}/plan/${planId}`);
+  goToCheckout = (planId: number) =>
+    this.props.history.push(
+      this.props.history.location.pathname + "/" + DUMMY_APP.id + "/" + planId
+    );
 
   expandDescription = () => this.setState({ descriptionExpanded: true });
 
@@ -392,7 +395,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer appDetails">
-          <PageHeader title={DUMMY_APP.name} />
+          <PageHeader title={DUMMY_APP.name} showBreadCrumbs={true} />
 
           <div className="marketplaceContent">
             <CardSection>

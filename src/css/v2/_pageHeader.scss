@@ -24,22 +24,12 @@
       white-space: pre;
     }
 
-    .breadCrumb {
-      &:hover {
-        color: #2a3642; // TODO
-      }
+    a {
+      color: $midgrey-light;
+    }
 
-      &:focus {
-        border-bottom: 1px solid $primarygreen; // TODO
-      }
-
-      &:not(:last-child) {
-        cursor: pointer;
-      }
-
-      &:last-child {
-        border-bottom: 1px solid #2a3642; // TODO
-      }
+    .isActive {
+      border-bottom: 1px solid $midgrey-light;
     }
   }
 

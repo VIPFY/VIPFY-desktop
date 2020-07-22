@@ -39,7 +39,7 @@ const DUMMY_APP = {
 };
 
 class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/${appId}/`);
 
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options.marketplace);
@@ -58,7 +58,11 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <PageHeader title="Discover" searchConfig={{ text: "Search an App in Marketplace" }} />
+          <PageHeader
+            title="Discover"
+            showBreadCrumbs={true}
+            searchConfig={{ text: "Search an App in Marketplace" }}
+          />
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>

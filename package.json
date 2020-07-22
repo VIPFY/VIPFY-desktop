@@ -134,6 +134,7 @@
     "react-onclickoutside": "^6.7.1",
     "react-password-strength": "^2.3.1",
     "react-resize-aware": "^2.7.2",
+    "react-router-breadcrumbs-hoc": "^3.3.0",
     "react-router-dom": "^5.1.2",
     "react-stripe-elements": "^2.0.3",
     "react-tooltip-lite": "^1.9.3",

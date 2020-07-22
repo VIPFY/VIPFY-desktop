@@ -289,11 +289,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
   }
 
-  // references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
-    // this.references.push({ key, element });
     addRenderElement({ key, element });
   };
 
@@ -344,7 +342,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
     addRenderElement,
     disabled
   ) => {
-    //return;
     let cssClass = "sidebar-link";
     let buttonClass = "naked-button itemHolder";
     const { sidebarOpen } = this.props;
@@ -571,6 +568,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     if (!sidebarOpen) {
       cssClass += "-small";
     }
+
     if (this.props.adminOpen) {
       cssClass += " sidebar-active";
       buttonClass += " selected";

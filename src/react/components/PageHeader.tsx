@@ -1,5 +1,6 @@
 import * as React from "react";
 import UniversalButton from "./universalButtons/universalButton";
+import BreadCrumbs from "./BreadCrumbs";
 
 interface ButtonConfig {
   label: string;
@@ -35,15 +36,8 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
 
     return (
       <div className="pageHeader">
-        {showBreadCrumbs && (
-          <div className="breadCrumbs">
-            <span className="breadCrumb">Categories</span>
-            <span>{" / "}</span>
-            <span className="breadCrumb">Communication</span>
-            <span>{" / "}</span>
-            <span className="breadCrumb">Bla</span>
-          </div>
-        )}
+        {showBreadCrumbs && <BreadCrumbs />}
+
         <div>
           <h1>{title}</h1>
           {buttonConfig && (

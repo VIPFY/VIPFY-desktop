@@ -1,6 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 
+import { goToApp } from "../../common/functions";
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
@@ -32,6 +33,7 @@ const CATEGORIES = [
 ];
 
 const DUMMY_APP = {
+  id: 1523,
   name: "Dummy App",
   icon: "Miro/logo.png",
   color: "grey",
@@ -42,7 +44,7 @@ const DUMMY_APP = {
 };
 
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/app/${appId}/`);
+  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/categories/${appId}/`);
 
   renderCategory(categoryName: string, icon: string) {
     icon = "fa-star";
@@ -74,7 +76,10 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
+          <PageHeader
+            title="Categories"
+            showBreadCrumbs={true}
+            searchConfig={{ text: "Search an App in Marketplace" }}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
@@ -123,6 +128,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   }
 
   render() {
+    // console.log(this.props);
     return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;
   }
 }
