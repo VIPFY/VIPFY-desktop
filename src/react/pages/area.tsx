@@ -68,13 +68,6 @@ import Checkout from "./marketplace/Checkout";
 const ROUTES = [
   { path: "", component: Dashboard },
   { path: "addcustomservice", component: AddCustomServicePage, greybackground: true },
-  {
-    path: "manager/addcustomservice/:appname",
-    component: AddCustomServicePage,
-    greybackground: true,
-    manager: true,
-    admin: true
-  },
   { path: "admin", component: AdminDashboard, admin: true },
   { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
   { path: "admin/email-integration/:emailid", component: LoginIntegrator, admin: true },
@@ -99,6 +92,13 @@ const ROUTES = [
   { path: "integrations", component: Integrations },
   { path: "lmanager", component: ServiceOverview, admin: true },
   { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
+  {
+    path: "manager/addcustomservice/:appname",
+    component: AddCustomServicePage,
+    greybackground: true,
+    manager: true,
+    admin: true
+  },
   { path: "messagecenter", component: MessageCenter },
   { path: "messagecenter/:person", component: MessageCenter },
   { path: "marketplace", component: MarketplaceDiscover, admin: true },
