@@ -2,7 +2,7 @@
   .navigationBar {
     height: 48px;
     width: 100%;
-    background-color: rgb(48, 71, 93);
+    background-color: $darkgrey-lighter;
     display: grid;
     grid-template-columns: 36px 36px 32px calc(100% - 280px) 36px 64px 36px 40px;
     align-items: center;
@@ -10,9 +10,9 @@
   .browserNavigationButton {
     width: 32px;
     height: 32px;
-    color: white;
+    color: $white;
     text-align: center;
-    background-color: #30475d;
+    background-color: $darkgrey-lighter;
     border-radius: 8px;
     cursor: pointer;
     transition: 150ms ease-in-out;
@@ -20,21 +20,21 @@
     font-size: 16px;
 
     &.active {
-      background-color: #12202b;
+      background-color: $darkgrey-dark;
     }
 
     &.useable {
       &:hover {
-        background-color: #26394a;
+        background-color: $darkgrey-light;
       }
 
       &:focus {
-        background-color: #26394a;
-        border: 1px solid #20baa9;
+        background-color: $darkgrey-light;
+        border: 1px solid $primarygreen;
       }
     }
     &.disabled {
-      color: #98a3ae;
+      color: $lightgrey-darkest;
     }
   }
   .browserTabHolderRelative {
@@ -53,7 +53,7 @@
 
       .browserTab {
         border-radius: 8px;
-        background-color: #26394a;
+        background-color: $darkgrey-light;
         height: 32px;
         padding-left: 4px;
         padding-right: 4px;
@@ -62,9 +62,9 @@
         column-gap: 4px;
         grid-template-rows: 32px;
         align-items: center;
-        color: white;
+        color: $white;
         width: 100%;
-        min-width: 200px; //calc(20% - 12px);
+        min-width: 200px;
 
         &:not(:first-of-type) {
           margin-left: 4px;
@@ -75,24 +75,24 @@
           height: 24px;
           font-size: 10px;
           border-radius: 6px;
-          background-color: #12202b;
+          background-color: $darkgrey-dark;
           grid-template-rows: 32px;
           align-items: center;
           opacity: 0;
         }
 
         &:hover {
-          background-color: #1e2e3b;
+          background-color: $darkgrey-dark;
           .browserNavigationButton {
             opacity: 1;
-            background-color: #1e2e3b;
+            background-color: $darkgrey-dark;
             &:hover {
-              background-color: #26394a;
+              background-color: $darkgrey-light;
             }
           }
         }
         &.active {
-          background-color: #18242f;
+          background-color: $darkgrey-darker;
         }
       }
     }
@@ -114,18 +114,18 @@
   }
   .overflowTabHolder {
     position: absolute;
-    background-color: #26394a;
+    background-color: $darkgrey-light;
     box-shadow: 0px 1px 2px #00000040;
     border-radius: 8px;
     width: 272px;
     left: 0;
     z-index: 1000;
-    border: solid 1px #18242f;
+    border: solid 1px $darkgrey-darker;
 
     .browserOverflowHeading {
-      color: #acb5be;
+      color: $midgrey-dark;
       font-size: 10px;
-      border-bottom: solid 1px #acb5be;
+      border-bottom: solid 1px $midgrey-dark;
       margin: 0px 16px;
       line-height: 28px;
       text-align: left;
@@ -136,7 +136,7 @@
       display: grid;
       grid-template-columns: 1fr 16px;
       column-gap: 4px;
-      color: white;
+      color: $white;
       align-items: center;
       height: 32px;
       text-align: left;
@@ -151,7 +151,7 @@
       }
 
       &:hover {
-        background-color: #18242f;
+        background-color: $darkgrey-darker;
       }
     }
   }
