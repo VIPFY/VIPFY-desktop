@@ -1,5 +1,5 @@
 import * as React from "react";
-import sharp from "sharp";
+//import sharp from "sharp";
 import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
 import { LoginResult } from "../interfaces";
@@ -41,6 +41,9 @@ interface Props {
   webviewId?: number;
   modifyFields?: Object;
   licenceID?: string;
+  openNewTab?: Function;
+  setUrl?: Function;
+  didFailLoad?: Function;
   continueExecute?: boolean;
 }
 
@@ -129,10 +132,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     Object.keys(props).forEach(function (key) {
       if (props[key] != nextProps[key] && typeof props[key] != "function") {
         if (
-          (Array.isArray(props[key]) &&
-            nextProps[key] &&
-            props[key].length == nextProps[key].length) ||
-          (props[key].fetchNotifications &&
+          (Array.isArray(props[key]) && props[key].length == nextProps[key].length) ||
+          (props[key] &&
+            props[key].fetchNotifications &&
             props[key].fetchNotifications.length == nextProps[key].fetchNotifications.length)
         ) {
           const array = Array.isArray(props[key]) ? props[key] : props[key].fetchNotifications;
@@ -162,6 +164,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   onNewWindow = async e => {
+    console.log("onNewWindow");
+    if (this.props.openNewTab && e.url.indexOf("wchat") == -1) {
+      this.props.openNewTab(e.url);
+      return;
+    }
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
     const app = await this.props.client.query({
@@ -182,10 +189,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
     const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
-      //TODO HISTORY
-      //this.props.history.push(`/area/app/${this.props.licenceID}/${encodeURIComponent(e.url)}`);
-
-      //TODO: [VIP-1210] Choose account when there are multiple ones
       if (
         app.data.fetchLicenceAssignmentsByDomain &&
         app.data.fetchLicenceAssignmentsByDomain.length > 0
@@ -275,10 +278,19 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
                 this.props.showLoadingScreen(false);
                 this.setState({ solve401: {} });
               }
+              if (this.props.setUrl) {
+                this.props.setUrl(e.url);
+              }
+            }}
+            onDidNavigateInPage={e => {
+              if (this.props.setUrl) {
+                this.props.setUrl(e.url);
+              }
             }}
             onPageTitleUpdated={title =>
               this.props.setViewTitle && this.props.setViewTitle(title.title)
             }
+            onDidFailLoad={e => this.props.didFailLoad && this.props.didFailLoad(e)}
           />
           {this.state.multipleChoose != null && (
             <PopupBase small={true}>
@@ -695,15 +707,15 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           const image = await webview.getWebContents().capturePage();
           const size = image.getSize();
 
-          const imgurl =
-            size.width == 0
+          const imgurl = null;
+          /*size.width == 0
               ? null
               : this.webpBufferToDataUrl(
-              await sharp(image.toPNG())
-                .resize(size.width / 2)
-                .webp({ quality: 80 })
-                .toBuffer()
-                );
+                  await sharp(image.toPNG())
+                    .resize(size.width / 2)
+                    .webp({ quality: 80 })
+                    .toBuffer()
+                );*/
 
           this.props.setResult(resultValues, imgurl);
         }, this.screenshotDelay);
@@ -714,10 +726,12 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           }
 
           this.sentResult = true;
-          this.props.setResult(
-            { ...this.loginState, ...resultValues, loggedIn: false, error: false },
-            ""
-          );
+          if (this.props.setResult) {
+            this.props.setResult(
+              { ...this.loginState, ...resultValues, loggedIn: false, error: false },
+              ""
+            );
+          }
         }, this.screenshotDelay);
       }
     } else {
@@ -875,40 +889,41 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             }
             this.loginState.passwordEntered = true;
           } else if (e.args[1]) {
-              text = e.args[0];
+            text = e.args[0];
+          } else {
+            throw new Error("unknown string");
+          }
+          if (text) {
+            for await (const c of text) {
+              if (this.loginState.unloaded) {
+                return;
+              }
+              const shift = c.toLowerCase() != c;
+              const modifiers = shift ? ["shift"] : [];
+              w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
+              w.sendInputEvent({ type: "char", modifiers, keyCode: c });
+              await this.modifiedSleep(Math.random() * 20 + 50);
+              if (this.loginState.unloaded) {
+                return;
+              }
+              w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
+              this.progress += 0.2 / text.length;
+              await this.modifiedSleep(Math.random() * 30 + 200);
+            }
+            await this.modifiedSleep(500);
+            if (this.loginState.unloaded) {
+              return;
+            }
+            w.send("formFieldFilled");
+            if (e.args[0] == "domain") {
+              this.loginState.domainEnteredEnd = true;
+            } else if (e.args[0] == "username") {
+              this.loginState.emailEnteredEnd = true;
+            } else if (e.args[0] == "password") {
+              this.loginState.passwordEnteredEnd = true;
             } else {
               throw new Error("unknown string");
             }
-          
-          for await (const c of text) {
-            if (this.loginState.unloaded) {
-              return;
-            }
-            const shift = c.toLowerCase() != c;
-            const modifiers = shift ? ["shift"] : [];
-            w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
-            w.sendInputEvent({ type: "char", modifiers, keyCode: c });
-            await this.modifiedSleep(Math.random() * 20 + 50);
-            if (this.loginState.unloaded) {
-              return;
-            }
-            w.sendInputEvent({ type: "keyUp", modifiers, keyCode: c });
-            this.progress += 0.2 / text.length;
-            await this.modifiedSleep(Math.random() * 30 + 200);
-          }
-          await this.modifiedSleep(500);
-          if (this.loginState.unloaded) {
-            return;
-          }
-          w.send("formFieldFilled");
-          if (e.args[0] == "domain") {
-            this.loginState.domainEnteredEnd = true;
-          } else if (e.args[0] == "username") {
-            this.loginState.emailEnteredEnd = true;
-          } else if (e.args[0] == "password") {
-            this.loginState.passwordEnteredEnd = true;
-          } else if (!e.args[1]) {
-            throw new Error("unknown string");
           }
         }
         break;
@@ -979,16 +994,16 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         break;
       }
       case "executeEnd": {
-          this.timeout = false;
-          this.progress = 1;
-          this.clearProgressTimer();
-          const loggedIn = await this.isLoggedIn(e.target);
-          this.sendResult(
-            { ...this.loginState, loggedIn, executeEnd: true, currentUrl: e.target.src },
-            false
-          );
-          return; //we are done with login
-        }
+        this.timeout = false;
+        this.progress = 1;
+        this.clearProgressTimer();
+        const loggedIn = await this.isLoggedIn(e.target);
+        this.sendResult(
+          { ...this.loginState, loggedIn, executeEnd: true, currentUrl: e.target.src },
+          false
+        );
+        return; //we are done with login
+      }
     }
   }
 }

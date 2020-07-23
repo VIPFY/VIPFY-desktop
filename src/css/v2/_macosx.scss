@@ -1,0 +1,29 @@
+.mac {
+  #window-controls {
+    display: none;
+  }
+
+  #titlebar {
+    grid-template-rows: 24px;
+  }
+  #App,
+  #DevTools {
+    height: calc(100vh - 24px);
+    margin-top: 24px;
+  }
+  #loading-screen {
+    height: calc(100vh - 24px);
+  }
+  #overlay,
+  .backgroundPopup {
+    height: calc(100vh - 24px);
+    top: 24px;
+  }
+  .errorPageMain {
+    height: calc(100vh - 24px);
+  }
+  .sidebar-adminpanel {
+    height: calc(100% - 24px);
+    top: 24px;
+  }
+}

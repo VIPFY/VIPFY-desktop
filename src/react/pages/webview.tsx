@@ -10,6 +10,7 @@ import HeaderNotificationContext from "../components/notifications/headerNotific
 import { decryptLicenceKey } from "../common/passwords";
 import PopupBase from "../popups/universalPopups/popupBase";
 import UniversalButton from "../components/universalButtons/universalButton";
+import * as is from "electron-is";
 
 const LOG_SSO_ERROR = gql`
   mutation onLogSSOError($data: JSON!) {
@@ -336,10 +337,13 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                 <LoadingDiv
                   progress={this.state.progress}
                   style={
-                    context.isActive
+                    is.macOS()
+                      ? context.isActive
+                        ? { height: "calc(100vh - 24px - 40px - 1px)" }
+                        : { height: "calc(100vh - 24px - 1px)" }
+                      : context.isActive
                       ? { height: "calc(100vh - 32px - 40px - 1px)" }
                       : { height: "calc(100vh - 32px - 1px)" }
-                    //{ height: "100px" }
                   }
                 />
               )}
@@ -406,7 +410,11 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                   progress={progress => this.setState({ progress })}
                   speed={this.state.loginspeed || 1}
                   style={
-                    context.isActive
+                    is.macOS()
+                      ? context.isActive
+                        ? { height: "calc(100vh - 24px - 40px)" }
+                        : { height: "calc(100vh - 24px)" }
+                      : context.isActive
                       ? { height: "calc(100vh - 32px - 40px)" }
                       : { height: "calc(100vh - 32px)" }
                   }

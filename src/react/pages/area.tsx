@@ -26,9 +26,6 @@ import Security from "./security";
 import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
 import ServiceEdit from "../components/admin/ServiceEdit";
-//import TestingBilling from "../components/admin/testingbilling";
-import ViewHandler from "./viewhandler";
-import Tabs from "../components/Tabs";
 import SsoConfigurator from "./ssoconfigurator";
 import SsoTester from "./SSOtester";
 import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
@@ -40,7 +37,6 @@ import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
 import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
-import HistoryButtons from "../components/HistoryButtons";
 import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import ServiceIntegrator from "../components/admin/ServiceIntegrator";
@@ -62,6 +58,7 @@ import { AppContext } from "../common/functions";
 import Workspace from "./Workspace";
 import InboundEmails from "../components/admin/emails";
 import PendingIntegrations from "../components/admin/PendingIntegrations";
+import Browser from "./browser";
 import AddCustomServicePage from "./addCustomService";
 import AppDetails from "./marketplace/AppDetails";
 import Checkout from "./marketplace/Checkout";
@@ -99,6 +96,8 @@ interface AreaState {
   adminOpen: boolean;
   consentPopup: boolean;
   allowSkip: boolean;
+  openServices: string[];
+  showService: string | null;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -115,7 +114,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     activeTab: null,
     adminOpen: false,
     consentPopup: false,
-    allowSkip: false
+    allowSkip: false,
+    openServices: [],
+    showService: null
   };
 
   componentDidMount = async () => {
@@ -130,29 +131,19 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   moveTo = path => {
     if (!path.startsWith("app")) {
-      this.setState({ viewID: -1 });
+      this.setState({ viewID: -1, showService: null });
     }
     this.props.moveTo(path);
   };
 
-  setApp = (assignmentId: number) => {
-    console.log("OPEN INSTANCES", this.state);
-    if (this.state.openInstances[assignmentId]) {
-      this.setState(prevState => {
-        const newstate = {
-          ...prevState,
-          app: assignmentId,
-          licenceID: assignmentId,
-          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
-        };
-        return newstate;
+  setApp = (assignmentId: string) => {
+    if (!this.state.openServices.find(os => os == assignmentId)) {
+      this.setState(oldstate => {
+        return { ...oldstate, openServices: [...oldstate.openServices, assignmentId] };
       });
-      this.props.history.push(`/area/app/${assignmentId}`);
-    } else {
-      console.log("SET APP", assignmentId);
-      this.addWebview(assignmentId, true);
-      this.props.history.push(`/area/app/${assignmentId}`);
     }
+    this.setState({ showService: assignmentId });
+    this.props.history.push(`/area/browser/${assignmentId}`);
   };
 
   setDomain = (boughtplan: number, domain: string) => {
@@ -252,13 +243,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     }));
   };
 
-  /*  setInstanceUrl = (viewID: number, url: string) => {
-    const view = this.state.webviews.find(view => view.key == viewID);
-    view.view.props.forceUrl = url;
-  }; */
-
   closeInstance = (viewID: number, licenceID: number) => {
-    console.log("CLOSE", viewID, licenceID, this.state.webviews);
     const position = this.state.webviews.findIndex(view => view.key == viewID);
 
     this.setState(prevState => {
@@ -279,13 +264,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (this.state.viewID == viewID) {
       if (this.props.history.location.pathname.startsWith("/area/app/")) {
         this.setState(prevState => {
-          console.log(
-            "TEST",
-            prevState.webviews[position],
-            prevState.webviews[0],
-            prevState.webviews.length - 1,
-            prevState.openInstances
-          );
           if (prevState.webviews[position]) {
             this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
             return { ...prevState, viewID: prevState.webviews[position].key };
@@ -506,7 +484,6 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   handleClose = (viewID: number, licenceID: number) => {
     this.setState(prevState => {
-      console.log("TEST", prevState.webviews, viewID, licenceID);
       const webviews = prevState.webviews.filter(view => view.key != viewID);
 
       return { webviews };
@@ -514,6 +491,14 @@ class Area extends React.Component<AreaProps, AreaState> {
 
     this.closeInstance(viewID, licenceID);
   };
+
+  closeBrowser(assignmentId, moveTo) {
+    this.setState(oldstate => {
+      const openServices = oldstate.openServices.filter(os => os != assignmentId) || [];
+      return { openServices };
+    });
+    this.moveTo(moveTo);
+  }
 
   printBreadcrumbs = (headline, breadcrumbs) => {
     const bc: JSX.Element[] = [];
@@ -609,6 +594,37 @@ class Area extends React.Component<AreaProps, AreaState> {
       );
     }
 
+    const browserlist: JSX.Element[] = [];
+    let marginLeft = 64;
+    if (sidebarOpen) {
+      marginLeft += 176;
+    }
+    this.state.openServices.forEach(o =>
+      browserlist.push(
+        <div
+          key={o}
+          style={{
+            visibility: this.state.showService == o ? "visible" : "hidden",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            width: "100%",
+            height: "100%"
+          }}>
+          <Browser
+            setApp={this.setApp}
+            toggleAdmin={this.toggleAdmin}
+            adminOpen={this.state.adminOpen}
+            moveTo={this.moveTo}
+            assignmentId={o}
+            visible={this.state.showService == o}
+            closeBrowser={(a, b) => this.closeBrowser(a, b)}
+            {...this.props}
+          />
+        </div>
+      )
+    );
+
     return (
       <AppContext.Consumer>
         {context => (
@@ -640,6 +656,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   viewID={this.state.viewID}
                                   views={this.state.webviews}
                                   openInstances={this.state.openInstances}
+                                  openServices={this.state.openServices}
+                                  showService={this.state.showService}
                                   toggleSidebar={this.toggleSidebar}
                                   setInstance={this.setInstance}
                                   {...this.props}
@@ -713,7 +731,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                           </Query>
                         )}
                       />
-                      <Route render={() => <HistoryButtons viewID={this.state.viewID} />} />
                       <Switch>
                         <Route
                           exact
@@ -853,6 +870,26 @@ class Area extends React.Component<AreaProps, AreaState> {
                           }}
                         />
                         <Route
+                          exact
+                          path="/area/browser/:assignmentid"
+                          render={props => {
+                            if (this.state.showService != props.match.params.assignmentid) {
+                              this.setApp(props.match.params.assignmentid);
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
+                          exact
+                          path="/area/browser"
+                          render={props => {
+                            if (this.state.showService != "browser") {
+                              this.setApp("browser");
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
                           key={"ERRORELSE"}
                           render={() => (
                             <div
@@ -864,21 +901,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                           )}
                         />
                       </Switch>
-                      <ViewHandler
-                        showView={this.state.viewID}
-                        views={this.state.webviews}
-                        sidebarOpen={sidebarOpen}
-                      />
-                      <Tabs
-                        tabs={this.state.webviews}
-                        setInstance={this.setInstance}
-                        viewID={this.state.viewID}
-                        handleDragStart={this.handleDragStart}
-                        handleDragOver={this.handleDragOver}
-                        handleDragEnd={this.handleDragEnd}
-                        handleDragLeave={this.handleDragLeave}
-                        handleClose={this.handleClose}
-                      />
+                      <div
+                        id="viewHandler"
+                        className={`marginLeft ${this.props.sidebarOpen && "sidebar-open"}`}
+                        style={{
+                          visibility: this.state.showService !== null ? "visible" : "hidden",
+                          position: "relative",
+                          height: this.state.showService !== null ? undefined : "1px",
+                          overflow: this.state.showService !== null ? undefined : "hidden"
+                        }}>
+                        {browserlist}
+                      </div>
                       {this.props.needspasswordchange &&
                         !localStorage.getItem("impersonator-token") && (
                           <ForcedPasswordChange email={this.props.emails[0].email} />

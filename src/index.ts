@@ -179,8 +179,6 @@ const createWindow = async () => {
 
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
     icon: "src/images/logo_weis.png",
     show: false,
     center: true,
@@ -189,6 +187,7 @@ const createWindow = async () => {
     fullscreenable: true,
     backgroundColor: "#253647",
     frame: false,
+    opacity: 1,
     webPreferences: {
       nodeIntegration: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -275,9 +274,9 @@ function fixDevToolSize(newBounds) {
 
   devtools.setBounds({
     x: newBounds.width - 600,
-    y: 64,
+    y: 58,
     width: 600,
-    height: newBounds.height - 64
+    height: newBounds.height - 58
   });
 }
 

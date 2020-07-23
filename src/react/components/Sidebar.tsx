@@ -288,12 +288,9 @@ class Sidebar extends React.Component<SidebarProps, State> {
       });
     }
   }
-
-  // references: { key; element }[] = [];
   goTo = view => this.props.moveTo(view);
 
   addReferences = (key, element, addRenderElement) => {
-    // this.references.push({ key, element });
     addRenderElement({ key, element });
   };
 
@@ -340,7 +337,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   renderLink = (
-    { label, location, icon, show, highlight }: SidebarLinks,
+    { label, location, icon, show, highlight, strict }: SidebarLinks,
     addRenderElement,
     disabled
   ) => {
@@ -354,8 +351,11 @@ class Sidebar extends React.Component<SidebarProps, State> {
     }
 
     if (
-      this.props.location.pathname.startsWith(`/area/${location}`) ||
-      `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
+      (strict
+        ? this.props.location.pathname == `/area/${location}`
+        : this.props.location.pathname.startsWith(`/area/${location}`)) ||
+      (location.startsWith("admin") &&
+        `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`))
     ) {
       cssClass += " sidebar-active";
       buttonClass += " selected";
@@ -411,159 +411,20 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
     const sidebarLinks = [
       {
-        label: "Dashboard",
+        label: "Open Service",
         location: "dashboard",
-        icon: "home",
+        icon: "plus",
         show: true,
         highlight: "dashboardelement"
       },
       {
-        label: "Message Center",
-        location: "messagecenter",
-        icon: "envelope",
-        show: config.showMessageCenter
-      },
-      {
         label: "Add Credentials",
         location: "integrations",
-        icon: "plus",
+        icon: "store",
         show: true,
         highlight: "pluselement"
-      },
-      {
-        label: "Domains",
-        location: "domains",
-        icon: "atlas",
-        show: config.showDomains
       }
     ];
-
-    const filteredLicences0 = licences.filter(licence => {
-      if (
-        !(
-          (!licence.disabled &&
-            !licence.pending &&
-            !licence.boughtplanid.planid.appid.disabled &&
-            (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
-            (licence.endtime > moment.now() || licence.endtime == null) &&
-            !licence.vacationstart) ||
-          (!licence.disabled &&
-            !licence.pending &&
-            licence.vacationstart &&
-            licence.vacationstart <= moment.now() &&
-            ((licence.vacationend && licence.vacationend > moment.now()) ||
-              licence.vacationend == null))
-        )
-      ) {
-        return false;
-      }
-
-      let one = false,
-        two = false;
-      if (this.state.searchString === "") {
-        return true;
-      }
-
-      if (
-        licence.boughtplanid.alias !== null &&
-        !licence.boughtplanid.alias.toLowerCase().includes(this.state.searchString.toLowerCase())
-      ) {
-        one = true;
-      }
-      if (
-        licence.boughtplanid.planid.appid.name !== null &&
-        !licence.boughtplanid.planid.appid.name
-          .toLowerCase()
-          .includes(this.state.searchString.toLowerCase())
-      ) {
-        two = true;
-      }
-      if (one && two) {
-        return false;
-      } //include search if search
-
-      return true;
-    });
-    let filteredLicences = filteredLicences0;
-
-    if (this.state.sortString == "Custom") {
-      // Handle "Custom" seperatly
-      // filteredLicences = this.sortCustomlist(licences);
-    } else {
-      filteredLicences = filteredLicences0.sort((a, b) => {
-        let a0; //Placeholder for a
-        let b0; //Placeholder for b
-        switch (
-          this.state.sortString //look what to search for an assin the fitting values
-        ) {
-          case "Name":
-            if (a.boughtplanid.alias !== null && a.boughtplanid.alias != "") {
-              a0 = a.boughtplanid.alias.toLowerCase();
-            } else {
-              a0 = a.boughtplanid.planid.appid.name.toLowerCase();
-            }
-            if (b.boughtplanid.alias !== null && b.boughtplanid.alias != "") {
-              b0 = b.boughtplanid.alias.toLowerCase();
-            } else {
-              b0 = b.boughtplanid.planid.appid.name.toLowerCase();
-            }
-            break;
-          case "Boughtplanid":
-            a0 = a.boughtplanid.id;
-            b0 = b.boughtplanid.id;
-            break;
-          case "???":
-            break;
-          case "Last_used":
-            break;
-          case "Endtime":
-            a0 = a.endtime;
-            b0 = b.endtime;
-            break;
-          case "Buytime":
-            a0 = a.boughtplanid.buytime.toLowerCase();
-            b0 = b.boughtplanid.buytime.toLowerCase();
-            break;
-          case "Total_price":
-            a0 = a.boughtplanid.totalprice;
-            b0 = b.boughtplanid.totalprice;
-            break;
-        }
-        if (a0 === null) {
-          if (this.state.sortOrientation) {
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-
-        if (b0 === null) {
-          if (this.state.sortOrientation) {
-            return -1;
-          } else {
-            return 1;
-          }
-        }
-
-        if (a0 < b0) {
-          if (this.state.sortOrientation) {
-            return -1;
-          } else {
-            return 1;
-          }
-        }
-
-        if (a0 > b0) {
-          if (this.state.sortOrientation) {
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-
-        return 0;
-      });
-    }
 
     let cssClass = "sidebar-link";
     let buttonClass = "naked-button itemHolder";
@@ -583,9 +444,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
             className={`sidebar${sidebarOpen ? "" : "-small"} ${
               this.props.impersonation ? "sidebar-impersonate" : ""
             }`}
-            style={{ gridTemplateRows: `129px 1fr ${this.props.isadmin ? "185px" : "145px"}` }}
+            style={{ gridTemplateRows: `88px 1fr ${this.props.isadmin ? "185px" : "145px"}` }}
             ref={el => context.addRenderElement({ key: "sidebar", element: el })}>
-            {/*<div className={`sidebar original${sidebarOpen ? "" : "-small"}`}>*/}
             <div className="sidebar-nav-icon">
               <Tooltip
                 className="sidebar-tooltip-nav"
@@ -604,51 +464,25 @@ class Sidebar extends React.Component<SidebarProps, State> {
               </Tooltip>
             </div>
             <div>
-              <Tooltip
-                className="sidebar-tooltip"
-                distance={8}
-                arrowSize={5}
-                useHover={!sidebarOpen}
-                content={<div style={{ width: "75px" }}>VIPFY</div>}
-                direction="right">
-                <div className="VIPFYLogo"></div>
-              </Tooltip>
               {sidebarLinks.map(link => this.renderLink(link, context.addRenderElement, false))}
               <div className="divider" />
             </div>
             <div className="sidebar-apps">
-              {/* Without temporary licences */}
               <SidebarApps
                 setApp={this.props.setApp}
                 setInstance={this.props.setInstance}
                 sidebarOpen={sidebarOpen}
                 openInstances={this.props.openInstances}
-                licences={
-                  filteredLicences /*.filter(
-                  ({ tags }) => tags.length < 1 || !tags.includes("vacation")
-                )*/
-                }
+                openServices={this.props.openServices}
+                showService={this.props.showService}
+                licences={licences}
                 viewID={this.props.viewID}
                 impersonation={this.props.impersonation}
+                maybeAddHighlightReference={this.maybeAddHighlightReference}
+                addRenderElement={context.addRenderElement}
+                goTo={this.goTo}
+                location={this.props.location}
               />
-
-              {/* Temporary licences */}
-              {/*<SidebarApps
-                header="Temporary Apps"
-                icon="island-tropical"
-                setApp={this.props.setApp}
-                setInstance={this.props.setInstance}
-                sidebarOpen={sidebarOpen}
-                openInstances={this.props.openInstances}
-                licences={filteredLicences.filter(
-                  ({ vacationend, vacationstart, tags }) =>
-                    tags.length > 0 &&
-                    tags.includes("vacation") &&
-                    vacationstart &&
-                    moment().isBefore(moment(vacationend))
-                )}
-                viewID={this.props.viewID}
-                />*/}
             </div>
             <ul>
               <div className="divider" style={{ marginBottom: "16px" }} />
@@ -683,7 +517,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
               {this.state.showNotification && (
                 <Notification
-                  //sidebar={"1"}
                   moveTo={this.props.moveTo}
                   data={this.props.data || {}}
                   loading={this.props.loading}
@@ -781,7 +614,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                 }}
               />
             )}
-            {/*</div>*/}
           </div>
         )}
       </AppContext.Consumer>
