@@ -10,7 +10,7 @@ import Webview from "./webview";
 import ErrorPage from "./error";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
-import SupportPage from "../pages/support";
+import SupportPage from "./support";
 import LoadingDiv from "../components/LoadingDiv";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
