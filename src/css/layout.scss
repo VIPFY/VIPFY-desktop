@@ -19,7 +19,6 @@
 @import "./fa_pro_all_5.10.2";
 @import "./forms";
 @import "./headerNotifications";
-@import "./macosx";
 @import "./manager";
 @import "./messages";
 @import "./popup";
@@ -2770,7 +2769,7 @@ progress[value] {
 }
 
 .errorScreen {
-  height: calc(100vh - 32px);
+  height: calc(100vh - 24px);
   width: 100%;
   display: flex;
   justify-content: center;
@@ -2807,7 +2806,7 @@ progress[value] {
   display: none;
   position: absolute;
   right: 0;
-  top: 32px;
+  top: 24px;
   height: 32px;
   width: 600px;
   background: lightgrey;

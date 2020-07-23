@@ -1,8 +1,8 @@
 import * as React from "react";
-import Tooltip from "react-tooltip-lite";
-import { clipboard } from "electron";
 import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
+import Tooltip from "react-tooltip-lite";
+import ServiceLogo from "./services/ServiceLogo";
 
 interface Props {
   sidebarOpen: boolean;
@@ -11,6 +11,9 @@ interface Props {
   icon?: string;
   setApp: Function;
   impersonation?: boolean;
+  maybeAddHighlightReference: Function;
+  addRenderElement: Function;
+  goTo: Function;
 }
 
 interface State {
@@ -55,100 +58,6 @@ class SidebarApps extends React.Component<Props, State> {
     }
   }
 
-  toggleApps = () =>
-    this.setState(prevState => ({
-      ...prevState,
-      showApps: !prevState.showApps
-    }));
-
-  handleArrowKeys(key) {
-    switch (key) {
-      case "ArrowDown":
-        if (
-          (this.state.showMoreApps &&
-            this.state.selected <
-              this.props.licences.filter(licence => {
-                if (licence.boughtplanid.alias) {
-                  return licence.boughtplanid.alias
-                    .toUpperCase()
-                    .includes(this.state.searchString.toUpperCase());
-                } else {
-                  return licence.boughtplanid.planid.appid.name
-                    .toUpperCase()
-                    .includes(this.state.searchString.toUpperCase());
-                }
-              }).length -
-                1) ||
-          (!this.state.showMoreApps && this.state.selected < 4)
-        ) {
-          this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected + 1 }));
-        }
-        break;
-      case "ArrowUp":
-        {
-          /*if (this.state.selected == 0) {
-            this.searchInput.focus();
-          }*/
-          if (this.state.selected >= 0) {
-            this.setState(oldstate => ({ ...oldstate, selected: oldstate.selected - 1 }));
-          }
-        }
-        break;
-      case "Enter":
-        {
-          const licences = this.props.licences
-            .filter(licence => {
-              if (licence.boughtplanid.alias) {
-                return licence.boughtplanid.alias
-                  .toUpperCase()
-                  .includes(this.state.searchString.toUpperCase());
-              } else {
-                return licence.boughtplanid.planid.appid.name
-                  .toUpperCase()
-                  .includes(this.state.searchString.toUpperCase());
-              }
-            })
-            .sort((a, b) => {
-              let nameA = a.boughtplanid.planid.appid.name.toUpperCase();
-              let nameB = b.boughtplanid.planid.appid.name.toUpperCase();
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
-              }
-
-              // If Appname equals
-
-              let nameC = a.boughtplanid.alias.toUpperCase();
-              let nameD = b.boughtplanid.alias.toUpperCase();
-              if (nameC < nameD) {
-                return -1;
-              }
-              if (nameC > nameD) {
-                return 1;
-              }
-
-              return 0;
-            });
-          const licenceid = licences[this.state.selected] && licences[this.state.selected].id;
-
-          if (
-            licenceid &&
-            this.props.openInstances &&
-            (!this.props.openInstances[licenceid] ||
-              (this.props.openInstances[licenceid] &&
-                Object.keys(this.props.openInstances[licenceid]).length == 1))
-          ) {
-            this.props.setApp(licenceid);
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
   render() {
     const { sidebarOpen, licences, openInstances, icon } = this.props;
     const { showApps, showMoreApps } = this.state;
@@ -157,151 +66,160 @@ class SidebarApps extends React.Component<Props, State> {
       return null;
     }
 
-    const input = (style = {}) => (
-      <div style={{ marginLeft: "8px", width: "calc(100% - 48px)" }}>
-        <input
-          ref={node => (this.searchInput = node)}
-          value={this.state.searchString}
-          onChange={e => this.setState({ searchString: e.target.value, selected: -1 })}
-          placeholder="Search Apps"
-          className={`sidebar-search${style ? style : sidebarOpen ? "" : "-tooltip"}`}
-          onContextMenu={e => {
-            e.preventDefault();
-            this.setState({ context: true, clientX: e.clientX, clientY: e.clientY });
-          }}
-        />
-      </div>
-    );
-
-    const SortComponent = (
-      <div style={{ width: "100px" }}>
-        <button className="sidebar-search-tooltip naked-button" onClick={this.toggleApps}>
-          <i className={`fal fa-angle-right ${showApps ? "open" : ""}`} />
-          <span style={{ fontSize: "10px" }}>{`${showApps ? "Hide" : "Show"} Apps`}</span>
-        </button>
-      </div>
-    );
-
     const appOrbitCount = [];
-    licences.forEach(l =>
-      appOrbitCount[l.boughtplanid.planid.appid.id]
-        ? appOrbitCount[l.boughtplanid.planid.appid.id].push(l.id)
-        : (appOrbitCount[l.boughtplanid.planid.appid.id] = [])
-    );
+    licences.forEach(l => {
+      if (this.props.openServices.find(os => os == l.id)) {
+        appOrbitCount[l.boughtplanid.planid.appid.id]
+          ? appOrbitCount[l.boughtplanid.planid.appid.id].push(l.id)
+          : (appOrbitCount[l.boughtplanid.planid.appid.id] = []);
+      }
+    });
+    const appservices = [];
+    this.props.openServices.forEach(os => {
+      if (os != "browser") {
+        appservices.push(os);
+      }
+    });
+    const { licence, active } = this.props;
 
+    let cssClass = "sidebar-link service";
+    let buttonClass = "naked-button serviceHolder";
+
+    if (!sidebarOpen) {
+      cssClass += "-small";
+    }
+    if (active) {
+      cssClass += " sidebar-active";
+    }
+
+    const browserButtonClass =
+      this.props.location.pathname == "/area/browser/browser"
+        ? `${buttonClass} selected`
+        : buttonClass;
+    const openServiceButtonClass =
+      this.props.location.pathname.startsWith("/area/dashboard") ||
+      this.props.location.pathname == "/area"
+        ? `${buttonClass} selected`
+        : buttonClass;
     return (
-      <ul
-        className="sidebar-main sidebarAppsholder"
-        onKeyDown={e => this.handleArrowKeys(e.key)}
-        onBlur={() => this.setState({ selected: -1 })}>
+      <ul className="sidebar-main sidebarAppsholder" onBlur={() => this.setState({ selected: -1 })}>
         <li>
           <ul className="sidebar-apps">
-            {showApps &&
-              licences.length > 0 &&
-              licences
-                .filter(licence => {
-                  if (this.props.impersonation && licence.options && licence.options.private) {
-                    return false;
-                  } else {
-                    if (licence.boughtplanid.alias) {
-                      return licence.boughtplanid.alias
-                        .toUpperCase()
-                        .includes(this.state.searchString.toUpperCase());
-                    } else {
-                      return licence.boughtplanid.planid.appid.name
-                        .toUpperCase()
-                        .includes(this.state.searchString.toUpperCase());
-                    }
-                  }
-                })
-                .sort((a, b) => {
-                  let nameA = a.boughtplanid.planid.appid.name.toUpperCase();
-                  let nameB = b.boughtplanid.planid.appid.name.toUpperCase();
-                  if (nameA < nameB) {
-                    return -1;
-                  }
-                  if (nameA > nameB) {
-                    return 1;
-                  }
+            <li
+              id="browser"
+              className={cssClass}
+              ref={el =>
+                this.props.maybeAddHighlightReference(
+                  "browser",
+                  "browserelement",
+                  el,
+                  this.props.addRenderElement
+                )
+              }>
+              <button
+                id={"browserbutton"}
+                type="button"
+                onMouseDown={() => {
+                  document.getElementById("browserbutton").className =
+                    "naked-button serviceHolder active";
+                }}
+                onMouseUp={() => {
+                  this.props.setApp("browser");
+                  document.getElementById("browserbutton").className = browserButtonClass;
+                }}
+                onMouseLeave={() => {
+                  document.getElementById("browserbutton").className = browserButtonClass;
+                }}
+                className={browserButtonClass} /*sidebar-link-apps*/
+              >
+                <Tooltip
+                  direction="right"
+                  arrowSize={5}
+                  useHover={!sidebarOpen}
+                  content="The Web"
+                  className="sidebar-tooltip">
+                  <div className="naked-button sidebarButton">
+                    <div className="service-hover">
+                      <i className="fad fa-globe" style={{ fontSize: "32px" }} />
+                    </div>
+                  </div>
+                </Tooltip>
 
-                  // If Appname equals
+                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                  The Web
+                </span>
+              </button>
+            </li>
+            {appservices.map(os => (
+              <SidebarLink
+                disabled={false}
+                key={`ServiceLogo-${os}`}
+                licence={this.props.licences.find(l => l.id == os)}
+                openInstances={openInstances}
+                sidebarOpen={sidebarOpen}
+                active={false}
+                setTeam={this.props.setApp}
+                setInstance={this.props.setInstance}
+                viewID={this.props.viewID}
+                isSearching={this.state.searchString === ""}
+                selected={this.props.showService == os}
+                multipleOrbits={
+                  this.props.licences.find(l => l.id == os) &&
+                  appOrbitCount[
+                    this.props.licences.find(l => l.id == os).boughtplanid.planid.appid.id
+                  ] &&
+                  appOrbitCount[
+                    this.props.licences.find(l => l.id == os).boughtplanid.planid.appid.id
+                  ].length > 0
+                }
+              />
+            ))}
+            {/*} <li
+              id="openService"
+              className={cssClass}
+              ref={el =>
+                this.props.maybeAddHighlightReference(
+                  "dashboard",
+                  "dashboardelement",
+                  el,
+                  this.props.addRenderElement
+                )
+              }>
+              <button
+                id={"openServicebutton"}
+                type="button"
+                onMouseDown={() => {
+                  document.getElementById("openServicebutton").className =
+                    "naked-button serviceHolder active";
+                }}
+                onMouseUp={() => {
+                  this.props.goTo("dashboard");
+                  document.getElementById("openServicebutton").className = openServiceButtonClass;
+                }}
+                onMouseLeave={() => {
+                  document.getElementById("openServicebutton").className = openServiceButtonClass;
+                }}
+                className={openServiceButtonClass}>
+                <Tooltip
+                  direction="right"
+                  arrowSize={5}
+                  useHover={!sidebarOpen}
+                  content="Open service"
+                  className="sidebar-tooltip">
+                  <div className="naked-button sidebarButton">
+                    <div className="service-hover">
+                      <i className="fal fa-plus" style={{ fontSize: "20px" }} />
+                    </div>
+                  </div>
+                </Tooltip>
 
-                  let nameC = a.boughtplanid.alias.toUpperCase();
-                  let nameD = b.boughtplanid.alias.toUpperCase();
-                  if (nameC < nameD) {
-                    return -1;
-                  }
-                  if (nameC > nameD) {
-                    return 1;
-                  }
-
-                  return 0;
-                })
-                .map((licence, index) => {
-                  if (!licence) {
-                    return;
-                  }
-                  const maxValue = licences.reduce((acc, cv) => Math.max(acc, cv.sidebar), 0);
-
-                  // Make sure that every License has an index
-                  if (licence.sidebar === null) {
-                    licence.sidebar = maxValue + 1;
-                  }
-                  return (
-                    <SidebarLink
-                      disabled={false}
-                      key={`ServiceLogo-${licence.id}`}
-                      licence={licence}
-                      openInstances={openInstances}
-                      sidebarOpen={sidebarOpen}
-                      active={
-                        openInstances && openInstances[licence.id]
-                          ? openInstances[licence.id][this.props.viewID]
-                          : false
-                      }
-                      setTeam={this.props.setApp}
-                      setInstance={this.props.setInstance}
-                      viewID={this.props.viewID}
-                      isSearching={this.state.searchString === ""}
-                      selected={this.state.selected == index}
-                      multipleOrbits={
-                        appOrbitCount[licence.boughtplanid.planid.appid.id].length > 0
-                      }
-                    />
-                  );
-                })}
+                <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+                  Open Service
+                </span>
+              </button>
+              </li>*/}
           </ul>
         </li>
-
-        {/* {showApps && licences.length > 5 && (
-          <li className={`sidebar-link show-more${sidebarOpen ? "" : "-small"}`}>
-            <button
-              type="button"
-              onClick={() =>
-                this.setState((prevState) => ({
-                  ...prevState,
-                  showMoreApps: !prevState.showMoreApps,
-                }))
-              }
-              className="naked-button itemHolder" /*sidebar-link-apps
-              style={{ color: "#ffffff80" }}>
-              <Tooltip
-                className="sidebar-tooltip"
-                arrowSize={5}
-                distance={12}
-                useHover={!sidebarOpen}
-                direction="right"
-                content={`Show ${showMoreApps ? "less" : "more"} Apps`}>
-                <div className="naked-button sidebarButton showMore">
-                  <i className={`fal fa-angle-down ${showMoreApps ? "open" : ""}`} />
-                </div>
-              </Tooltip>
-              <span className="sidebar-link-caption">
-                {`Show ${showMoreApps ? "less" : "more"} Apps`}
-              </span>
-            </button>
-          </li>
-        )} */}
       </ul>
     );
   }

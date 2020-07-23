@@ -8,9 +8,13 @@
 // please add in alphabetical order
 @import "./appDetails";
 @import "./appOverviewCard";
+@import "./browser";
 @import "./card";
 @import "./employeeCard";
 @import "./marketplace";
 @import "./marketplaceCategories";
 @import "./pageHeader";
 @import "./prosConsList";
+
+// last add macos specials
+@import "./macosx";

@@ -12,13 +12,10 @@ import ErrorPage from "./error";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import LoadingDiv from "../components/LoadingDiv";
-import ViewHandler from "./viewhandler";
-import Tabs from "../components/Tabs";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
 import Consent from "../popups/universalPopups/Consent";
 import ResizeAware from "react-resize-aware";
-import HistoryButtons from "../components/HistoryButtons";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
 import TutorialBase from "../tutorials/tutorialBase";
 import { fetchUserLicences } from "../queries/departments";
@@ -28,6 +25,7 @@ import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
+import Browser from "./browser";
 import routes from "../routes";
 
 interface AreaProps {
@@ -63,6 +61,8 @@ interface AreaState {
   adminOpen: boolean;
   consentPopup: boolean;
   allowSkip: boolean;
+  openServices: string[];
+  showService: string | null;
 }
 
 class Area extends React.Component<AreaProps, AreaState> {
@@ -79,7 +79,9 @@ class Area extends React.Component<AreaProps, AreaState> {
     activeTab: null,
     adminOpen: false,
     consentPopup: false,
-    allowSkip: false
+    allowSkip: false,
+    openServices: [],
+    showService: null
   };
 
   categories = {
@@ -224,30 +226,20 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   moveTo = path => {
     if (!path.startsWith("app")) {
-      this.setState({ viewID: -1 });
+      this.setState({ viewID: -1, showService: null });
     }
 
     this.props.moveTo(path);
   };
 
-  setApp = (assignmentId: number) => {
-    if (this.state.openInstances[assignmentId]) {
-      this.setState(prevState => {
-        const newstate = {
-          ...prevState,
-          app: assignmentId,
-          licenceID: assignmentId,
-          viewID: Object.keys(prevState.openInstances[assignmentId])[0]
-        };
-
-        return newstate;
+  setApp = (assignmentId: string) => {
+    if (!this.state.openServices.find(os => os == assignmentId)) {
+      this.setState(oldstate => {
+        return { ...oldstate, openServices: [...oldstate.openServices, assignmentId] };
       });
-
-      this.props.history.push(`/area/app/${assignmentId}`);
-    } else {
-      this.addWebview(assignmentId, true);
-      this.props.history.push(`/area/app/${assignmentId}`);
     }
+    this.setState({ showService: assignmentId });
+    this.props.history.push(`/area/browser/${assignmentId}`);
   };
 
   setDomain = (boughtplan: number, domain: string) => {
@@ -359,23 +351,28 @@ class Area extends React.Component<AreaProps, AreaState> {
       return { webviews, openInstances };
     });
 
-    if (
-      this.state.viewID == viewID &&
-      this.props.history.location.pathname.startsWith("/area/app/")
-    ) {
-      this.setState(prevState => {
-        if (prevState.webviews[position]) {
-          this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
-          return { ...prevState, viewID: prevState.webviews[position].key };
-        } else if (prevState.webviews[0]) {
-          this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
-          return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
-        } else {
-          this.props.moveTo("dashboard");
-          return prevState;
-        }
-      });
+    if (this.state.viewID == viewID) {
+      if (this.props.history.location.pathname.startsWith("/area/app/")) {
+        this.setState(prevState => {
+          if (prevState.webviews[position]) {
+            this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
+            return { ...prevState, viewID: prevState.webviews[position].key };
+          } else if (prevState.webviews[0]) {
+            this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
+            return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
+          } else {
+            this.props.moveTo("dashboard");
+            return prevState;
+          }
+        });
+      }
     }
+  };
+
+  setInstance = viewID => {
+    const licenceID = this.state.webviews.find(e => e.key == viewID).licenceID;
+    this.setState({ app: licenceID, licenceID, viewID });
+    this.props.history.push(`/area/app/${licenceID}`);
   };
 
   handleDragStart = (viewID: number) => {
@@ -416,6 +413,14 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.closeInstance(viewID, licenceID);
   };
 
+  closeBrowser(assignmentId, moveTo) {
+    this.setState(oldstate => {
+      const openServices = oldstate.openServices.filter(os => os != assignmentId) || [];
+      return { openServices };
+    });
+    this.moveTo(moveTo);
+  }
+
   isAdminOpen = () => {
     return routes.find(route => {
       const splits = route.path.slice(6).split(":");
@@ -432,10 +437,10 @@ class Area extends React.Component<AreaProps, AreaState> {
     })?.admin;
   };
 
-  renderCategories = (categories, category, addRenderElement) => (
+  renderCategories = (categories, categorie, addRenderElement) => (
     <li>
-      <div className={"adminHeadline-categoryTitle"}>{category}</div>
-      {categories[category].map(({ label, location, highlight, ...categoryProps }) => {
+      <div className={"adminHeadline-categoryTitle"}>{categorie}</div>
+      {categories[categorie].map(({ label, location, highlight, ...categoryProps }) => {
         let buttonClass = "naked-button adminHeadline-categoryElement";
 
         const id = label.toString() + location.toString();
@@ -480,8 +485,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       adminOpen,
       viewID,
       licenceID,
-      consentPopup,
-      openInstances
+      openServices,
+      openInstances,
+      consentPopup
     } = this.state;
 
     const {
@@ -496,7 +502,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       expiredPlan,
       id,
       style,
-      history
+      showService
     } = this.props;
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
@@ -508,6 +514,37 @@ class Area extends React.Component<AreaProps, AreaState> {
         </div>
       );
     }
+
+    const browserlist: JSX.Element[] = [];
+    let marginLeft = 64;
+    if (sidebarOpen) {
+      marginLeft += 176;
+    }
+    openServices.forEach(o =>
+      browserlist.push(
+        <div
+          key={o}
+          style={{
+            visibility: showService == o ? "visible" : "hidden",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            width: "100%",
+            height: "100%"
+          }}>
+          <Browser
+            setApp={this.setApp}
+            toggleAdmin={this.toggleAdmin}
+            adminOpen={adminOpen}
+            moveTo={this.moveTo}
+            assignmentId={o}
+            visible={showService == o}
+            closeBrowser={(a, b) => this.closeBrowser(a, b)}
+            {...this.props}
+          />
+        </div>
+      )
+    );
 
     return (
       <AppContext.Consumer>
@@ -540,6 +577,8 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   viewID={viewID}
                                   views={webviews}
                                   openInstances={openInstances}
+                                  openServices={openServices}
+                                  showService={showService}
                                   toggleSidebar={this.toggleSidebar}
                                   setInstance={this.setInstance}
                                   {...this.props}
@@ -570,9 +609,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                           </Query>
                         )}
                       />
-
-                      <Route render={() => <HistoryButtons viewID={viewID} />} />
-
                       <Switch>
                         <Route
                           exact
@@ -694,6 +730,26 @@ class Area extends React.Component<AreaProps, AreaState> {
                         />
 
                         <Route
+                          exact
+                          path="/area/browser/:assignmentid"
+                          render={props => {
+                            if (showService != props.match.params.assignmentid) {
+                              this.setApp(props.match.params.assignmentid);
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
+                          exact
+                          path="/area/browser"
+                          render={props => {
+                            if (showService != "browser") {
+                              this.setApp("browser");
+                            }
+                            return "";
+                          }}
+                        />
+                        <Route
                           key={"ERRORELSE"}
                           render={() => (
                             <div
@@ -706,18 +762,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                         />
                       </Switch>
 
-                      <ViewHandler showView={viewID} views={webviews} sidebarOpen={sidebarOpen} />
-
-                      <Tabs
-                        tabs={webviews}
-                        setInstance={this.setInstance}
-                        viewID={viewID}
-                        handleDragStart={this.handleDragStart}
-                        handleDragOver={this.handleDragOver}
-                        handleDragEnd={this.handleDragEnd}
-                        handleDragLeave={this.handleDragLeave}
-                        handleClose={this.handleClose}
-                      />
+                      <div
+                        id="viewHandler"
+                        className={`marginLeft ${sidebarOpen && "sidebar-open"}`}
+                        style={{
+                          visibility: showService !== null ? "visible" : "hidden",
+                          position: "relative",
+                          height: showService !== null ? undefined : "1px",
+                          overflow: showService !== null ? undefined : "hidden"
+                        }}>
+                        {browserlist}
+                      </div>
 
                       {needspasswordchange && !localStorage.getItem("impersonator-token") && (
                         <ForcedPasswordChange email={emails[0].email} />

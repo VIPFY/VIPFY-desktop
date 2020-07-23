@@ -11,6 +11,7 @@ import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import HeaderNotificationContext from "../notifications/headerNotificationContext";
 import { element } from "prop-types";
+import * as is from "electron-is";
 
 // capture the session for reset reasons
 const { session } = remote;
@@ -1383,7 +1384,11 @@ class LoginIntegrator extends React.Component<Props, State> {
             <div
               id="ground"
               style={
-                context.isActive
+                is.macOS()
+                  ? context.isActive
+                    ? { height: "calc(100vh - 24px - 40px)" }
+                    : { height: "calc(100vh - 24px)" }
+                  : context.isActive
                   ? { height: "calc(100vh - 32px - 40px)" }
                   : { height: "calc(100vh - 32px)" }
               }>
