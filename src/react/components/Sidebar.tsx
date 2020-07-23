@@ -1,7 +1,6 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
 import gql from "graphql-tag";
-import * as moment from "moment";
 import * as ReactDOM from "react-dom";
 import { Licence } from "../interfaces";
 import Notification from "../components/Notification";
@@ -21,7 +20,6 @@ import {
   VIPFYPlanParts
 } from "../queries/departments";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./security/graphqlOperations";
-import config from "../../configurationManager";
 
 const NOTIFICATION_SUBSCRIPTION = gql`
   subscription onNewNotification {
@@ -88,7 +86,6 @@ interface SidebarLinks {
   label: string;
   location: string;
   icon: string;
-  show: any;
   highlight: any;
 }
 
@@ -337,13 +334,13 @@ class Sidebar extends React.Component<SidebarProps, State> {
   };
 
   renderLink = (
-    { label, location, icon, show, highlight, strict }: SidebarLinks,
+    { label, location, icon, highlight, strict }: SidebarLinks,
     addRenderElement,
     disabled
   ) => {
-    //return;
     let cssClass = "sidebar-link";
     let buttonClass = "naked-button itemHolder";
+
     const { sidebarOpen } = this.props;
 
     if (!sidebarOpen) {
@@ -360,47 +357,47 @@ class Sidebar extends React.Component<SidebarProps, State> {
       cssClass += " sidebar-active";
       buttonClass += " selected";
     }
+
     const id = label.toString() + location.toString() + icon.toString();
 
-    if (show) {
-      return (
-        <Tooltip
-          className="sidebar-tooltip"
-          distance={8}
-          arrowSize={5}
-          useHover={!sidebarOpen}
-          content={label}
-          direction="right">
-          <li
-            key={location}
-            className={cssClass}
-            ref={el => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
-            <button
-              id={id}
-              disabled={disabled}
-              className={buttonClass}
-              onMouseDown={() => {
-                document.getElementById(id).className = "naked-button itemHolder active";
-              }}
-              onMouseUp={() => {
-                document.getElementById(id).className = buttonClass;
-                this.goTo(location);
-              }}
-              onMouseLeave={() => {
-                document.getElementById(id).className = buttonClass;
-              }}>
-              <div className="naked-button sidebarButton">
-                <i className={`fal fa-${icon}`} />
-              </div>
+    return (
+      <Tooltip
+        key={location}
+        className="sidebar-tooltip"
+        distance={8}
+        arrowSize={5}
+        useHover={!sidebarOpen}
+        content={label}
+        direction="right">
+        <li
+          key={location}
+          className={cssClass}
+          ref={el => this.maybeAddHighlightReference(location, highlight, el, addRenderElement)}>
+          <button
+            id={id}
+            disabled={disabled}
+            className={buttonClass}
+            onMouseDown={() => {
+              document.getElementById(id).className = "naked-button itemHolder active";
+            }}
+            onMouseUp={() => {
+              document.getElementById(id).className = buttonClass;
+              this.goTo(location);
+            }}
+            onMouseLeave={() => {
+              document.getElementById(id).className = buttonClass;
+            }}>
+            <div className="naked-button sidebarButton">
+              <i className={`fal fa-${icon}`} />
+            </div>
 
-              <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
-                {label}
-              </span>
-            </button>
-          </li>
-        </Tooltip>
-      );
-    }
+            <span className={`sidebar-link-caption ${sidebarOpen ? "" : "invisible"}`}>
+              {label}
+            </span>
+          </button>
+        </li>
+      </Tooltip>
+    );
   };
 
   render() {
@@ -414,14 +411,12 @@ class Sidebar extends React.Component<SidebarProps, State> {
         label: "Open Service",
         location: "dashboard",
         icon: "plus",
-        show: true,
         highlight: "dashboardelement"
       },
       {
         label: "Add Credentials",
         location: "integrations",
         icon: "store",
-        show: true,
         highlight: "pluselement"
       }
     ];
@@ -531,7 +526,6 @@ class Sidebar extends React.Component<SidebarProps, State> {
                   label: "Support",
                   location: "support",
                   icon: "ambulance",
-                  show: true,
                   highlight: "supportelement"
                 },
                 context.addRenderElement,
