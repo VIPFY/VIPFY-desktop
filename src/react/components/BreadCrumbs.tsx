@@ -1,11 +1,12 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import withBreadcrumbs from "react-router-breadcrumbs-hoc";
+import routes from "../routes";
 
 const Breadcrumbs = ({ breadcrumbs }) => (
   <div className="breadCrumbs">
     {breadcrumbs.map(({ match, breadcrumb }, i: number) => {
-      // we don't render the first breadcrumb: it links to "#/", which doesn't work in our app
+      // don't render the first breadcrumb: it links to "#/", which doesn't work in our app
       if (i == 0) {
         return null;
       }
@@ -25,4 +26,5 @@ const Breadcrumbs = ({ breadcrumbs }) => (
   </div>
 );
 
-export default withBreadcrumbs()(Breadcrumbs);
+// FIXME: The "routes" param doesn't seem to be respected while the routes are also imported in area.tsx.
+export default withBreadcrumbs(routes)(Breadcrumbs);

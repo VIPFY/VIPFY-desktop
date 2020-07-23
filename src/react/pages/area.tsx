@@ -4,119 +4,31 @@ import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
 import { Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
-
-import Billing from "./billing";
-import Dashboard from "./dashboard";
+import SupportPage from "../pages/support";
 import Domains from "./domains";
-import MarketplaceDiscover from "./marketplace/MarketplaceDiscover";
-import MarketplaceCategories from "./marketplace/MarketplaceCategories";
-import MessageCenter from "./messagecenter";
-import AdminDashboard from "../components/admin/Dashboard";
-import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
 import Webview from "./webview";
 import ErrorPage from "./error";
-import UsageStatistics from "./usagestatistics";
-import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
-import SupportPage from "./support";
-import Security from "./security";
-import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
-import ServiceEdit from "../components/admin/ServiceEdit";
 import ViewHandler from "./viewhandler";
 import Tabs from "../components/Tabs";
-import SsoConfigurator from "./ssoconfigurator";
-import SsoTester from "./SSOtester";
-import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
-import ServiceLogoEdit from "../components/admin/ServiceLogoOverview";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
-import EmployeeOverview from "./manager/employeeOverview";
-import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
 import HistoryButtons from "../components/HistoryButtons";
-import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
-import ServiceIntegrator from "../components/admin/ServiceIntegrator";
 import TutorialBase from "../tutorials/tutorialBase";
-import CryptoDebug from "../components/admin/crytpodebug";
-import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
-import EmployeeDetails from "./manager/employeeDetails";
-import TeamOverview from "./manager/teamOverview";
-import ServiceOverview from "./manager/serviceOverview";
-import ServiceDetails from "./manager/serviceDetails";
-import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
-import Workspace from "./Workspace";
-import InboundEmails from "../components/admin/emails";
-import PendingIntegrations from "../components/admin/PendingIntegrations";
-import AddCustomServicePage from "./addCustomService";
-import AppDetails from "./marketplace/AppDetails";
-import Checkout from "./marketplace/Checkout";
-
-// please add in alphabetic order
-const ROUTES = [
-  { path: "", component: Dashboard },
-  { path: "addcustomservice", component: AddCustomServicePage, greybackground: true },
-  { path: "admin", component: AdminDashboard, admin: true },
-  { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
-  { path: "admin/email-integration/:emailid", component: LoginIntegrator, admin: true },
-  { path: "admin/inboundemails", component: InboundEmails, admin: true },
-  { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
-  { path: "admin/service-creation", component: ServiceCreation, admin: true },
-  { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
-  { path: "admin/service-edit", component: ServiceEdit, admin: true },
-  { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
-  { path: "admin/service-integration/:appid", component: LoginIntegrator, admin: true },
-  { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
-  { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-  { path: "billing", component: Billing, admin: true },
-  { path: "company", component: CompanyDetails, admin: true },
-  { path: "dashboard", component: Dashboard },
-  { path: "dashboard/:overlay", component: Dashboard },
-  { path: "dmanager", component: TeamOverview, admin: true },
-  { path: "dmanager/:teamid", component: TeamDetails, admin: true },
-  { path: "emanager", component: EmployeeOverview, admin: true },
-  { path: "emanager/:userid", component: EmployeeDetails, admin: true },
-  { path: "error", component: ErrorPage },
-  { path: "integrations", component: Integrations },
-  { path: "lmanager", component: ServiceOverview, admin: true },
-  { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
-  {
-    path: "manager/addcustomservice/:appname",
-    component: AddCustomServicePage,
-    greybackground: true,
-    manager: true,
-    admin: true
-  },
-  { path: "messagecenter", component: MessageCenter },
-  { path: "messagecenter/:person", component: MessageCenter },
-  { path: "marketplace", component: MarketplaceDiscover, admin: true },
-  { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
-  { path: "marketplace/categories/:appid", component: AppDetails, admin: true },
-  { path: "marketplace/categories/:appid/:planid", component: Checkout, admin: true },
-  { path: "marketplace/:appid", component: AppDetails, admin: true },
-  { path: "marketplace/:appid/:planid", component: Checkout, admin: true },
-  { path: "profile/:userid", component: EmployeeDetails, addprops: { profile: true } },
-  { path: "security", component: Security, admin: true },
-  { path: "ssoconfig", component: SsoConfigurator, admin: true },
-  { path: "ssotest", component: SsoTester, admin: true },
-  { path: "support", component: SupportPage },
-  { path: "usage", component: UsageStatistics, admin: true },
-  { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
-  { path: "vacation", component: Vacation },
-  { path: "workspace", component: Workspace }
-];
+import routes from "../routes";
 
 interface AreaProps {
   id: string;
@@ -505,11 +417,10 @@ class Area extends React.Component<AreaProps, AreaState> {
   };
 
   isAdminOpen = () => {
-    return ROUTES.find(r => {
-      const splits = r.path.split(":");
+    return routes.find(route => {
+      const splits = route.path.slice(6).split(":");
       const slashsplits = splits[0].split("/");
       const locationssplits = history.location.pathname.split("/");
-
       let location = "";
       locationssplits.forEach((l, k) => {
         if (k > 0 && k <= slashsplits.length + 1) {
@@ -517,7 +428,6 @@ class Area extends React.Component<AreaProps, AreaState> {
           location += l;
         }
       });
-
       return `/area/${splits[0]}` == location;
     })?.admin;
   };
@@ -678,7 +588,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           render={() => <SupportPage {...this.state} fromErrorPage={true} />}
                         />
 
-                        {ROUTES.map(({ path, component, admin, addprops, manager }) => {
+                        {routes.map(({ path, component, admin, addprops, manager }) => {
                           const RouteComponent = component;
                           let marginLeft = 64;
 
@@ -694,7 +604,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             <Route
                               key={path}
                               exact
-                              path={`/area/${path}`}
+                              path={path}
                               render={props => (
                                 <div
                                   className={`full-working ${chatOpen ? "chat-open" : ""}`}
