@@ -58,7 +58,7 @@ class BrowserNavigationButton extends React.Component<Props, State> {
               try {
                 await this.props.onClick();
               } catch (err) {
-                console.log("ERROR", err);
+                console.error("ERROR", err);
               }
               this.setState({ active: false });
             } else if (this.props.dropdown) {

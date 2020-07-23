@@ -1,5 +1,5 @@
 import * as React from "react";
-import sharp from "sharp";
+//import sharp from "sharp";
 import WebView from "react-electron-web-view";
 import { sleep, getPreloadScriptPath } from "../common/functions";
 import { LoginResult } from "../interfaces";
@@ -707,15 +707,15 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           const image = await webview.getWebContents().capturePage();
           const size = image.getSize();
 
-          const imgurl =
-            size.width == 0
+          const imgurl = null;
+          /*size.width == 0
               ? null
               : this.webpBufferToDataUrl(
                   await sharp(image.toPNG())
                     .resize(size.width / 2)
                     .webp({ quality: 80 })
                     .toBuffer()
-                );
+                );*/
 
           this.props.setResult(resultValues, imgurl);
         }, this.screenshotDelay);

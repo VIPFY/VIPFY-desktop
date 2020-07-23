@@ -27,22 +27,24 @@ interface Props {
   moveTo: Function;
   setApp: Function;
 }
+
+interface Tab {
+  id: string;
+  label: string;
+  url: string;
+  active: boolean;
+  history: string[];
+  historyMarker: number;
+  setHistory?: string | undefined;
+}
 interface State {
-  tabs: {
-    id: string;
-    label: string;
-    url: string;
-    active: boolean;
-    history: string[];
-    historyMarker: number;
-    setHistory?: string | undefined;
-  }[];
+  tabs: Tab[];
   searchUrl: string;
   drag: boolean;
 
   interaction: Date | null;
-  intervalId: Timer | null;
-  intervalId2: Timer | null;
+  activityCheckTimer: Timer | null;
+  activitySendTimer: Timer | null;
   timeSpent: number;
   key: any;
   showLoadingScreen: Boolean;
@@ -77,8 +79,8 @@ class Browser extends React.Component<Props, State> {
     searchUrl: "",
     drag: false,
     interaction: null,
-    intervalId: null,
-    intervalId2: null,
+    activityCheckTimer: null,
+    activitySendTimer: null,
     timeSpent: 0,
     key: null,
     showLoadingScreen: false,
@@ -94,9 +96,9 @@ class Browser extends React.Component<Props, State> {
     } else {
       console.log("NO TABHOLDER");
     }
-    let intervalId = setInterval(() => this.timer1m(), 60000);
-    let intervalId2 = setInterval(() => this.sendTimeSpent(), 600000);
-    this.setState({ intervalId, intervalId2 });
+    let activityCheckTimer = setInterval(() => this.checkActivity(), 60000);
+    let activitySendTimer = setInterval(() => this.sendTimeSpent(), 600000);
+    this.setState({ activityCheckTimer, activitySendTimer });
 
     if (this.props.assignmentId && this.props.assignmentId != "browser") {
       let result = await this.props.client.query({
@@ -223,7 +225,7 @@ class Browser extends React.Component<Props, State> {
     );
   }
 
-  timer1m = () => {
+  checkActivity = () => {
     const now = new Date();
     let timeSpent = this.state.timeSpent;
     if (now - this.state.interaction < 1000 * 60 * 5) {
@@ -249,13 +251,13 @@ class Browser extends React.Component<Props, State> {
     // no need to await this, let apollo do this whenever
     this.props.client.mutate({
       mutation: gql`
-        mutation trackMinutesSpent($licenceid: ID!, $minutes: Int!) {
-          trackMinutesSpent(assignmentid: $licenceid, minutes: $minutes) {
+        mutation trackMinutesSpent($assignmentid: ID!, $minutes: Int!) {
+          trackMinutesSpent(assignmentid: $assignmentid, minutes: $minutes) {
             ok
           }
         }
       `,
-      variables: { licenceid: this.props.assignmentId, minutes: minutes }
+      variables: { assignmentid: this.props.assignmentId, minutes: minutes }
     });
   };
 
@@ -422,12 +424,8 @@ class Browser extends React.Component<Props, State> {
   trySiteLoading = (id, url, error = false) => {
     if (url != this.state.tabs.find(t => t.id == id).url) {
       // If valid url or localhosturl than update tab directly
-      if (
-        /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm.test(
-          url
-        ) ||
-        url.startsWith("localhost")
-      ) {
+      const isValidUrl = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gm;
+      if (isValidUrl.test(url) || url.startsWith("localhost")) {
         this.setState(oldstate => {
           const updatedTabs = oldstate.tabs.map(t => (t.id == id ? { ...t, url } : t));
           return {
@@ -436,6 +434,7 @@ class Browser extends React.Component<Props, State> {
           };
         });
       }
+
       let searchvalue = "";
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         searchvalue = "https://" + url;
@@ -956,7 +955,7 @@ class Browser extends React.Component<Props, State> {
       );
     }
     return (
-      <div style={{ height: "100%", position: "relative" }}>
+      <div className="browser" style={{ height: "100%", position: "relative" }}>
         <div className="navigationBar" style={this.props.visible ? {} : { height: "100%" }}>
           <BrowserNavigationButton
             icon="chevron-left"
@@ -1009,8 +1008,8 @@ class Browser extends React.Component<Props, State> {
           ) : (
             <div></div>
           )}
-          <BrowserNavigationButton icon="user" />
-          <BrowserNavigationButton icon="cog" />
+          {/*<BrowserNavigationButton icon="user" />
+          <BrowserNavigationButton icon="cog" />*/}
         </div>
         {webviewElements}
         {this.state.selectAccount && (
