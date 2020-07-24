@@ -102,15 +102,19 @@ class PaymentData extends Component<Props, State> {
                           </div>
                         </CardSection>
                         <CardSection>
-                          {paymentData.emails.map((e, k) => (
-                            <div
-                              style={Object.assign(
-                                { lineHeight: "19px" },
-                                k > 0 ? {} : { marginTop: "7px" }
-                              )}>
-                              Email: {e.email}
-                            </div>
-                          ))}
+                          {paymentData.emails ? (
+                            paymentData.emails.map((e, k) => (
+                              <div
+                                style={Object.assign(
+                                  { lineHeight: "19px" },
+                                  k > 0 ? {} : { marginTop: "7px" }
+                                )}>
+                                Email: {e.email}
+                              </div>
+                            ))
+                          ) : (
+                            <span style={{ color: "red" }}>No Emails!</span>
+                          )}
                         </CardSection>
                         <CardSection>
                           {paymentData.phone && (

@@ -96,7 +96,9 @@ class PaymentAddress extends Component<Props, State> {
             const { country, address, id: addressId } = address2 || {};
             const { city, street, addition, postalCode } = address || {};
 
-            const presentEmails1 = emails.filter(e => this.state.emaildelete.indexOf(e.id) == -1);
+            const presentEmails1 = emails
+              ? emails.filter(e => this.state.emaildelete.indexOf(e.id) == -1)
+              : [];
             const presentEmails = presentEmails1.concat(
               this.state.emailadd.filter(e => this.state.emaildelete.indexOf(e.id) == -1)
             );
@@ -225,7 +227,10 @@ class PaymentAddress extends Component<Props, State> {
                               ) {
                                 usesVat = true;
                               }
-                              this.setState({ country: v, usesVat, vat: {} });
+                              this.setState({ country: v, usesVat });
+                              if (v != country) {
+                                this.setState({ vat: {} });
+                              }
                             }
                           }}
                         />
@@ -238,6 +243,7 @@ class PaymentAddress extends Component<Props, State> {
                                   label="Vat Number"
                                   smallTextField={true}
                                   startvalue={vatstatus?.vatNumber}
+                                  disabled={vatstatus?.vatNumber}
                                   endvalue={async vatNumber => {
                                     this.setState({
                                       vat: { vatNumber },
@@ -298,7 +304,7 @@ class PaymentAddress extends Component<Props, State> {
                               ) : (
                                 <UniversalCheckbox
                                   name="WithoutTaxes"
-                                  startingvalue={vatstatus?.valid}
+                                  startingvalue={vatstatus?.selfCheck}
                                   style={{ height: "48px", alignItems: "center", display: "flex" }}
                                   liveValue={valid => {
                                     console.log("CHANGE", valid);
