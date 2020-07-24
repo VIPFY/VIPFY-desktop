@@ -254,7 +254,9 @@ class ClickTrackerInner extends PureComponent<Props, State> {
     });
   }
 
-  static getDerivedStateFromProps(props, state) {}
+  static getDerivedStateFromProps() {
+    return null;
+  }
 
   render() {
     return null;

@@ -1,7 +1,6 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
+import { withApollo } from "react-apollo";
 import WebView from "react-electron-web-view";
-import gql from "graphql-tag";
 
 import * as TestData from "../../../ssoTestData.json";
 import { getPreloadScriptPath } from "../common/functions";
@@ -27,6 +26,7 @@ interface State {
   confirmbutton: string;
   currentlySetting: Field;
   ipcHandler: Function;
+  preloadscript?: string;
 }
 
 class SsoTester extends React.PureComponent<Props, State> {
@@ -57,7 +57,6 @@ class SsoTester extends React.PureComponent<Props, State> {
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
               }`}
-              //onClick={this.toggle}
             />
             <span>SSO Configurator</span>
           </div>
@@ -109,7 +108,6 @@ class SsoTester extends React.PureComponent<Props, State> {
 
   loginFieldIndex = 0;
   iterFindLoginFields(e) {
-    console.log(e, this.state.preloadscript);
     if (e != null) {
       if (e.channel == "debug") {
         return -1;
@@ -148,7 +146,6 @@ class SsoTester extends React.PureComponent<Props, State> {
           if (this.state.currentlySetting == Field.confirm) {
             this.setState({ confirmbutton: id });
           }
-          //e.target.send("loginData", key);
         }
         break;
       default:

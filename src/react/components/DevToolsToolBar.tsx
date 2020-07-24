@@ -8,17 +8,20 @@ interface Props {}
 
 const element = document.getElementById("DevToolToolBar")!;
 
-const Tabs = (props: Props) => {
+const Tabs = () => {
   const [webviews, setWebviews] = React.useState([]);
   const [active, setActive] = React.useState(-1);
+
   useInterval(async () => {
     const w: any[] = Array.from(document.querySelectorAll("webview"));
+
     w.push({
       getWebContentsId: () => -1,
       getTitle: () => "Global",
       style: { outline: null },
       isVipfyFaked: true
     });
+
     w.sort((a, b) => a.getWebContentsId() - b.getWebContentsId());
     setWebviews(w);
     setActive(await ipcRenderer.invoke("getDevToolsContentId"));
@@ -40,6 +43,7 @@ const Tabs = (props: Props) => {
         }>
         <i className="fas fa-eye"></i>
       </button>
+
       {webviews
         .filter(w => w.isVipfyFaked || document.body.contains(w))
         .filter(w => {
@@ -53,6 +57,7 @@ const Tabs = (props: Props) => {
         })
         .map(w => (
           <button
+            key={w.getWebContentsId()}
             className={`naked-button smalltab ${w.getWebContentsId() == active ? "active" : ""}`}
             onMouseEnter={() => (w.style.outline = "solid pink 3px")}
             onMouseLeave={() => (w.style.outline = "unset")}

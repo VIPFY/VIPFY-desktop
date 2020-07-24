@@ -25,7 +25,7 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
     setDismissHeaderNotification((key, redoable) => this.dismissHeaderNotification(key, redoable));
   }
 
-  componentWillMount = async () => {
+  UNSAFE_componentWillMount = async () => {
     try {
       let response = await fetch("https://vipfy.store/maintenance.json", {
         cache: "reload"
@@ -92,7 +92,7 @@ class HeaderNotificationProvider extends React.Component<Props, State> {
       }
 
       let notificationadded = [...notifications, notification];
-      notificationadded.sort(function(
+      notificationadded.sort(function (
         a: { type?: String; time: number },
         b: { type?: String; time: number }
       ) {
