@@ -39,6 +39,7 @@ interface PageHeaderProps {
   buttonConfig?: ButtonConfig;
   searchConfig?: SearchConfig;
   children?: any;
+  disabled?: boolean;
 }
 
 interface PageHeaderState {
@@ -52,7 +53,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   }
 
   render() {
-    const { showBreadCrumbs, title, children, buttonConfig, wizardConfig } = this.props;
+    const { showBreadCrumbs, title, children, buttonConfig, wizardConfig, disabled } = this.props;
     const { loading } = this.state;
 
     return (
@@ -76,7 +77,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
               label={buttonConfig.label}
               onClick={buttonConfig.onClick}
               className="pageHeaderButton"
-              disabled={loading}
+              disabled={disabled || loading}
               // old button can't do this, new button will:
               // icon={buttonConfig.button}
             ></UniversalButton>

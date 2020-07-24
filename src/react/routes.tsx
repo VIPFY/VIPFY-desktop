@@ -34,6 +34,10 @@ import PendingIntegrations from "./components/admin/PendingIntegrations";
 import AddCustomServicePage from "./pages/addCustomService";
 import AppDetails from "./pages/marketplace/AppDetails";
 import Checkout from "./pages/marketplace/Checkout";
+import TestingBilling from "./components/admin/testingbilling";
+import PaymentMethod from "./pages/billing/paymentMethod";
+import PaymentAddress from "./pages/billing/paymentAddress";
+import PaymentData from "./pages/billing/paymentData";
 
 // please add in alphabetic order
 const routes = [
@@ -55,7 +59,11 @@ const routes = [
   { path: "/area/admin/service-integration/:appid", component: LoginIntegrator, admin: true },
   { path: "/area/admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
   { path: "/area/admin/universal-login-test", component: UniversalLoginTest, admin: true },
+  { path: "/area/admin/testingbilling", component: TestingBilling, admin: true },
   { path: "/area/billing", component: Billing, admin: true },
+  { path: "/area/paymentdata/paymentmethod", component: PaymentMethod, admin: true },
+  { path: "/area/paymentdata/paymentaddress", component: PaymentAddress, admin: true },
+  { path: "/area/paymentdata", component: PaymentData, admin: true },
   { path: "/area/company", component: CompanyDetails, admin: true },
   { path: "/area/dashboard", component: Dashboard },
   { path: "/area/dashboard/:overlay", component: Dashboard },

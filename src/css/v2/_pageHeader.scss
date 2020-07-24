@@ -11,6 +11,10 @@
     display: flex;
   }
 
+  h1 {
+    flex-grow: 1;
+  }
+
   .breadCrumbs {
     margin-bottom: 8px;
     font-size: 14px;
@@ -29,46 +33,13 @@
     }
   }
 
-  .titleRow {
-    > :not(:last-child) {
-      flex-grow: 1;
-    }
-
-    .pageHeaderButton {
-      background-color: $primarygreen;
-      color: $white;
-      margin-left: 16px;
-    }
-  }
-
-  .wizard {
-    display: flex;
-    align-items: center;
-
-    .pill {
-      width: 136px;
-      padding: 0 8px;
-      text-align: center;
-      font-size: 12px;
-      line-height: 30px;
-      border: 1px solid $lightgrey-darker;
-      border-radius: 16px;
-
-      &.active {
-        border-color: $primarygreen;
-      }
-    }
-
-    .divider {
-      margin: 4px;
-      min-width: 4px;
-      max-width: 50px;
-      flex-grow: 1;
-      border-bottom: 1px solid $lightgrey-darkest;
-    }
-  }
-
   .children {
     display: block;
+  }
+
+  .pageHeaderButton {
+    background-color: $primarygreen;
+    color: $white;
+    margin-left: 16px;
   }
 }

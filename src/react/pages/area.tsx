@@ -20,6 +20,7 @@ import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange
 import TutorialBase from "../tutorials/tutorialBase";
 import { fetchUserLicences } from "../queries/departments";
 import RecoveryKey from "../components/signin/RecoveryKey";
+import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
@@ -138,7 +139,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       },
       {
         label: "Payment Method",
-        location: "paymentdata/paymentmethod",
+        location: "paymentdata",
         icon: "file-invoice-dollar",
         show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
@@ -666,10 +667,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                                           )}
                                         </ul>
                                       </div>
-                                    )}
-
-                                    {addprops && addprops.heading && (
-                                      <div className="pageHeading">{addprops.heading}</div>
                                     )}
 
                                     <RouteComponent

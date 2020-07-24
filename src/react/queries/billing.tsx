@@ -18,12 +18,48 @@ export const FETCH_BILLS = gql`
 export const FETCH_CARDS = gql`
   {
     fetchPaymentData {
-      id
-      brand
-      exp_month
-      exp_year
-      last4
-      name
+      stripeid
+      cards {
+        id
+        brand
+        exp_month
+        exp_year
+        last4
+        name
+      }
+      address
+    }
+  }
+`;
+
+export const FETCH_PAYMENT_DATA = gql`
+  {
+    fetchPaymentData {
+      stripeid
+      cards {
+        id
+        brand
+        exp_month
+        exp_year
+        last4
+        name
+      }
+      address {
+        country
+        address
+        id
+      }
+      vatstatus
+      emails {
+        id
+        email
+      }
+      companyName
+      phone {
+        id
+        number
+      }
+      promoCode
     }
   }
 `;

@@ -2814,35 +2814,5 @@ progress[value] {
     height: 4px;
   }
 }
-.breadcrumbs {
-  margin-top: 24px;
-  font-size: 14px;
-  line-height: 19px;
-  color: $midgrey-light;
-  border-bottom: 1px solid transparent;
-  .breadcrumb {
-    cursor: pointer;
-    &:hover {
-      color: #2a3642;
-    }
-    &:focus {
-      border-bottom: 1px solid $primarygreen;
-    }
-    &.current {
-      cursor: normal;
-      border-bottom: 1px solid #2a3642;
-    }
-  }
-  .breadcrumbSeparator {
-    margin: 0px 4px;
-  }
-}
-
-.pageHeading {
-  margin: 7px 0px 24px;
-  line-height: 32px;
-  color: $midgrey-light;
-  font-size: 24px;
-}
 
 @import "./v2/layout";
