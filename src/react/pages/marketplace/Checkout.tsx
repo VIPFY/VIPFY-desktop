@@ -36,13 +36,19 @@ const DUMMY_USER = {
   ]
 };
 
-const BUTTON_CONFIG = { label: "Press me!", onClick: () => alert("works") };
-
 class Checkout extends React.Component<{}> {
   render() {
     return (
       <div>
-        <PageHeader title="Checkout" showBreadCrumbs={true} buttonConfig={BUTTON_CONFIG} />
+        <PageHeader
+          title="Checkout"
+          showBreadCrumbs={true}
+          buttonConfig={{ label: "Test Button", onClick: () => alert("works") }}
+          wizardConfig={{
+            currentStep: 0,
+            steps: ["Select Employees", "Confirm Data"]
+          }}
+        />
         <div>
           <EmployeeCard employee={DUMMY_USER} />
         </div>
