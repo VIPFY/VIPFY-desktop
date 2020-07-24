@@ -4,64 +4,29 @@ import { withRouter, Switch } from "react-router";
 import { ipcRenderer } from "electron";
 import { Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
-
-import Billing from "./billing";
-import Dashboard from "./dashboard";
 import Domains from "./domains";
-import MarketplaceDiscover from "./marketplace/MarketplaceDiscover";
-import MarketplaceCategories from "./marketplace/MarketplaceCategories";
-import MessageCenter from "./messagecenter";
-import AdminDashboard from "../components/admin/Dashboard";
-import ServiceCreation from "../components/admin/ServiceCreation";
 import Sidebar from "../components/Sidebar";
 import Webview from "./webview";
 import ErrorPage from "./error";
-import UsageStatistics from "./usagestatistics";
-import UsageStatisticsBoughtplan from "./usagestatisticsboughtplans";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
-
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";
-import Security from "./security";
-import Integrations from "./integrations";
 import LoadingDiv from "../components/LoadingDiv";
-import ServiceEdit from "../components/admin/ServiceEdit";
-import SsoConfigurator from "./ssoconfigurator";
-import SsoTester from "./SSOtester";
-import ServiceCreationExternal from "../components/admin/ServiceCreationExternal";
-import ServiceLogoEdit from "../components/admin/ServiceLogoOverview";
 import { SideBarContext, UserContext } from "../common/context";
 import ClickTracker from "../components/ClickTracker";
-import EmployeeOverview from "./manager/employeeOverview";
-import TeamDetails from "./manager/teamDetails";
 import Consent from "../popups/universalPopups/Consent";
-import UniversalLoginTest from "../components/admin/UniversalLoginTest/UniversalLoginTest";
 import ResizeAware from "react-resize-aware";
-import CompanyDetails from "./manager/companyDetails";
 import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange";
-import ServiceIntegrator from "../components/admin/ServiceIntegrator";
 import TutorialBase from "../tutorials/tutorialBase";
-import CryptoDebug from "../components/admin/crytpodebug";
-import Vacation from "./vacation";
 import { fetchUserLicences } from "../queries/departments";
-import EmployeeDetails from "./manager/employeeDetails";
-import TeamOverview from "./manager/teamOverview";
-import ServiceOverview from "./manager/serviceOverview";
-import ServiceDetails from "./manager/serviceDetails";
-import LoginIntegrator from "../components/admin/LoginIntegrator";
 import RecoveryKey from "../components/signin/RecoveryKey";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
-import Workspace from "./Workspace";
-import InboundEmails from "../components/admin/emails";
-import PendingIntegrations from "../components/admin/PendingIntegrations";
 import Browser from "./browser";
-import AddCustomServicePage from "./addCustomService";
-import AppDetails from "./marketplace/AppDetails";
-import Checkout from "./marketplace/Checkout";
+import routes from "../routes";
 
 interface AreaProps {
   id: string;
@@ -118,205 +83,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     openServices: [],
     showService: null
   };
-
-  componentDidMount = async () => {
-    ipcRenderer.on("change-page", (_event, page) => {
-      this.props.history.push(page);
-    });
-
-    if (this.props.consent === null) {
-      this.setState({ consentPopup: true });
-    }
-  };
-
-  moveTo = path => {
-    if (!path.startsWith("app")) {
-      this.setState({ viewID: -1, showService: null });
-    }
-    this.props.moveTo(path);
-  };
-
-  setApp = (assignmentId: string) => {
-    if (!this.state.openServices.find(os => os == assignmentId)) {
-      this.setState(oldstate => {
-        return { ...oldstate, openServices: [...oldstate.openServices, assignmentId] };
-      });
-    }
-    this.setState({ showService: assignmentId });
-    this.props.history.push(`/area/browser/${assignmentId}`);
-  };
-
-  setDomain = (boughtplan: number, domain: string) => {
-    this.setState({ app: boughtplan, licenceID: boughtplan, domain });
-    this.props.history.push(`/area/app/${boughtplan}`);
-  };
-
-  componentDidCatch(error, info) {
-    console.error(error, info);
-    this.moveTo("error");
-  }
-
-  setSidebar = value => {
-    this.setState({ sidebarOpen: value });
-  };
-
-  toggleChat = () => {
-    this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
-  };
-
-  toggleAdmin = () => {
-    this.setState(prevState => ({ adminOpen: !prevState.adminOpen }));
-  };
-
-  toggleSidebar = () => {
-    this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
-  };
-
-  addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
-    console.log("ADDWEBVIEW", licenceID, this.state);
-    this.setState(prevState => {
-      const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
-      const l = {
-        licenceID: licenceID,
-        plain: true,
-        setViewTitle: this.setViewTitle,
-        viewID,
-        addWebview: this.addWebview,
-        url: url,
-        loggedIn
-      };
-      const newview = <Webview {...this.state} {...this.props} {...l} />;
-      return {
-        webviews: [
-          ...prevState.webviews,
-          {
-            key: viewID,
-            view: newview,
-            instanceTitle: "Opening new service",
-            licenceID
-          }
-        ],
-        openInstances: {
-          ...prevState.openInstances,
-          [licenceID]:
-            prevState.openInstances && prevState.openInstances[licenceID]
-              ? {
-                  ...prevState.openInstances[licenceID],
-
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-                }
-              : {
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-                }
-        },
-        app: opendirect ? licenceID : prevState.app,
-        licenceID: opendirect ? licenceID : prevState.licenceID,
-        viewID: opendirect ? viewID : prevState.viewID
-      };
-    });
-    this.props.addUsedLicenceID(licenceID);
-  };
-
-  setViewTitle = (title, viewID, licenceID) => {
-    this.setState(prevState => ({
-      openInstances: {
-        ...prevState.openInstances,
-        [licenceID]:
-          prevState.openInstances &&
-          prevState.openInstances[licenceID] &&
-          prevState.openInstances[licenceID][viewID]
-            ? {
-                ...prevState.openInstances[licenceID],
-                [viewID]: {
-                  instanceTitle: title,
-                  instanceId: viewID
-                }
-              }
-            : { ...prevState.openInstances[licenceID] }
-      },
-      webviews: prevState.webviews.map(view => {
-        if (view.key == viewID) {
-          view.instanceTitle = title;
-        }
-        return view;
-      })
-    }));
-  };
-
-  closeInstance = (viewID: number, licenceID: number) => {
-    const position = this.state.webviews.findIndex(view => view.key == viewID);
-
-    this.setState(prevState => {
-      const webviews = prevState.webviews.filter(view => view.key != viewID);
-      const { openInstances } = prevState;
-
-      if (openInstances[licenceID]) {
-        if (openInstances[licenceID].length > 1) {
-          delete openInstances[licenceID][viewID];
-        } else {
-          delete openInstances[licenceID];
-        }
-      }
-
-      return { webviews, openInstances };
-    });
-
-    if (this.state.viewID == viewID) {
-      if (this.props.history.location.pathname.startsWith("/area/app/")) {
-        this.setState(prevState => {
-          if (prevState.webviews[position]) {
-            this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
-            return { ...prevState, viewID: prevState.webviews[position].key };
-          } else if (prevState.webviews[0]) {
-            this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
-            return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
-          } else {
-            this.props.moveTo("dashboard");
-            return prevState;
-          }
-        });
-      }
-    }
-  };
-
-  rendercategories = (categories, categorie, addRenderElement) => (
-    <li>
-      <div className={"adminHeadline-categoryTitle"}>{categorie}</div>
-      {categories[categorie].map(({ label, location, highlight, ...categoryProps }) => {
-        let buttonClass = "naked-button adminHeadline-categoryElement";
-
-        const id = label.toString() + location.toString();
-
-        if (
-          this.props.location.pathname.startsWith(`/area/${location}`) ||
-          `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
-        ) {
-          buttonClass += " selected";
-        }
-
-        return (
-          <button
-            ref={element => addRenderElement({ key: highlight, element })}
-            {...categoryProps}
-            id={id}
-            className={buttonClass}
-            onMouseDown={() => {
-              document.getElementById(id).className =
-                "naked-button adminHeadline-categoryElement active";
-            }}
-            onMouseUp={() => {
-              document.getElementById(id).className = buttonClass;
-              this.moveTo(location);
-            }}
-            onMouseLeave={() => {
-              document.getElementById(id).className = buttonClass;
-            }}>
-            <div className="label">{label}</div>
-          </button>
-        );
-      })}
-    </li>
-  );
 
   categories = {
     PROFILE: [
@@ -448,6 +214,161 @@ class Area extends React.Component<AreaProps, AreaState> {
     ]
   };
 
+  componentDidMount = async () => {
+    ipcRenderer.on("change-page", (_event, page) => {
+      this.props.history.push(page);
+    });
+
+    if (this.props.consent === null) {
+      this.setState({ consentPopup: true });
+    }
+  };
+
+  moveTo = path => {
+    if (!path.startsWith("app")) {
+      this.setState({ viewID: -1, showService: null });
+    }
+
+    this.props.moveTo(path);
+  };
+
+  setApp = (assignmentId: string) => {
+    if (!this.state.openServices.find(os => os == assignmentId)) {
+      this.setState(oldstate => {
+        return { ...oldstate, openServices: [...oldstate.openServices, assignmentId] };
+      });
+    }
+    this.setState({ showService: assignmentId });
+    this.props.history.push(`/area/browser/${assignmentId}`);
+  };
+
+  setDomain = (boughtplan: number, domain: string) => {
+    this.setState({ app: boughtplan, licenceID: boughtplan, domain });
+    this.props.history.push(`/area/app/${boughtplan}`);
+  };
+
+  componentDidCatch(error, info) {
+    console.error(error, info);
+    this.moveTo("error");
+  }
+
+  setSidebar = value => this.setState({ sidebarOpen: value });
+
+  toggleChat = () => this.setState(prevState => ({ chatOpen: !prevState.chatOpen }));
+
+  toggleAdmin = () => this.setState(prevState => ({ adminOpen: !prevState.adminOpen }));
+
+  toggleSidebar = () => this.setState(prevState => ({ sidebarOpen: !prevState.sidebarOpen }));
+
+  addWebview = (licenceID, opendirect = false, url = undefined, loggedIn = false) => {
+    this.setState(prevState => {
+      const viewID = Math.max(...prevState.webviews.map(o => o.key), 0) + 1;
+
+      const l = {
+        licenceID: licenceID,
+        plain: true,
+        setViewTitle: this.setViewTitle,
+        viewID,
+        addWebview: this.addWebview,
+        url: url,
+        loggedIn
+      };
+
+      const newview = <Webview {...this.state} {...this.props} {...l} />;
+
+      return {
+        webviews: [
+          ...prevState.webviews,
+          {
+            key: viewID,
+            view: newview,
+            instanceTitle: "Opening new service",
+            licenceID
+          }
+        ],
+        openInstances: {
+          ...prevState.openInstances,
+          [licenceID]:
+            prevState.openInstances && prevState.openInstances[licenceID]
+              ? {
+                  ...prevState.openInstances[licenceID],
+
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+                }
+              : {
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+                }
+        },
+        app: opendirect ? licenceID : prevState.app,
+        licenceID: opendirect ? licenceID : prevState.licenceID,
+        viewID: opendirect ? viewID : prevState.viewID
+      };
+    });
+    this.props.addUsedLicenceID(licenceID);
+  };
+
+  setViewTitle = (title, viewID, licenceID) => {
+    this.setState(prevState => ({
+      openInstances: {
+        ...prevState.openInstances,
+        [licenceID]:
+          prevState.openInstances &&
+          prevState.openInstances[licenceID] &&
+          prevState.openInstances[licenceID][viewID]
+            ? {
+                ...prevState.openInstances[licenceID],
+                [viewID]: {
+                  instanceTitle: title,
+                  instanceId: viewID
+                }
+              }
+            : { ...prevState.openInstances[licenceID] }
+      },
+      webviews: prevState.webviews.map(view => {
+        if (view.key == viewID) {
+          view.instanceTitle = title;
+        }
+        return view;
+      })
+    }));
+  };
+
+  closeInstance = (viewID: number, licenceID: number) => {
+    const position = this.state.webviews.findIndex(view => view.key == viewID);
+
+    this.setState(prevState => {
+      const webviews = prevState.webviews.filter(view => view.key != viewID);
+      const { openInstances } = prevState;
+
+      if (openInstances[licenceID]) {
+        if (openInstances[licenceID].length > 1) {
+          delete openInstances[licenceID][viewID];
+        } else {
+          delete openInstances[licenceID];
+        }
+      }
+
+      return { webviews, openInstances };
+    });
+
+    if (this.state.viewID == viewID) {
+      if (this.props.history.location.pathname.startsWith("/area/app/")) {
+        this.setState(prevState => {
+          if (prevState.webviews[position]) {
+            this.props.moveTo(`app/${prevState.webviews[position].licenceID}`);
+            return { ...prevState, viewID: prevState.webviews[position].key };
+          } else if (prevState.webviews[0]) {
+            this.props.moveTo(`app/${prevState.webviews[prevState.webviews.length - 1].licenceID}`);
+            return { ...prevState, viewID: prevState.webviews[prevState.webviews.length - 1].key };
+          } else {
+            this.props.moveTo("dashboard");
+            return prevState;
+          }
+        });
+      }
+    }
+  };
+
   setInstance = viewID => {
     const licenceID = this.state.webviews.find(e => e.key == viewID).licenceID;
     this.setState({ app: licenceID, licenceID, viewID });
@@ -500,93 +421,93 @@ class Area extends React.Component<AreaProps, AreaState> {
     this.moveTo(moveTo);
   }
 
-  printBreadcrumbs = (headline, breadcrumbs) => {
-    const bc: JSX.Element[] = [];
-
-    if (breadcrumbs) {
-      breadcrumbs.forEach(b =>
-        bc.push(
-          <>
-            <button
-              className={`cleanup breadcrumb ${b.link ? "" : "disabeld"}`}
-              onClick={() => b.link && this.props.moveTo(b.link)}>
-              {b.text}
-            </button>
-            <span className="breadcrumbSeperator">/</span>
-          </>
-        )
-      );
-    }
-    bc.push(
-      <>
-        <button className="cleanup breadcrumb current">{headline}</button>
-        <span className="breadcrumbSeperator">/</span>
-      </>
-    );
-    return bc;
+  isAdminOpen = () => {
+    return routes.find(route => {
+      const splits = route.path.slice(6).split(":");
+      const slashsplits = splits[0].split("/");
+      const locationssplits = history.location.pathname.split("/");
+      let location = "";
+      locationssplits.forEach((l, k) => {
+        if (k > 0 && k <= slashsplits.length + 1) {
+          location += "/";
+          location += l;
+        }
+      });
+      return `/area/${splits[0]}` == location;
+    })?.admin;
   };
 
+  renderCategories = (categories, categorie, addRenderElement) => (
+    <li>
+      <div className={"adminHeadline-categoryTitle"}>{categorie}</div>
+      {categories[categorie].map(({ label, location, highlight, ...categoryProps }) => {
+        let buttonClass = "naked-button adminHeadline-categoryElement";
+
+        const id = label.toString() + location.toString();
+
+        if (
+          this.props.location.pathname.startsWith(`/area/${location}`) ||
+          `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
+        ) {
+          buttonClass += " selected";
+        }
+
+        return (
+          <button
+            ref={element => addRenderElement({ key: highlight, element })}
+            {...categoryProps}
+            id={id}
+            className={buttonClass}
+            onMouseDown={() => {
+              document.getElementById(id).className =
+                "naked-button adminHeadline-categoryElement active";
+            }}
+            onMouseUp={() => {
+              document.getElementById(id).className = buttonClass;
+              this.moveTo(location);
+            }}
+            onMouseLeave={() => {
+              document.getElementById(id).className = buttonClass;
+            }}>
+            <div className="label">{label}</div>
+          </button>
+        );
+      })}
+    </li>
+  );
+
   render() {
-    const { sidebarOpen, chatOpen } = this.state;
-    const routes = [
-      { path: "", component: Dashboard },
-      { path: "dashboard", component: Dashboard },
-      { path: "dashboard/:overlay", component: Dashboard },
-      { path: "security", component: Security, admin: true },
-      { path: "messagecenter", component: MessageCenter },
-      { path: "messagecenter/:person", component: MessageCenter },
-      { path: "billing", component: Billing, admin: true },
-      { path: "marketplace", component: MarketplaceDiscover, admin: true },
-      { path: "marketplace/categories", component: MarketplaceCategories, admin: true },
-      { path: "marketplace/app/:appid", component: AppDetails, admin: true },
-      { path: "marketplace/app/:appid/plan/:planid", component: Checkout, admin: true },
-      { path: "integrations", component: Integrations },
-      { path: "usage", component: UsageStatistics, admin: true },
-      { path: "usage/boughtplan/:boughtplanid", component: UsageStatisticsBoughtplan, admin: true },
-      { path: "support", component: SupportPage },
-      { path: "error", component: ErrorPage },
-      { path: "workspace", component: Workspace },
-      { path: "vacation", component: Vacation },
-      { path: "admin", component: AdminDashboard, admin: true },
-      { path: "admin/service-creation-external", component: ServiceCreationExternal, admin: true },
-      { path: "admin/service-creation", component: ServiceCreation, admin: true },
-      { path: "admin/service-edit", component: ServiceEdit, admin: true },
-      { path: "admin/service-integration", component: ServiceIntegrator, admin: true },
-      { path: "admin/service-integration/:appid", component: LoginIntegrator, admin: true },
-      { path: "admin/email-integration/:emailid", component: LoginIntegrator, admin: true },
-      { path: "admin/crypto-debug", component: CryptoDebug, admin: true },
-      { path: "admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
-      { path: "admin/pending-integrations", component: PendingIntegrations, admin: true },
-      { path: "ssoconfig", component: SsoConfigurator, admin: true },
-      { path: "ssotest", component: SsoTester, admin: true },
-      { path: "emanager", component: EmployeeOverview, admin: true },
-      { path: "lmanager", component: ServiceOverview, admin: true },
-      { path: "dmanager", component: TeamOverview, admin: true },
-      { path: "emanager/:userid", component: EmployeeDetails, admin: true },
-      { path: "profile/:userid", component: EmployeeDetails, addprops: { profile: true } },
-      { path: "lmanager/:serviceid", component: ServiceDetails, admin: true },
-      { path: "dmanager/:teamid", component: TeamDetails, admin: true },
-      { path: "admin/universal-login-test", component: UniversalLoginTest, admin: true },
-      { path: "company", component: CompanyDetails, admin: true },
-      { path: "admin/inboundemails", component: InboundEmails, admin: true },
-      { path: "addcustomservice", component: AddCustomServicePage, greybackground: true },
-      {
-        path: "manager/addcustomservice/:appname",
-        component: AddCustomServicePage,
-        greybackground: true,
-        manager: true,
-        admin: true
-      }
-    ];
+    const {
+      sidebarOpen,
+      chatOpen,
+      allowSkip,
+      webviews,
+      adminOpen,
+      viewID,
+      licenceID,
+      openServices,
+      openInstances,
+      consentPopup
+    } = this.state;
+
+    const {
+      recoverypublickey,
+      emails,
+      needspasswordchange,
+      isadmin,
+      tutorialprogress,
+      highlightReferences,
+      showVIPFYPlanPopup,
+      company,
+      expiredPlan,
+      id,
+      style,
+      showService
+    } = this.props;
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
 
-    if (
-      !this.state.allowSkip &&
-      !this.props.recoverypublickey &&
-      !isImpersonating &&
-      this.props.isadmin
-    ) {
+    if (!allowSkip && !recoverypublickey && !isImpersonating && isadmin) {
       return (
         <div className="centralize backgroundLogo">
           <RecoveryKey continue={() => this.setState({ allowSkip: true })} />
@@ -599,12 +520,12 @@ class Area extends React.Component<AreaProps, AreaState> {
     if (sidebarOpen) {
       marginLeft += 176;
     }
-    this.state.openServices.forEach(o =>
+    openServices.forEach(o =>
       browserlist.push(
         <div
           key={o}
           style={{
-            visibility: this.state.showService == o ? "visible" : "hidden",
+            visibility: showService == o ? "visible" : "hidden",
             position: "absolute",
             top: "0px",
             left: "0px",
@@ -614,10 +535,10 @@ class Area extends React.Component<AreaProps, AreaState> {
           <Browser
             setApp={this.setApp}
             toggleAdmin={this.toggleAdmin}
-            adminOpen={this.state.adminOpen}
+            adminOpen={adminOpen}
             moveTo={this.moveTo}
             assignmentId={o}
-            visible={this.state.showService == o}
+            visible={showService == o}
             closeBrowser={(a, b) => this.closeBrowser(a, b)}
             {...this.props}
           />
@@ -628,9 +549,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     return (
       <AppContext.Consumer>
         {context => (
-          <Query<WorkAround, WorkAround>
-            query={fetchUserLicences}
-            variables={{ unitid: this.props.id }}>
+          <Query<WorkAround, WorkAround> query={fetchUserLicences} variables={{ unitid: id }}>
             {({ data, loading, error }) => {
               if (loading) {
                 return <LoadingDiv />;
@@ -639,12 +558,14 @@ class Area extends React.Component<AreaProps, AreaState> {
               if (error) {
                 return <ErrorPage />;
               }
+
               const licences = data.fetchUserLicenceAssignments;
+
               return (
-                <div className="area" style={this.props.style}>
+                <div className="area" style={style}>
                   <ClickTracker />
-                  <SideBarContext.Provider value={this.state.sidebarOpen}>
-                    <UserContext.Provider value={{ userid: this.props.id }}>
+                  <SideBarContext.Provider value={sidebarOpen}>
+                    <UserContext.Provider value={{ userid: id }}>
                       <Route
                         render={props => (
                           <Query query={FETCH_NOTIFICATIONS} pollInterval={120000}>
@@ -653,11 +574,11 @@ class Area extends React.Component<AreaProps, AreaState> {
                                 <Sidebar
                                   sidebarOpen={sidebarOpen}
                                   setApp={this.setApp}
-                                  viewID={this.state.viewID}
-                                  views={this.state.webviews}
-                                  openInstances={this.state.openInstances}
-                                  openServices={this.state.openServices}
-                                  showService={this.state.showService}
+                                  viewID={viewID}
+                                  views={webviews}
+                                  openInstances={openInstances}
+                                  openServices={openServices}
+                                  showService={showService}
                                   toggleSidebar={this.toggleSidebar}
                                   setInstance={this.setInstance}
                                   {...this.props}
@@ -665,36 +586,15 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   {...props}
                                   {...res}
                                   moveTo={this.moveTo}
-                                  adminOpen={
-                                    routes.find(r => {
-                                      const splits = r.path.split(":");
-                                      const slashsplits = splits[0].split("/");
-                                      const locationssplits = this.props.history.location.pathname.split(
-                                        "/"
-                                      );
-
-                                      let location = "";
-                                      locationssplits.forEach((l, k) => {
-                                        if (k > 0 && k <= slashsplits.length + 1) {
-                                          location += "/";
-                                          location += l;
-                                        }
-                                      });
-
-                                      if (`/area/${splits[0]}` == location) {
-                                        return true;
-                                      } else {
-                                        return false;
-                                      }
-                                    })?.admin
-                                  }
+                                  adminOpen={this.isAdminOpen}
                                 />
+
                                 <FloatingNotifications
                                   sidebarOpen={sidebarOpen}
                                   setApp={this.setApp}
-                                  viewID={this.state.viewID}
-                                  views={this.state.webviews}
-                                  openInstances={this.state.openInstances}
+                                  viewID={viewID}
+                                  views={webviews}
+                                  openInstances={openInstances}
                                   toggleSidebar={this.toggleSidebar}
                                   setInstance={this.setInstance}
                                   {...this.props}
@@ -702,29 +602,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   {...props}
                                   {...res}
                                   moveTo={this.moveTo}
-                                  adminOpen={
-                                    routes.find(r => {
-                                      const splits = r.path.split(":");
-                                      const slashsplits = splits[0].split("/");
-                                      const locationssplits = this.props.history.location.pathname.split(
-                                        "/"
-                                      );
-
-                                      let location = "";
-                                      locationssplits.forEach((l, k) => {
-                                        if (k > 0 && k <= slashsplits.length + 1) {
-                                          location += "/";
-                                          location += l;
-                                        }
-                                      });
-
-                                      if (`/area/${splits[0]}` == location) {
-                                        return true;
-                                      } else {
-                                        return false;
-                                      }
-                                    })?.admin
-                                  }
+                                  adminOpen={this.isAdminOpen}
                                 />
                               </>
                             )}
@@ -746,90 +624,73 @@ class Area extends React.Component<AreaProps, AreaState> {
                           render={() => <SupportPage {...this.state} fromErrorPage={true} />}
                         />
 
-                        {routes.map(
-                          ({
-                            path,
-                            component,
-                            admin,
-                            addprops,
-                            design,
-                            greybackground,
-                            manager
-                          }) => {
-                            const RouteComponent = component;
-                            let marginLeft = 64;
-                            if (admin) {
-                              marginLeft += 176;
-                            }
-                            if (sidebarOpen) {
-                              marginLeft += 176;
-                            }
-                            if (admin && !this.props.isadmin) {
-                              return;
-                            } else {
-                              return (
-                                <Route
-                                  key={path}
-                                  exact
-                                  path={`/area/${path}`}
-                                  render={props => (
-                                    <div
-                                      className={`full-working ${chatOpen ? "chat-open" : ""}`}
-                                      style={{ marginLeft: `${marginLeft}px` }}>
-                                      <ResizeAware>
-                                        {admin && (
-                                          <div
-                                            className={`sidebar-adminpanel${
-                                              sidebarOpen ? "" : " small"
-                                            }`}
-                                            ref={element =>
-                                              context.addRenderElement({
-                                                key: "adminSideBar",
-                                                element
-                                              })
-                                            }>
-                                            <div className="adminHeadline">ADMIN PANEL</div>
-                                            <ul>
-                                              {Object.keys(this.categories).map(categorie =>
-                                                this.rendercategories(
-                                                  this.categories,
-                                                  categorie,
-                                                  context.addRenderElement
-                                                )
-                                              )}
-                                            </ul>
-                                          </div>
-                                        )}
-                                        {addprops && addprops.heading && (
-                                          <div className="breadcrumbs">
-                                            {this.printBreadcrumbs(
-                                              addprops.heading,
-                                              addprops.breadcrumbs
-                                            )}
-                                          </div>
-                                        )}
-                                        {addprops && addprops.heading && (
-                                          <div className="pageHeading">{addprops.heading}</div>
-                                        )}
-                                        <RouteComponent
-                                          setApp={this.setApp}
-                                          toggleAdmin={this.toggleAdmin}
-                                          adminOpen={this.state.adminOpen}
-                                          moveTo={this.moveTo}
-                                          {...addprops}
-                                          {...this.props}
-                                          {...props}
-                                          licences={licences}
-                                          manager={manager}
-                                        />
-                                      </ResizeAware>
-                                    </div>
-                                  )}
-                                />
-                              );
-                            }
+                        {routes.map(({ path, component, admin, addprops, manager }) => {
+                          const RouteComponent = component;
+                          let marginLeft = 64;
+
+                          if (admin || sidebarOpen) {
+                            marginLeft += 176;
                           }
-                        )}
+
+                          if (admin && !isadmin) {
+                            return null;
+                          }
+
+                          return (
+                            <Route
+                              key={path}
+                              exact
+                              path={path}
+                              render={props => (
+                                <div
+                                  className={`full-working ${chatOpen ? "chat-open" : ""}`}
+                                  style={{ marginLeft: `${marginLeft}px` }}>
+                                  <ResizeAware>
+                                    {admin && (
+                                      <div
+                                        className={`sidebar-adminpanel${
+                                          sidebarOpen ? "" : " small"
+                                        }`}
+                                        ref={element =>
+                                          context.addRenderElement({
+                                            key: "adminSideBar",
+                                            element
+                                          })
+                                        }>
+                                        <div className="adminHeadline">ADMIN PANEL</div>
+                                        <ul>
+                                          {Object.keys(this.categories).map(categorie =>
+                                            this.renderCategories(
+                                              this.categories,
+                                              categorie,
+                                              context.addRenderElement
+                                            )
+                                          )}
+                                        </ul>
+                                      </div>
+                                    )}
+
+                                    {addprops && addprops.heading && (
+                                      <div className="pageHeading">{addprops.heading}</div>
+                                    )}
+
+                                    <RouteComponent
+                                      setApp={this.setApp}
+                                      toggleAdmin={this.toggleAdmin}
+                                      adminOpen={adminOpen}
+                                      moveTo={this.moveTo}
+                                      {...addprops}
+                                      {...this.props}
+                                      {...props}
+                                      licences={licences}
+                                      manager={manager}
+                                    />
+                                  </ResizeAware>
+                                </div>
+                              )}
+                            />
+                          );
+                        })}
 
                         <Route
                           exact
@@ -843,6 +704,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             </div>
                           )}
                         />
+
                         <Route
                           exact
                           path="/area/domains/:domain"
@@ -860,20 +722,18 @@ class Area extends React.Component<AreaProps, AreaState> {
                           exact
                           path="/area/app/:licenceid"
                           render={props => {
-                            if (
-                              this.state.licenceID != props.match.params.licenceid ||
-                              this.state.viewID == -1
-                            ) {
+                            if (licenceID != props.match.params.licenceid || viewID == -1) {
                               this.setApp(props.match.params.licenceid);
                             }
                             return "";
                           }}
                         />
+
                         <Route
                           exact
                           path="/area/browser/:assignmentid"
                           render={props => {
-                            if (this.state.showService != props.match.params.assignmentid) {
+                            if (showService != props.match.params.assignmentid) {
                               this.setApp(props.match.params.assignmentid);
                             }
                             return "";
@@ -883,7 +743,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           exact
                           path="/area/browser"
                           render={props => {
-                            if (this.state.showService != "browser") {
+                            if (showService != "browser") {
                               this.setApp("browser");
                             }
                             return "";
@@ -901,34 +761,35 @@ class Area extends React.Component<AreaProps, AreaState> {
                           )}
                         />
                       </Switch>
+
                       <div
                         id="viewHandler"
-                        className={`marginLeft ${this.props.sidebarOpen && "sidebar-open"}`}
+                        className={`marginLeft ${sidebarOpen && "sidebar-open"}`}
                         style={{
-                          visibility: this.state.showService !== null ? "visible" : "hidden",
+                          visibility: showService !== null ? "visible" : "hidden",
                           position: "relative",
-                          height: this.state.showService !== null ? undefined : "1px",
-                          overflow: this.state.showService !== null ? undefined : "hidden"
+                          height: showService !== null ? undefined : "1px",
+                          overflow: showService !== null ? undefined : "hidden"
                         }}>
                         {browserlist}
                       </div>
-                      {this.props.needspasswordchange &&
-                        !localStorage.getItem("impersonator-token") && (
-                          <ForcedPasswordChange email={this.props.emails[0].email} />
-                        )}
-                      {this.props.isadmin &&
-                        this.props.tutorialprogress &&
-                        this.props.highlightReferences && <TutorialBase {...this.props} />}
-                      {this.state.consentPopup && (
+
+                      {needspasswordchange && !localStorage.getItem("impersonator-token") && (
+                        <ForcedPasswordChange email={emails[0].email} />
+                      )}
+
+                      {isadmin && tutorialprogress && highlightReferences && (
+                        <TutorialBase {...this.props} />
+                      )}
+
+                      {consentPopup && (
                         <Consent close={() => this.setState({ consentPopup: false })} />
                       )}
                     </UserContext.Provider>
                   </SideBarContext.Provider>
-                  {this.props.showVIPFYPlanPopup && (
-                    <VIPFYPlanPopup
-                      company={this.props.company}
-                      currentPlan={this.props.expiredPlan}
-                    />
+
+                  {showVIPFYPlanPopup && (
+                    <VIPFYPlanPopup company={company} currentPlan={expiredPlan} />
                   )}
                 </div>
               );

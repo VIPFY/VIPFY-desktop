@@ -15,6 +15,24 @@
     flex-grow: 1;
   }
 
+  .breadCrumbs {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 19px;
+
+    > :nth-child(even) {
+      white-space: pre;
+    }
+
+    a {
+      color: $midgrey-light;
+    }
+
+    .isActive {
+      border-bottom: 1px solid $midgrey-light;
+    }
+  }
+
   .children {
     display: block;
   }

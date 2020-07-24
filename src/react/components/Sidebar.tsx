@@ -427,6 +427,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
     if (!sidebarOpen) {
       cssClass += "-small";
     }
+
     if (this.props.adminOpen) {
       cssClass += " sidebar-active";
       buttonClass += " selected";

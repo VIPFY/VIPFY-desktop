@@ -42,7 +42,7 @@ class Checkout extends React.Component<{}> {
   render() {
     return (
       <div>
-        <PageHeader title="Checkout" buttonConfig={BUTTON_CONFIG} />
+        <PageHeader title="Checkout" showBreadCrumbs={true} buttonConfig={BUTTON_CONFIG} />
         <div>
           <EmployeeCard employee={DUMMY_USER} />
         </div>
