@@ -488,7 +488,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       licenceID,
       openServices,
       openInstances,
-      consentPopup
+      consentPopup,
+      showService
     } = this.state;
 
     const {
@@ -498,12 +499,11 @@ class Area extends React.Component<AreaProps, AreaState> {
       isadmin,
       tutorialprogress,
       highlightReferences,
-      showVIPFYPlanPopup,
       company,
       expiredPlan,
       id,
       style,
-      showService
+      showVIPFYPlanPopup
     } = this.props;
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
