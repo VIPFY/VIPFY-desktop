@@ -4,7 +4,6 @@ import gql from "graphql-tag";
 import humanizeDuration from "humanize-duration";
 import moment from "moment";
 import { ErrorComp } from "../../common/functions";
-import { REMOVE_EXTERNAL_ACCOUNT } from "../../mutations/products";
 import IconButton from "../../common/IconButton";
 import LoadingDiv from "../LoadingDiv";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -249,42 +248,6 @@ class AppListInner extends React.Component<Props, State> {
                   })
                 }
               />
-
-              {this.state.showDeletion == key && (
-                <Mutation mutation={REMOVE_EXTERNAL_ACCOUNT}>
-                  {(removeAccount, { loading, error }) => (
-                    <PopupBase
-                      small={true}
-                      styles={{ textAlign: "center" }}
-                      buttonStyles={{ justifyContent: "space-around" }}
-                      close={() => this.setState({ showDeletion: null })}
-                      closeable={false}>
-                      <h1>Delete Service</h1>
-                      <div>{`Do you really want to delete ${alias ? alias : appName}?`}</div>
-
-                      {error && <ErrorComp error={error} />}
-
-                      <UniversalButton
-                        type="low"
-                        disabled={loading}
-                        onClick={() => this.setState({ showDeletion: null })}
-                        label="Cancel"
-                      />
-
-                      <UniversalButton
-                        type="low"
-                        label="Delete"
-                        disabled={loading}
-                        onClick={() =>
-                          removeAccount({
-                            variables: { licenceid: boughtplan.id, time: moment().toISOString() }
-                          })
-                        }
-                      />
-                    </PopupBase>
-                  )}
-                </Mutation>
-              )}
             </td>
           </tr>
         );
@@ -297,7 +260,7 @@ export default (props: { search: string; company: any }) => (
     query={FETCH_UNIT_APPS}
     variables={{ departmentid: props.company.unit.id }}
     pollInterval={1000 * 60 * 10}>
-    {({ data, loading, error }) => {
+    {({ data, loading, error = null }) => {
       if (loading) {
         return <LoadingDiv />;
       }
