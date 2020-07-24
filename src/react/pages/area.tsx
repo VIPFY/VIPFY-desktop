@@ -423,17 +423,18 @@ class Area extends React.Component<AreaProps, AreaState> {
 
   isAdminOpen = () => {
     return routes.find(route => {
-      const splits = route.path.slice(6).split(":");
-      const slashsplits = splits[0].split("/");
-      const locationssplits = history.location.pathname.split("/");
+      const pathStart = route.path.split(":")[0];
+      const slashSplits = pathStart.split("/");
+      const locationSplits = this.props.history.location.pathname.split("/");
+
       let location = "";
-      locationssplits.forEach((l, k) => {
-        if (k > 0 && k <= slashsplits.length + 1) {
-          location += "/";
-          location += l;
+      locationSplits.forEach((locationSplit, i) => {
+        if (i > 0 && i <= slashSplits.length + 1) {
+          location += "/" + locationSplit;
         }
       });
-      return `/area/${splits[0]}` == location;
+
+      return pathStart === location;
     })?.admin;
   };
 
@@ -516,10 +517,7 @@ class Area extends React.Component<AreaProps, AreaState> {
     }
 
     const browserlist: JSX.Element[] = [];
-    let marginLeft = 64;
-    if (sidebarOpen) {
-      marginLeft += 176;
-    }
+
     openServices.forEach(o =>
       browserlist.push(
         <div
@@ -586,7 +584,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   {...props}
                                   {...res}
                                   moveTo={this.moveTo}
-                                  adminOpen={this.isAdminOpen}
+                                  adminOpen={this.isAdminOpen()}
                                 />
 
                                 <FloatingNotifications
@@ -602,7 +600,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   {...props}
                                   {...res}
                                   moveTo={this.moveTo}
-                                  adminOpen={this.isAdminOpen}
+                                  adminOpen={this.isAdminOpen()}
                                 />
                               </>
                             )}
@@ -751,14 +749,17 @@ class Area extends React.Component<AreaProps, AreaState> {
                         />
                         <Route
                           key={"ERRORELSE"}
-                          render={() => (
-                            <div
-                              className={`full-working ${chatOpen ? "chat-open" : ""} ${
-                                sidebarOpen ? "sidebar-open" : ""
-                              }`}>
-                              <ErrorPage />
-                            </div>
-                          )}
+                          render={() => {
+                            console.error("You tried go to a non-existing route.");
+                            return (
+                              <div
+                                className={`full-working ${chatOpen ? "chat-open" : ""} ${
+                                  sidebarOpen ? "sidebar-open" : ""
+                                }`}>
+                                <ErrorPage />
+                              </div>
+                            );
+                          }}
                         />
                       </Switch>
 
