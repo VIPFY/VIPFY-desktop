@@ -170,30 +170,21 @@ class PaymentMethod extends Component<Props, State> {
                             customStyles={{ marginTop: "28px" }}
                             onClick={async () => {
                               let secret = null;
-                              if (data.fetchPaymentData.stripeid) {
-                                secret = await this.props.client.mutate({
-                                  mutation: gql`
-                                    mutation startRecurringBillingIntent($customerid: String!) {
-                                      startRecurringBillingIntent(customerid: $customerid) {
-                                        secret
-                                        setupid
-                                      }
+                              secret = await this.props.client.mutate({
+                                mutation: gql`
+                                  mutation startRecurringBillingIntent {
+                                    startRecurringBillingIntent {
+                                      secret
+                                      setupid
                                     }
-                                  `,
-                                  variables: {
-                                    customerid: data.fetchPaymentData.stripeid
                                   }
-                                });
-                                this.setState({
-                                  edit: true,
-                                  secret: secret.data.startRecurringBillingIntent.secret,
-                                  setupid: secret.data.startRecurringBillingIntent.setupid
-                                });
-                              } else {
-                                throw new Error(
-                                  "Invalid State - a Stripe user should have been already created"
-                                );
-                              }
+                                `
+                              });
+                              this.setState({
+                                edit: true,
+                                secret: secret.data.startRecurringBillingIntent.secret,
+                                setupid: secret.data.startRecurringBillingIntent.setupid
+                              });
                             }}
                           />
                         </CardSection>
@@ -223,12 +214,12 @@ class PaymentMethod extends Component<Props, State> {
                           try {
                             await this.props.client.mutate({
                               mutation: gql`
-                                mutation deletePaymentMethod($paymentmethodId: String!) {
-                                  deletePaymentMethod(paymentmethodId: $paymentmethodId)
+                                mutation deletePaymentMethod($paymentMethodId: String!) {
+                                  deletePaymentMethod(paymentMethodId: $paymentMethodId)
                                 }
                               `,
                               variables: {
-                                paymentmethodId: this.state.remove.id
+                                paymentMethodId: this.state.remove.id
                               }
                             });
                           } catch (err) {
