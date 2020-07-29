@@ -49,7 +49,11 @@ export const FETCH_PAYMENT_DATA = gql`
         address
         id
       }
-      vatstatus
+      vatstatus {
+        valid
+        vatNumber
+        selfCheck
+      }
       emails {
         id
         email
