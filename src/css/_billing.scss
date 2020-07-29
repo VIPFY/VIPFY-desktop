@@ -325,12 +325,12 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   align-items: baseline;*/
 
   max-width: 1608px;
-  margin-left: 32px;
-  margin-right: 32px;
+  margin-left: -12px;
+  margin-right: -12px;
   margin-top: 12px;
   margin-bottom: 12px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   align-items: baseline;
 
   .paymentMethod {
@@ -584,7 +584,7 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   margin-top: 12px;
   margin-bottom: 12px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   align-items: baseline;
 
@@ -631,8 +631,16 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
   }
 }
 
+@media (max-width: 1440px) {
+  .paymentMethodHolder {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 @media (max-width: 1240px) {
   .paymentMethodHolder {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .paymentDataHolder {
     grid-template-columns: repeat(2, 1fr);
   }
 }

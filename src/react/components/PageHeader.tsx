@@ -76,7 +76,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             <UniversalButton
               label={buttonConfig.label}
               onClick={buttonConfig.onClick}
-              className="pageHeaderButton"
+              type="high"
               disabled={disabled || loading}
               // old button can't do this, new button will:
               // icon={buttonConfig.button}

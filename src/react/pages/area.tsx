@@ -20,7 +20,6 @@ import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange
 import TutorialBase from "../tutorials/tutorialBase";
 import { fetchUserLicences } from "../queries/departments";
 import RecoveryKey from "../components/signin/RecoveryKey";
-import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";

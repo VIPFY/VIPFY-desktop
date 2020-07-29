@@ -69,7 +69,7 @@ class Addresses extends React.Component<Props, State> {
                 pollInterval={60 * 10 * 1000 + 100}
                 query={FETCH_ADDRESSES}
                 variables={this.state.variables}>
-                {({ data, loading, error }) => {
+                {({ data, loading, error = null }) => {
                   if (loading) {
                     return <LoadingDiv />;
                   }
@@ -96,7 +96,7 @@ class Addresses extends React.Component<Props, State> {
                         <tbody>
                           {data.fetchAddresses.map(
                             ({ address, description, country, priority, tags, id }) => {
-                              let { street, zip, city } = address;
+                              let { street, postalCode, city } = address;
                               // const normalizedTags =
                               //   tags && tags.length > 0
                               //     ? tags.map((tag, key) => (
@@ -110,7 +110,7 @@ class Addresses extends React.Component<Props, State> {
                               return (
                                 <tr className="addresses-list" key={id}>
                                   <td>{street ? street : "not set"}</td>
-                                  <td>{zip ? zip : "not set"}</td>
+                                  <td>{postalCode ? postalCode : "not set"}</td>
                                   <td>{city ? city : "not set"}</td>
                                   <td>{country}</td>
                                   <td>{description ? description : "not set"}</td>
@@ -126,7 +126,7 @@ class Addresses extends React.Component<Props, State> {
                                           oldAddress: {
                                             country,
                                             street,
-                                            zip,
+                                            postalCode,
                                             city,
                                             description,
                                             id
@@ -143,7 +143,7 @@ class Addresses extends React.Component<Props, State> {
                                           oldAddress: {
                                             country,
                                             street,
-                                            zip,
+                                            postalCode,
                                             city,
                                             description,
                                             id

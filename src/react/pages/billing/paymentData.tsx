@@ -47,7 +47,7 @@ class PaymentData extends Component<Props, State> {
                         alignItems: "center",
                         height: "21px"
                       }}>
-                      <div style={{ fontFamily: "Roboto medium" }}>Billing Address</div>
+                      <h3 style={{ fontFamily: "Roboto medium" }}>Billing Address</h3>
                       <div
                         className="cardButton"
                         onClick={() => this.props.moveTo("paymentData/paymentAddress")}>
@@ -75,7 +75,7 @@ class PaymentData extends Component<Props, State> {
                             paymentData.address.address &&
                             paymentData.address.address.addition && (
                               <div style={{ lineHeight: "19px", marginBottom: "7px" }}>
-                                Street: {paymentData.address.address.addition}
+                                Addition: {paymentData.address.address.addition}
                               </div>
                             )}
                           <div style={{ lineHeight: "19px", marginBottom: "7px" }}>
@@ -94,7 +94,7 @@ class PaymentData extends Component<Props, State> {
                               <span style={{ color: "red" }}>Missing city in address!</span>
                             )}
                           </div>
-                          <div>
+                          <div style={{ lineHeight: "19px", marginBottom: "7px" }}>
                             Country:{" "}
                             {(paymentData.address && paymentData.address.country) || (
                               <span style={{ color: "red" }}>Missing country in address!</span>
@@ -147,11 +147,13 @@ class PaymentData extends Component<Props, State> {
                           paymentData.vatstatus.valid
                         ) && (
                           <CardSection>
-                            It looks like you haven't set up your billing address completly yet.
-                            Unfortunately, in order to take full advantage of VIPFY's potential
-                            (such as subscribing to services with just one click, or using VIPFY in
-                            your team with more than 5 people), you will need to provide the missing
-                            information.
+                            <div style={{ lineHeight: "19px" }}>
+                              It looks like you haven't set up your billing address completly yet.
+                              Unfortunately, in order to take full advantage of VIPFY's potential
+                              (such as subscribing to services with just one click, or using VIPFY
+                              in your team with more than 5 people), you will need to provide the
+                              missing information.
+                            </div>
                           </CardSection>
                         )}
                       </>
@@ -190,7 +192,7 @@ class PaymentData extends Component<Props, State> {
                         alignItems: "center",
                         height: "21px"
                       }}>
-                      <div style={{ fontFamily: "Roboto medium" }}>Credit Cards</div>
+                      <h3>Credit Cards</h3>
                       {paymentData.stripeid ? (
                         <div
                           className="cardButton"

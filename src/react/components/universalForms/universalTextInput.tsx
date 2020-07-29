@@ -321,7 +321,9 @@ class UniversalTextInput extends React.Component<Props, State> {
           )}
         </div>
         {(this.props.helperText || (this.props.errorEvaluation && this.props.errorhint)) && (
-          <div className="universalHelperText" style={this.props.errorhint ? { color: "red" } : {}}>
+          <div
+            className="universalHelperText"
+            style={this.props.errorhint ? { color: "#e32022" } : {}}>
             {this.props.errorhint ? (
               <span>
                 <i className="fal fa-exclamation-circle" style={{ marginRight: "4px" }}></i>

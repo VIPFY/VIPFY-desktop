@@ -10,6 +10,9 @@ import UniversalCheckbox from "../../components/universalForms/universalCheckbox
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import PageHeader from "../../components/PageHeader";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import { EDIT_DEPARTMENT } from "../../mutations/department";
+import { CREATE_ADDRESS } from "../../mutations/contact";
 
 interface Props {}
 
@@ -17,55 +20,251 @@ interface State {}
 class PaymentAddress extends Component<Props, State> {
   state = { emaildelete: [], emailadd: [] };
 
-  save = async (addressId, phoneId) => {
-    try {
-      await this.props.client.mutate({
-        mutation: gql`
-          mutation saveBillingInformations(
-            $country: String
-            $vat: JSON
-            $postalCode: String
-            $city: String
-            $street: String
-            $companyName: String
-            $phone: String
-            $addition: String
-            $promoCode: String
-            $emaildelete: [String]
-            $emailadd: [String]
-            $addressId: String
-            $phoneId: String
-          ) {
-            saveBillingInformations(
-              country: $country
-              vat: $vat
-              postalCode: $postalCode
-              city: $city
-              street: $street
-              companyName: $companyName
-              phone: $phone
-              addition: $addition
-              promoCode: $promoCode
-              emaildelete: $emaildelete
-              emailadd: $emailadd
-              addressId: $addressId
-              phoneId: $phoneId
-            )
-          }
-        `,
-        variables: {
-          ...this.state,
-          emailadd: this.state.emailadd.map(ea => ea.email),
-          addressId,
-          phoneId
-        }
-      });
-    } catch (err) {
-      console.log(err);
+  save = async ({ addressId, phoneId, companyId }) => {
+    const promises = [];
+    if (this.state.companyName) {
+      //Update Companyname
+      try {
+        promises.push(
+          this.props.client.mutate({
+            mutation: EDIT_DEPARTMENT,
+            variables: {
+              departmentid: companyId,
+              name: this.state.companyName
+            }
+          })
+        );
+      } catch (err) {
+        console.log("ERROR!!", err);
+      }
     }
+    if (this.state.phone) {
+      //Update Phone
+      try {
+        if (!phoneId) {
+          //new valid email
+          promises.push(
+            this.props.client.mutate({
+              mutation: gql`
+                mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean, $userid: ID) {
+                  createPhone(phoneData: $phoneData, department: $department, userid: $userid) {
+                    id
+                    number
+                    description
+                    priority
+                    verified
+                    tags
+                  }
+                }
+              `,
+              variables: {
+                department: true,
+                phoneData: {
+                  number: this.state.phone,
+                  tags: ["billing"]
+                }
+              }
+            })
+          );
+        } else if (this.state.phone == "") {
+          promises.push(
+            this.props.client.mutate({
+              mutation: gql`
+                mutation onDeletePhone($id: ID!, $department: Boolean, $userid: ID) {
+                  deletePhone(id: $id, department: $department, userid: $userid) {
+                    ok
+                  }
+                }
+              `,
+              variables: {
+                id: phoneId,
+                department: true
+              }
+            })
+          );
+        } else if (this.state.phone != "") {
+          promises.push(
+            this.props.client.mutate({
+              mutation: gql`
+                mutation onUpdatePhone($phone: PhoneInput!, $id: ID!, $userid: ID) {
+                  updatePhone(phone: $phone, id: $id, userid: $userid) {
+                    id
+                    number
+                    description
+                    priority
+                    verified
+                    tags
+                  }
+                }
+              `,
+              variables: {
+                id: phoneId,
+                phone: {
+                  department: true,
+                  number: this.state.phone,
+                  tags: ["billing"]
+                }
+              }
+            })
+          );
+        }
+      } catch (err) {
+        console.log("ERROR!!", err);
+      }
+    }
+
+    if (
+      this.state.countryChanged ||
+      this.state.addition ||
+      this.state.street ||
+      this.state.postalCode ||
+      this.state.city
+    ) {
+      //Address has changed
+      if (!addressId) {
+        promises.push(
+          this.props.client.mutate({
+            mutation: CREATE_ADDRESS,
+            variables: {
+              department: true,
+              addressData: {
+                country: this.state.countryChanged ? this.state.country : undefined,
+                addition: this.state.addition,
+                street: this.state.street,
+                postalCode: this.state.postalCode,
+                city: this.state.city
+              }
+            }
+          })
+        );
+      } else {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation onUpdateAddress($address: AddressInput!, $id: ID!) {
+                updateAddress(address: $address, id: $id) {
+                  id
+                  address
+                  country
+                  description
+                  priority
+                  tags
+                }
+              }
+            `,
+            variables: {
+              id: addressId,
+              address: {
+                country: this.state.countryChanged ? this.state.country : undefined,
+                addition: this.state.addition,
+                street: this.state.street,
+                postalCode: this.state.postalCode,
+                city: this.state.city,
+                department: true
+              }
+            }
+          })
+        );
+      }
+    }
+
+    if (this.state.vat && (this.state.vat.vatNumber || this.state.vat.selfCheck)) {
+      //Update Vat
+      try {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation saveVatStatus($vat: JSON!, $country: String!) {
+                saveVatStatus(vat: $vat, country: $country)
+              }
+            `,
+            variables: {
+              vat: this.state.vat,
+              country: this.state.country
+            }
+          })
+        );
+      } catch (err) {
+        console.log("ERROR!!", err);
+      }
+    }
+
+    if (this.state.promoCode) {
+      //Update PromoCode
+      try {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation savePromoCode($promoCode: String!) {
+                savePromoCode(promoCode: $promoCode)
+              }
+            `,
+            variables: {
+              promoCode: this.state.promoCode
+            }
+          })
+        );
+      } catch (err) {
+        console.log("ERROR!!", err);
+      }
+    }
+
+    if (this.state.emailadd.length > 0 || this.state.emaildelete.length > 0) {
+      try {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation saveBillingEmails($emailadd: [String]!, $emaildelete: [String]!) {
+                saveBillingEmails(emailadd: $emailadd, emaildelete: $emaildelete)
+              }
+            `,
+            variables: {
+              emailadd: this.state.emailadd.map(ea => ea.email),
+              emaildelete: this.state.emaildelete
+            }
+          })
+        );
+      } catch (err) {
+        console.log("ERROR!!", err);
+      }
+    }
+
+    await Promise.all(promises);
   };
 
+  unsaved = () => {
+    const unsaved =
+      this.state.emaildelete.length > 0 ||
+      this.state.emailadd.length > 0 ||
+      this.state.countryChanged ||
+      this.state.vat.valid ||
+      this.state.companyName ||
+      this.state.promoCode ||
+      this.state.phone ||
+      this.state.addition ||
+      this.state.street ||
+      this.state.postalCode ||
+      this.state.city;
+    console.log("UNSAVED", unsaved, this.state);
+    return unsaved;
+  };
+
+  unblock = null;
+  componentDidMount() {
+    this.unblock = this.props.history.block((x, y) => {
+      console.log("BLOCKED TRANSITION! 2", x, y, this.state);
+      if (this.unsaved()) {
+        this.setState({ unsavedChanges: x });
+        return false;
+      } else {
+        this.setState({ unsavedChanges: null });
+        return true;
+      }
+    });
+  }
+
   render() {
+    console.log("PROPS", this.state);
     return (
       <div className="page">
         <Query query={FETCH_PAYMENT_DATA}>
@@ -90,7 +289,8 @@ class PaymentAddress extends Component<Props, State> {
               phone: allphone,
               vatstatus,
               emails,
-              promoCode
+              promoCode,
+              companyId
             } = paymentData || {};
             const { number: phone, id: phoneId } = allphone || {};
             const { country, address, id: addressId } = address2 || {};
@@ -112,8 +312,9 @@ class PaymentAddress extends Component<Props, State> {
                     label: "Save",
                     onClick: async () => {
                       try {
-                        await this.save(addressId, phoneId);
+                        await this.save({ addressId, phoneId, companyId });
                         await refetch();
+                        this.unblock();
                         this.props.moveTo("paymentdata");
                       } catch (err) {
                         console.log("ERROR", err);
@@ -227,10 +428,12 @@ class PaymentAddress extends Component<Props, State> {
                               ) {
                                 usesVat = true;
                               }
-                              this.setState({ country: v, usesVat });
-                              if (v != country) {
-                                this.setState({ vat: {} });
-                              }
+                              this.setState({
+                                country: v,
+                                usesVat,
+                                vat: {},
+                                countryChanged: v != country
+                              });
                             }
                           }}
                         />
@@ -394,8 +597,33 @@ class PaymentAddress extends Component<Props, State> {
                       />
                     </CardSection>
                   </div>
-                  {this.state.popup && (
-                    <PopupBase small={true}>You have not fill out all required fields</PopupBase>
+                  {this.state.unsavedChanges && (
+                    <PopupBase small={true}>
+                      <div>You have not saved your changes yet! Do you want to save them?</div>
+                      <UniversalButton
+                        type="low"
+                        label="Discard"
+                        onClick={() => {
+                          this.unblock();
+                          this.props.moveTo(this.state.unsavedChanges.pathname.substring(6));
+                        }}
+                      />
+                      <UniversalButton
+                        type="high"
+                        label="Save"
+                        onClick={async () => {
+                          try {
+                            await this.save({ addressId, phoneId, companyId });
+                            await refetch();
+                            this.unblock();
+                            this.props.moveTo(this.state.unsavedChanges.pathname.substring(6));
+                          } catch (err) {
+                            this.setState({ unsavedChanges: null });
+                            console.log("ERROR", err);
+                          }
+                        }}
+                      />
+                    </PopupBase>
                   )}
                 </div>
               </div>

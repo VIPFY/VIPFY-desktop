@@ -6,7 +6,7 @@ import { fetchTeam } from "../../queries/departments";
 import FormPopup from "../../popups/universalPopups/formPopup";
 
 const UPDATE_DATA = gql`
-  mutation editDepartmentName($departmentid: ID!, $name: String!) {
+  mutation editDepartmentName($departmentid: ID, $name: String!) {
     editDepartmentName(departmentid: $departmentid, name: $name) {
       ok
     }

@@ -55,6 +55,7 @@ export const FETCH_PAYMENT_DATA = gql`
         email
       }
       companyName
+      companyId
       phone {
         id
         number
