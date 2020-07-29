@@ -223,12 +223,12 @@ class PaymentMethod extends Component<Props, State> {
                           try {
                             await this.props.client.mutate({
                               mutation: gql`
-                                mutation deletePaymentMethod($paymentmethodid: String!) {
-                                  deletePaymentMethod(paymentmethodid: $paymentmethodid)
+                                mutation deletePaymentMethod($paymentmethodId: String!) {
+                                  deletePaymentMethod(paymentmethodId: $paymentmethodId)
                                 }
                               `,
                               variables: {
-                                paymentmethodid: this.state.remove.id
+                                paymentmethodId: this.state.remove.id
                               }
                             });
                           } catch (err) {
