@@ -18,98 +18,94 @@ interface Props {}
 
 interface State {}
 class PaymentAddress extends Component<Props, State> {
-  state = { emaildelete: [], emailadd: [] };
+  state = { emaildelete: [], emailadd: [], error: {} };
 
   save = async ({ addressId, phoneId, companyId }) => {
     const promises = [];
     if (this.state.companyName) {
       //Update Companyname
-      try {
-        promises.push(
-          this.props.client.mutate({
-            mutation: EDIT_DEPARTMENT,
-            variables: {
-              departmentid: companyId,
-              name: this.state.companyName
-            }
-          })
-        );
-      } catch (err) {
-        console.log("ERROR!!", err);
-      }
+      promises.push(
+        this.props.client.mutate({
+          mutation: EDIT_DEPARTMENT,
+          variables: {
+            departmentid: companyId,
+            name: this.state.companyName
+          },
+          errorPolicy: "all"
+        })
+      );
     }
     if (this.state.phone) {
       //Update Phone
-      try {
-        if (!phoneId) {
-          //new valid email
-          promises.push(
-            this.props.client.mutate({
-              mutation: gql`
-                mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean, $userid: ID) {
-                  createPhone(phoneData: $phoneData, department: $department, userid: $userid) {
-                    id
-                    number
-                    description
-                    priority
-                    verified
-                    tags
-                  }
+      if (!phoneId) {
+        //new valid email
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation onCreatePhone($phoneData: PhoneInput!, $department: Boolean, $userid: ID) {
+                createPhone(phoneData: $phoneData, department: $department, userid: $userid) {
+                  id
+                  number
+                  description
+                  priority
+                  verified
+                  tags
                 }
-              `,
-              variables: {
+              }
+            `,
+            variables: {
+              department: true,
+              phoneData: {
+                number: this.state.phone,
+                tags: ["billing"]
+              }
+            },
+            errorPolicy: "all"
+          })
+        );
+      } else if (this.state.phone == "") {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation onDeletePhone($id: ID!, $department: Boolean, $userid: ID) {
+                deletePhone(id: $id, department: $department, userid: $userid) {
+                  ok
+                }
+              }
+            `,
+            variables: {
+              id: phoneId,
+              department: true
+            },
+            errorPolicy: "all"
+          })
+        );
+      } else if (this.state.phone != "") {
+        promises.push(
+          this.props.client.mutate({
+            mutation: gql`
+              mutation onUpdatePhone($phone: PhoneInput!, $id: ID!, $userid: ID) {
+                updatePhone(phone: $phone, id: $id, userid: $userid) {
+                  id
+                  number
+                  description
+                  priority
+                  verified
+                  tags
+                }
+              }
+            `,
+            variables: {
+              id: phoneId,
+              phone: {
                 department: true,
-                phoneData: {
-                  number: this.state.phone,
-                  tags: ["billing"]
-                }
+                number: this.state.phone,
+                tags: ["billing"]
               }
-            })
-          );
-        } else if (this.state.phone == "") {
-          promises.push(
-            this.props.client.mutate({
-              mutation: gql`
-                mutation onDeletePhone($id: ID!, $department: Boolean, $userid: ID) {
-                  deletePhone(id: $id, department: $department, userid: $userid) {
-                    ok
-                  }
-                }
-              `,
-              variables: {
-                id: phoneId,
-                department: true
-              }
-            })
-          );
-        } else if (this.state.phone != "") {
-          promises.push(
-            this.props.client.mutate({
-              mutation: gql`
-                mutation onUpdatePhone($phone: PhoneInput!, $id: ID!, $userid: ID) {
-                  updatePhone(phone: $phone, id: $id, userid: $userid) {
-                    id
-                    number
-                    description
-                    priority
-                    verified
-                    tags
-                  }
-                }
-              `,
-              variables: {
-                id: phoneId,
-                phone: {
-                  department: true,
-                  number: this.state.phone,
-                  tags: ["billing"]
-                }
-              }
-            })
-          );
-        }
-      } catch (err) {
-        console.log("ERROR!!", err);
+            },
+            errorPolicy: "all"
+          })
+        );
       }
     }
 
@@ -134,7 +130,8 @@ class PaymentAddress extends Component<Props, State> {
                 postalCode: this.state.postalCode,
                 city: this.state.city
               }
-            }
+            },
+            errorPolicy: "all"
           })
         );
       } else {
@@ -162,7 +159,8 @@ class PaymentAddress extends Component<Props, State> {
                 city: this.state.city,
                 department: true
               }
-            }
+            },
+            errorPolicy: "all"
           })
         );
       }
@@ -170,66 +168,100 @@ class PaymentAddress extends Component<Props, State> {
 
     if (this.state.vat && (this.state.vat.vatNumber || this.state.vat.selfCheck)) {
       //Update Vat
-      try {
-        promises.push(
-          this.props.client.mutate({
-            mutation: gql`
-              mutation saveVatStatus($vat: JSON!, $country: String!) {
-                saveVatStatus(vat: $vat, country: $country)
-              }
-            `,
-            variables: {
-              vat: this.state.vat,
-              country: this.state.country
+      promises.push(
+        this.props.client.mutate({
+          mutation: gql`
+            mutation saveVatStatus($vat: JSON!, $country: String!) {
+              saveVatStatus(vat: $vat, country: $country)
             }
-          })
-        );
-      } catch (err) {
-        console.log("ERROR!!", err);
-      }
+          `,
+          variables: {
+            vat: this.state.vat,
+            country: this.state.country
+          },
+          errorPolicy: "all"
+        })
+      );
     }
 
     if (this.state.promoCode) {
       //Update PromoCode
-      try {
-        promises.push(
-          this.props.client.mutate({
-            mutation: gql`
-              mutation savePromoCode($promoCode: String!) {
-                savePromoCode(promoCode: $promoCode)
-              }
-            `,
-            variables: {
-              promoCode: this.state.promoCode
+      promises.push(
+        this.props.client.mutate({
+          mutation: gql`
+            mutation savePromoCode($promoCode: String!) {
+              savePromoCode(promoCode: $promoCode)
             }
-          })
-        );
-      } catch (err) {
-        console.log("ERROR!!", err);
-      }
+          `,
+          variables: {
+            promoCode: this.state.promoCode
+          },
+          errorPolicy: "all"
+        })
+      );
     }
 
     if (this.state.emailadd.length > 0 || this.state.emaildelete.length > 0) {
-      try {
-        promises.push(
-          this.props.client.mutate({
-            mutation: gql`
-              mutation saveBillingEmails($emailadd: [String]!, $emaildelete: [String]!) {
-                saveBillingEmails(emailadd: $emailadd, emaildelete: $emaildelete)
-              }
-            `,
-            variables: {
-              emailadd: this.state.emailadd.map(ea => ea.email),
-              emaildelete: this.state.emaildelete
+      promises.push(
+        this.props.client.mutate({
+          mutation: gql`
+            mutation saveBillingEmails($emailadd: [String]!, $emaildelete: [String]!) {
+              saveBillingEmails(emailadd: $emailadd, emaildelete: $emaildelete)
             }
-          })
-        );
-      } catch (err) {
-        console.log("ERROR!!", err);
-      }
+          `,
+          variables: {
+            emailadd: this.state.emailadd.map(ea => ea.email),
+            emaildelete: this.state.emaildelete
+          },
+          errorPolicy: "all"
+        })
+      );
     }
 
-    await Promise.all(promises);
+    const responses = await Promise.all(promises);
+
+    if (responses[0].errors && responses[0].errors.length > 0) {
+      responses[0].errors.forEach(error => {
+        const functionName = error.path[0];
+        switch (functionName) {
+          case "editDepartmentName":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, name: true } };
+            });
+            break;
+
+          case "createPhone" || "deletePhone" || "updatePhone":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, phone: true } };
+            });
+
+          case "createAddress" || "updateAddress":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, address: true } };
+            });
+
+          case "saveVatStatus":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, vat: true } };
+            });
+
+          case "savePromoCode":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, promoCode: true } };
+            });
+
+          case "saveBillingEmails":
+            this.setState(oldstate => {
+              return { ...oldstate, error: { ...oldstate.error, emails: true } };
+            });
+
+          default:
+            break;
+        }
+      });
+
+      throw new Error("Saving not completed");
+    }
   };
 
   unsaved = () => {
@@ -318,7 +350,6 @@ class PaymentAddress extends Component<Props, State> {
                         this.props.moveTo("paymentdata");
                       } catch (err) {
                         console.log("ERROR", err);
-                        alert("Could not save all data");
                       }
                     },
                     disabled: this.state.vatChecking
@@ -349,6 +380,8 @@ class PaymentAddress extends Component<Props, State> {
                           holderStyles={{ gridColumn: "1 / 3" }}
                           startvalue={companyName}
                           livevalue={companyName => this.setState({ companyName })}
+                          errorhint="Unable to save company Name"
+                          errorEvaluation={this.state.error.name}
                         />
                         <UniversalTextInput
                           id="phone"
@@ -356,6 +389,8 @@ class PaymentAddress extends Component<Props, State> {
                           smallTextField={true}
                           startvalue={phone}
                           livevalue={phone => this.setState({ phone })}
+                          errorhint="Unable to save phone number"
+                          errorEvaluation={this.state.error.phone}
                         />
                         <UniversalTextInput
                           id="street"
@@ -364,6 +399,8 @@ class PaymentAddress extends Component<Props, State> {
                           holderStyles={{ gridColumn: "1 / 3" }}
                           startvalue={street}
                           livevalue={street => this.setState({ street })}
+                          errorhint="Unable to save address"
+                          errorEvaluation={this.state.error.address}
                         />
                         <UniversalTextInput
                           id="addition"
@@ -371,6 +408,8 @@ class PaymentAddress extends Component<Props, State> {
                           smallTextField={true}
                           startvalue={addition}
                           livevalue={addition => this.setState({ addition })}
+                          errorhint="Unable to save address"
+                          errorEvaluation={this.state.error.address}
                         />
                         <UniversalTextInput
                           id="postalCode"
@@ -378,6 +417,8 @@ class PaymentAddress extends Component<Props, State> {
                           smallTextField={true}
                           startvalue={postalCode}
                           livevalue={postalCode => this.setState({ postalCode })}
+                          errorhint="Unable to save address"
+                          errorEvaluation={this.state.error.address}
                         />
                         <UniversalTextInput
                           id="city"
@@ -385,6 +426,8 @@ class PaymentAddress extends Component<Props, State> {
                           smallTextField={true}
                           startvalue={city}
                           livevalue={city => this.setState({ city })}
+                          errorhint="Unable to save address"
+                          errorEvaluation={this.state.error.address}
                         />
                         <UniversalDropdownInput
                           id="country"
@@ -436,6 +479,8 @@ class PaymentAddress extends Component<Props, State> {
                               });
                             }
                           }}
+                          errorhint="Unable to save address"
+                          errorEvaluation={this.state.error.address}
                         />
                         <div style={{ gridColumn: "1 / 3", height: "48px" }}>
                           {this.state.country && (
@@ -491,8 +536,12 @@ class PaymentAddress extends Component<Props, State> {
                                       this.setState({ vatChecking: false });
                                     }
                                   }}
-                                  errorhint="Invalid Vat Number"
-                                  errorEvaluation={this.state.vatError}
+                                  errorhint={
+                                    this.state.error.vat
+                                      ? "Unable to save vat"
+                                      : "Invalid Vat Number"
+                                  }
+                                  errorEvaluation={this.state.vatError || this.state.error.vat}
                                   buttons={
                                     this.state.vatChecking && [
                                       {
@@ -512,7 +561,9 @@ class PaymentAddress extends Component<Props, State> {
                                   liveValue={valid => {
                                     console.log("CHANGE", valid);
                                     this.setState({ vat: { valid, selfCheck: true } });
-                                  }}>
+                                  }}
+                                  errorhint="Unable to save vat"
+                                  errorEvaluation={this.state.error.vat}>
                                   I am a company that can accept invoices without tax.
                                 </UniversalCheckbox>
                               )}
@@ -527,6 +578,8 @@ class PaymentAddress extends Component<Props, State> {
                           startvalue={promoCode}
                           disabled={promoCode}
                           livevalue={promoCode => this.setState({ promoCode })}
+                          errorhint="Unable to save promo code"
+                          errorEvaluation={this.state.error.promoCode}
                         />
                       </div>
                     </CardSection>
@@ -580,6 +633,8 @@ class PaymentAddress extends Component<Props, State> {
                                 });
                               }
                             }}
+                            errorhint="Unable to save emails"
+                            errorEvaluation={this.state.error.emails}
                           />
                         ))}
                       <UniversalButton
