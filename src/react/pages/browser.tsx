@@ -343,23 +343,17 @@ class Browser extends React.Component<Props, State> {
         });
         const licence = result.data.fetchLicenceAssignment;
 
-        console.log(licence);
-
         if (licence) {
           loginurl = licence.boughtPlan.plan.app.loginurl;
-          console.log("TEST1", loginurl);
           if (licence.boughtPlan.key && licence.boughtPlan.key.domain) {
             loginurl = licence.boughtPlan.key.domain;
           }
-          console.log("TEST2", loginurl);
           if (licence.key && licence.key.loginurl) {
             loginurl = licence.key.loginurl;
           }
-          console.log("TEST3", loginurl);
         }
       }
     }
-    console.log("TEST", loginurl);
     this.setState(oldstate => {
       const newTabs = [];
       oldstate.tabs.forEach(t => {
