@@ -28,6 +28,7 @@ interface Props {
   noNoResults?: Boolean;
   noFixed?: Boolean;
   disabled?: boolean;
+  startingfocus?: boolean;
 }
 
 interface State {
@@ -90,7 +91,10 @@ class UniversalDropDownInput extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    if (this.nameInput) {
+    if (this.props.startvalue && this.props.livecode) {
+      this.props.livecode(this.props.startvalue);
+    }
+    if (this.nameInput && this.props.startingfocus) {
       this.nameInput.focus();
     }
   }
@@ -288,97 +292,113 @@ class UniversalDropDownInput extends React.Component<Props, State> {
     }
     return (
       <div
-        className="universalLabelInput"
+        className={`textField ${this.props.disabled ? "disabled" : ""}`}
         style={Object.assign(
-          { height: "30px", position: "relative" },
+          { textAlign: "left" },
           this.props.width ? { width: this.props.width } : {},
-          this.props.styles || {}
+          this.props.holderStyles || {}
         )}>
-        <input
-          id={this.props.id}
-          disabled={this.props.disabled}
-          type={
-            this.props.type == "password"
-              ? this.state.eyeopen
-                ? ""
-                : "password"
-              : this.props.type || ""
-          }
-          onFocus={() => this.toggleInput(true)}
-          onBlur={() => this.toggleInput(false)}
-          className="cleanup universalTextInput"
-          style={{
-            ...(this.props.errorEvaluation && this.state.notypeing
-              ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
-              : this.props.width
-              ? { width: this.props.width }
-              : {}),
-            ...(this.props.showIcon && this.state.code != ""
-              ? {
-                  paddingLeft: "32px",
-                  width: this.props.width
-                    ? parseInt(this.props.width) - 32 + "px"
-                    : "calc(100% - 32px)"
-                }
-              : {})
-          }}
-          value={this.state.value}
-          onChange={e => this.changeValue(e)}
-          ref={input => (this.nameInput = input)}
-        />
-        {this.props.noFloating ? (
-          ""
-        ) : (
+        {this.props.label && (
           <label
             htmlFor={this.props.id}
             className="universalLabel"
-            style={this.props.errorEvaluation && this.state.notypeing ? { color: "#e32022" } : {}}>
+            style={Object.assign(
+              (this.props.errorEvaluation ||
+                (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
+                this.state.notypeing
+                ? { color: "#e32022" }
+                : {},
+              this.props.labelStyles || {}
+            )}
+            onClick={() => this.props.labelClick && this.props.labelClick()}>
             {this.props.label}
           </label>
         )}
-        {this.props.errorEvaluation && this.state.notypeing && (
-          <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
-            {this.props.errorhint}
-          </div>
-        )}
-        {this.state.code == "" && this.showResults()}
-        {this.state.code != "" && this.props.showIcon && this.props.showIcon(this.state.fullvalue)}
-        {this.props.children && (
-          <button className="cleanup inputInsideButton" tabIndex={-1}>
-            <i className="fal fa-info" />
-            <div className="explainLayer">
-              <div className="explainLayerInner">{this.props.children}</div>
+        <div
+          className="universalLabelInput"
+          style={Object.assign(
+            { height: "30px", position: "relative" },
+            this.props.width ? { width: this.props.width } : {},
+            this.props.styles || {}
+          )}>
+          <input
+            id={this.props.id}
+            disabled={this.props.disabled}
+            type={
+              this.props.type == "password"
+                ? this.state.eyeopen
+                  ? ""
+                  : "password"
+                : this.props.type || ""
+            }
+            onFocus={() => this.toggleInput(true)}
+            onBlur={() => this.toggleInput(false)}
+            className="cleanup universalTextInput"
+            style={{
+              ...(this.props.errorEvaluation && this.state.notypeing
+                ? { ...(this.props.width ? { width: this.props.width } : {}), color: "#e32022" }
+                : this.props.width
+                ? { width: this.props.width }
+                : {}),
+              ...(this.props.showIcon && this.state.code != ""
+                ? {
+                    paddingLeft: "32px",
+                    width: this.props.width
+                      ? parseInt(this.props.width) - 32 + "px"
+                      : "calc(100% - 32px)"
+                  }
+                : {})
+            }}
+            value={this.state.value}
+            onChange={e => this.changeValue(e)}
+            ref={input => (this.nameInput = input)}
+          />
+          {this.props.errorEvaluation && this.state.notypeing && (
+            <div className="errorhint" style={{ opacity: this.state.errorfaded ? 1 : 0 }}>
+              {this.props.errorhint}
             </div>
-          </button>
-        )}
-        {this.props.resetPossible && this.state.value && (
-          <button
-            className="cleanup inputInsideButton"
-            tabIndex={-1}
-            onClick={() => this.reset()}
-            style={{ color: "#253647" }}>
-            <i className="fal fa-trash-alt" />
-          </button>
-        )}
-        {!this.state.value &&
-          this.props.alternativeText &&
-          this.props.alternativeText(this.nameInput)}
-        {this.props.type == "password" &&
-          (this.state.eyeopen ? (
+          )}
+          {this.state.code == "" && this.showResults()}
+          {this.state.code != "" &&
+            this.props.showIcon &&
+            this.props.showIcon(this.state.fullvalue)}
+          {this.props.children && (
+            <button className="cleanup inputInsideButton" tabIndex={-1}>
+              <i className="fal fa-info" />
+              <div className="explainLayer">
+                <div className="explainLayerInner">{this.props.children}</div>
+              </div>
+            </button>
+          )}
+          {this.props.resetPossible && this.state.value && (
             <button
               className="cleanup inputInsideButton"
               tabIndex={-1}
-              onClick={() => this.setState({ eyeopen: false })}>
-              <i className="fal fa-eye" />
+              onClick={() => this.reset()}
+              style={{ color: "#253647" }}>
+              <i className="fal fa-trash-alt" />
             </button>
-          ) : (
-            <button
-              className="cleanup inputInsideButton"
-              tabIndex={-1}
-              onClick={() => this.setState({ eyeopen: true })}>
-              <i className="fal fa-eye-slash" />
-            </button>
-          ))}
+          )}
+          {!this.state.value &&
+            this.props.alternativeText &&
+            this.props.alternativeText(this.nameInput)}
+          {this.props.type == "password" &&
+            (this.state.eyeopen ? (
+              <button
+                className="cleanup inputInsideButton"
+                tabIndex={-1}
+                onClick={() => this.setState({ eyeopen: false })}>
+                <i className="fal fa-eye" />
+              </button>
+            ) : (
+              <button
+                className="cleanup inputInsideButton"
+                tabIndex={-1}
+                onClick={() => this.setState({ eyeopen: true })}>
+                <i className="fal fa-eye-slash" />
+              </button>
+            ))}
+        </div>
       </div>
     );
   }

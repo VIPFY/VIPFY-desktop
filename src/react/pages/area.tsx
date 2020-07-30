@@ -138,7 +138,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       },
       {
         label: "Payment Method",
-        location: "paymentdata/paymentmethod",
+        location: "paymentdata",
         icon: "file-invoice-dollar",
         show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
@@ -666,10 +666,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                                           )}
                                         </ul>
                                       </div>
-                                    )}
-
-                                    {addprops && addprops.heading && (
-                                      <div className="pageHeading">{addprops.heading}</div>
                                     )}
 
                                     <RouteComponent

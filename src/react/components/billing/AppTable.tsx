@@ -74,7 +74,6 @@ const FETCH_UNIT_APPS = gql`
 `;
 
 interface State {
-  showDeletion: null | number;
   active: string;
 }
 
@@ -101,7 +100,7 @@ const shortEnglishHumanizer = humanizeDuration.humanizer({
 });
 
 class AppListInner extends React.Component<Props, State> {
-  state = { showDeletion: null, active: "" };
+  state = { active: "" };
 
   render() {
     if (!this.props.data.fetchUnitApps || !this.props.data.fetchUnitAppsSimpleStats) {
@@ -183,60 +182,6 @@ class AppListInner extends React.Component<Props, State> {
             <td>{licencestotal}</td>
             <td>{totalDur}</td>
             <td align="right" className="naked-button-holder">
-              {/* Not needed till the Launch of the Marketplace */}
-              {/* <button
-                  disabled={options && options.external}
-                  onClick={() =>
-                    showPopup({
-                      header: "Upgrade Plan",
-                      body: ChangePlan,
-                      props: {
-                        appName,
-                        planName,
-                        appId,
-                        boughtPlanId: boughtplan.id,
-                        currentPlan: boughtplan.planid
-                      }
-                    })
-                  }
-                  type="button"
-                  title={
-                    options && options.external ? "You cannot updgrade external plans" : "Upgrade"
-                  }
-                  className="naked-button">
-                  <i className="fas fa-sort-amount-up" />
-                </button> */}
-              {/* <Mutation mutation={!endtime ? CANCEL_PLAN : REACTIVATE_PLAN}>
-                  {mutation => (
-                    <i
-                      title={!endtime ? "Cancel" : "Reactivate"}
-                      className={`fal fa-${!endtime ? "trash-alt" : "redo"}`}
-                      onClick={() =>
-                        showPopup({
-                          header: `${!endtime ? "Cancel" : "Reactivate"} ${appName} ${planName}`,
-                          body: Confirmation,
-                          props: {
-                            id: boughtplan.id,
-                            headline: `Please confirm ${
-                              !endtime ? "cancellation" : "reactivation"
-                            } of this plan`,
-                            submitFunction: planid => mutation({ variables: { planid } })
-                          }
-                        })
-                      }
-                    />
-                  )}
-                </Mutation> */}
-              {/*<IconButton
-                title="Delete"
-                className="editButtons"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.setState({ showDeletion: key });
-                }}
-                icon="trash-alt"
-              />*/}
-
               <IconButton
                 icon="external-link-alt"
                 title="show details"

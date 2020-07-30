@@ -16,7 +16,7 @@ interface Props {
   oldvalues?: {
     country: string;
     street: string;
-    zip: string;
+    postalCode: string;
     city: string;
     description: string;
     id: number;
@@ -30,7 +30,7 @@ interface Props {
 interface State {
   country: string;
   street: string;
-  zip: string;
+  postalCode: string;
   city: string;
   description: string;
   confirm: Boolean;
@@ -63,7 +63,7 @@ class PopupAddress extends React.Component<Props, State> {
   state = {
     country: this.props.oldvalues ? this.props.oldvalues.country : "",
     street: this.props.oldvalues ? this.props.oldvalues.street : "",
-    zip: this.props.oldvalues ? this.props.oldvalues.zip : "",
+    postalCode: this.props.oldvalues ? this.props.oldvalues.postalCode : "",
     city: this.props.oldvalues ? this.props.oldvalues.city : "",
     description: this.props.oldvalues ? this.props.oldvalues.description : "",
     confirm: false,
@@ -114,7 +114,7 @@ class PopupAddress extends React.Component<Props, State> {
           variables: {
             address: {
               street: this.state.street,
-              zip: this.state.zip,
+              postalCode: this.state.postalCode,
               city: this.state.city,
               country: this.state.country,
               description: this.state.description,
@@ -133,7 +133,7 @@ class PopupAddress extends React.Component<Props, State> {
         const variables = {
           addressData: {
             street: this.state.street,
-            zip: this.state.zip,
+            postalCode: this.state.postalCode,
             city: this.state.city,
             country: this.state.country,
             description: this.state.description
@@ -196,7 +196,7 @@ class PopupAddress extends React.Component<Props, State> {
             </p>
             <p>
               <span className="bold light">Zip: </span>
-              <span className="light">{this.props.oldvalues!.zip}</span>
+              <span className="light">{this.props.oldvalues!.postalCode}</span>
             </p>
             <p>
               <span className="bold light">City: </span>
@@ -274,9 +274,9 @@ class PopupAddress extends React.Component<Props, State> {
           <UniversalTextInput
             id="zip"
             label="Zip"
-            livevalue={value => this.setState({ zip: value })}
+            livevalue={value => this.setState({ postalCode: value })}
             width="200px"
-            startvalue={this.props.oldvalues ? this.props.oldvalues.zip : ""}
+            startvalue={this.props.oldvalues ? this.props.oldvalues.postalCode : ""}
           />
           <UniversalTextInput
             id="city"
