@@ -314,11 +314,46 @@ class Browser extends React.Component<Props, State> {
     return {};
   }
 
-  openNewTab = ({
-    url = "https://www.google.com",
-    directlyopen = true,
-    insertAfter = undefined
-  }) => {
+  openNewTab = async ({ url, directlyopen = true, insertAfter = undefined }) => {
+    let loginurl = url;
+    if (!url) {
+      loginurl = "https://www.google.com";
+
+      if (this.props.assignmentId != "browser") {
+        let result = await this.props.client.query({
+          query: gql`
+      {
+        fetchLicenceAssignment(assignmentid: "${this.props.assignmentId}") {
+          id
+          key
+          boughtPlan: boughtplanid {
+            id
+            key
+            plan: planid {
+              id
+              app: appid {
+                id
+                loginurl
+              }
+            }
+          }
+        }
+      }
+      `
+        });
+        const licence = result.data.fetchLicenceAssignment;
+
+        if (licence) {
+          loginurl = licence.boughtPlan.plan.app.loginurl;
+          if (licence.boughtPlan.key && licence.boughtPlan.key.domain) {
+            loginurl = licence.boughtPlan.key.domain;
+          }
+          if (licence.key && licence.key.loginurl) {
+            loginurl = licence.key.loginurl;
+          }
+        }
+      }
+    }
     this.setState(oldstate => {
       const newTabs = [];
       oldstate.tabs.forEach(t => {
@@ -330,9 +365,9 @@ class Browser extends React.Component<Props, State> {
           newTabs.push({
             label: "opening new Tab",
             id: uuid(),
-            url: url,
+            url: loginurl,
             active: directlyopen,
-            history: [url],
+            history: [loginurl],
             historyMarker: 0
           });
         }
@@ -341,9 +376,9 @@ class Browser extends React.Component<Props, State> {
         newTabs.push({
           label: "opening new Tab",
           id: uuid(),
-          url: url,
+          url: loginurl,
           active: directlyopen,
-          history: [url],
+          history: [loginurl],
           historyMarker: 0
         });
       }
