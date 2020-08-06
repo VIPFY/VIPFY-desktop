@@ -90,6 +90,7 @@ class CreateAccount extends React.Component<Props, State> {
                   {this.props.orbit.options.selfhosting && (
                     <div style={{ alignItems: "center", display: "flex" }}>
                       <UniversalCheckbox
+                        name="Selfhosting"
                         startingvalue={false}
                         liveValue={e => this.setState({ selfhosting: e, changedl: true })}
                         style={{ float: "left" }}
@@ -204,6 +205,7 @@ class CreateAccount extends React.Component<Props, State> {
                   Private:
                 </span>
                 <UniversalCheckbox
+                  name="private"
                   startingvalue={false}
                   liveValue={e => this.setState({ private: e })}
                 />
