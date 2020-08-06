@@ -214,42 +214,49 @@ class App extends React.Component<AppProps, AppState> {
       await this.props.history.push("/area/dashboard");
       await this.props.client.cache.reset(); // clear graphql cache
     } else {
-      // Destroy all Sessions
-      if (this.state.usedLicenceIDs.length > 0) {
-        const cookies = [];
-
-        await Promise.all(
-          this.state.usedLicenceIDs.map(async licenceID => {
-            const appcookies = await session.fromPartition(`service-${licenceID}`).cookies.get({});
-            cookies.push({
-              key: licenceID,
-              cookies: appcookies
-            });
-            return session.fromPartition(`service-${licenceID}`).clearStorageData();
-          })
-        );
-        await this.props.saveCookies({
-          variables: {
-            cookies: [
-              await encryptForUser(
-                await getMyUnitId(this.props.client),
-                JSON.stringify(cookies),
-                this.props.client
-              )
-            ]
-          }
-        });
-      }
       try {
-        await this.props.signOut();
-      } catch (err) {
-        console.error("LOG: logMeOut -> err", err);
-      }
+        this.props.logoutFunction(() => null);
+        // Destroy all Sessions
+        if (this.state.usedLicenceIDs.length > 0) {
+          const cookies = [];
 
-      await localStorage.removeItem("token");
-      await this.props.client.cache.reset(); // clear graphql cache
-      await resetLoggingContext();
-      await this.props.history.push("/");
+          await Promise.all(
+            this.state.usedLicenceIDs.map(async licenceID => {
+              const appcookies = await session
+                .fromPartition(`service-${licenceID}`)
+                .cookies.get({});
+              cookies.push({
+                key: licenceID,
+                cookies: appcookies
+              });
+              return session.fromPartition(`service-${licenceID}`).clearStorageData();
+            })
+          );
+          await this.props.saveCookies({
+            variables: {
+              cookies: [
+                await encryptForUser(
+                  await getMyUnitId(this.props.client),
+                  JSON.stringify(cookies),
+                  this.props.client
+                )
+              ]
+            }
+          });
+        }
+        try {
+          await this.props.signOut();
+        } catch (err) {
+          console.error("LOG: logMeOut -> err", err);
+        }
+
+        await localStorage.removeItem("token");
+        await this.props.client.cache.reset(); // clear graphql cache
+        await resetLoggingContext();
+        await this.props.history.push("/");
+      } finally {
+        location.reload();
+      }
     }
 
     await this.setState(INITIAL_STATE); // clear state
