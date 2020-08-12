@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
 import CardSection from "../../components/CardSection";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
-import UniversalDropdownInput from "../../components/universalForms/UniversalDropdownInput";
+// import UniversalDropdownInput from "../../components/universalForms/UniversalDropdownInput";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
@@ -429,7 +429,7 @@ class PaymentAddress extends Component<Props, State> {
                           errorhint="Unable to save address"
                           errorEvaluation={this.state.error.address}
                         />
-                        <UniversalDropdownInput
+                        {/* <UniversalDropdownInput
                           id="country"
                           label="Country"
                           smallTextField={true}
@@ -481,7 +481,7 @@ class PaymentAddress extends Component<Props, State> {
                           }}
                           errorhint="Unable to save address"
                           errorEvaluation={this.state.error.address}
-                        />
+                        /> */}
                         <div style={{ gridColumn: "1 / 3", height: "48px" }}>
                           {this.state.country && (
                             <div>

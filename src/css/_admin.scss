@@ -1,5 +1,5 @@
 .admin {
-  margin: 0rem 2rem 0 2rem;
+  margin: 2rem;
   position: relative;
 
   h1 {
@@ -227,5 +227,45 @@ webview.universalLoginExecutor {
     height: 96px;
     position: relative;
     cursor: pointer;
+  }
+}
+
+#click-tracking-study {
+  thead {
+    background: $vipfy-primary;
+    color: white;
+
+    th {
+      padding: 8px;
+      font-weight: bold;
+    }
+  }
+
+  tbody {
+    tr {
+      &:hover {
+        background-color: $vipfy-lightgrey;
+      }
+
+      td {
+        padding: 8px;
+
+        &:last-of-type {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .lazy-user {
+    background-color: $red-lighter;
+  }
+
+  .good-user {
+    background-color: $green-lighter;
+  }
+
+  .vipfy-user {
+    background-color: $blue-lightest;
   }
 }
