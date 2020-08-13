@@ -24,6 +24,7 @@ export const tests: Test[] = [
     expectLoginSuccess: true,
     deleteCookies: true,
     speedFactor: 10,
+    expectPasswordEntered: true,
     enterCorrectEmail: true,
     enterCorrectPassword: true
   },
@@ -32,6 +33,7 @@ export const tests: Test[] = [
     expectLoginSuccess: true,
     deleteCookies: true,
     speedFactor: 2,
+    expectPasswordEntered: true,
     enterCorrectEmail: true,
     enterCorrectPassword: true,
     skipCondition: { testDependency: 0, skipIfPassedEquals: true }
