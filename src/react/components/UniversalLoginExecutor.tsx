@@ -89,7 +89,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     emailEnteredEnd: false,
     passwordEnteredEnd: false,
     domainEnteredEnd: false,
-    loggedInNNraw: null,
+    step: 0,
   };
 
   isUnmounted = false;
@@ -107,6 +107,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   sentResult = false;
 
+  screenshotDelay = 500;
   starttime = 0;
 
   componentDidMount() {
