@@ -512,7 +512,7 @@ const input = values.map(value => ({
 console.log(input[0]);
 
 const config = {
-  hiddenLayers: [32, 64, 16, 4], // hidden layers allow the net to detect page types like "empty", "dashboard", "loginpage", etc.
+  hiddenLayers: [32, 32, 16, 4], // hidden layers allow the net to detect page types like "empty", "dashboard", "loginpage", etc.
   // experimentally, four hidden layers perform better than one. Layer sizes are a compromise to keep output file size acceptable
   activation: "tanh" // supported activation types: ['sigmoid', 'relu', 'leaky-relu', 'tanh'],
 };
