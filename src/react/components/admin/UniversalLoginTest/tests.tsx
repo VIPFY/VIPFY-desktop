@@ -8,6 +8,7 @@ export interface Test {
   enterCorrectPassword?: boolean;
   skipCondition?: SkipCondition;
   timeout?: number;
+  loginDetection?: number;
 }
 
 // sometimes a test should be skipped. this defines the conditions under which that should happen

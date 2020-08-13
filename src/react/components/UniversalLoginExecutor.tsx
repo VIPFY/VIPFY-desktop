@@ -10,9 +10,18 @@ import { parse } from "url";
 import psl from "psl";
 import gql from "graphql-tag";
 import { withApollo } from "react-apollo";
+import brain from "brain.js";
 import PopupBase from "../popups/universalPopups/popupBase";
+import {
+  substrings as substringsNN,
+  attributes as attributesNN,
+  networkDef
+} from "./loginDetectionNet";
 const { session } = remote;
 const os = require("os");
+
+const loginDetector = new brain.NeuralNetwork();
+loginDetector.fromJSON(networkDef as brain.INeuralNetworkJSON);
 
 interface Props {
   loginUrl: string;
@@ -45,6 +54,7 @@ interface Props {
   setUrl?: Function;
   didFailLoad?: Function;
   continueExecute?: boolean;
+  loginDetection?: number;
 }
 
 interface State {
@@ -79,7 +89,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     emailEnteredEnd: false,
     passwordEnteredEnd: false,
     domainEnteredEnd: false,
-    step: 0
+    loggedInNNraw: null,
   };
 
   isUnmounted = false;
@@ -97,7 +107,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
   sentResult = false;
 
-  screenshotDelay = 500;
+  starttime = 0;
 
   componentDidMount() {
     if (this.props.deleteCookies) {
@@ -110,6 +120,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       }, this.props.timeout);
     }
 
+    this.starttime = Date.now();
     this.progress = 0;
     this.props.progress!(0);
     this.progressStep = ((1 - 2 * 0.2) * this.progressInterval) / this.props.timeout!;
@@ -324,6 +335,52 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   async isLoggedIn(w) {
+    if (this.props.loginDetection == 1) {
+      return this.isLoggedInA(w);
+    } else if (this.props.loginDetection == 3) {
+      return this.isLoggedInC(w);
+    } else {
+      return this.isLoggedInC(w);
+    }
+  }
+
+  async isLoggedInC(w) {
+    const attrLimit = 12;
+    const identLimit = 12;
+
+    const value = {
+      identList: await this.getIdentList(w),
+      attributes: await this.getAttributeNames(w),
+      scores: Array.from(new Uint8Array(substringsNN.length)),
+      attributeScores: Array.from(new Uint8Array(attributesNN.length))
+    };
+
+    const countValues = (list, countees, target) => {
+      for (const ident of list) {
+        const matching = countees.filter(s => ident.includes(s));
+        if (matching.length == 0) continue;
+        for (const m of matching) {
+          const v = countees.indexOf(m);
+          if (target[v] >= identLimit) continue;
+          if (!target[v]) target[v] = 1;
+          else target[v] += 1;
+        }
+      }
+    };
+
+    countValues(value.identList, substringsNN, value.scores);
+    countValues(value.attributes, attributesNN, value.attributeScores);
+
+    const input = value.scores
+      .map(v => v / identLimit)
+      .concat(value.attributeScores.map(v => v / attrLimit));
+    const res: number[] = loginDetector.run(input);
+    this.loginState.loggedInNNraw = res[0];
+    // console.log("NN", res); // uncomment this to debug login
+    return res[0] > 0.5;
+  }
+
+  async isLoggedInA(w) {
     const l = ["signin", "login", "sign", "anmelden", "admin"];
     const urlParts = ["pathname", "search", "hash", "hostname"];
     const initial = new URL(this.props.loginUrl);
@@ -504,6 +561,248 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     } else {
       return false;
     }
+  }
+
+  async getIdentList(w) {
+    if (!w || !w.getWebContents()) {
+      return [];
+    }
+    const list: Promise<string[]> = w.getWebContents().executeJavaScript(`
+    function isEqualOrChild(child, parent) {
+      if (child == parent) return true;
+      if (child === null || parent === null) return false;
+    
+      while (child.parentElement !== null) {
+        child = child.parentElement;
+    
+        if (child == parent) {
+          return true;
+        }
+      }
+    
+      return false;
+    }
+    
+    function getMidPoint(e, doc) {
+      var rect = e.getBoundingClientRect();
+      const style = window.getComputedStyle(e);
+      var dx = 0;
+      var dy = 0;
+    
+      if (doc) {
+        var iframe = document.querySelector(args.document);
+        var drect = iframe.getBoundingClientRect();
+        dx = drect.x;
+        dy = drect.y;
+      }
+    
+      return {
+        x:
+          dx +
+          rect.x +
+          parseInt(style.paddingLeft) +
+          (rect.width -
+            parseInt(style.paddingLeft) -
+            parseInt(style.paddingRight)) /
+            10,
+        y:
+          dy +
+          rect.y +
+          parseInt(style.paddingTop) +
+          (rect.height -
+            parseInt(style.paddingTop) -
+            parseInt(style.paddingBottom)) /
+            2,
+      }; // bias to the left
+    }
+    
+    function isHidden(elem) {
+      if (
+        !(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)
+      ) {
+        return true;
+      }
+    
+      const style = window.getComputedStyle(elem);
+    
+      if (
+        style.display === "none" ||
+        style.opacity === 0 ||
+        style.visibility === "hidden"
+      ) {
+        return true;
+      }
+    
+      const pos = getMidPoint(elem);
+      const e = document.elementFromPoint(pos.x, pos.y);
+    
+      return !isEqualOrChild(e, elem);
+    }
+    (function(){
+    let attributes = [
+      "name",
+      "id",
+      "aria-label",
+      "aria-roledescription",
+      "placeholder",
+      "ng-model",
+      "data-ng-model",
+      "data-callback",
+      "data-name",
+      "class",
+      "value",
+      "alt",
+      "data-testid",
+      "data-test-id",
+      "href",
+      "data-event-click-target",
+      "src",
+      "property",
+      "method",
+      "role",
+      "data-trigger",
+      "autocomplete",
+      "type",
+
+    ];
+    
+    return Array.from(document.querySelectorAll("*"))
+      .filter((e) => !isHidden(e))
+      .flatMap((e) => {
+        let values = [];
+        for (const attribute of attributes) {
+          const attr = e.attributes.getNamedItem(attribute);
+    
+          if (attr == null) {
+            continue;
+          }
+    
+          const val = attr.value.toLowerCase();
+    
+          values.push(val);
+        }
+        return values;
+      });}());
+    `);
+    return [this.webview.getURL()].concat(await list);
+  }
+
+  async getAttributeNames(w) {
+    if (!w || !w.getWebContents()) {
+      return [];
+    }
+    const list: Promise<string[]> = w.getWebContents().executeJavaScript(`
+    function isEqualOrChild(child, parent) {
+      if (child == parent) return true;
+      if (child === null || parent === null) return false;
+    
+      while (child.parentElement !== null) {
+        child = child.parentElement;
+    
+        if (child == parent) {
+          return true;
+        }
+      }
+    
+      return false;
+    }
+    
+    function getMidPoint(e, doc) {
+      var rect = e.getBoundingClientRect();
+      const style = window.getComputedStyle(e);
+      var dx = 0;
+      var dy = 0;
+    
+      if (doc) {
+        var iframe = document.querySelector(args.document);
+        var drect = iframe.getBoundingClientRect();
+        dx = drect.x;
+        dy = drect.y;
+      }
+    
+      return {
+        x:
+          dx +
+          rect.x +
+          parseInt(style.paddingLeft) +
+          (rect.width -
+            parseInt(style.paddingLeft) -
+            parseInt(style.paddingRight)) /
+            10,
+        y:
+          dy +
+          rect.y +
+          parseInt(style.paddingTop) +
+          (rect.height -
+            parseInt(style.paddingTop) -
+            parseInt(style.paddingBottom)) /
+            2,
+      }; // bias to the left
+    }
+    
+    function isHidden(elem) {
+      if (
+        !(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length)
+      ) {
+        return true;
+      }
+    
+      const style = window.getComputedStyle(elem);
+    
+      if (
+        style.display === "none" ||
+        style.opacity === 0 ||
+        style.visibility === "hidden"
+      ) {
+        return true;
+      }
+    
+      const pos = getMidPoint(elem);
+      const e = document.elementFromPoint(pos.x, pos.y);
+    
+      return !isEqualOrChild(e, elem);
+    }
+    (function(){
+    let attributes = [
+      "name",
+      "id",
+      "aria-label",
+      "aria-roledescription",
+      "placeholder",
+      "ng-model",
+      "data-ng-model",
+      "data-callback",
+      "data-name",
+      "class",
+      "value",
+      "alt",
+      "data-testid",
+      "data-test-id",
+      "href",
+      "data-event-click-target",
+      "src",
+      "property"
+    ];
+    
+    return Array.from(document.querySelectorAll("*"))
+      .filter((e) => !isHidden(e))
+      .flatMap((e) => {
+        let values = [];
+        for (let i = 0; i < e.attributes.length; i++) {
+          const attr = e.attributes.item(i);
+    
+          if (attr == null) {
+            continue;
+          }
+    
+          const val = attr.name.toLowerCase();
+    
+          values.push(val);
+        }
+        return values;
+      });}());
+    `);
+    return [].concat(await list);
   }
 
   async isErrorIn(w) {
