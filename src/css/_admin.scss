@@ -231,13 +231,30 @@ webview.universalLoginExecutor {
 }
 
 #click-tracking-study {
+  .statistics {
+    padding: 0;
+    margin-bottom: 1rem;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 8px;
+      max-width: 400px;
+    }
+  }
+
   thead {
-    background: $vipfy-primary;
     color: white;
+    background: $vipfy-primary;
 
     th {
       padding: 8px;
       font-weight: bold;
+
+      i {
+        margin-left: 8px;
+      }
     }
   }
 
