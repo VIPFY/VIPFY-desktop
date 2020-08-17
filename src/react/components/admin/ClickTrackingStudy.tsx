@@ -5,9 +5,10 @@ import * as moment from "moment";
 import gql from "graphql-tag";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
 import { WorkAround } from "../../interfaces";
 import Duration from "../../common/duration";
+import IconButton from "../../common/IconButton";
 
 interface Participant {
   id: string;
@@ -22,6 +23,18 @@ interface Participant {
 const FETCH_STUDY_DATA = gql`
   {
     adminFetchStudyData
+  }
+`;
+
+const FINISH_STUDY = gql`
+  mutation onFinishStudy($participantID: ID!) {
+    finishStudy(participantID: $participantID)
+  }
+`;
+
+const CANCEL_FINISH = gql`
+  mutation onCancelFinishStudy($participantID: ID!) {
+    cancelFinishStudy(participantID: $participantID)
   }
 `;
 
@@ -148,7 +161,12 @@ export default () => {
                         className={classNames(
                           { "lazy-user": participants[id].amountFiles == 0 },
                           { "good-user": selectIcon(participants[id].voucher) == "check" },
-                          { "vipfy-user": selectIcon(participants[id].voucher) == "slash" }
+                          { "vipfy-user": selectIcon(participants[id].voucher) == "slash" },
+                          {
+                            "study-finished":
+                              participants[id].registrationDate != "-" &&
+                              moment(moment()).diff(participants[id].registrationDate, "days") >= 30
+                          }
                         )}
                         key={id}>
                         <td>{participants[id].email}</td>
@@ -182,7 +200,30 @@ export default () => {
                             : "-"}
                         </td>
                         <td>
-                          <i className={`fal fa-user-${selectIcon(participants[id].voucher)}`} />
+                          <Mutation<WorkAround, WorkAround>
+                            update={proxy => {
+                              const data = proxy.readQuery({ query: FETCH_STUDY_DATA });
+
+                              data.adminFetchStudyData[id].voucher = !data.adminFetchStudyData[id]
+                                .voucher;
+
+                              proxy.writeQuery({ query: FETCH_STUDY_DATA, data });
+                            }}
+                            mutation={participants[id].voucher ? CANCEL_FINISH : FINISH_STUDY}>
+                            {(mutate, { loading, error }) => (
+                              <React.Fragment>
+                                <IconButton
+                                  disabled={loading}
+                                  icon={`user-${selectIcon(participants[id].voucher)}`}
+                                  onClick={() =>
+                                    mutate({ variables: { participantID: participants[id].id } })
+                                  }
+                                />
+
+                                <ErrorComp error={error} />
+                              </React.Fragment>
+                            )}
+                          </Mutation>
                         </td>
                       </tr>
                     ))}

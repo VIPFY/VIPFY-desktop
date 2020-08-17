@@ -1,0 +1,60 @@
+#click-tracking-study {
+  .statistics {
+    padding: 0;
+    margin-bottom: 1rem;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 8px;
+      max-width: 400px;
+    }
+  }
+
+  thead {
+    color: white;
+    background: $vipfy-primary;
+
+    th {
+      padding: 8px;
+      font-weight: bold;
+
+      i {
+        margin-left: 8px;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      &:hover {
+        background-color: $vipfy-lightgrey;
+      }
+
+      td {
+        padding: 8px;
+
+        &:last-of-type {
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  .study-finished {
+    background-color: $lightyellow-lighter;
+
+    &.good-user {
+      background-color: $primarygreen;
+    }
+  }
+
+  .lazy-user {
+    background-color: $red-lighter;
+  }
+
+  .vipfy-user {
+    background-color: $blue-lightest;
+  }
+}
