@@ -64,10 +64,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
           {wizardConfig && (
             <div className="wizard">
               {wizardConfig.steps.map((step, i) => (
-                <>
+                <React.Fragment key={step}>
                   {i > 0 && <span className="divider" />}
-                  <PillButton key={step} label={step} active={wizardConfig.currentStep === i} />
-                </>
+                  <PillButton label={step} active={wizardConfig.currentStep === i} />
+                </React.Fragment>
               ))}
             </div>
           )}
