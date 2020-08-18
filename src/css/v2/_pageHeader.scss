@@ -11,6 +11,10 @@
     display: flex;
   }
 
+  h1 {
+    flex-grow: 1;
+  }
+
   .breadCrumbs {
     margin-bottom: 8px;
     font-size: 14px;

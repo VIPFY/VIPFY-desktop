@@ -12,7 +12,7 @@ export const SET_VAT_ID = gql`
 `;
 
 export const EDIT_DEPARTMENT = gql`
-  mutation editDepartmentName($departmentid: ID!, $name: String!) {
+  mutation editDepartmentName($departmentid: ID, $name: String!) {
     editDepartmentName(departmentid: $departmentid, name: $name) {
       ok
     }

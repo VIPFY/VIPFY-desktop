@@ -1,5 +1,4 @@
 import * as React from "react";
-import CreditCardList from "../components/billing/CreditCardList";
 import Addresses from "../components/profile/Addresses";
 import BillingHistoryChart from "../components/billing/BillingHistoryChart";
 import EmailList from "../components/EmailList";
@@ -24,10 +23,6 @@ export default (props: Props) => (
 
     <Collapsible title="Billing Emails" info="Invoices will be sent to these Email addresses">
       <EmailList tag="billing" />
-    </Collapsible>
-
-    <Collapsible title="Credit Cards">
-      <CreditCardList companyID={props.company.unit.id} />
     </Collapsible>
 
     <Collapsible title="Cost Distribution">

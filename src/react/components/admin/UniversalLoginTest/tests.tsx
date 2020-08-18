@@ -8,6 +8,7 @@ export interface Test {
   enterCorrectPassword?: boolean;
   skipCondition?: SkipCondition;
   timeout?: number;
+  loginDetection?: number;
 }
 
 // sometimes a test should be skipped. this defines the conditions under which that should happen
@@ -23,6 +24,7 @@ export const tests: Test[] = [
     expectLoginSuccess: true,
     deleteCookies: true,
     speedFactor: 10,
+    expectPasswordEntered: true,
     enterCorrectEmail: true,
     enterCorrectPassword: true
   },
@@ -31,6 +33,7 @@ export const tests: Test[] = [
     expectLoginSuccess: true,
     deleteCookies: true,
     speedFactor: 2,
+    expectPasswordEntered: true,
     enterCorrectEmail: true,
     enterCorrectPassword: true,
     skipCondition: { testDependency: 0, skipIfPassedEquals: true }

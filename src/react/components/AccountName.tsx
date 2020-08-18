@@ -21,13 +21,17 @@ export default function AccountName(props: {
   `;
 
   return (
-    <Query<WorkAround, WorkAround> query={fetchLicence} variables={{ licenceid: accountid }}>
-      {({ loading, error, data }) => {
+    <Query query={fetchLicence} variables={{ licenceid: accountid }}>
+      {({ loading, error = null, data }) => {
         if (loading) {
           return <span />;
         }
 
         if (error && (!data || !data.fetchLicence)) {
+          return <span>(can't fetch account data)</span>;
+        }
+        //WORKAROUND FOR STRANGE BEHAVIOUR
+        if (!data || !data.fetchLicence || !data.fetchLicence.alias) {
           return <span>(can't fetch account data)</span>;
         }
 

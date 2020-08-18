@@ -104,6 +104,7 @@ class UniversalLoginExecutorWrapper extends React.PureComponent<Props, State> {
         webviewId={currentTestIndex}
         partition={SSO_TEST_PARTITION}
         deleteCookies={this.props.deleteCookies || test.deleteCookies}
+        loginDetection={test.loginDetection}
         setResult={(loginResult: LoginResult, screenshot: string) => {
           const testResult = {
             passed: this.isPassed(test, loginResult),

@@ -138,7 +138,7 @@ class Area extends React.Component<AreaProps, AreaState> {
       },
       {
         label: "Payment Method",
-        location: "paymentdata/paymentmethod",
+        location: "paymentdata",
         icon: "file-invoice-dollar",
         show: this.props.isadmin && config.showBilling,
         highlight: "billingelement"
@@ -489,7 +489,8 @@ class Area extends React.Component<AreaProps, AreaState> {
       licenceID,
       openServices,
       openInstances,
-      consentPopup
+      consentPopup,
+      showService
     } = this.state;
 
     const {
@@ -499,12 +500,11 @@ class Area extends React.Component<AreaProps, AreaState> {
       isadmin,
       tutorialprogress,
       highlightReferences,
-      showVIPFYPlanPopup,
       company,
       expiredPlan,
       id,
       style,
-      showService
+      showVIPFYPlanPopup
     } = this.props;
 
     const isImpersonating = !!localStorage.getItem("impersonator-token");
@@ -667,10 +667,6 @@ class Area extends React.Component<AreaProps, AreaState> {
                                           )}
                                         </ul>
                                       </div>
-                                    )}
-
-                                    {addprops && addprops.heading && (
-                                      <div className="pageHeading">{addprops.heading}</div>
                                     )}
 
                                     <RouteComponent

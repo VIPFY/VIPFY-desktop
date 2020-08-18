@@ -28,6 +28,11 @@ interface Props {
   helpertextenabled?: boolean;
   helperText?: String;
   smallTextField?: Boolean;
+  inputStyles?: Object;
+  inputElement?: JSX.Element;
+  labelClick?: Function;
+  labelStyles?: Object;
+  holderStyles?: Object;
 }
 
 interface State {
@@ -137,20 +142,24 @@ class UniversalTextInput extends React.Component<Props, State> {
     return (
       <div
         className={`textField ${this.props.disabled ? "disabled" : ""}`}
-        style={
-          this.props.width ? { width: this.props.width, textAlign: "left" } : { textAlign: "left" }
-        }>
+        style={Object.assign(
+          { textAlign: "left" },
+          this.props.width ? { width: this.props.width } : {},
+          this.props.holderStyles || {}
+        )}>
         {this.props.label && (
           <label
             htmlFor={this.props.id}
             className="universalLabel"
-            style={
+            style={Object.assign(
               (this.props.errorEvaluation ||
                 (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
-              this.state.notypeing
+                this.state.notypeing
                 ? { color: "#e32022" }
-                : {}
-            }>
+                : {},
+              this.props.labelStyles || {}
+            )}
+            onClick={() => this.props.labelClick && this.props.labelClick()}>
             {this.props.label}
           </label>
         )}
@@ -159,12 +168,18 @@ class UniversalTextInput extends React.Component<Props, State> {
             this.props.className
           }`}
           style={Object.assign(
-            { ...this.props.style },
             this.props.width ? { width: this.props.width } : {},
             this.props.prefix || this.props.suffix
               ? { display: "flex", alignItems: "center", overflowX: "auto" }
               : {},
-            this.props.smallTextField ? { height: "30px" } : { height: "38px" }
+            this.props.smallTextField ? { height: "30px" } : { height: "38px" },
+            { ...this.props.style },
+            { ...(this.props.focus ? { borderColor: "#20baa9" } : {}) },
+            (this.props.errorEvaluation ||
+              (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
+              this.state.notypeing
+              ? { borderColor: "#e32022" }
+              : {}
           )}
           onContextMenu={e => {
             e.preventDefault();
@@ -178,67 +193,82 @@ class UniversalTextInput extends React.Component<Props, State> {
           }}
           // @ts-ignore
           ref={this.wrapper}>
-          {this.props.prefix && <div>{this.props.prefix}</div>}
-          <input
-            // @ts-ignore
-            autoFocus={this.props.focus || false}
-            id={this.props.id}
-            type={
-              this.props.type == "password"
-                ? this.state.eyeopen
-                  ? ""
-                  : "password"
-                : this.props.type || ""
-            }
-            disabled={this.props.disabled ? true : false}
-            onFocus={() => this.toggleInput(true)}
-            onBlur={() => {
-              if (this.props.onBlur) {
-                this.props.onBlur();
-              }
-
-              this.toggleInput(false);
-            }}
-            onKeyUp={e => this.handleKeyUp(e)}
-            className={
-              this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
-            }
-            style={{
-              width: "calc(100% - 34px)",
-              ...(this.props.type == "date"
-                ? {
-                    border: "none",
-                    borderBottom: "1px solid #20baa9",
-                    fontFamily: "'Roboto', sans-serif"
-                  }
-                : {}),
-              ...(this.props.errorEvaluation && this.state.notypeing
-                ? {
-                    borderBottomColor: "#e32022"
-                  }
-                : {})
-            }}
-            min={this.props.min}
-            value={this.state.value}
-            onChange={e => this.changeValue(e)}
-            ref={input => {
+          {this.props.prefix && (
+            <div style={{ marginLeft: "8px", marginRight: "-4px" }}>{this.props.prefix}</div>
+          )}
+          {this.props.inputElement ? (
+            this.props.inputElement
+          ) : (
+            <input
               // @ts-ignore
-              this.nameInput = input;
-            }}
-          />
+              autoFocus={this.props.focus || false}
+              id={this.props.id}
+              type={
+                this.props.type == "password"
+                  ? this.state.eyeopen
+                    ? ""
+                    : "password"
+                  : this.props.type || ""
+              }
+              disabled={this.props.disabled ? true : false}
+              onFocus={() => this.toggleInput(true)}
+              onBlur={() => {
+                if (this.props.onBlur) {
+                  this.props.onBlur();
+                }
+
+                this.toggleInput(false);
+              }}
+              onKeyUp={e => this.handleKeyUp(e)}
+              className={
+                this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
+              }
+              style={{
+                width: "calc(100% - 18px)",
+                ...(this.props.type == "date"
+                  ? {
+                      border: "none",
+                      borderBottom: "1px solid #20baa9",
+                      fontFamily: "'Roboto', sans-serif"
+                    }
+                  : {}),
+                ...(this.props.errorEvaluation && this.state.notypeing
+                  ? {
+                      borderBottomColor: "#e32022"
+                    }
+                  : {}),
+                ...(this.props.inputStyles || {})
+              }}
+              min={this.props.min}
+              value={this.state.value}
+              onChange={e => this.changeValue(e)}
+              ref={input => {
+                // @ts-ignore
+                this.nameInput = input;
+              }}
+            />
+          )}
 
           {this.props.suffix && <div>{this.props.suffix}</div>}
 
+          {this.props.buttons &&
+            this.props.buttons.map(b => (
+              <button className="cleanup passwordIcon" tabIndex={-1} onClick={() => b.onClick()}>
+                <i className={b.icon} />
+                {b.label}
+              </button>
+            ))}
+
           {this.props.children && (
-            <button className="cleanup" tabIndex={-1}>
+            <button className="cleanup passwordIcon" tabIndex={-1}>
               <i className="fal fa-info" />
               <div className="explainLayer">
                 <div className="explainLayerInner">{this.props.children}</div>
               </div>
             </button>
           )}
-          {this.props.type == "password" ? (
-            this.state.eyeopen ? (
+          {this.props.type == "password" &&
+            (this.state.eyeopen ? (
               <button
                 className="cleanup passwordIcon"
                 tabIndex={-1}
@@ -252,16 +282,12 @@ class UniversalTextInput extends React.Component<Props, State> {
                 onClick={() => this.setState({ eyeopen: true })}>
                 <i className="far fa-eye-slash" />
               </button>
-            )
-          ) : (
-            ""
-          )}
+            ))}
           {this.props.deleteFunction && (
             <button
-              className="cleanup"
+              className="cleanup passwordIcon"
               tabIndex={-1}
-              // @ts-ignore
-              onClick={() => this.props.deleteFunction()}
+              onClick={e => this.props.deleteFunction(e)}
               style={{ color: "#253647" }}>
               <i className="fal fa-trash-alt" />
             </button>
@@ -295,7 +321,9 @@ class UniversalTextInput extends React.Component<Props, State> {
           )}
         </div>
         {(this.props.helperText || (this.props.errorEvaluation && this.props.errorhint)) && (
-          <div className="universalHelperText" style={this.props.errorhint ? { color: "red" } : {}}>
+          <div
+            className="universalHelperText"
+            style={this.props.errorhint ? { color: "#e32022" } : {}}>
             {this.props.errorhint ? (
               <span>
                 <i className="fal fa-exclamation-circle" style={{ marginRight: "4px" }}></i>

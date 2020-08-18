@@ -22,6 +22,7 @@ class PillButton extends React.PureComponent<PillButtonProps> {
 interface ButtonConfig {
   label: string;
   onClick: Function;
+  disabled: boolean;
   icon?: string;
 }
 
@@ -51,6 +52,7 @@ interface PageHeaderProps {
   filterConfig?: any;
   pagination?: Pagination;
   children?: any;
+  disabled?: boolean;
 }
 
 interface PageHeaderState {
@@ -103,8 +105,8 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             <UniversalButton
               label={buttonConfig.label}
               onClick={buttonConfig.onClick}
-              className="pageHeaderButton"
-              disabled={loading}
+              type="high"
+              disabled={buttonConfig.disabled || loading}
               // old button can't do this, new button will:
               // icon={buttonConfig.button}
             ></UniversalButton>

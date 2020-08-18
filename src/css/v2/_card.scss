@@ -6,6 +6,12 @@
   font-size: 14px;
   background-color: $white;
 
+  &:hover {
+    .cardButton {
+      opacity: 1;
+    }
+  }
+
   &.clickable:hover {
     box-shadow: 0 3px 4px #00000026;
     cursor: pointer;
@@ -73,6 +79,31 @@
     &.neutral {
       background-color: $lightgrey-lighter;
       color: black;
+    }
+  }
+
+  .cardButton {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 32px;
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out, opacity 200ms ease-in-out;
+    opacity: 0;
+
+    &:hover,
+    &:active {
+      background-color: $lightgrey-light;
+    }
+
+    &:focus {
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      border: 1px solid $primarygreen;
+      outline: none;
     }
   }
 }
