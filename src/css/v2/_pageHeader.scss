@@ -47,7 +47,15 @@
     }
   }
 
+  .headerGrid {
+    display: grid;
+    grid-gap: 16px;
+  }
+
   .collectionRow {
+    display: flex;
+    align-items: center;
+
     :first-child {
       width: 25%;
       max-width: 25%;
@@ -65,7 +73,6 @@
 
   .tagsRow {
     align-items: center;
-    margin: 16px 0 0 0;
 
     span {
       height: 24px;

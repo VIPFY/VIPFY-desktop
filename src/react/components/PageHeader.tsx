@@ -84,6 +84,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
     } = this.props;
 
     const showSecondLine = searchConfig || filterConfig || pagination;
+    const showGrid = wizardConfig || showSecondLine || activeFilters.length > 0;
 
     return (
       <div className="pageHeader">
@@ -92,7 +93,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
         <div className="titleRow">
           <h1>{title}</h1>
           {wizardConfig && (
-            <div className="wizard">
+            <div className="wizard smHide">
               {wizardConfig.steps.map((step, i) => (
                 <React.Fragment key={step}>
                   {i > 0 && <span className="divider" />}
@@ -113,29 +114,44 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
           )}
         </div>
 
-        {showSecondLine && (
-          <div className="collectionRow">
-            {searchConfig && <UniversalSearchBox placeholder={searchConfig.text} />}
-            {filterConfig && <div>Filter By</div>}
-            {pagination && <div>Rows per page: {pagination.currentRowsPerPage}</div>}
+        {showGrid && (
+          <div className="headerGrid">
+            {wizardConfig && (
+              <div className="wizard lgHide">
+                {wizardConfig.steps.map((step, i) => (
+                  <React.Fragment key={step}>
+                    {i > 0 && <span className="divider" />}
+                    <PillButton label={step} active={wizardConfig.currentStep === i} />
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+
+            {showSecondLine && (
+              <div className="collectionRow">
+                {searchConfig && <UniversalSearchBox placeholder={searchConfig.text} />}
+                {filterConfig && <div>Filter By</div>}
+                {pagination && <div>Rows per page: {pagination.currentRowsPerPage}</div>}
+              </div>
+            )}
+
+            {activeFilters.length > 0 && (
+              <div className="tagsRow">
+                {activeFilters.map(filter => (
+                  <Tag key={filter} className="filter">
+                    {filter}
+                  </Tag>
+                ))}
+                <span className="verticalSeparator" />
+                <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>
+                  Clear all
+                </span>
+              </div>
+            )}
           </div>
         )}
 
-        {activeFilters.length > 0 && (
-          <div className="tagsRow">
-            {activeFilters.map(filter => (
-              <Tag key={filter} className="filter">
-                {filter}
-              </Tag>
-            ))}
-            <span className="verticalSeparator" />
-            <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>
-              Clear all
-            </span>
-          </div>
-        )}
-
-        <div className="children">{children}</div>
+        {children && <div className="children">{children}</div>}
       </div>
     );
   }
