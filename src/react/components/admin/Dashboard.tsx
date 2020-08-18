@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 
-export default (props: { props: any }) => {
+export default (_props: any) => {
   const links = [
     { icon: "plus", link: "service-creation", label: "Create a new Service" },
     { icon: "dice-d12", link: "service-creation-external", label: "Create a new External Service" },
@@ -10,7 +10,8 @@ export default (props: { props: any }) => {
     { icon: "ambulance", link: "pending-integrations", label: "Pending Integrations" },
     { icon: "books-medical", link: "service-integration", label: "Service Integration" },
     { icon: "key-skeleton", link: "crypto-debug", label: "Test crypto" },
-    { icon: "images", link: "service-logo-overview", label: "Service Logos" }
+    { icon: "images", link: "service-logo-overview", label: "Service Logos" },
+    { icon: "fist-raised", link: "click-tracking-2020", label: "Click Tracking Study 2020" }
   ];
 
   return (

@@ -5,7 +5,7 @@ import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
 import CardSection from "../../components/CardSection";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
-import UniversalDropdownInput from "../../components/universalForms/UniversalDropdownInput";
+import UniversalDropdownInput from "../../components/universalForms/universalDropdownInput";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
