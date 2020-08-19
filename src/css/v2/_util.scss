@@ -46,3 +46,15 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+.smHide {
+  @include sm {
+    display: none !important;
+  }
+}
+
+.lgHide {
+  @include lg {
+    display: none !important;
+  }
+}

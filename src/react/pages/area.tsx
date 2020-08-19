@@ -438,10 +438,10 @@ class Area extends React.Component<AreaProps, AreaState> {
     })?.admin;
   };
 
-  renderCategories = (categories, categorie, addRenderElement) => (
-    <li>
-      <div className={"adminHeadline-categoryTitle"}>{categorie}</div>
-      {categories[categorie].map(({ label, location, highlight, ...categoryProps }) => {
+  renderCategories = (categories, category, addRenderElement) => (
+    <li key={category}>
+      <div className={"adminHeadline-categoryTitle"}>{category}</div>
+      {categories[category].map(({ label, location, highlight, ...categoryProps }) => {
         let buttonClass = "naked-button adminHeadline-categoryElement";
 
         const id = label.toString() + location.toString();
@@ -456,6 +456,7 @@ class Area extends React.Component<AreaProps, AreaState> {
         return (
           <button
             ref={element => addRenderElement({ key: highlight, element })}
+            key={label}
             {...categoryProps}
             id={id}
             className={buttonClass}

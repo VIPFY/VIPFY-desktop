@@ -6,6 +6,12 @@
   font-size: 14px;
   background-color: $white;
 
+  &:hover {
+    .cardButton {
+      opacity: 1;
+    }
+  }
+
   &.clickable:hover {
     box-shadow: 0 3px 4px #00000026;
     cursor: pointer;
@@ -76,57 +82,28 @@
     }
   }
 
-  .tagsRow {
-    display: flex;
-    flex-flow: row wrap;
-    margin: 0 -8px -8px 0;
-
-    .tag {
-      margin: 0 8px 8px 0;
-    }
-  }
-
-  .featureTag {
-    padding: 5px 12px;
-  }
-
-  .pricingTag {
-    height: 20px;
-    padding: 1px 12px;
-    border: 1px solid #c9d1da;
-    background-color: white;
-    font-size: 12px;
-  }
-
   .cardButton {
     width: 32px;
     height: 32px;
-    font-size: 14px;
-    text-align: center;
-    cursor: pointer;
     border-radius: 8px;
-    transition: background-color 200ms ease-in-out, opacity 200ms ease-in-out;
+    text-align: center;
+    font-size: 14px;
     line-height: 32px;
+    cursor: pointer;
+    transition: background-color 200ms ease-in-out, opacity 200ms ease-in-out;
     opacity: 0;
 
-    &:hover {
-      background-color: #e3e7ec;
+    &:hover,
+    &:active {
+      background-color: $lightgrey-light;
     }
+
     &:focus {
       width: 30px;
       height: 30px;
       line-height: 30px;
-      border: 1px solid #20baa9;
+      border: 1px solid $primarygreen;
       outline: none;
-    }
-    &:active {
-      background-color: #e3e7ec;
-    }
-  }
-
-  &:hover {
-    .cardButton {
-      opacity: 1;
     }
   }
 }

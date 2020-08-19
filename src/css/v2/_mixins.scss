@@ -5,6 +5,13 @@
   }
 }
 
+// 1241px screen width and more
+@mixin lg {
+  @media (min-width: calc(#{$screen-sm-max} + 1px)) {
+    @content;
+  }
+}
+
 @mixin grid {
   display: grid;
   grid-gap: $grid-gap;
