@@ -183,10 +183,8 @@ export default () => {
                               postfix=" ago"
                               timestamp={moment(
                                 participants[id].dates.reduce((acc, cV) => {
-                                  const momentDate = moment(cV, "DD.MM.YY");
-
-                                  return momentDate.isBefore(moment(acc)) ? cV : acc;
-                                }),
+                                  return moment(cV, "DD.MM.YY").isBefore(moment(acc)) ? cV : acc;
+                                }, new Date()),
                                 "DD.MM.YY"
                               )}
                             />
