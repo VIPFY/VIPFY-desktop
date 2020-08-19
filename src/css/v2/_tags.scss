@@ -1,0 +1,14 @@
+.tagsRow {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 -8px -8px 0;
+
+  .tag {
+    margin: 0 8px 8px 0;
+
+    &.filter {
+      border-radius: 9999px;
+      background-color: $lightgrey-light;
+    }
+  }
+}

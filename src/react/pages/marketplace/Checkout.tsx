@@ -48,6 +48,15 @@ class Checkout extends React.Component<{}> {
             currentStep: 0,
             steps: ["Select Employees", "Confirm Data"]
           }}
+          searchConfig={{ text: "Search in Checkout" }}
+          filterConfig={{}}
+          pagination={{
+            currentRowsFrom: 1,
+            currentRowsTo: 12,
+            currentRowsPerPage: 12,
+            selectableRowsPerPage: [12, 24, 48],
+            overallRows: 20
+          }}
         />
         <div>
           <EmployeeCard employee={DUMMY_USER} />

@@ -2,6 +2,8 @@ import * as React from "react";
 import classNames from "classnames";
 import UniversalButton from "./universalButtons/universalButton";
 import BreadCrumbs from "./BreadCrumbs";
+import UniversalSearchBox from "../components/universalSearchBox";
+import Tag from "../common/Tag";
 
 interface PillButtonProps {
   label: string;
@@ -20,6 +22,7 @@ class PillButton extends React.PureComponent<PillButtonProps> {
 interface ButtonConfig {
   label: string;
   onClick: Function;
+  disabled: boolean;
   icon?: string;
 }
 
@@ -32,29 +35,56 @@ interface WizardConfig {
   steps: string[];
 }
 
+interface Pagination {
+  currentRowsPerPage: number;
+  selectableRowsPerPage: number[];
+  overallRows: number;
+  currentRowsFrom: number;
+  currentRowsTo: number;
+}
+
 interface PageHeaderProps {
   title: string;
   showBreadCrumbs?: boolean;
   wizardConfig?: WizardConfig;
   buttonConfig?: ButtonConfig;
   searchConfig?: SearchConfig;
+  filterConfig?: any;
+  pagination?: Pagination;
   children?: any;
   disabled?: boolean;
 }
 
 interface PageHeaderState {
   loading: boolean;
+  activeFilters: string[];
 }
 
 class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   constructor(props) {
     super(props);
-    this.state = { loading: false };
+    this.state = { loading: false, activeFilters: [] };
+  }
+
+  clearFilters() {
+    this.setState({ activeFilters: [] });
   }
 
   render() {
-    const { showBreadCrumbs, title, children, buttonConfig, wizardConfig, disabled } = this.props;
-    const { loading } = this.state;
+    const { loading, activeFilters } = this.state;
+    const {
+      showBreadCrumbs,
+      title,
+      children,
+      buttonConfig,
+      wizardConfig,
+      searchConfig,
+      filterConfig,
+      pagination
+    } = this.props;
+
+    const showSecondLine = searchConfig || filterConfig || pagination;
+    const showGrid = wizardConfig || showSecondLine || activeFilters.length > 0;
 
     return (
       <div className="pageHeader">
@@ -63,12 +93,12 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
         <div className="titleRow">
           <h1>{title}</h1>
           {wizardConfig && (
-            <div className="wizard">
+            <div className="wizard smHide">
               {wizardConfig.steps.map((step, i) => (
-                <>
+                <React.Fragment key={step}>
                   {i > 0 && <span className="divider" />}
-                  <PillButton key={step} label={step} active={wizardConfig.currentStep === i} />
-                </>
+                  <PillButton label={step} active={wizardConfig.currentStep === i} />
+                </React.Fragment>
               ))}
             </div>
           )}
@@ -77,13 +107,51 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
               label={buttonConfig.label}
               onClick={buttonConfig.onClick}
               type="high"
-              disabled={disabled || loading}
+              disabled={buttonConfig.disabled || loading}
               // old button can't do this, new button will:
               // icon={buttonConfig.button}
             ></UniversalButton>
           )}
         </div>
-        <div className="children">{children}</div>
+
+        {showGrid && (
+          <div className="headerGrid">
+            {wizardConfig && (
+              <div className="wizard lgHide">
+                {wizardConfig.steps.map((step, i) => (
+                  <React.Fragment key={step}>
+                    {i > 0 && <span className="divider" />}
+                    <PillButton label={step} active={wizardConfig.currentStep === i} />
+                  </React.Fragment>
+                ))}
+              </div>
+            )}
+
+            {showSecondLine && (
+              <div className="collectionRow">
+                {searchConfig && <UniversalSearchBox placeholder={searchConfig.text} />}
+                {filterConfig && <div>Filter By</div>}
+                {pagination && <div>Rows per page: {pagination.currentRowsPerPage}</div>}
+              </div>
+            )}
+
+            {activeFilters.length > 0 && (
+              <div className="tagsRow">
+                {activeFilters.map(filter => (
+                  <Tag key={filter} className="filter">
+                    {filter}
+                  </Tag>
+                ))}
+                <span className="verticalSeparator" />
+                <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>
+                  Clear all
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {children && <div className="children">{children}</div>}
       </div>
     );
   }
