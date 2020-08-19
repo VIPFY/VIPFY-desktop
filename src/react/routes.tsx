@@ -5,6 +5,7 @@ import MarketplaceCategories from "./pages/marketplace/MarketplaceCategories";
 import MessageCenter from "./pages/messagecenter";
 import AdminDashboard from "./components/admin/Dashboard";
 import ServiceCreation from "./components/admin/ServiceCreation";
+import ClickTrackingStudy from "./components/admin/ClickTrackingStudy";
 import ErrorPage from "./pages/error";
 import UsageStatistics from "./pages/usagestatistics";
 import UsageStatisticsBoughtplan from "./pages/usagestatisticsboughtplans";
@@ -58,8 +59,9 @@ const routes = [
   { path: "/area/admin/service-integration", component: ServiceIntegrator, admin: true },
   { path: "/area/admin/service-integration/:appid", component: LoginIntegrator, admin: true },
   { path: "/area/admin/service-logo-overview", component: ServiceLogoEdit, admin: true },
-  { path: "/area/admin/universal-login-test", component: UniversalLoginTest, admin: true },
+  { path: "/area/admin/click-tracking-2020", component: ClickTrackingStudy, admin: true },
   { path: "/area/admin/testingbilling", component: TestingBilling, admin: true },
+  { path: "/area/admin/universal-login-test", component: UniversalLoginTest, admin: true },
   { path: "/area/billing", component: Billing, admin: true },
   { path: "/area/paymentdata/paymentmethod", component: PaymentMethod, admin: true },
   { path: "/area/paymentdata/paymentaddress", component: PaymentAddress, admin: true },
