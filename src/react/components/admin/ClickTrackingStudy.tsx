@@ -165,7 +165,20 @@ export default () => {
                           {
                             "study-finished":
                               participants[id].registrationDate != "-" &&
-                              moment(moment()).diff(participants[id].registrationDate, "days") >= 30
+                              moment(moment()).diff(participants[id].registrationDate, "days") >=
+                                30 &&
+                              moment().diff(
+                                moment(
+                                  participants[id].dates.reduce((acc, cV) => {
+                                    return moment(cV, "DD.MM.YY").isBefore(moment(acc, "DD.MM.YY"))
+                                      ? cV
+                                      : acc;
+                                  }, "01.01.30"),
+                                  "DD.MM.YY"
+                                ),
+                                "days"
+                              ) >= 30 &&
+                              participants[id].amountFiles >= 336
                           }
                         )}
                         key={id}>
