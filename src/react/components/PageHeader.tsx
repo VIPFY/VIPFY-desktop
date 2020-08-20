@@ -154,10 +154,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
                 </span>
               </div>
             )}
+
+            {children && <div className="children">{children}</div>}
           </div>
         )}
-
-        {children && <div className="children">{children}</div>}
       </div>
     );
   }

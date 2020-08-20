@@ -76,10 +76,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
-          <PageHeader
-            title="Categories"
-            showBreadCrumbs={true}
-            searchConfig={{ text: "Search an App in Marketplace" }}>
+          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
