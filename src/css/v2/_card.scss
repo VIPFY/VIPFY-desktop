@@ -34,7 +34,6 @@
     }
 
     > :last-child {
-      margin-left: 16px;
       align-self: flex-start;
     }
   }
@@ -75,11 +74,6 @@
     align-items: center;
     border-radius: 6px;
     font-size: 12px;
-
-    &.neutral {
-      background-color: $lightgrey-lighter;
-      color: black;
-    }
   }
 
   .cardButton {

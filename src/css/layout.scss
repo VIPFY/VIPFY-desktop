@@ -127,8 +127,6 @@ li {
 }
 
 #App {
-  color: #253647; //#333 durch #253647 ersetzen
-  font-family: "Roboto", sans-serif;
   background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
@@ -2815,4 +2813,4 @@ progress[value] {
   }
 }
 
-@import "./v2/layout";
+@import "./v2/index";

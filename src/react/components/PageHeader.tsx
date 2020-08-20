@@ -129,16 +129,22 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
 
             {showSecondLine && (
               <div className="collectionRow">
-                {searchConfig && <UniversalSearchBox placeholder={searchConfig.text} />}
-                {filterConfig && <div>Filter By</div>}
-                {pagination && <div>Rows per page: {pagination.currentRowsPerPage}</div>}
+                {searchConfig && (
+                  <UniversalSearchBox placeholder={searchConfig.text} boxStyles="headerSearch" />
+                )}
+                {filterConfig && <div className="headerFilter">Filter By</div>}
+                {pagination && (
+                  <div className="headerPagination">
+                    Rows per page: {pagination.currentRowsPerPage}
+                  </div>
+                )}
               </div>
             )}
 
             {activeFilters.length > 0 && (
               <div className="tagsRow">
                 {activeFilters.map(filter => (
-                  <Tag key={filter} className="filter">
+                  <Tag key={filter} className="filterTag">
                     {filter}
                   </Tag>
                 ))}

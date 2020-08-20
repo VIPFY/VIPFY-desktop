@@ -5,10 +5,17 @@
 
   .tag {
     margin: 0 8px 8px 0;
+  }
+}
 
-    &.filter {
-      border-radius: 9999px;
-      background-color: $lightgrey-light;
-    }
+.tag {
+  &.featureTag {
+    background-color: $lightgrey-lighter;
+    text-transform: uppercase;
+  }
+
+  &.filterTag {
+    border-radius: 9999px;
+    background-color: $lightgrey-light;
   }
 }

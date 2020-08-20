@@ -4,7 +4,6 @@
   z-index: 1;
   margin: 0 -4px;
   padding: 16px 4px;
-  color: $midgrey-light;
   background-color: $lightgrey-lightest;
 
   > div {
@@ -38,17 +37,17 @@
     display: flex;
     align-items: center;
 
-    :first-child {
+    .headerSearch {
       width: 25%;
       max-width: 25%;
       margin-right: 24px;
     }
 
-    :nth-child(2) {
+    .headerFilter {
       margin-right: 16px;
     }
 
-    :last-child {
+    .headerPagination {
       margin-left: auto;
     }
   }
@@ -71,7 +70,7 @@
 
     .verticalSeparator {
       padding-left: 8px;
-      border-left: 1px solid $midgrey-light;
+      border-left: 1px solid $midgrey-dark;
     }
 
     .clearFiltersBtn {

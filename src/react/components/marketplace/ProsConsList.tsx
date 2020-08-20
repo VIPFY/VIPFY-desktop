@@ -16,7 +16,7 @@ class ProsConsList extends React.Component<ProsConsListProps> {
         <Tag>
           <span className={classNames("fal", "fa-fw", { "fa-plus": !cons, "fa-minus": cons })} />
         </Tag>
-        <span>{argument}</span>
+        <p>{argument}</p>
       </div>
     ));
   }

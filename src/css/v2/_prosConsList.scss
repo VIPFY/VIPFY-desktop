@@ -1,23 +1,22 @@
 .argument {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
 
-  &:last-child {
-    margin-bottom: 0;
+  &:not(:last-child) {
+    margin-bottom: 8px;
   }
 
   &.pro {
     .tag {
       color: $primarygreen;
-      background-color: #d6f2ef;
+      background-color: $primarygreen-light;
     }
   }
 
   &.con {
     .tag {
       color: $red-darker;
-      background-color: $red-lighter;
+      background-color: $red-lightest;
     }
   }
 
