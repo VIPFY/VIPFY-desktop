@@ -4,7 +4,6 @@
   z-index: 1;
   margin: 0 -4px;
   padding: 16px 4px;
-  color: $midgrey-light;
   background-color: $lightgrey-lightest;
 
   > div {
@@ -25,11 +24,11 @@
     }
 
     a {
-      color: $midgrey-light;
+      color: $midgrey-dark;
     }
 
     .isActive {
-      border-bottom: 1px solid $midgrey-light;
+      border-bottom: 1px solid $midgrey-dark;
     }
   }
 
@@ -89,7 +88,7 @@
 
     .verticalSeparator {
       padding-left: 8px;
-      border-left: 1px solid $midgrey-light;
+      border-left: 1px solid $midgrey-dark;
     }
 
     .clearFiltersBtn {

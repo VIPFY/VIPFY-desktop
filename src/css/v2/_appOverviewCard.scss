@@ -31,12 +31,12 @@
     font-size: 12px;
 
     .fa-star {
-      color: $midgrey-light;
+      color: $midgrey-dark;
     }
   }
 
   .headerTags {
-    margin: -4px 0;
+    margin: -4px 0 -4px 16px;
     display: flex;
     justify-content: center;
     align-items: center;
