@@ -180,43 +180,49 @@ class RegisterCompany extends React.Component<Props, State> {
             </div>
 
             <div className="password-container">
-              <ReactPasswordStrength
-                className="passwordStrength"
-                minLength={PW_MIN_LENGTH}
-                minScore={2}
-                scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                tooShortWord={"too short"}
-                inputProps={{
-                  name: "password_input",
-                  autoComplete: "off",
-                  placeholder: "New Password",
-                  className: "cleanup universalTextInput toggle-password"
-                }}
-                changeCallback={state => this.handlePasswordChange(state)}
-              />
+              <div className="textField" style={{ width: "312px", textAlign: "left" }}>
+                <label htmlFor="passwordNew" className="universalLabel">
+                  New Password
+                </label>
+                <div className="universalLabelInput" style={{ height: "32px" }}>
+                  <ReactPasswordStrength
+                    className="passwordStrength"
+                    minLength={PW_MIN_LENGTH}
+                    minScore={2}
+                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
+                    tooShortWord={"too short"}
+                    inputProps={{
+                      name: "password_input",
+                      autoComplete: "off",
+                      placeholder: "New Password",
+                      className: "cleanup universalTextInput toggle-password"
+                    }}
+                    changeCallback={state => this.handlePasswordChange(state)}
+                  />
+                  <IconButton
+                    icon={`eye${this.state.passwordData.show ? "" : "-slash"}`}
+                    onClick={() =>
+                      this.setState(prevState => {
+                        const passwordField = document.querySelector(".toggle-password");
 
-              <IconButton
-                icon={`eye${this.state.passwordData.show ? "" : "-slash"}`}
-                onClick={() =>
-                  this.setState(prevState => {
-                    const passwordField = document.querySelector(".toggle-password");
+                        if (prevState.passwordData.show) {
+                          passwordField.type = "password";
+                        } else {
+                          passwordField.type = "text";
+                        }
 
-                    if (prevState.passwordData.show) {
-                      passwordField.type = "password";
-                    } else {
-                      passwordField.type = "text";
+                        return {
+                          ...prevState,
+                          passwordData: {
+                            ...prevState.passwordData,
+                            show: !prevState.passwordData.show
+                          }
+                        };
+                      })
                     }
-
-                    return {
-                      ...prevState,
-                      passwordData: {
-                        ...prevState.passwordData,
-                        show: !prevState.passwordData.show
-                      }
-                    };
-                  })
-                }
-              />
+                  />
+                </div>
+              </div>
             </div>
 
             <div

@@ -127,6 +127,8 @@ li {
 }
 
 #App {
+  color: #253647; //#333 durch #253647 ersetzen
+  font-family: "Roboto", sans-serif;
   background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
@@ -1594,10 +1596,12 @@ option {
 .passwordStrength {
   display: inline-block;
   position: relative;
-  line-height: 1;
+  //@debug: 1;
   border: 0;
   font-family: inherit;
   padding: 0;
+  line-height: 32px;
+  width: calc(100% - 32px);
 
   .universalTextInput {
     text-align: left;
@@ -2140,11 +2144,11 @@ progress[value] {
     margin-top: 30px;
 
     input {
-      width: 312px;
+      // width: 312px;
     }
 
     i {
-      right: 123px;
+      //  right: 123px;
     }
   }
 }
@@ -2767,7 +2771,7 @@ progress[value] {
 }
 
 .errorScreen {
-  height: calc(100vh - 24px);
+  height: calc(100vh - 32px);
   width: 100%;
   display: flex;
   justify-content: center;
@@ -2804,7 +2808,7 @@ progress[value] {
   display: none;
   position: absolute;
   right: 0;
-  top: 24px;
+  top: 32px;
   height: 32px;
   width: 600px;
   background: lightgrey;
