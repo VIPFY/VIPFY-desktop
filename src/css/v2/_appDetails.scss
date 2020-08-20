@@ -31,26 +31,6 @@
 
       .pic {
         margin-right: 24px;
-
-        span {
-          &.largeScreen {
-            display: block;
-          }
-
-          &.smallScreen {
-            display: none;
-          }
-
-          @include sm {
-            &.largeScreen {
-              display: none;
-            }
-
-            &.smallScreen {
-              display: block;
-            }
-          }
-        }
       }
 
       .details {

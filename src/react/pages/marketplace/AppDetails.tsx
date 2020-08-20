@@ -408,8 +408,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               <div className="card serviceCard">
                 <CardSection className="header" style={{ padding: "24px 0" }}>
                   <div className="pic">
-                    <ServiceLogo icon={DUMMY_APP.icon} size={136} className="largeScreen" />
-                    <ServiceLogo icon={DUMMY_APP.icon} size={112} className="smallScreen" />
+                    <ServiceLogo icon={DUMMY_APP.icon} size={136} className="smHide" />
+                    <ServiceLogo icon={DUMMY_APP.icon} size={112} className="lgHide" />
                   </div>
 
                   <div className="title details">
