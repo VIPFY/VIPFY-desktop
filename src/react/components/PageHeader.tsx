@@ -138,7 +138,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {activeFilters.length > 0 && (
               <div className="tagsRow">
                 {activeFilters.map(filter => (
-                  <Tag key={filter} className="filter">
+                  <Tag key={filter} className="filterTag">
                     {filter}
                   </Tag>
                 ))}

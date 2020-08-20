@@ -65,7 +65,7 @@
     background-color: $white;
     padding: 8px 16px 16px 16px;
     position: relative;
-    color: $midgrey-light;
+    color: $midgrey-dark;
     transition: box-shadow 200ms ease-in-out margin-bottom 200ms ease-in-out margin-top 200ms
       ease-in-out;
 
@@ -191,7 +191,7 @@
     &.disabled {
       padding: 7px 15px 15px 15px;
       border: 1px solid #e4e8ec;
-      color: $midgrey-dark;
+      color: $midgrey-light;
 
       .header {
         border-bottom: 1px solid #e4e8ec;

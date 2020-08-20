@@ -1,7 +1,7 @@
 .universalLabel {
   font-size: 12px;
   padding-bottom: 4px;
-  color: $midgrey-light;
+  color: $midgrey-dark;
   display: block;
 }
 .passwordIcon {
@@ -25,7 +25,7 @@
 }
 
 .universalTextInput {
-  color: $midgrey-light;
+  color: $midgrey-dark;
   text-align: left;
   font-family: "Roboto";
   padding: 0px 8px;
@@ -33,16 +33,16 @@
 
   &:disabled {
     border-color: $lightgrey-light;
-    color: $midgrey-dark;
+    color: $midgrey-light;
     &:hover {
       border-color: $lightgrey-light;
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
     .universalLabel {
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
     .universalHelperText {
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
   }
 }
@@ -50,16 +50,16 @@
 .textField {
   &.disabled {
     border-color: $lightgrey-light;
-    color: $midgrey-dark;
+    color: $midgrey-light;
     &:hover {
       border-color: $lightgrey-light;
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
     .universalLabel {
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
     .universalHelperText {
-      color: $midgrey-dark;
+      color: $midgrey-light;
     }
   }
 }
@@ -67,5 +67,5 @@
 .universalHelperText {
   font-size: 12px;
   padding-top: 4px;
-  color: $midgrey-light;
+  color: $midgrey-dark;
 }

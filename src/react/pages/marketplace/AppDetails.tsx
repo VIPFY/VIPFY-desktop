@@ -17,6 +17,7 @@ import SeparatedSection from "../../components/SeparatedSection";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 
 const DUMMY_ID = 1;
 
@@ -362,7 +363,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             const measuredStyle = { backgroundColor: color, width: `${stat.percent}%` };
 
             return (
-              <div key={i}>
+              <div key={i} className="dataPoint">
                 <div className="statistic">
                   <div className="meter" style={meterStyle}>
                     <div className="measured" style={measuredStyle}></div>
@@ -438,7 +439,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                       style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
                       Buy new license
                     </Tag>
-                    <Tag div={true} className={"neutral"}>
+                    <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
                       Integrate existing license
                     </Tag>
                   </div>
@@ -447,12 +448,20 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 {hasFeatures && (
                   <CardSection className="tagsRow">
                     {DUMMY_APP.features.map((feature, i) => (
-                      <Tag className="featureTag neutral" key={i}>
+                      <Tag className="featureTag" key={i}>
                         {feature}
                       </Tag>
                     ))}
                   </CardSection>
                 )}
+
+                <CardSection style={{ alignItems: "center", display: "flex" }}>
+                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />{" "}
+                  {/* TODO make functional */}
+                  <span style={{ fontSize: "14px", lineHeight: "24px", marginLeft: "8px" }}>
+                    Compare Service
+                  </span>
+                </CardSection>
               </div>
             </CardSection>
 
@@ -492,7 +501,9 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {DUMMY_APP.reviews.map((review, i) => (
                     <div className="card" key={i}>
                       <CardSection>
-                        <blockquote>{review.text}</blockquote>
+                        <h2>
+                          <blockquote>{review.text}</blockquote>
+                        </h2>
                       </CardSection>
                       <CardSection>
                         {review.reviewer}, {review.industry}
