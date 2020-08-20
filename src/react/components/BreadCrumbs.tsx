@@ -13,7 +13,7 @@ const Breadcrumbs = ({ breadcrumbs }) => (
 
       return (
         <React.Fragment key={match.url}>
-          {i > 1 && <span>{" / "}</span>}
+          {i > 1 && <span className="breadCrumbSeparator">{"/"}</span>}
 
           <span className="breadCrumb">
             <NavLink exact activeClassName="isActive" to={match.url}>

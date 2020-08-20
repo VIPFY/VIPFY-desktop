@@ -14,24 +14,6 @@
     flex-grow: 1;
   }
 
-  .breadCrumbs {
-    margin-bottom: 8px;
-    font-size: 14px;
-    line-height: 19px;
-
-    > :nth-child(even) {
-      white-space: pre;
-    }
-
-    a {
-      color: $midgrey-dark;
-    }
-
-    .isActive {
-      border-bottom: 1px solid $midgrey-dark;
-    }
-  }
-
   .titleRow {
     margin-bottom: 24px;
 
@@ -55,17 +37,17 @@
     display: flex;
     align-items: center;
 
-    :first-child {
+    .headerSearch {
       width: 25%;
       max-width: 25%;
       margin-right: 24px;
     }
 
-    :nth-child(2) {
+    .headerFilter {
       margin-right: 16px;
     }
 
-    :last-child {
+    .headerPagination {
       margin-left: auto;
     }
   }

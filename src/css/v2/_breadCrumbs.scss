@@ -1,0 +1,29 @@
+.breadCrumbs {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 19px;
+
+  .breadCrumb {
+    &:hover,
+    &:focus {
+      color: $darkgrey-dark;
+    }
+
+    a {
+      color: $midgrey-dark;
+    }
+
+    .isActive {
+      color: $darkgrey-dark;
+      border-bottom: 1px solid $darkgrey-dark;
+
+      &:focus {
+        border-color: $primarygreen;
+      }
+    }
+  }
+
+  .breadCrumbSeparator {
+    margin: 0 4px;
+  }
+}
