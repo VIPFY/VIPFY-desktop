@@ -153,7 +153,128 @@ class ChangeAccount extends React.Component<Props, State> {
           0,
           this.props.account.options.loginurl.search(/:\/\/{1}/) + 3
         )) ||
-      null
+      null,
+    loginValues: {}
+  };
+
+  printFields = () => {
+    if (!this.props.app.internaldata || !this.props.app.internaldata.loginFields) {
+      return (
+        <>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+            <span style={{ lineHeight: "24px", width: "84px" }}>Email:</span>
+            <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
+              <UniversalTextInput
+                id="accountemail"
+                width="100%"
+                startvalue={
+                  this.state.loginValues && this.state.loginValues.email
+                    ? this.state.loginValues.email
+                    : undefined
+                }
+                livevalue={v => {
+                  if (this.state.loginValues && v != this.state.loginValues.email && v != "") {
+                    this.setState(oldstate => {
+                      return {
+                        loginValues: { ...oldstate.loginValues, email: v },
+                        changedp: true
+                      };
+                    });
+                    if (!this.state.aliastouched) {
+                      this.setState({ alias: v, changeda: true });
+                    }
+                  } else {
+                    this.setState(oldstate => {
+                      return {
+                        loginValues: { ...oldstate.loginValues, email: v },
+                        changedp: false
+                      };
+                    });
+                  }
+                }}
+              />
+            </span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+            <span style={{ lineHeight: "24px", width: "84px" }}>Password:</span>
+            <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
+              <UniversalTextInput
+                id="accountpassword"
+                width="100%"
+                type="password"
+                startvalue={
+                  this.state.loginValues && this.state.loginValues.password
+                    ? this.state.loginValues.password
+                    : undefined
+                }
+                livevalue={v => {
+                  if (this.state.loginValues && v != this.state.loginValues.password && v != "") {
+                    this.setState(oldstate => {
+                      return {
+                        loginValues: { ...oldstate.loginValues, password: v },
+                        changedp: true
+                      };
+                    });
+                  } else {
+                    this.setState(oldstate => {
+                      return {
+                        loginValues: { ...oldstate.loginValues, password: v },
+                        changedp: false
+                      };
+                    });
+                  }
+                }}
+              />
+            </span>
+          </div>
+        </>
+      );
+    }
+    const editedFields: JSX.Element[] = [];
+    this.props.app.internaldata.loginFields.forEach((lF, k) => {
+      editedFields.push(
+        <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }} key={k}>
+          <span style={{ lineHeight: "24px", width: "84px", textTransform: "capitalize" }}>
+            {lF.fillkey}
+          </span>
+          <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
+            <UniversalTextInput
+              id={`account-${lF.fillkey}`}
+              width="100%"
+              type={lF.isPassword ? "password" : undefined}
+              startvalue={
+                this.state.loginValues && this.state.loginValues[lF.fillkey]
+                  ? this.state.loginValues[lF.fillkey]
+                  : undefined
+              }
+              livevalue={v => {
+                if (this.state.loginValues && v != this.state.loginValues[lF.fillkey] && v != "") {
+                  this.setState(oldstate => {
+                    return {
+                      loginValues: { ...oldstate.loginValues, [lF.fillkey]: v }
+                    };
+                  });
+                  //TODO: Add more fillkey or alias
+                  if (
+                    !this.state.aliastouched &&
+                    (lF.fillkey == "email" || lF.fillkey == "username")
+                  ) {
+                    this.setState({ alias: v, changeda: true });
+                  }
+                } else {
+                  this.setState(oldstate => {
+                    return {
+                      loginValues: { ...oldstate.loginValues, [lF.fillkey]: v }
+                    };
+                  });
+                }
+              }}
+            />
+          </span>
+        </div>
+      );
+    });
+    return editedFields;
   };
 
   render() {
@@ -344,44 +465,7 @@ class ChangeAccount extends React.Component<Props, State> {
                       }
                   : { height: "0px" }
               }>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>Email:</span>
-                <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
-                  <UniversalTextInput
-                    id="accountemail"
-                    width="100%"
-                    startvalue={this.state.email}
-                    livevalue={v => {
-                      if (v != this.state.email && v != "") {
-                        this.setState({ email: v, changede: true });
-                        if (!this.state.aliastouched) {
-                          this.setState({ alias: v, changeda: true });
-                        }
-                      } else {
-                        this.setState({ email: v, changede: false });
-                      }
-                    }}
-                  />
-                </span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>Password:</span>
-                <span style={{ lineHeight: "24px", width: "calc(100% - 84px)" }}>
-                  <UniversalTextInput
-                    id="accountpassword"
-                    width="100%"
-                    type="password"
-                    startvalue={this.state.password}
-                    livevalue={v => {
-                      if (v != this.state.password && v != "") {
-                        this.setState({ password: v, changedp: true });
-                      } else {
-                        this.setState({ password: v, changedp: false });
-                      }
-                    }}
-                  />
-                </span>
-              </div>
+              {this.printFields()}
               {newaccount && (
                 <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
                   <span style={{ lineHeight: "24px", width: "84px" }}>Alias:</span>
@@ -585,26 +669,34 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.state.changede ||
                       this.state.changedp ||
                       this.state.changedt ||
-                      this.state.changedl
+                      this.state.changedl ||
+                      Object.keys(this.state.loginValues).length > 0
                     ? "Save"
                     : "Close"
                 }
                 disabled={
                   newaccount
-                    ? !(this.state.changeda && this.state.changede && this.state.changedp)
-                    : ((this.state.changede || this.state.changedp) &&
+                    ? !(
+                        (this.state.changeda && this.state.changede && this.state.changedp) ||
+                        (this.props.app.internaldata &&
+                          Object.keys(this.state.loginValues).length ==
+                            this.props.app.internaldata.loginFields.length)
+                      )
+                    : (((this.state.changede || this.state.changedp) &&
                         !(this.state.changede && this.state.changedp)) ||
-                      (this.state.changedl && !(this.state.changede && this.state.changedp))
+                        (this.state.changedl && !(this.state.changede && this.state.changedp))) &&
+                      !(
+                        this.props.app.internaldata &&
+                        Object.keys(this.state.loginValues).length ==
+                          this.props.app.internaldata.loginFields.length
+                      )
                 }
                 onClick={async () => {
                   if (newaccount) {
                     this.setState({ saving: true });
                     try {
                       const logindata = await createEncryptedLicenceKeyObject(
-                        {
-                          username: this.state.email,
-                          password: this.state.password
-                        },
+                        this.state.loginValues,
                         false,
                         this.props.client
                       );
@@ -645,13 +737,10 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.setState({ saving: true });
                       try {
                         let logindata = undefined;
-                        if (this.state.email && this.state.password) {
+                        if (this.state.loginValues) {
                           logindata = await reencryptLicenceKeyObject(
                             account.id,
-                            {
-                              username: this.state.email ?? "",
-                              password: this.state.password ?? ""
-                            },
+                            this.state.loginValues,
                             false,
                             this.props.client
                           );

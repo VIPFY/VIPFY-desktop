@@ -238,7 +238,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       fetchPolicy: "network-only"
     });
     let licence = result.data.fetchLicenceAssignment;
-
     if (!licence) {
       return;
     }
@@ -293,6 +292,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
+    console.log("URL", parse(e.url));
     const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //  shell.openExternal(e.url);
@@ -305,6 +305,25 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
       }
     }
   }
+
+  acceptNewLicence = async () => {
+    try {
+      await this.props.client.mutate({
+        mutation: gql`
+          mutation agreeToLicence($licenceid: ID!) {
+            agreeToLicence(licenceid: $licenceid) {
+              ok
+            }
+          }
+        `,
+        variables: { licenceid: this.state.accountId }
+      });
+      this.setState({ previousLicenceId: "" });
+      this.switchApp();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   waitforRecheck() {
     setTimeout(() => this.setState({ errorRecheck: true }), 5000);
@@ -333,247 +352,267 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
         {context => {
           return (
             <div className={cssClass} id={`webview-${this.props.viewID}`}>
-              {this.state.showLoadingScreen && (
-                <LoadingDiv
-                  progress={this.state.progress}
-                  style={
-                    is.macOS()
-                      ? context.isActive
-                        ? { height: "calc(100vh - 24px - 40px - 1px)" }
-                        : { height: "calc(100vh - 24px - 1px)" }
-                      : context.isActive
-                      ? { height: "calc(100vh - 32px - 40px - 1px)" }
-                      : { height: "calc(100vh - 32px - 1px)" }
-                  }
-                />
-              )}
-
-              {this.state.options.type == "universalLogin" ||
-              this.state.options.type == "execute" ? (
-                <UniversalLoginExecutor
-                  key={`${this.state.setUrl}-${this.state.loginspeed}`}
-                  loginUrl={this.props.url || this.state.setUrl}
-                  username={this.state.key.email || this.state.key.username}
-                  password={this.state.key.password}
-                  domain={this.state.key.domain}
-                  timeout={60000}
-                  takeScreenshot={false}
-                  partition={`service-${this.state.licenceId}`}
-                  className={cssClassWeb}
-                  showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
-                  setResult={async ({ loggedIn, error, direct, emailEntered, passwordEntered }) => {
-                    if (loggedIn) {
-                      this.hideLoadingScreen();
-
-                      if (emailEntered && passwordEntered && !direct) {
-                        await this.props.updateLicenceSpeed({
-                          variables: {
-                            licenceid: this.props.licenceID,
-                            speed: this.state.loginspeed,
-                            working: true
-                          }
-                        });
-                      }
-                    }
-
-                    if (error) {
-                      if (this.state.loginspeed == 1) {
-                        this.showErrorScreen();
-                        await this.props.updateLicenceSpeed({
-                          variables: {
-                            licenceid: this.props.licenceID,
-                            speed: this.state.loginspeed,
-                            oldspeed: this.state.oldspeed,
-                            working: false
-                          }
-                        });
-                        this.setState({
-                          progress: 1,
-                          error:
-                            "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
-                          errorshowed: true
-                        });
-                      } else {
-                        await this.props.updateLicenceSpeed({
-                          variables: {
-                            licenceid: this.props.licenceID,
-                            speed: this.state.loginspeed,
-                            working: false
-                          }
-                        });
-                        this.setState(s => {
-                          return { loginspeed: 1, oldspeed: s.loginspeed };
-                        });
-                      }
-                    }
-                  }}
-                  progress={progress => this.setState({ progress })}
-                  speed={this.state.loginspeed || 1}
-                  style={
-                    is.macOS()
-                      ? context.isActive
-                        ? { height: "calc(100vh - 24px - 40px)" }
-                        : { height: "calc(100vh - 24px)" }
-                      : context.isActive
-                      ? { height: "calc(100vh - 32px - 40px)" }
-                      : { height: "calc(100vh - 32px)" }
-                  }
-                  interactionHappenedCallback={() => {
-                    let interactions = this.state.interactions;
-                    interactions[this.state.planId] = new Date();
-                    this.setState({ interactions });
-                  }}
-                  execute={this.state.options.execute}
-                  noError={this.state.options.noError}
-                  individualShow={this.state.options.individualShow}
-                  noUrlCheck={this.state.options.noUrlCheck}
-                  individualNotShow={this.state.options.individualNotShow}
-                  addWebview={this.props.addWebview}
-                  licenceID={this.props.licenceID}
-                  setViewTitle={title =>
-                    this.props.setViewTitle &&
-                    this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
-                  }
-                  loggedIn={this.props.loggedIn}
-                  deleteCookies={this.state.options.deleteCookies}
-                  continueExecute={this.state.options.continueExecute}
-                />
-              ) : (
-                <div>Please Update VIPFY to use this service</div>
-              )}
-              {this.state.error && (
-                <PopupBase small={true}>
-                  <h2>Ooopps, sorry it seems that we can't log you in</h2>
-                  <p style={{ marginTop: "24px" }}>
-                    Please take a look and give us Feedback to improve our Login-System
-                  </p>
-                  <UniversalButton
-                    type="high"
-                    onClick={() => {
-                      this.hideLoadingScreen();
-                      this.waitforRecheck();
-                      this.setState({ error: null });
-                    }}
-                    label="ok"
-                  />
-                </PopupBase>
-              )}
-              {this.state.errorRecheck && (
-                <PopupBase small={true} buttonStyles={{ justifyContent: "flex-start" }}>
-                  <h2>Please help us to improve</h2>
-                  <p style={{ marginTop: "24px" }}>Have you found a reason for the failed login?</p>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
+              {!this.state.showLoadingScreen &&
+                (!this.state.key || (this.state.key && !this.state.key.password)) && (
+                  <div>
                     <UniversalButton
-                      type="high"
-                      label="Account expired"
-                      onClick={async () => {
-                        try {
-                          await this.props.logError({
-                            variables: {
-                              data: {
-                                licenceId: this.state.licenceId,
-                                accountId: this.state.accountId,
-                                unitId: this.state.unitId,
-                                options: this.state.options,
-                                appid: this.state.appid,
-                                error: this.state.error,
-                                loginspeed: this.state.loginspeed,
-                                label: "Account expired"
-                              }
-                            }
-                          });
-                        } catch (err) {
-                          console.error(err);
-                        }
-                        this.setState({ errorRecheck: false });
-                      }}
-                      customStyles={{ marginBottom: "24px" }}
-                    />
-                    <UniversalButton
-                      type="high"
-                      label="Wrong credentials"
-                      onClick={async () => {
-                        try {
-                          await this.props.logError({
-                            variables: {
-                              data: {
-                                licenceId: this.state.licenceId,
-                                accountId: this.state.accountId,
-                                unitId: this.state.unitId,
-                                options: this.state.options,
-                                appid: this.state.appid,
-                                error: this.state.error,
-                                loginspeed: this.state.loginspeed,
-                                label: "Wrong credentials"
-                              }
-                            }
-                          });
-                        } catch (err) {
-                          console.error(err);
-                        }
-                        this.setState({ errorRecheck: false });
-                      }}
-                      customStyles={{ marginBottom: "24px" }}
-                    />
-                    <UniversalButton
-                      type="high"
-                      label="The login actually worked"
-                      onClick={async () => {
-                        try {
-                          await this.props.logError({
-                            variables: {
-                              data: {
-                                licenceId: this.state.licenceId,
-                                accountId: this.state.accountId,
-                                unitId: this.state.unitId,
-                                options: this.state.options,
-                                appid: this.state.appid,
-                                error: this.state.error,
-                                loginspeed: this.state.loginspeed,
-                                label: "The login actually worked"
-                              }
-                            }
-                          });
-                        } catch (err) {
-                          console.error(err);
-                        }
-                        this.setState({ errorRecheck: false });
-                      }}
-                      customStyles={{ marginBottom: "24px" }}
-                    />
-                    <UniversalButton
-                      type="high"
-                      label="Still on the LoginPage"
-                      onClick={async () => {
-                        try {
-                          await this.props.logError({
-                            variables: {
-                              data: {
-                                licenceId: this.state.licenceId,
-                                accountId: this.state.accountId,
-                                unitId: this.state.unitId,
-                                options: this.state.options,
-                                appid: this.state.appid,
-                                error: this.state.error,
-                                loginspeed: this.state.loginspeed,
-                                label: "Still on the LoginPage"
-                              }
-                            }
-                          });
-                        } catch (err) {
-                          console.error(err);
-                        }
-                        this.setState({ errorRecheck: false });
-                      }}
-                      customStyles={{ marginBottom: "24px" }}
+                      label="Accept Licence"
+                      onClick={async () => await this.acceptNewLicence()}
                     />
                   </div>
-                  <UniversalButton
-                    type="low"
-                    onClick={() => this.setState({ errorRecheck: false })}
-                    label="cancel"
-                  />
-                </PopupBase>
+                )}
+              {this.state.key && this.state.key.password && (
+                <>
+                  {this.state.showLoadingScreen && (
+                    <LoadingDiv
+                      progress={this.state.progress}
+                      style={
+                        is.macOS()
+                          ? context.isActive
+                            ? { height: "calc(100vh - 24px - 40px - 1px)" }
+                            : { height: "calc(100vh - 24px - 1px)" }
+                          : context.isActive
+                          ? { height: "calc(100vh - 32px - 40px - 1px)" }
+                          : { height: "calc(100vh - 32px - 1px)" }
+                      }
+                    />
+                  )}
+
+                  {this.state.options.type == "universalLogin" ||
+                  this.state.options.type == "execute" ? (
+                    <UniversalLoginExecutor
+                      key={`${this.state.setUrl}-${this.state.loginspeed}`}
+                      loginUrl={this.props.url || this.state.setUrl}
+                      username={this.state.key.email || this.state.key.username}
+                      password={this.state.key.password}
+                      domain={this.state.key.domain}
+                      timeout={60000}
+                      takeScreenshot={false}
+                      partition={`service-${this.state.licenceId}`}
+                      className={cssClassWeb}
+                      showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
+                      setResult={async ({
+                        loggedIn,
+                        error,
+                        direct,
+                        emailEntered,
+                        passwordEntered
+                      }) => {
+                        if (loggedIn) {
+                          this.hideLoadingScreen();
+
+                          if (emailEntered && passwordEntered && !direct) {
+                            await this.props.updateLicenceSpeed({
+                              variables: {
+                                licenceid: this.props.licenceID,
+                                speed: this.state.loginspeed,
+                                working: true
+                              }
+                            });
+                          }
+                        }
+
+                        if (error) {
+                          if (this.state.loginspeed == 1) {
+                            this.showErrorScreen();
+                            await this.props.updateLicenceSpeed({
+                              variables: {
+                                licenceid: this.props.licenceID,
+                                speed: this.state.loginspeed,
+                                oldspeed: this.state.oldspeed,
+                                working: false
+                              }
+                            });
+                            this.setState({
+                              progress: 1,
+                              error:
+                                "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
+                              errorshowed: true
+                            });
+                          } else {
+                            await this.props.updateLicenceSpeed({
+                              variables: {
+                                licenceid: this.props.licenceID,
+                                speed: this.state.loginspeed,
+                                working: false
+                              }
+                            });
+                            this.setState(s => {
+                              return { loginspeed: 1, oldspeed: s.loginspeed };
+                            });
+                          }
+                        }
+                      }}
+                      progress={progress => this.setState({ progress })}
+                      speed={this.state.loginspeed || 1}
+                      style={
+                        is.macOS()
+                          ? context.isActive
+                            ? { height: "calc(100vh - 24px - 40px)" }
+                            : { height: "calc(100vh - 24px)" }
+                          : context.isActive
+                          ? { height: "calc(100vh - 32px - 40px)" }
+                          : { height: "calc(100vh - 32px)" }
+                      }
+                      interactionHappenedCallback={() => {
+                        let interactions = this.state.interactions;
+                        interactions[this.state.planId] = new Date();
+                        this.setState({ interactions });
+                      }}
+                      execute={this.state.options.execute}
+                      noError={this.state.options.noError}
+                      individualShow={this.state.options.individualShow}
+                      noUrlCheck={this.state.options.noUrlCheck}
+                      individualNotShow={this.state.options.individualNotShow}
+                      addWebview={this.props.addWebview}
+                      licenceID={this.props.licenceID}
+                      setViewTitle={title =>
+                        this.props.setViewTitle &&
+                        this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
+                      }
+                      loggedIn={this.props.loggedIn}
+                      deleteCookies={this.state.options.deleteCookies}
+                    />
+                  ) : (
+                    <div>Please Update VIPFY to use this service</div>
+                  )}
+                  {this.state.error && (
+                    <PopupBase small={true}>
+                      <h2>Ooopps, sorry it seems that we can't log you in</h2>
+                      <p style={{ marginTop: "24px" }}>
+                        Please take a look and give us Feedback to improve our Login-System
+                      </p>
+                      <UniversalButton
+                        type="high"
+                        onClick={() => {
+                          this.hideLoadingScreen();
+                          this.waitforRecheck();
+                          this.setState({ error: null });
+                        }}
+                        label="ok"
+                      />
+                    </PopupBase>
+                  )}
+                  {this.state.errorRecheck && (
+                    <PopupBase small={true} buttonStyles={{ justifyContent: "flex-start" }}>
+                      <h2>Please help us improve</h2>
+                      <p style={{ marginTop: "24px" }}>
+                        Have you found a reason for the failed login?
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <UniversalButton
+                          type="high"
+                          label="Account expired"
+                          onClick={async () => {
+                            try {
+                              await this.props.logError({
+                                variables: {
+                                  data: {
+                                    licenceId: this.state.licenceId,
+                                    accountId: this.state.accountId,
+                                    unitId: this.state.unitId,
+                                    options: this.state.options,
+                                    appid: this.state.appid,
+                                    error: this.state.error,
+                                    loginspeed: this.state.loginspeed,
+                                    label: "Account expired"
+                                  }
+                                }
+                              });
+                            } catch (err) {
+                              console.error(err);
+                            }
+                            this.setState({ errorRecheck: false });
+                          }}
+                          customStyles={{ marginBottom: "24px" }}
+                        />
+                        <UniversalButton
+                          type="high"
+                          label="Wrong credentials"
+                          onClick={async () => {
+                            try {
+                              await this.props.logError({
+                                variables: {
+                                  data: {
+                                    licenceId: this.state.licenceId,
+                                    accountId: this.state.accountId,
+                                    unitId: this.state.unitId,
+                                    options: this.state.options,
+                                    appid: this.state.appid,
+                                    error: this.state.error,
+                                    loginspeed: this.state.loginspeed,
+                                    label: "Wrong credentials"
+                                  }
+                                }
+                              });
+                            } catch (err) {
+                              console.error(err);
+                            }
+                            this.setState({ errorRecheck: false });
+                          }}
+                          customStyles={{ marginBottom: "24px" }}
+                        />
+                        <UniversalButton
+                          type="high"
+                          label="The login actually worked"
+                          onClick={async () => {
+                            try {
+                              await this.props.logError({
+                                variables: {
+                                  data: {
+                                    licenceId: this.state.licenceId,
+                                    accountId: this.state.accountId,
+                                    unitId: this.state.unitId,
+                                    options: this.state.options,
+                                    appid: this.state.appid,
+                                    error: this.state.error,
+                                    loginspeed: this.state.loginspeed,
+                                    label: "The login actually worked"
+                                  }
+                                }
+                              });
+                            } catch (err) {
+                              console.error(err);
+                            }
+                            this.setState({ errorRecheck: false });
+                          }}
+                          customStyles={{ marginBottom: "24px" }}
+                        />
+                        <UniversalButton
+                          type="high"
+                          label="Still on the LoginPage"
+                          onClick={async () => {
+                            try {
+                              await this.props.logError({
+                                variables: {
+                                  data: {
+                                    licenceId: this.state.licenceId,
+                                    accountId: this.state.accountId,
+                                    unitId: this.state.unitId,
+                                    options: this.state.options,
+                                    appid: this.state.appid,
+                                    error: this.state.error,
+                                    loginspeed: this.state.loginspeed,
+                                    label: "Still on the LoginPage"
+                                  }
+                                }
+                              });
+                            } catch (err) {
+                              console.error(err);
+                            }
+                            this.setState({ errorRecheck: false });
+                          }}
+                          customStyles={{ marginBottom: "24px" }}
+                        />
+                      </div>
+                      <UniversalButton
+                        type="low"
+                        onClick={() => this.setState({ errorRecheck: false })}
+                        label="cancel"
+                      />
+                    </PopupBase>
+                  )}
+                </>
               )}
             </div>
           );

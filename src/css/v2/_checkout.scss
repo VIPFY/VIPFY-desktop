@@ -1,0 +1,14 @@
+.checkout {
+  .employeeHolder {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    align-items: baseline;
+  }
+
+  @media (max-width: 1240px) {
+    .employeeHolder {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+}

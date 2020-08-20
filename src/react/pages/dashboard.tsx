@@ -7,6 +7,9 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
 import { Licence } from "../interfaces";
 import dashboardPic from "../../images/dashboard.png";
+import { graphql } from "react-apollo";
+import compose from "lodash.flowright";
+import gql from "graphql-tag";
 
 const favourites: { [key: number]: Licence | null } = {};
 [...Array(8).keys()].map(n => (favourites[n] = null));
@@ -25,6 +28,12 @@ interface State {
   dragItem: number | null;
   showDeletion: boolean;
 }
+
+const TRIGGERTESTJOB = gql`
+  mutation performCronjobTasks {
+    performCronjobTasks
+  }
+`;
 
 class Dashboard extends React.Component<Props, State> {
   state = { search: "", dragItem: null, showDeletion: false };
@@ -86,7 +95,13 @@ class Dashboard extends React.Component<Props, State> {
     return (
       <div className="managerPage dashboard">
         <div className="heading">
-          <h1>Dashboard</h1>
+          <h1
+            onClick={() =>
+              //this.props.moveTo("admin/email-integration/af96c4fb-0b37-4c1b-8042-ffa51a2ade9c")
+              this.props.triggerTestJob()
+            }>
+            Dashboard
+          </h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
@@ -136,4 +151,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default Dashboard;
+export default compose(graphql(TRIGGERTESTJOB, { name: "triggerTestJob" }))(Dashboard);

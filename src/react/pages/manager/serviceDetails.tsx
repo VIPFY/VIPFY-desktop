@@ -69,7 +69,7 @@ class ServiceDetails extends React.Component<Props, State> {
         query={fetchCompanyService}
         variables={{ serviceid }}
         fetchPolicy="network-only">
-        {({ loading, error, data, refetch }) => {
+        {({ loading, error = null, data, refetch }) => {
           if (loading) {
             return "Loading...";
           }
