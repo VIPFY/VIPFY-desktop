@@ -246,7 +246,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
     }
   };
   render() {
-    if (this.state.step == 0) {
+    if (this.state.step == 0 && this.props.data.trackedPlan) {
       let domain = undefined;
       let username = undefined;
       let password = undefined;
