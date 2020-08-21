@@ -110,8 +110,8 @@ class AddCustomServicePage extends React.Component<Props, State> {
       { value: "captcha", label: "Captcha" },
       { value: "domain", label: "Domain" },
       { value: "subDomain", label: "Subdomain" },
-      { value: "url", label: "Url (with http or https)" },
-      { value: "phone", label: "Phone number" }
+      { value: "url", label: "URL (with http or https)" },
+      { value: "phone", label: "Phone Number" }
     ];
 
     const emailAdresses = remainingFields.filter(r => r.args.value && r.args.value.includes("@"));
