@@ -148,40 +148,40 @@ class AddCustomServicePage extends React.Component<Props, State> {
     }
 
     remainingFields.forEach(rF => {
-      if (rF.args.id != hasEmail) {
-        fields.push(
-          <div key={rF.args.id} className="tooManyFieldDropdown">
-            <span>{rF.args.value}</span>
-            <UniversalDropdown
-              id={rF.args.id}
-              allowOther={true}
-              options={possibleFields}
-              livevalue={v =>
-                this.setState(oldstate => {
-                  const editedTrackedPlan = [];
-                  oldstate.trackedPlan.forEach(tP => {
-                    if (tP.args.id == rF.args.id) {
-                      editedTrackedPlan.push({
-                        ...tP,
-                        args: {
-                          ...tP.args,
-                          fillkey: v,
-                          value: v.toLowerCase().includes("security") ? "" : tP.args.value,
-                          isSecurity: v.toLowerCase().includes("security")
-                        }
-                      });
-                    } else {
-                      editedTrackedPlan.push(tP);
-                    }
-                  });
-                  return { ...oldstate, trackedPlan: editedTrackedPlan };
-                })
-              }
-              style={{ position: "relative" }}
+      if (field.arg.id === hasEmail) { return; }
+      fields.push(
+        <div key={rF.args.id} className="tooManyFieldDropdown">
+          <span>{rF.args.value}</span>
+          <UniversalDropdown
+            id={rF.args.id}
+            allowOther={true}
+            options={possibleFields}
+            livevalue={v =>
+        this.setState(oldstate => {
+          const editedTrackedPlan = [];
+          oldstate.trackedPlan.forEach(tP => {
+            if (tP.args.id == rF.args.id) {
+              editedTrackedPlan.push({
+                ...tP,
+                args: {
+                  ...tP.args,
+                  fillkey: v,
+                  value: v.toLowerCase().includes("security") ? "" : tP.args.value,
+                  isSecurity: v.toLowerCase().includes("security")
+                }
+              });
+            } else {
+              editedTrackedPlan.push(tP);
+            }
+          });
+          return { ...oldstate, trackedPlan: editedTrackedPlan };
+        })
+                      }
+            style={{ position: "relative" }}
             />
-          </div>
-        );
-      }
+        </div>
+      );
+      
     });
 
     return fields;
@@ -221,7 +221,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                 <i style={{ marginRight: "16px" }} className="fas fa-long-arrow-right"></i>
                 <UniversalButton
                   type="high"
-                  label="Finish with Integration"
+                  label="Finish Integration"
                   onClick={async () => {
                     const lastelement = this.state.trackedPlan[this.state.trackedPlan.length - 1];
                     if (lastelement.operation == "waitandfill" && !lastelement.args.value) {
@@ -253,9 +253,6 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   borderRadius: "12px",
                   minWidth: "328px",
                   maxWidth: "30%",
-                  //height: "175px",
-                  //marginTop: "8px",
-                  //marginLeft: "32px",
                   padding: "16px 16px 24px 16px"
                 }}>
                 <h3>Service Definition</h3>
