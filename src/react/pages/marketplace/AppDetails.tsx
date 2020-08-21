@@ -294,6 +294,9 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
               </SeparatedSection>
             )}
           </div>
+          <Tag div={true} className="buyPlanButton">
+            <p>Add to Basket</p>
+          </Tag>
         </div>
         <div className="features">
           <div>

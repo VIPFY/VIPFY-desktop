@@ -240,6 +240,14 @@
       }
     }
 
+    .buyPlanButton {
+      width: calc(100% - 10px);
+      min-height: 32px;
+      margin-top: 16px;
+      background-color: $primarygreen;
+      color: $white;
+    }
+
     .pricing {
       background-color: $primarygreen-light;
 
