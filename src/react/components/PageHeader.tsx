@@ -130,7 +130,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {showSecondLine && (
               <div className="collectionRow">
                 {searchConfig && (
-                  <UniversalSearchBox placeholder={searchConfig.text} boxStyles="headerSearch" />
+                  <UniversalSearchBox
+                    placeholder={searchConfig.text}
+                    boxStyles={{ width: "25%", maxWidth: "25%", marginRight: "24px" }}
+                  />
                 )}
                 {filterConfig && <div className="headerFilter">Filter By</div>}
                 {pagination && (

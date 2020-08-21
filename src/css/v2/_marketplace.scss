@@ -53,4 +53,10 @@
   .freeTrialTag {
     text-transform: uppercase;
   }
+
+  .starRating {
+    .fa-star {
+      color: $midgrey-dark;
+    }
+  }
 }

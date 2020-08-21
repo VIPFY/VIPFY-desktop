@@ -33,7 +33,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         <div className="title">
           <div>
             {this.props.app.name}
-            <p className="rating">{showStars(4, 5)}</p>
+            <p className="starRating">{showStars(4, 5)}</p>
           </div>
         </div>
         {isWideFormat && (

@@ -10,6 +10,7 @@ import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
 
+import { showStars } from "../../common/functions";
 import Tag from "../../common/Tag";
 import ServiceLogo from "../../components/services/ServiceLogo";
 import CardSection from "../../components/CardSection";
@@ -74,10 +75,7 @@ const DUMMY_APP = {
   category: "Communication",
   pricing: "Starts at USD 30/months",
   languages: "English, German",
-  links: [
-    { title: "Website", url: "https://www.surveymonkey.com/" },
-    { title: "Support Website", url: "https://www.surveymonkey.com/mp/contact-sales/" }
-  ],
+  supportURL: "https://www.surveymonkey.com/mp/contact-sales/",
   features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"],
   pics: [onboarding, dashboard, forgot_password, logo_hell, login_new_user, logo_dunkel],
   description:
@@ -415,32 +413,34 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   <div className="title details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
-                      <span className="fal fa-comments-alt fa-fw" />
-                      {DUMMY_APP.category}
+                      <p className="starRating">{showStars(3, 5)}</p>
                     </div>
                     <div>
                       <Tag className="pricingTag">{DUMMY_APP.pricing}</Tag>
                     </div>
                     <div>
+                      <span className="fal fa-comments-alt fa-fw" />
+                      {DUMMY_APP.category}
+                    </div>
+                    <div>
                       <span className="fal fa-globe fa-fw" />
                       {DUMMY_APP.languages}
                     </div>
-                    {DUMMY_APP.links.map((link, i) => (
-                      <div className="link" key={i}>
-                        {link.title}
-                        <span className="fal fa-external-link fa-fw" />
-                      </div>
-                    ))}
+                    <div className="link">
+                      Support Website
+                      <span className="fal fa-external-link fa-fw" />
+                    </div>
                   </div>
 
                   <div className="licenseTags">
-                    <Tag
-                      div={true}
-                      style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
+                    <Tag div={true} className="buyLicenseButton">
                       Buy new license
                     </Tag>
                     <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
                       Integrate existing license
+                    </Tag>
+                    <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
+                      Write review
                     </Tag>
                   </div>
                 </CardSection>
