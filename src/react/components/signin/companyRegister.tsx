@@ -205,11 +205,7 @@ class RegisterCompany extends React.Component<Props, State> {
                       this.setState(prevState => {
                         const passwordField = document.querySelector(".toggle-password");
 
-                        if (prevState.passwordData.show) {
-                          passwordField.type = "password";
-                        } else {
-                          passwordField.type = "text";
-                        }
+                         passwordField.type = prevState.passwordData.show ? "password" : "text";
 
                         return {
                           ...prevState,
