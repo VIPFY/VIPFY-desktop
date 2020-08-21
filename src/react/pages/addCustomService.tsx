@@ -253,7 +253,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   borderRadius: "12px",
                   minWidth: "328px",
                   maxWidth: "30%",
-                  padding: "16px 16px 24px 16px"
+                  padding: "16px 16px 24px"
                 }}>
                 <h3>Service Definition</h3>
                 <div
@@ -308,7 +308,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
             />
           )}
           {this.state.step == "finish" && (
-            <div style={{ display: "flex" /*, justifyContent: "center"*/ }}>
+            <div style={{ display: "flex" }}>
               <div
                 style={{
                   background: "white",
@@ -319,7 +319,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   padding: "16px 16px 24px 16px"
                 }}>
                 <span style={{ fontSize: "16px", lineHeight: "16px" }}>
-                  We are verifing the integration in the background.
+                  Integration verification running in background.
                 </span>
                 <UniversalButton
                   type="high"
@@ -345,7 +345,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   borderRadius: "12px",
                   minWidth: "328px",
                   maxWidth: "30%",
-                  padding: "16px 16px 24px 16px"
+                  padding: "16px 16px 24px"
                 }}>
                 <span style={{ fontSize: "16px", lineHeight: "16px" }}>
                   We need your help to identify all loginfields.
