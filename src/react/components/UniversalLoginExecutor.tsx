@@ -1236,8 +1236,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               this.loginState.emailEnteredEnd = true;
             } else if (e.args[0] == "password") {
               this.loginState.passwordEnteredEnd = true;
-            } else {
-              //throw new Error("unknown string");
             }
             if (e.args[0] == "password" && this.props.execute == null) {
               w.sendInputEvent({ type: "keyDown", modifiers: [], keyCode: "\u000d" });

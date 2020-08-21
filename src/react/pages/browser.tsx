@@ -770,8 +770,7 @@ class Browser extends React.Component<Props, State> {
                       marginBottom: "24px",
                       lineHeight: "19px"
                     }}>
-                    To use this Services you have to authenticate your account. The Security Key
-                    will be sent to you either by e-mail or by SMS
+                    Before you can use this service, we need to validate your account. The security key will be sent to you via email or text message.
                   </div>
                   <UniversalTextInput
                     id="security"

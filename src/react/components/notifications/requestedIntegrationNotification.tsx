@@ -274,8 +274,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
             <div>
               <div style={{ marginBottom: "24px" }}>
                 <div>
-                  Please provide the {this.state.needSecurityCode} that has been sended to you by
-                  the service provider. (The new one not the one you already used.)
+                  Please provide the new {this.state.needSecurityCode} sent to you by the service provider.
                 </div>
                 <span style={{ lineHeight: "24px", width: "100%" }}>
                   <UniversalTextInput
