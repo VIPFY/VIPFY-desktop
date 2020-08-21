@@ -1,7 +1,7 @@
 {
   "name": "vipfy-desktop",
   "productName": "VIPFY",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "The desktop client for vipfy.com",
   "main": ".webpack/main",
   "scripts": {
@@ -11,7 +11,7 @@
     "make-mac-dev": "./prepare-build.sh true && ./build-mac-dev.sh",
     "make-mac-prod": "./prepare-build.sh && ./build-mac-prod.sh",
     "publish-js": "electron-forge publish",
-    "publish-js-obfuscated": "jscrambler src/ssoConfigPreload/* -o obfuscated && electron-forge publish && shx rm -r obfuscate",
+    "publish-js-obfuscated": "jscrambler src/ssoConfigPreload/* -o obfuscated && electron-forge publish && shx rm -r obfuscated",
     "publish-js-obfuscated2": "electron-forge publish",
     "lint": "tslint --project tsconfig.json --type-check --force",
     "start": "electron-forge start",
@@ -145,7 +145,6 @@
     "recharts": "^1.3.2",
     "regenerator": "^0.14.4",
     "semver": "^6.3.0",
-    "sharp": "^0.25.4",
     "sodium-plus": "0.4.2",
     "streamroller": "^2.2.4",
     "subscriptions-transport-ws": "^0.9.15",

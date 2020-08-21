@@ -2,9 +2,11 @@
   #window-controls {
     display: none;
   }
-
   #titlebar {
     grid-template-rows: 24px;
+  }
+  #titlebar-logo {
+    margin-left: 64px;
   }
   #App,
   #DevTools {
