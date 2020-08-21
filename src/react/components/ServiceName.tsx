@@ -27,7 +27,7 @@ export default function ServiceName(props: {
           return <span />;
         }
 
-        if (error) {
+        if (error || !data) {
           return <span>(can't fetch service data)</span>;
         }
 

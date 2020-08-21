@@ -93,7 +93,6 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
 
   finishIntegration = async universal => {
     const script = [];
-    console.log(this.props.data.trackedPlan);
     let password = undefined;
     let username = undefined;
     let domain = undefined;
@@ -244,7 +243,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
     }
   };
   render() {
-    if (this.state.step == 0) {
+    if (this.state.step == 0 && this.props.data.trackedPlan) {
       let domain = undefined;
       let username = undefined;
       let password = undefined;
