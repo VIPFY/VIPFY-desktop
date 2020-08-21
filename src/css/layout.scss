@@ -127,8 +127,6 @@ li {
 }
 
 #App {
-  color: #253647; //#333 durch #253647 ersetzen
-  font-family: "Roboto", sans-serif;
   background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
@@ -1596,7 +1594,6 @@ option {
 .passwordStrength {
   display: inline-block;
   position: relative;
-  //@debug: 1;
   border: 0;
   font-family: inherit;
   padding: 0;
@@ -2142,14 +2139,6 @@ progress[value] {
 
   .password-container {
     margin-top: 30px;
-
-    input {
-      // width: 312px;
-    }
-
-    i {
-      //  right: 123px;
-    }
   }
 }
 
