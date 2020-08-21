@@ -97,7 +97,6 @@ class Dashboard extends React.Component<Props, State> {
         <div className="heading">
           <h1
             onClick={() =>
-              //this.props.moveTo("admin/email-integration/af96c4fb-0b37-4c1b-8042-ffa51a2ade9c")
               this.props.triggerTestJob()
             }>
             Dashboard
