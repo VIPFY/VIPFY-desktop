@@ -17,7 +17,7 @@ import {
   attributes as attributesNN,
   networkDef
 } from "./loginDetectionNet";
-const { session } = remote;
+const { session, webContents } = remote;
 const os = require("os");
 
 const loginDetector = new brain.NeuralNetwork();
@@ -89,7 +89,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     emailEnteredEnd: false,
     passwordEnteredEnd: false,
     domainEnteredEnd: false,
-    step: 0,
+    step: 0
   };
 
   isUnmounted = false;
@@ -117,7 +117,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
     if (this.props.timeout) {
       this.timeoutHandle = setTimeout(() => {
-        this.sendResult({ ...this.loginState, loggedIn: false, error: false, timedOut: true });
+        this.sendResult({ ...this.loginState, loggedIn: false, error: true, timedOut: true });
       }, this.props.timeout);
     }
 
@@ -302,7 +302,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             onPageTitleUpdated={title =>
               this.props.setViewTitle && this.props.setViewTitle(title.title)
             }
-            onDidFailLoad={e => this.props.didFailLoad && this.props.didFailLoad(e)}
+            onDidFailLoad={e =>
+              this.props.didFailLoad && e.errorCode != -3 && this.props.didFailLoad(e)
+            }
           />
           {this.state.multipleChoose != null && (
             <PopupBase small={true}>
@@ -393,9 +395,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       }
     }
 
-    if (w && w.getWebContents()) {
-      return await w
-        .getWebContents()
+    if (w && w.getWebContentsId()) {
+      return await webContents
+        .fromId(w.getWebContentsId())
         .executeJavaScript(
           `
           (function () {
@@ -548,7 +550,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               };
             };
 
-          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout" ${
+          let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "/profile" ${
             this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           
@@ -807,9 +809,9 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
   }
 
   async isErrorIn(w) {
-    if (w && w.getWebContents()) {
-      return await w
-        .getWebContents()
+    if (w && w.getWebContentsId()) {
+      return await webContents
+        .fromId(w.getWebContentsId())
         .executeJavaScript(
           `
           (function () {
@@ -996,7 +998,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
       const webview = this.webview;
 
-      if (webview && remote.webContents.fromId(webview.getWebContentsId())) {
+      if (webview && webContents.fromId(webview.getWebContentsId())) {
         setTimeout(async () => {
           if (this.isUnmounted || this.sentResult) {
             return;
@@ -1004,7 +1006,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
 
           this.sentResult = true;
 
-          const image = await webview.getWebContents().capturePage();
+          const image = await webContents.fromId(webview.getWebContentsId()).capturePage();
           const size = image.getSize();
 
           const imgurl = null;
@@ -1043,6 +1045,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
     if (this.progressCallbackRunning) {
       return;
     }
+    this.progressCallbackRunning = true;
 
     if (this.props.loggedIn) {
       await this.sendResult({
@@ -1054,7 +1057,6 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       this.progressCallbackRunning = false;
       return;
     }
-    this.progressCallbackRunning = true;
     this.progress += this.progressStep;
     this.progress = Math.min(1, this.progress);
     this.props.progress!(this.progress);
@@ -1174,24 +1176,37 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         {
           const w = e.target;
           let text = "";
-
-          if (e.args[0] == "domain") {
-            text = this.props.domain;
-            this.loginState.domainEntered = true;
-          } else if (e.args[0] == "username") {
-            text = this.props.username;
-            this.loginState.emailEntered = true;
-          } else if (e.args[0] == "password") {
-            if (this.props.execute) {
-              text = this.props.password;
+          if (e.args[0] && e.args[0].toLowerCase().includes("security")) {
+            text = await this.props.needSecurityCode(e.args[0]);
+          } else if (this.props.loginValues) {
+            if (this.props.loginValues[e.args[0]]) {
+              text = this.props.loginValues[e.args[0]];
+            } else if (e.args[0] != "password" && this.props.loginValues["username"]) {
+              text = this.props.loginValues["username"];
+            } else if (e.args[0] != "password" && this.props.loginValues["email"]) {
+              text = this.props.loginValues["email"];
             } else {
-              text = this.props.password + "\u000d";
+              throw new Error(`unknown string for ${e.args[0]}`);
             }
-            this.loginState.passwordEntered = true;
-          } else if (e.args[1]) {
-            text = e.args[0];
           } else {
-            throw new Error("unknown string");
+            if (e.args[0] == "domain") {
+              text = this.props.domain;
+              this.loginState.domainEntered = true;
+            } else if (e.args[0] == "username") {
+              text = this.props.username;
+              this.loginState.emailEntered = true;
+            } else if (e.args[0] == "password") {
+              if (this.props.execute) {
+                text = this.props.password;
+              } else {
+                text = this.props.password + "\u000d";
+              }
+              this.loginState.passwordEntered = true;
+            } else if (e.args[1]) {
+              text = e.args[0];
+            } else {
+              throw new Error("unknown string");
+            }
           }
           if (text) {
             for await (const c of text) {
@@ -1221,8 +1236,15 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
               this.loginState.emailEnteredEnd = true;
             } else if (e.args[0] == "password") {
               this.loginState.passwordEnteredEnd = true;
-            } else {
-              throw new Error("unknown string");
+            }
+            if (e.args[0] == "password" && this.props.execute == null) {
+              w.sendInputEvent({ type: "keyDown", modifiers: [], keyCode: "\u000d" });
+              w.sendInputEvent({ type: "char", modifiers: [], keyCode: "\u000d" });
+              await this.modifiedSleep(Math.random() * 20 + 50);
+              if (this.loginState.unloaded) {
+                return;
+              }
+              w.sendInputEvent({ type: "keyUp", modifiers: [], keyCode: "\u000d" });
             }
           }
         }
@@ -1237,12 +1259,14 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
           if (this.state.errorin) {
             return;
           }
-          await sleep(50);
-          e.target.send("loginData", {
-            ...this.loginState,
-            speed: this.props.speed,
-            execute: this.props.execute
-          });
+          if (!this.props.loggedIn) {
+            await sleep(50);
+            e.target.send("loginData", {
+              ...this.loginState,
+              speed: this.props.speed,
+              execute: this.props.execute
+            });
+          }
         }
         break;
 
@@ -1297,7 +1321,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         this.timeout = false;
         this.progress = 1;
         this.clearProgressTimer();
-        const loggedIn = await this.isLoggedIn(e.target);
+        const loggedIn = true; //await this.isLoggedIn(e.target);
         this.sendResult(
           { ...this.loginState, loggedIn, executeEnd: true, currentUrl: e.target.src },
           false

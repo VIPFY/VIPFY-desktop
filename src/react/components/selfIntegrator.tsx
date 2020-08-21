@@ -70,10 +70,7 @@ class SelfIntegrator extends React.Component<Props, State> {
           }
           if (
             plan.length == 0 ||
-            !(
-              plan[plan.length - 1].args.selector == e.args[6] &&
-              plan[plan.length - 1].args.document == e.args[8]
-            )
+            !plan.some(p => p.args.selector == e.args[6] && p.args.document == e.args[8])
           ) {
             switch (e.args[0].toLowerCase()) {
               case "input":
@@ -87,6 +84,7 @@ class SelfIntegrator extends React.Component<Props, State> {
                     document: e.args[8],
                     isInvisible: false,
                     invisible: 1,
+                    isSecurity: e.args[1].toLowerCase().includes("security"),
                     id: id
                   }
                 });
@@ -163,7 +161,6 @@ class SelfIntegrator extends React.Component<Props, State> {
       case "click":
         {
           console.log("CLICKED", e);
-          
         }
         break;
       case "recaptcha":
@@ -175,7 +172,6 @@ class SelfIntegrator extends React.Component<Props, State> {
           let height = e.args[3] - 50;
           let x = Math.floor(Math.random() * width + left);
           let y = Math.floor(Math.random() * height + top);
-          console.log("Recap", x, y);
           w.sendInputEvent({ type: "mouseMove", x: x, y: y });
           await sleep(Math.random() * 30 + 200);
           w.sendInputEvent({ type: "mouseDown", x: x, y: y, button: "left", clickCount: 1 });
@@ -195,23 +191,13 @@ class SelfIntegrator extends React.Component<Props, State> {
       case "fillFormField":
         {
           const w = e.target;
-          console.log(
-            "fillField",
-            this.state.processedfinalexecutionPlan,
-            this.state.processedfinalexecutionPlan.find(element => {
-              return element.args.fillkey == e.args[0];
-            }),
-            e.args[0]
-          );
-          var text = this.state.processedfinalexecutionPlan.find(element => {
+          const text = this.state.processedfinalexecutionPlan.find(element => {
             return element.args.fillkey == e.args[0];
           })!.value;
 
           for await (const c of text) {
-            //console.log("Letter", c);
             const shift = c.toLowerCase() != c;
             const modifiers = shift ? ["shift"] : [];
-            //console.log("WEBVIEW", w);
             w.sendInputEvent({ type: "keyDown", modifiers, keyCode: c });
             w.sendInputEvent({ type: "char", modifiers, keyCode: c });
             await sleep(Math.random() * 20 + 50);
@@ -226,13 +212,6 @@ class SelfIntegrator extends React.Component<Props, State> {
 
       case "executeStep":
         if (this.state.url != "about:blank") {
-          console.log(
-            "Step++",
-            this.state.step,
-            " -> ",
-            this.state.step + 1,
-            this.state.processedfinalexecutionPlan
-          );
           if (
             this.state.processedfinalexecutionPlan.findIndex(element => {
               return element.step == this.state.step;
@@ -250,7 +229,6 @@ class SelfIntegrator extends React.Component<Props, State> {
         break;
 
       case "unload":
-        //console.log("UNLOAD", this.webview);
         this.setState({ webviewReady: false });
         this.webview = null;
         break;
@@ -274,7 +252,6 @@ class SelfIntegrator extends React.Component<Props, State> {
           this.setState({ divList: [], endExecute: true });
           this.webview!.send("startTracking", {});
         }
-        console.log("END EXECUTION");
         break;
       default:
         //console.log("No case applied", e.channel);
@@ -292,17 +269,16 @@ class SelfIntegrator extends React.Component<Props, State> {
 
   handleSiteChange(e) {
     if (e.url.includes("google")) {
-    return
+      return;
     }
-      // so if webview is not google then track it.
-      this.state.cantrack = true;
-      this.setState({
-        webviewid: Math.round(Math.random() * 10000000000).toString(),
-        searchurl: e.url,
-        divList: [],
-        test: false
-      });
-    
+    // so if webview is not google then track it.
+    this.state.cantrack = true;
+    this.setState({
+      webviewid: Math.round(Math.random() * 10000000000).toString(),
+      searchurl: e.url,
+      divList: [],
+      test: false
+    });
   }
 
   didFailLoad(e) {
@@ -310,7 +286,6 @@ class SelfIntegrator extends React.Component<Props, State> {
       if (this.state.urlmodified >= 1) {
         this.trySiteLoading();
       } else {
-        console.log("SEARCH ON GOOGLE 3");
         this.searchOnGoogle();
       }
     } else {
@@ -399,7 +374,6 @@ class SelfIntegrator extends React.Component<Props, State> {
                 <LogoExtractor
                   url={this.state.url}
                   setResult={async (icon, color) => {
-                    console.log("GOT ICON AND COLOR", icon, color);
                     await this.setBothStates(oldstate => {
                       if (!oldstate.receivedIcon) {
                         return { ...oldstate, receivedIcon: true, icon, color };

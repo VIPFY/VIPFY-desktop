@@ -107,6 +107,18 @@ ipcRenderer.once("loginData", async (e, key) => {
           setInterval(verifyRecaptcha, 100);
         }
       }
+      securityCode = findSecurity();
+      if (securityCode) {
+        await enterSecurityCode(securityCode);
+        didAnything = true;
+        await sleep(100);
+        button = findConfirmButton();
+        if (button && didAnything) {
+          await clickButton(button);
+          didAnything = true;
+        }
+      }
+
       if (!recaptcha || recaptchaConfirmOnce) {
         document.querySelector("html").style.visibility = "visible";
         await sleep(100);
@@ -273,6 +285,19 @@ async function fillFormField(target, content, value) {
   return p;
 }
 
+async function enterSecurityCode(target) {
+  if (stopped) throw new Error("abort");
+  const p = new Promise(resolve =>
+    ipcRenderer.once("formFieldFilled", async (e, key) => {
+      if (stopped) return;
+      resolve();
+    })
+  );
+  await clickButton(target);
+  ipcRenderer.sendToHost("fillFormField", "securityCode");
+  return p;
+}
+
 window.addEventListener("beforeunload", () => {
   stopped = true;
   ipcRenderer.sendToHost("unload", null);
@@ -324,16 +349,19 @@ function getMidPoint(e, doc) {
   }
 }
 
-function clickButton(targetNode, doc) {
+function clickButton(targetNode, doc, isSecurity) {
   var rect = getMidPoint(targetNode, doc);
 
   if (stopped) throw new Error("abort");
-  const p = new Promise(resolve =>
+  const p = new Promise((resolve, reject) => {
+    if (isSecurity) {
+      setTimeout(() => reject("security"), 2000);
+    }
     ipcRenderer.once("clicked", async (e, key) => {
       if (stopped) return;
       resolve();
-    })
-  );
+    });
+  });
   if (rect) {
     ipcRenderer.sendToHost("click", rect.x, rect.y);
   }
@@ -405,9 +433,9 @@ function findEmailField() {
   return t[0];
 }
 
-function findDomainField() {
+function findSecurity() {
   let t = Array.from(findForm().querySelectorAll("input"))
-    .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
+    .filter(filterDom(["security", "code"], ["pw", "pass", "email", "user"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
   return t[0];
@@ -418,7 +446,6 @@ function findDomainField() {
     .filter(filterDom(["account", "domain"], ["pw", "pass", "email"]))
     .filter(e => !isHidden(e))
     .filter(e => !e.disabled);
-  console.log("DOMAIN", t);
   return t[0];
 }
 
@@ -842,7 +869,10 @@ async function execute(operations, mainexecute = false) {
         await sleep(Math.max(0, args.seconds + Math.random() * randomrange - randomrange / 2));
         break;
       case "waitfor":
-        const p = new Promise(async resolve => {
+        const p = new Promise(async (resolve, reject) => {
+          if (args.isSecurity) {
+            setTimeout(() => reject("security"), 2000);
+          }
           while (!doc.querySelector(args.selector)) {
             doc = args.document
               ? document.querySelector(args.document).contentWindow.document
@@ -854,7 +884,11 @@ async function execute(operations, mainexecute = false) {
         await p;
         break;
       case "click":
-        await clickButton(doc.querySelector(args.selector), args.document);
+        try {
+          await clickButton(doc.querySelector(args.selector), args.document, args.isSecurity);
+        } catch (err) {
+          console.log(err);
+        }
         break;
       case "fill":
         //console.log("fill", doc.querySelector(args.selector), args.fillkey);
@@ -874,11 +908,15 @@ async function execute(operations, mainexecute = false) {
         ]);
         break;
       case "waitandfill":
-        await execute([
-          { operation: "waitfor", args },
-          { operation: "click", args },
-          { operation: "fill", args }
-        ]);
+        try {
+          await execute([
+            { operation: "waitfor", args },
+            { operation: "click", args },
+            { operation: "fill", args }
+          ]);
+        } catch (err) {
+          console.log("err");
+        }
         break;
       case "cookie":
         let cookiebutton = null;
