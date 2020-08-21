@@ -292,7 +292,6 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
   onNewWindow(e): void {
     //if webview tries to open new window, open it in default browser
     //TODO: probably needs more fine grained control for cases where new window should stay logged in
-    console.log("URL", parse(e.url));
     const protocol = parse(e.url).protocol;
     if (protocol === "http:" || protocol === "https:") {
       //  shell.openExternal(e.url);
@@ -474,7 +473,7 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                       deleteCookies={this.state.options.deleteCookies}
                     />
                   ) : (
-                    <div>Please Update VIPFY to use this service</div>
+                    <div>Please update VIPFY to use this service.</div>
                   )}
                   {this.state.error && (
                     <PopupBase small={true}>
