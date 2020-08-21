@@ -281,7 +281,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                 />
                 <UniversalButton
                   type="high"
-                  label="Continue with integration"
+                  label="Continue Integration"
                   customButtonStyles={{ marginTop: "24px", width: "100%" }}
                   onClick={() => {
                     if (this.state.serviceName) {
@@ -316,7 +316,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   borderRadius: "12px",
                   minWidth: "328px",
                   maxWidth: "30%",
-                  padding: "16px 16px 24px 16px"
+                  padding: "16px 16px 24px"
                 }}>
                 <span style={{ fontSize: "16px", lineHeight: "16px" }}>
                   Integration verification running in background.
@@ -337,7 +337,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
             </div>
           )}
           {this.state.step == "error" && (
-            <div style={{ display: "flex" /*, justifyContent: "center"*/ }}>
+            <div style={{ display: "flex" }}>
               <div
                 style={{
                   background: "white",
@@ -348,7 +348,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   padding: "16px 16px 24px"
                 }}>
                 <span style={{ fontSize: "16px", lineHeight: "16px" }}>
-                  We need your help to identify all loginfields.
+                  We need your help to identify all login fields.
                 </span>
                 {this.parseTooManyFields()}
 
