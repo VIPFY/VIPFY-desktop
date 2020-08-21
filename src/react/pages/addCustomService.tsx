@@ -99,7 +99,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
     // All remaining fields
 
     const possibleFields = [
-      { value: "email", label: "Email-Address" },
+      { value: "email", label: "Email Address" },
       { value: "username", label: "Username" },
       { value: "customerid", label: "Customer ID" },
       { value: "companyid", label: "Company ID" },
@@ -108,9 +108,8 @@ class AddCustomServicePage extends React.Component<Props, State> {
       { value: "oneTimeCode", label: "One-Time Code" },
       { value: "twoFactorCode", label: "Two Factor Code" },
       { value: "captcha", label: "Captcha" },
-      { value: "twoFactorCode", label: "Two Factor Code" },
       { value: "domain", label: "Domain" },
-      { value: "subDomain", label: "Sub Domain" },
+      { value: "subDomain", label: "Subdomain" },
       { value: "url", label: "Url (with http or https)" },
       { value: "phone", label: "Phone number" }
     ];
