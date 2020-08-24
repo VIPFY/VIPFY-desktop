@@ -292,9 +292,9 @@ class CompanyDetails extends React.Component<Props, State> {
                             return (
                               <div className="tableColumnSmall content twoline">
                                 <div
-                                  className="tableColumnSmall editable"
+                                  className="tableColumnSmall" // editable"
                                   style={{ width: "100%" }}
-                                  onClick={() =>
+                                  /*onClick={() =>
                                     this.setState({
                                       showPlanModal: true,
                                       currentPlan: {
@@ -306,7 +306,8 @@ class CompanyDetails extends React.Component<Props, State> {
                                         features: data.fetchVipfyPlan.plan.options
                                       }
                                     })
-                                  }>
+                                  }*/
+                                >
                                   <h1>VIPFY-Plan</h1>
                                   <h2>{data.fetchVipfyPlan.plan.name}</h2>
                                   <div className="profileEditButton">

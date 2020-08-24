@@ -1,6 +1,7 @@
 import * as React from "react";
 import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import UniversalButton from "../universalButtons/universalButton";
+import UniversalTextInput from "../universalForms/universalTextInput";
 import { graphql, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
@@ -93,24 +94,21 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
 
   finishIntegration = async universal => {
     const script = [];
-    console.log(this.props.data.trackedPlan);
-    let password = undefined;
-    let username = undefined;
-    let domain = undefined;
+    let loginValues: Object = {};
+    let loginFields = [];
+    let username = null;
+    let lastSecurity = false;
     this.props.data.trackedPlan.forEach(i => {
       let fillkey = undefined;
       if (i.operation == "waitandfill") {
-        fillkey = i.args.fillkey;
-        switch (fillkey) {
-          case "password":
-            password = i.args.value;
-            break;
-          case "domain":
-            domain = i.args.value;
-            break;
-          default:
-            fillkey = "username";
-            username = i.args.value;
+        fillkey = i.args.fillkey == "text" ? "username" : i.args.fillkey;
+        loginValues[fillkey] = i.args.value;
+        loginFields.push({
+          fillkey,
+          isPassword: fillkey == "password" ? true : undefined
+        });
+        if (i.args.fillkey == "username" || i.args.fillkey == "email" || i.args.fillkey == "text") {
+          username = i.args.value;
         }
       }
 
@@ -118,9 +116,17 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
         operation: i.operation,
         args: {
           fillkey,
-          selector: i.args.selector
+          selector: i.args.selector,
+          isSecurity: lastSecurity || i.args.isSecurity ? true : undefined
         }
       });
+
+      if (i.args.isSecurity) {
+        script[script.length - 2].args.isSecurity = true;
+        lastSecurity = true;
+      } else {
+        lastSecurity = false;
+      }
     });
 
     if (universal) {
@@ -128,11 +134,11 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
         variables: {
           data: {
             loginUrl: this.props.data.startUrl,
-            internalData: {},
+            internalData: { loginFields },
             options: { type: "universalLogin", noError: true, deleteCookies: true },
             appId: this.props.data.appId,
             manager: this.props.data.manager,
-            login: { username, password, domain }
+            login: loginValues
           }
         }
       });
@@ -141,7 +147,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
         variables: {
           data: {
             loginUrl: this.props.data.startUrl,
-            internalData: { execute: [{ key: "Login", script }] },
+            internalData: { loginFields, execute: [{ key: "Login", script }] },
             options: {
               execute: script,
               type: "execute",
@@ -150,16 +156,13 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
             },
             appId: this.props.data.appId,
             manager: this.props.data.manager,
-            login: { username, password, domain }
+            login: loginValues
           }
         }
       });
     }
     const logindata = await createEncryptedLicenceKeyObject(
-      {
-        username,
-        password
-      },
+      loginValues,
       undefined,
       this.props.client
     );
@@ -205,13 +208,12 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
     const account = await this.props.createAccount({
       variables: {
         orbitid: orbitid,
-        alias: username,
+        alias: username || `${this.props.data.serviceName} Account 1`,
         logindata,
         options
       },
       ...refetchQueries
     });
-    console.log("ACCOUNT", account);
 
     const unitid = await getMyUnitId(this.props.client);
 
@@ -244,12 +246,12 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
     }
   };
   render() {
-    if (this.state.step == 0) {
+    if (this.state.step == 0 && this.props.data.trackedPlan) {
       let domain = undefined;
       let username = undefined;
       let password = undefined;
       this.props.data.trackedPlan.forEach(p => {
-        if (p.operation == "waitandfill") {
+        if (p.operation == "waitandfill" && !p.args.isSecurity) {
           if (p.args.fillkey == "password") {
             password = p.args.value;
           } else if (p.args.fillkey == "domain") {
@@ -268,7 +270,34 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
           <div style={{ fontSize: "16px", textAlign: "center", marginTop: "8px" }}>
             <i className="fal fa-spin fa-spinner"></i>
           </div>
-          <div style={{ height: "1px", width: "1px", overflow: "hidden" }}>
+          {this.state.needSecurityCode && (
+            <div>
+              <div style={{ marginBottom: "24px" }}>
+                <div>
+                  Please provide the new {this.state.needSecurityCode} sent to you by the service provider.
+                </div>
+                <span style={{ lineHeight: "24px", width: "100%" }}>
+                  <UniversalTextInput
+                    id={`account-${this.state.needSecurityCode}`}
+                    width="100%"
+                    livevalue={v => this.setState({ securityCode: v })}
+                    smallTextField={true}
+                  />
+                </span>
+              </div>
+              <UniversalButton
+                label="continue"
+                type="high"
+                onClick={() => this.setState({ needSecurityCode: null })}
+              />
+            </div>
+          )}
+          <div
+            style={{
+              height: "1px",
+              width: "1px",
+              overflow: "hidden"
+            }}>
             <UniversalLoginExecutor
               key={`RequestedIntegration-${this.props.notificationId}-${this.state.tryuniversal}`}
               loginUrl={this.props.data.startUrl}
@@ -291,10 +320,10 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
                 timedOut
               }) => {
                 if (executeEnd) {
-                  setTimeout(async () => await this.finishIntegration(false), 500);
-                }
-                if (this.state.tryuniversal && timedOut) {
-                  this.setState({ tryuniversal: false });
+                  setTimeout(
+                    async () => await this.finishIntegration(this.state.tryuniversal),
+                    5000
+                  );
                 }
                 if (!this.state.tryuniversal && timedOut) {
                   //Forward to support
@@ -302,6 +331,9 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
                     variables: { appid: this.props.data.appId }
                   });
                   this.setState({ step: 2 });
+                }
+                if (this.state.tryuniversal && timedOut) {
+                  this.setState({ tryuniversal: false });
                 }
                 if (
                   this.state.tryuniversal &&
@@ -312,7 +344,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
                   passwordEntered
                 ) {
                   this.setState({ finishedOnce: true });
-                  setTimeout(async () => await this.finishIntegration(true), 500);
+                  setTimeout(async () => await this.finishIntegration(true), 5000);
                 }
                 /*if (loggedIn) {
                 this.hideLoadingScreen();
@@ -387,6 +419,22 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
               //loggedIn={this.props.loggedIn}
               //deleteCookies={this.state.options.deleteCookies}
               continueExecute={!this.state.tryuniversal}
+              needSecurityCode={async type => {
+                await this.setState({ needSecurityCode: type });
+                let checkforCode = null;
+                const codeProvided = new Promise((resolve, reject) => {
+                  checkforCode = setInterval(() => {
+                    if (this.state.needSecurityCode === null) {
+                      resolve();
+                    }
+                  }, 100);
+                });
+                await codeProvided;
+                if (checkforCode) {
+                  clearInterval(checkforCode);
+                }
+                return this.state.securityCode;
+              }}
             />
           </div>
         </div>
