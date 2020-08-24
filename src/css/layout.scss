@@ -429,6 +429,7 @@ li {
 .area {
   height: 100%;
   transition: 400ms ease-in-out height;
+  background-color: $lightgrey-lightest;
 }
 .goToMarketplace {
   font-size: 0.5em;

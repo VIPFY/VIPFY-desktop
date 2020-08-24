@@ -28,6 +28,7 @@ interface Props {
   labelstyle?: Object;
   starttext?: String;
   othertext?: String;
+  sendFirstValue?: Boolean;
 }
 
 interface State {
@@ -63,6 +64,9 @@ class UniversalDropdown extends React.Component<Props, State> {
 
   componentDidMount() {
     document.addEventListener("mousedown", e => this.handleClickOutside(e));
+    if (this.props.sendFirstValue && this.props.livevalue && this.props.startvalue) {
+      this.props.livevalue(this.props.startvalue);
+    }
   }
 
   componentWillUnmount() {

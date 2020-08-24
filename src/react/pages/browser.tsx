@@ -5,6 +5,8 @@ import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { parse } from "url";
 import psl from "psl";
+import { CircularProgressbarWithChildren } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 import BrowserNavigationButton from "../components/universalButtons/browserNavigationButton";
 import BrowserTab from "../components/browserTab";
 import BrowserOverflowTab from "../components/browserOverflowTab";
@@ -13,7 +15,10 @@ import { me } from "../queries/auth";
 import { decryptLicenceKey } from "../common/passwords";
 import LoadingDiv from "../components/LoadingDiv";
 import PopupBase from "../popups/universalPopups/popupBase";
+import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
+import secNeeded from "../../images/undraw_Security_on_ff2u.svg";
+import ServiceLogo from "../components/services/ServiceLogo";
 
 interface Props {
   updateMyConfig: Function;
@@ -85,7 +90,8 @@ class Browser extends React.Component<Props, State> {
     key: null,
     showLoadingScreen: false,
     progress: 0,
-    selectAccount: null
+    selectAccount: null,
+    loginspeed: 10
   };
 
   tabHolder = null;
@@ -164,7 +170,8 @@ class Browser extends React.Component<Props, State> {
             url: loginurl,
             active: true,
             history: [loginurl],
-            historyMarker: 0
+            historyMarker: 0,
+            logo: licence.boughtPlan.plan.app.logo
           });
         } else {
           updatedtabs.find(t => t.active).url = loginurl;
@@ -172,7 +179,8 @@ class Browser extends React.Component<Props, State> {
         return {
           key: { ...key, domain: licence.boughtPlan.key && licence.boughtPlan.key.domain },
           tabs: updatedtabs,
-          showLoadingScreen: true
+          showLoadingScreen: true,
+          options: optionsobject
         };
       });
     } else {
@@ -185,7 +193,8 @@ class Browser extends React.Component<Props, State> {
             url: "https://google.com",
             active: true,
             history: ["https://google.com"],
-            historyMarker: 0
+            historyMarker: 0,
+            loggedIn: true
           });
 
           return {
@@ -334,6 +343,7 @@ class Browser extends React.Component<Props, State> {
               app: appid {
                 id
                 loginurl
+                logo
               }
             }
           }
@@ -729,20 +739,96 @@ class Browser extends React.Component<Props, State> {
             visibility: this.props.visible && t.active ? "visible" : "hidden"
           }}>
           {this.state.showLoadingScreen && (
-            <LoadingDiv
-              progress={this.state.progress}
+            <div
               style={{
                 width: "100%",
                 height: "100%",
                 position: "absolute",
                 top: "0px",
                 left: "0px",
-                backgroundColor: "white"
-              }}
-            />
+                backgroundColor: "white",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}>
+              {this.state.securityCodeType ? (
+                <div style={{ width: "392px", display: "flex", flexFlow: "column" }}>
+                  <img src={secNeeded} />
+                  <div
+                    style={{
+                      textTransform: "capitalize",
+                      color: "#3B4C5D",
+                      fontSize: "20px",
+                      marginTop: "32px"
+                    }}>
+                    {this.state.securityCodeType}
+                  </div>
+                  <div
+                    style={{
+                      marginTop: "16px",
+                      fontSize: "14px",
+                      marginBottom: "24px",
+                      lineHeight: "19px"
+                    }}>
+                    Before you can use this service, we need to validate your account. The security key will be sent to you via email or text message.
+                  </div>
+                  <UniversalTextInput
+                    id="security"
+                    livevalue={v => this.setState({ securityCode: v })}
+                  />
+                  <UniversalButton
+                    label="Continue"
+                    type="high"
+                    disabled={this.state.securityCode === null}
+                    customButtonStyles={{ width: "100%", marginTop: "24px" }}
+                    onClick={() =>
+                      this.setState(oldstate => {
+                        return {
+                          securityCodeType: null
+                        };
+                      })
+                    }
+                  />
+                </div>
+              ) : (
+                <div
+                  style={{
+                    width: "500px",
+                    height: "500px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexFlow: "column"
+                  }}>
+                  <div
+                    style={{
+                      width: "96px",
+                      height: "96px"
+                    }}>
+                    <CircularProgressbarWithChildren
+                      value={this.state.progress * 100}
+                      strokeWidth={4}
+                      styles={{
+                        path: {
+                          stroke: "#96A7BA"
+                        },
+                        trail: {
+                          stroke: "#E3E7EC"
+                        }
+                      }}>
+                      <ServiceLogo icon={t.logo} size={56} className="loadingShadow" />
+                    </CircularProgressbarWithChildren>
+                  </div>
+                  <div style={{ color: "#3B4C5D", fontSize: "14px", marginTop: "16px" }}>
+                    <span>{Math.floor(this.state.progress * 100)} </span>
+                    <i className="fal fa-percentage"></i>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
           <UniversalLoginExecutor
-            key={t.id}
+            key={`${t.id}-${this.state.loginspeed}`}
             loginUrl={t.url}
             partition={
               this.props.assignmentId ? `assignment-${this.props.assignmentId}` : "browser"
@@ -754,7 +840,9 @@ class Browser extends React.Component<Props, State> {
             username={this.state.key && (this.state.key.email || this.state.key.username)}
             password={this.state.key && this.state.key.password}
             domain={this.state.key && this.state.key.domain}
+            loginValues={this.state.key}
             timeout={60000}
+            speed={this.state.loginspeed}
             className="browserWindowTab"
             setViewTitle={title =>
               this.setState(oldstate => {
@@ -781,7 +869,7 @@ class Browser extends React.Component<Props, State> {
                 if (emailEntered && passwordEntered && !direct) {
                   await this.props.updateLicenceSpeed({
                     variables: {
-                      licenceid: this.props.licenceID,
+                      licenceid: this.props.assignmentId,
                       speed: this.state.loginspeed,
                       working: true
                     }
@@ -794,7 +882,7 @@ class Browser extends React.Component<Props, State> {
                   this.showErrorScreen();
                   await this.props.updateLicenceSpeed({
                     variables: {
-                      licenceid: this.props.licenceID,
+                      licenceid: this.props.assignmentId,
                       speed: this.state.loginspeed,
                       oldspeed: this.state.oldspeed,
                       working: false
@@ -809,8 +897,8 @@ class Browser extends React.Component<Props, State> {
                 } else {
                   await this.props.updateLicenceSpeed({
                     variables: {
-                      licenceid: this.props.licenceID,
-                      speed: this.state.loginspeed,
+                      licenceid: this.props.assignmentId,
+                      speed: this.state.loginspeed || 10,
                       working: false
                     }
                   });
@@ -832,6 +920,23 @@ class Browser extends React.Component<Props, State> {
             noUrlCheck={this.state.options && this.state.options.noUrlCheck}
             individualNotShow={this.state.options && this.state.options.individualNotShow}
             deleteCookies={this.state.options && this.state.options.deleteCookies}
+            needSecurityCode={async type => {
+              await this.setState({ securityCodeType: type });
+              let checkforCode = null;
+              const codeProvided = new Promise((resolve, reject) => {
+                checkforCode = setInterval(() => {
+                  if (this.state.securityCodeType === null) {
+                    resolve();
+                  }
+                }, 100);
+              });
+              await codeProvided;
+              if (checkforCode) {
+                clearInterval(checkforCode);
+              }
+              return this.state.securityCode;
+            }}
+            loggedIn={t.loggedIn}
           />
           {this.state.error && (
             <PopupBase small={true}>
