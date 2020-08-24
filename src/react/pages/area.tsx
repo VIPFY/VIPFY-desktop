@@ -92,7 +92,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "company",
         icon: "building",
         show: this.props.isadmin,
-        important: false,
         highlight: "companyprofile"
       }
     ],
@@ -102,7 +101,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "dmanager",
         icon: "user-tag",
         show: this.props.isadmin,
-        important: false,
         highlight: "dmanager"
       },
       {
@@ -110,7 +108,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "emanager",
         icon: "users-cog",
         show: this.props.isadmin,
-        important: false,
         highlight: "emanager"
       },
       {
@@ -118,7 +115,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "lmanager",
         icon: "credit-card-blank",
         show: this.props.isadmin,
-        important: false,
         highlight: "lmanager"
       }
     ],
@@ -458,7 +454,6 @@ class Area extends React.Component<AreaProps, AreaState> {
           <button
             ref={element => addRenderElement({ key: highlight, element })}
             key={label}
-            {...categoryProps}
             id={id}
             className={buttonClass}
             onMouseDown={() => {
