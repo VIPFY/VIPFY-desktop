@@ -449,13 +449,13 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
                   <div className="licenseTags">
                     <Tag div={true} className="buyLicenseButton">
-                      Buy new license
+                      Buy New License
                     </Tag>
                     <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
-                      Integrate existing license
+                      Integrate Existing License
                     </Tag>
                     <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
-                      Write review
+                      Write Review
                     </Tag>
                   </div>
                 </CardSection>
@@ -470,12 +470,9 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   </CardSection>
                 )}
 
-                <CardSection style={{ alignItems: "center", display: "flex" }}>
-                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />{" "}
-                  {/* TODO make functional */}
-                  <span style={{ fontSize: "14px", lineHeight: "24px", marginLeft: "8px" }}>
-                    Compare Service
-                  </span>
+                <CardSection className="compareServiceCheckbox">
+                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
+                  <span>Compare Service</span>
                 </CardSection>
               </div>
             </CardSection>
@@ -516,9 +513,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {DUMMY_APP.reviews.map((review, i) => (
                     <div className="card" key={i}>
                       <CardSection>
-                        <h2>
-                          <blockquote>{review.text}</blockquote>
-                        </h2>
+                        <blockquote>{review.text}</blockquote>
                       </CardSection>
                       <CardSection>
                         {review.reviewer}, {review.industry}

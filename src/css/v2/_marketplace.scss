@@ -59,4 +59,15 @@
       color: $midgrey-dark;
     }
   }
+
+  .compareServiceCheckbox {
+    display: flex;
+    align-items: center;
+
+    > span {
+      margin-left: 8px;
+      font-size: 14px;
+      line-height: 24px;
+    }
+  }
 }

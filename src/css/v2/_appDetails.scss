@@ -127,7 +127,7 @@
     }
 
     .lineClamp {
-      height: 5em;
+      height: 7em;
       overflow: hidden;
     }
   }
@@ -139,6 +139,11 @@
 
       :first-child {
         flex-grow: 1;
+      }
+
+      blockquote {
+        font-size: 20px;
+        line-height: 28px;
       }
     }
   }
