@@ -15,7 +15,6 @@ import Tag from "../../common/Tag";
 import ServiceLogo from "../../components/services/ServiceLogo";
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
-import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
@@ -214,7 +213,20 @@ const DUMMY_APP = {
       ]
     }
   ],
-  alternatives: [APP_ALTERNATIVE_1, APP_ALTERNATIVE_2, APP_ALTERNATIVE_3]
+  alternatives: [
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3
+  ]
 };
 
 interface Plan {
@@ -595,16 +607,20 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             {DUMMY_APP.alternatives && DUMMY_APP.alternatives.length && (
               <CardSection>
                 <h2>Alternatives</h2>
-                <div className="apps">
-                  <div className="grid3Cols smGrid1Col">
-                    {DUMMY_APP.alternatives.map((alternative, i) => (
-                      <AppOverviewCard
-                        key={i}
-                        app={alternative}
-                        onClick={() => this.goToApp(alternative.id)}
-                      />
-                    ))}
-                  </div>
+                <div className="grid3Cols smGrid2Cols">
+                  {DUMMY_APP.alternatives.map(alternative => (
+                    <div className="card alternative" key={alternative.id}>
+                      <div>
+                        <ServiceLogo icon={DUMMY_APP.icon} />
+                        {DUMMY_APP.name}
+                      </div>
+                      <div>VS</div>
+                      <div>
+                        <ServiceLogo icon={alternative.icon} />
+                        {alternative.name}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardSection>
             )}
