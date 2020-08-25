@@ -7,6 +7,7 @@
   border-radius: 6px;
   padding: 0 8px;
   font-size: 12px;
+  line-height: 16px;
 
   &.disabled {
     border-color: $lightgrey-light;
@@ -17,6 +18,13 @@
     padding: 0 12px;
     height: 32px;
     border-radius: 8px;
+    font-size: 14px;
+    line-height: 19px;
+
+    .tagIcon {
+      font-size: 13px;
+      line-height: 18px;
+    }
   }
 
   &.pricingTag,
@@ -33,6 +41,12 @@
   &.marketplaceTag {
     border: none;
     background-color: $lightgrey-lighter;
+  }
+
+  .tagIcon {
+    margin-right: 8px;
+    font-size: 9px;
+    line-height: 11px;
   }
 }
 

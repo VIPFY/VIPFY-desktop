@@ -8,6 +8,7 @@ import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import PageHeader from "../../components/PageHeader";
+import Tag from "../../common/Tag";
 
 interface MarketplaceDiscoverProps {
   history: any;
@@ -63,6 +64,14 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             showBreadCrumbs={true}
             searchConfig={{ text: "Search an App in Marketplace" }}
           />
+
+          <Tag type="employee" large={true} employee={{ firstname: "Eva", lastname: "Kiszka" }}>
+            Large
+          </Tag>
+
+          <Tag type="employee" large={false} employee={{ firstname: "Eva", lastname: "Kiszka" }}>
+            Small
+          </Tag>
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>
