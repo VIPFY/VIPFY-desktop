@@ -194,19 +194,8 @@
       grid-column: 1 / -1;
     }
   }
-
-  .pricingTag {
-    height: 20px;
-    padding: 1px 12px;
-    border: 1px solid $lightgrey-darker;
-    background-color: $white;
-    font-size: 12px;
-  }
-
-  .freeTrialTag {
-    text-transform: uppercase;
-  }
 }
+
 .tooManyFieldDropdown {
   margin-top: 16px;
 }

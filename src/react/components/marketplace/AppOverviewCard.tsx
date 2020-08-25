@@ -39,7 +39,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         {isWideFormat && (
           <div className="headerTags tags">
             <div>
-              {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
+              {hasFreeTrial && this.renderPricingTag("Free trial", true, "infoTag")}
               {this.renderPricingTag("19.99$ p.m.", true)}
             </div>
           </div>
@@ -81,7 +81,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
 
         {!isWideFormat && (
           <CardSection className="tagsRow">
-            {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
+            {hasFreeTrial && this.renderPricingTag("Free trial", false, "infoTag")}
             {this.renderPricingTag("19.99$ p.m.")}
           </CardSection>
         )}

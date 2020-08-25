@@ -8,17 +8,31 @@
   padding: 0 8px;
   font-size: 12px;
 
+  &.disabled {
+    border-color: $lightgrey-light;
+    color: $midgrey-light;
+  }
+
   &.large {
+    padding: 0 12px;
     height: 32px;
     border-radius: 8px;
+  }
+
+  &.pricingTag,
+  &.infoTag,
+  &.marketplaceTag {
     padding: 0 12px;
+  }
+
+  &.infoTag,
+  &.marketplaceTag {
+    text-transform: uppercase;
   }
 
   &.marketplaceTag {
     border: none;
-    padding: 0 12px;
     background-color: $lightgrey-lighter;
-    text-transform: uppercase;
   }
 }
 
