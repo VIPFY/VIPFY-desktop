@@ -54,18 +54,28 @@
 
   .tagsRow {
     align-items: center;
+    font-size: 12px;
+    line-height: 16px;
 
     span {
       height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      line-height: 16px;
     }
 
-    .tag {
+    .filterPill {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 9999px;
+      background-color: $lightgrey-light;
       margin: 0 8px 0 0;
+      padding-right: 9px;
+
+      .filterName {
+        padding: 0 16px;
+      }
     }
 
     .verticalSeparator {

@@ -63,7 +63,7 @@ interface PageHeaderState {
 class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   constructor(props) {
     super(props);
-    this.state = { loading: false, activeFilters: [] };
+    this.state = { loading: false, activeFilters: ["som", "thing"] };
   }
 
   clearFilters() {
@@ -130,7 +130,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {showSecondLine && (
               <div className="collectionRow">
                 {searchConfig && (
-                  <UniversalSearchBox placeholder={searchConfig.text} boxStyles="headerSearch" />
+                  <UniversalSearchBox
+                    placeholder={searchConfig.text}
+                    boxStyles={{ width: "25%", maxWidth: "25%", marginRight: "24px" }}
+                  />
                 )}
                 {filterConfig && <div className="headerFilter">Filter By</div>}
                 {pagination && (
@@ -144,9 +147,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {activeFilters.length > 0 && (
               <div className="tagsRow">
                 {activeFilters.map(filter => (
-                  <Tag key={filter} className="filterTag">
-                    {filter}
-                  </Tag>
+                  <div key={filter} className="filterPill">
+                    <span className="filterName">{filter}</span>
+                    <span className="fal fa-fw fa-times" />
+                  </div>
                 ))}
                 <span className="verticalSeparator" />
                 <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>

@@ -95,7 +95,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         {hasFeatures && (
           <CardSection className="tagsRow">
             {app.features.map((feature: string, i: number) => (
-              <Tag className="featureTag" key={i}>
+              <Tag className="marketplaceTag" key={i}>
                 {feature}
               </Tag>
             ))}

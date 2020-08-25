@@ -439,7 +439,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                       style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
                       Buy new license
                     </Tag>
-                    <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
+                    <Tag div={true} className={"marketplaceTag"} style={{ textTransform: "none" }}>
                       Integrate existing license
                     </Tag>
                   </div>
@@ -448,7 +448,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 {hasFeatures && (
                   <CardSection className="tagsRow">
                     {DUMMY_APP.features.map((feature, i) => (
-                      <Tag className="featureTag" key={i}>
+                      <Tag className="marketplaceTag" key={i}>
                         {feature}
                       </Tag>
                     ))}

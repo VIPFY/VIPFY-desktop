@@ -1,3 +1,27 @@
+.tag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid $lightgrey-darker;
+  height: 24px;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 12px;
+
+  &.large {
+    height: 32px;
+    border-radius: 8px;
+    padding: 0 12px;
+  }
+
+  &.marketplaceTag {
+    border: none;
+    padding: 0 12px;
+    background-color: $lightgrey-lighter;
+    text-transform: uppercase;
+  }
+}
+
 .tagsRow {
   display: flex;
   flex-flow: row wrap;
@@ -5,17 +29,5 @@
 
   .tag {
     margin: 0 8px 8px 0;
-  }
-}
-
-.tag {
-  &.featureTag {
-    background-color: $lightgrey-lighter;
-    text-transform: uppercase;
-  }
-
-  &.filterTag {
-    border-radius: 9999px;
-    background-color: $lightgrey-light;
   }
 }
