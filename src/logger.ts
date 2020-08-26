@@ -46,11 +46,11 @@ gelf.setConfig({
       return message.level < 7;
     }
   ],
-  adapterName: "udp",
+  adapterName: "tcp-tls",
   adapterOptions: {
     host: "graylog.internal.vipfy.store",
-    port: 12201,
-    protocol: "udp4"
+    port: 12202,
+    family: 4
   }
 });
 
