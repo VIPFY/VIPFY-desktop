@@ -63,7 +63,7 @@ interface PageHeaderState {
 class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   constructor(props) {
     super(props);
-    this.state = { loading: false, activeFilters: ["som", "thing"] };
+    this.state = { loading: false, activeFilters: [] };
   }
 
   clearFilters() {
