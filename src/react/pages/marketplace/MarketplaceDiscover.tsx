@@ -54,8 +54,6 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
       );
     }
 
-    const sortedApps = sortApps(marketplaceApps);
-
     return (
       <div className="marketplace">
         <div className="marketplaceContainer">
@@ -65,13 +63,14 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             searchConfig={{ text: "Search an App in Marketplace" }}
           />
 
-          <Tag type="employee" large={true} employee={{ firstname: "Eva", lastname: "Kiszka" }}>
-            Large
-          </Tag>
+          <Tag type="employee" large={true} employee={{ firstname: "Eva", lastname: "Kiszka" }} />
+          <Tag type="employee" large={false} employee={{ firstname: "Eva", lastname: "Kiszka" }} />
 
-          <Tag type="employee" large={false} employee={{ firstname: "Eva", lastname: "Kiszka" }}>
-            Small
-          </Tag>
+          <Tag type="service" large={true} service={DUMMY_APP} />
+          <Tag type="service" large={false} service={DUMMY_APP} />
+
+          <Tag type="team" large={true} team={{ name: "Backend" }} />
+          <Tag type="team" large={false} team={{ name: "Backend" }} />
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>
