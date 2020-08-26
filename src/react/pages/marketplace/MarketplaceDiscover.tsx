@@ -3,12 +3,10 @@ import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { App } from "../../interfaces";
-import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import PageHeader from "../../components/PageHeader";
-import Tag from "../../common/Tag";
 
 interface MarketplaceDiscoverProps {
   history: any;
@@ -62,15 +60,6 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             showBreadCrumbs={true}
             searchConfig={{ text: "Search an App in Marketplace" }}
           />
-
-          <Tag type="employee" large={true} employee={{ firstname: "Eva", lastname: "Kiszka" }} />
-          <Tag type="employee" large={false} employee={{ firstname: "Eva", lastname: "Kiszka" }} />
-
-          <Tag type="service" large={true} service={DUMMY_APP} />
-          <Tag type="service" large={false} service={DUMMY_APP} />
-
-          <Tag type="team" large={true} team={{ name: "Backend" }} />
-          <Tag type="team" large={false} team={{ name: "Backend" }} />
 
           <div className="marketplaceContent">
             <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>
