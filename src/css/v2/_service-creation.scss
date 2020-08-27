@@ -1,0 +1,46 @@
+#service-creation {
+  height: 100%;
+
+  .input-label {
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  select {
+    margin: 16px 0;
+  }
+
+  .textField {
+    margin-top: 32px;
+  }
+
+  .list {
+    margin-top: 16px;
+
+    li {
+      margin: 8px 0 0 8px;
+    }
+
+    .list-headline {
+      font-weight: 700;
+      margin-left: 0;
+    }
+
+    .alternatives {
+      display: flex;
+      justify-content: space-between;
+      max-width: 450px;
+    }
+  }
+
+  img {
+    margin-top: 16px;
+  }
+
+  .success {
+    margin: 16px 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: $vipfy-positive;
+  }
+}

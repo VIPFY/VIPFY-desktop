@@ -182,6 +182,7 @@ export interface App {
   deprecated: boolean;
   hidden: boolean;
   hasboughtplan: boolean;
+  category?: string;
 }
 
 export interface Option {
