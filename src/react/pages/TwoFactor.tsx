@@ -36,50 +36,41 @@ export default (props: Props) => {
   return (
     <Mutation<WorkAround, WorkAround> mutation={VALIDATE_2FA} onCompleted={handleToken}>
       {(validateToken, { error, loading }) => (
-        <section className="two-factor">
-          <div className="dataGeneralForm">
-            <div className="holder">
-              <div className="logo" />
-              <img src={twoFAPic} className="illustration-login" />
+        <div className="twoFactor">
+          <h1>Two Factor Authentication</h1>
+          {props.twoFactor.startsWith("otpauth://") ? (
+            <React.Fragment>
+              <p>Please enter the six-character digit code to authenticate yourself.</p>
+              <TwoFactorForm
+                handleSubmit={values => handleSubmit(values, validateToken)}
+                fieldNumber={6}
+                seperator={4}
+                disabled={loading}
+                customButtonStyles={{ width: "100%", marginTop: "24px" }}
+              />
 
-              <div className="holder-right">
-                <h1>Two Factor Authentication</h1>
-                {props.twoFactor.startsWith("otpauth://") ? (
-                  <React.Fragment>
-                    <p>Please enter the six-character digit code to authenticate yourself.</p>
-                    <TwoFactorForm
-                      handleSubmit={(values) => handleSubmit(values, validateToken)}
-                      fieldNumber={6}
-                      seperator={4}
-                      disabled={loading}
-                    />
+              <ErrorComp error={error} />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <div>Please authenticate with your Yubikey</div>
+              <ol type="1">
+                <li>Insert your Yubikey into an available USB port on your machine.</li>
+                <li>
+                  Place the cursor in the empty field. Touch or tap your Yubikey. The empty field
+                  will be filled by the Yubikey.
+                </li>
+              </ol>
 
-                    <ErrorComp error={error} />
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <div>Please authenticate with your Yubikey</div>
-                    <ol type="1">
-                      <li>Insert your Yubikey into an available USB port on your machine.</li>
-                      <li>
-                        Place the cursor in the empty field. Touch or tap your Yubikey. The empty
-                        field will be filled by the Yubikey.
-                      </li>
-                    </ol>
-
-                    <UniversalTextInput
-                      width="312px"
-                      livevalue={(value) => console.log(value)}
-                      id="yubikey"
-                      type="password"
-                      label="Password"
-                    />
-                  </React.Fragment>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
+              <UniversalTextInput
+                livevalue={value => console.log(value)}
+                id="yubikey"
+                type="password"
+                label="Password"
+              />
+            </React.Fragment>
+          )}
+        </div>
       )}
     </Mutation>
   );

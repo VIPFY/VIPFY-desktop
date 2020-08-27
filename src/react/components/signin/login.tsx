@@ -9,9 +9,7 @@ interface Props {
   type: string;
   email: string;
   continueFunction: Function;
-  backFunction: Function;
   error?: string;
-  changeUser: Function;
   goToRecovery: Function;
 }
 
@@ -44,6 +42,15 @@ class Login extends React.Component<Props, State> {
     return state;
   }
 
+  submit = async () => {
+    this.setState({ submitting: true });
+    const hasError = await this.props.continueFunction(this.state.email, this.state.field2);
+    if (hasError) {
+      this.setState({ showError: true });
+      this.setState({ submitting: false });
+    }
+  };
+
   render() {
     const store = new Store();
     let user: {
@@ -59,87 +66,40 @@ class Login extends React.Component<Props, State> {
     }
 
     return (
-      <div className="dataGeneralForm">
-        <div className="holder">
-          <div className="logo" />
-          <img src={welcomeBack} className="illustration-login" />
+      <div>
+        <h1>Sign In</h1>
+        <UniversalTextInput
+          id="email"
+          type="email"
+          onEnter={() => document.querySelector("#upw").focus()}
+          startvalue={this.props.email}
+          label="Email"
+          livevalue={email => this.setState({ email })}
+        />
+        <UniversalTextInput
+          id="upw"
+          type="password"
+          label="Password"
+          livevalue={v => this.setState({ field2: v, changed: true, showError: false })}
+          onEnter={async () => await this.submit()}
+        />
 
-          <div className="holder-right">
-            <h1>{`Welcome ${user ? `back, ${user.name}` : ""}`}</h1>
-            <div className="UniversalInputHolder">
-              {this.state.changeEmail && this.props.email ? (
-                <UniversalTextInput
-                  id="email"
-                  type="email"
-                  width="312px"
-                  onEnter={() => this.props.continueFunction(this.state.field2, this.state.email)}
-                  startvalue={this.props.email}
-                  label="Email"
-                  livevalue={email => this.setState({ email })}
-                />
-              ) : (
-                <div className="preloggedFullname">
-                  <EmployeePicture employee={user} className="accountBullet" size={20} />
-                  <button
-                    title="Click to update your Email"
-                    className="naked-button"
-                    onClick={() => this.setState({ changeEmail: true })}>
-                    {user ? user.fullname : this.props.email}
-                  </button>
-                </div>
-              )}
-              <button onClick={() => this.props.changeUser()} className="notperson">
-                {user ? `Not ${user.name}?` : "Change User"}
-              </button>
-            </div>
-            <div className="UniversalInputHolder">
-              <UniversalTextInput
-                id="upw"
-                width="312px"
-                type="password"
-                label="Password"
-                livevalue={v => this.setState({ field2: v, changed: true, showError: false })}
-                errorEvaluation={this.props.error && this.state.changed}
-                errorhint={
-                  this.props.error && this.state.changed && this.state.showError ? (
-                    <React.Fragment>
-                      <i className="fal fa-exclamation-circle" />
-                      <span>{this.props.error}</span>
-                    </React.Fragment>
-                  ) : null
-                }
-                onEnter={() => this.props.continueFunction(this.state.field2, this.state.email)}
-              />
-            </div>
+        <a onClick={() => !this.state.submitting && this.props.goToRecovery()}>Forgot password?</a>
 
-            <div className="login-buttons">
-              <UniversalButton
-                label="Forgot password"
-                type="low"
-                disabled={this.state.submitting}
-                onClick={this.props.goToRecovery}
-              />
-              <UniversalButton
-                label="login"
-                type="high"
-                disabled={this.state.field2 == "" || this.state.submitting}
-                onClick={async () => {
-                  this.setState({ submitting: true });
-                  const hasError = await this.props.continueFunction(
-                    this.state.field2,
-                    this.state.email
-                  );
+        <UniversalButton
+          label="login"
+          type="high"
+          disabled={this.state.field2 == "" || this.state.submitting}
+          customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
+          onClick={async () => await this.submit()}
+        />
 
-                  if (hasError) {
-                    this.setState({ showError: true });
-                    setTimeout(() => this.setState({ showError: false }), 2250);
-                    this.setState({ submitting: false });
-                  }
-                }}
-              />
-            </div>
+        {this.state.showError && this.props.error && (
+          <div className="loginError">
+            <i className="fal fa-exclamation-circle" />
+            <span>{this.props.error}</span>
           </div>
-        </div>
+        )}
       </div>
     );
   }

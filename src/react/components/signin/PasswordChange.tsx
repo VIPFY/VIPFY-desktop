@@ -1,6 +1,5 @@
 import * as React from "react";
 import { withApollo } from "react-apollo";
-import ReactPasswordStrength from "react-password-strength";
 import { me } from "../../queries/auth";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
@@ -102,80 +101,53 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
     const { firstLogin, className } = this.props;
 
     return (
-      <section className={`welcome ${className ? className : ""}`}>
-        <div className="welcome-holder">
-          <img src={welcomeImage} alt="Welcome" />
-          <div className="welcome-text">
-            <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
-            <div>
-              {firstLogin
-                ? "Your Admin forces you to reset your password."
-                : "Your initial password has been sent to your email. Please replace it to continue."}
-            </div>
-
-            <div className="password-fields">
-              <UniversalTextInput
-                id="oldPassword"
-                livevalue={e => this.oldPasswordChanged(e)}
-                label="Initial Password"
-                width="312px"
-                type="password"
-              />
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label>
-                  <ReactPasswordStrength
-                    className="passwordStrength"
-                    minLength={PW_MIN_LENGTH}
-                    minScore={2}
-                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                    tooShortWord={"too short"}
-                    inputProps={{
-                      name: "password_input",
-                      autoComplete: "off",
-                      placeholder: "New Password",
-                      className: "cleanup universalTextInput"
-                    }}
-                    changeCallback={(state, feedback) => this.passwordChanged(state, feedback)}
-                  />
-                </label>
-              </div>
-              <UniversalTextInput
-                id="repeat"
-                livevalue={e => this.repeatPasswordChanged(e)}
-                label="Repeat"
-                errorEvaluation={
-                  this.state.newPassword !== null &&
-                  this.state.repeatPassword !== null &&
-                  this.state.newPassword !== this.state.repeatPassword
-                }
-                errorhint="Passwords don't match"
-                width="312px"
-                type="password"
-              />
-            </div>
-            <div className={`formError ${this.state.error === null ? "no" : "one"}Error`}>
-              {this.state.error}
-            </div>
-
-            <div className="universal-buttons">
-              <UniversalButton
-                customStyles={{ width: "105px" }}
-                label="Back"
-                type="low"
-                onClick={() => this.abort()}
-              />
-
-              <UniversalButton
-                disabled={!this.canSubmit()}
-                customStyles={{ width: "105px" }}
-                label="continue"
-                type="high"
-                onClick={() => this.confirm()}
-              />
-            </div>
-          </div>
+      <div className="changePassword">
+        <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
+        <div>
+          {firstLogin
+            ? "Your Admin forces you to reset your password."
+            : "Your initial password has been sent to your email. Please replace it to continue."}
         </div>
-      </section>
+
+        <div className="password-fields">
+          <UniversalTextInput
+            id="oldPassword"
+            livevalue={e => this.oldPasswordChanged(e)}
+            label="Initial Password"
+            type="password"
+            onEnter={() => document.querySelector("[name='password_input']").focus()}
+          />
+          <UniversalTextInput
+            id="newPassword"
+            label="New Password"
+            type="password"
+            checkPassword={passwordData => this.passwordChanged(passwordData, null)}
+          />
+
+          <UniversalTextInput
+            id="repeat"
+            livevalue={e => this.repeatPasswordChanged(e)}
+            label="Repeat"
+            errorEvaluation={
+              this.state.newPassword !== null &&
+              this.state.repeatPassword !== null &&
+              this.state.newPassword !== this.state.repeatPassword
+            }
+            errorhint="Passwords don't match"
+            type="password"
+            onEnter={() => this.confirm()}
+          />
+        </div>
+
+        <UniversalButton
+          disabled={this.state.loading || !this.canSubmit()}
+          label="continue"
+          type="high"
+          onClick={() => this.confirm()}
+          customButtonStyles={{ width: "100%", marginTop: "24px" }}
+        />
+        {this.state.error && <div className="error">{this.state.error}</div>}
+      </div>
     );
   }
 }

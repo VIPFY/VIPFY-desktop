@@ -1,0 +1,270 @@
+.loginHolder {
+  height: 100%;
+  width: 100%;
+  background-image: url("../../images/loginBackground_large.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  background-color: #eaf1f8;
+  background-position-x: left;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .loginCard {
+    width: 384px;
+    height: 488px;
+    margin-right: 10%;
+    background-color: $white;
+    box-shadow: 0px 6px 10px #00000026;
+    border: 1px solid $lightgrey-lightest;
+    border-radius: 20px;
+    padding: 32px;
+    display: grid;
+    grid-template-rows: 1fr 16px 19px;
+
+    > hr {
+      border: none;
+      border-top: 1px solid $lightgrey-dark;
+
+      &:last-child {
+        display: none;
+      }
+    }
+
+    h1 {
+      line-height: 32px;
+      margin-bottom: 24px;
+    }
+
+    .textField {
+      margin-bottom: 24px;
+    }
+
+    span {
+      font-size: 14px;
+    }
+
+    a {
+      color: $primarygreen;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 19px;
+    }
+
+    .footerLinks {
+      font-size: 14px;
+      line-height: 19px;
+
+      a {
+        margin-left: 16px;
+      }
+    }
+    .loginError {
+      font-size: 12px;
+      color: $red-dark;
+
+      i {
+        margin-right: 4px;
+      }
+    }
+
+    h1 > a {
+      color: unset;
+      font-size: 20px;
+      margin-right: 12px;
+    }
+
+    #recovery-form {
+      margin: 24px 0 30px;
+      display: grid;
+      align-items: center;
+      justify-items: center;
+      grid-row-gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(16px, 32px));
+
+      i {
+        &:last-of-type {
+          display: none;
+        }
+      }
+
+      input {
+        grid-column: span 2;
+        width: 64px;
+        height: 32px;
+        text-align: center;
+        border-radius: 4px;
+        background-color: $lightgrey-lightest;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+        outline: none;
+        border: 0;
+      }
+
+      &:invalid + div > button:last-of-type > .universalButton {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    .agreementText {
+      font-size: 12px;
+      margin-left: 4px;
+
+      a {
+        font-size: 12px;
+        margin-left: 4px;
+      }
+    }
+    .error {
+      position: absolute;
+      top: 340px;
+      font-size: 12px;
+      color: $red-darker;
+    }
+  }
+}
+.passwordStrength {
+  display: inline-block;
+  position: relative;
+  border: 0;
+  font-family: inherit;
+  padding: 0;
+  line-height: 32px;
+  width: calc(100% - 32px);
+
+  .universalTextInput {
+    text-align: left;
+
+    &:hover {
+      background-color: unset;
+    }
+  }
+
+  .ReactPasswordStrength-strength-desc {
+    width: auto;
+    font-size: 80%;
+    padding: 0;
+  }
+
+  input {
+    box-sizing: content-box;
+  }
+}
+.passwordStrength-40 {
+  @extend .passwordStrength;
+  line-height: 40px;
+
+  .ReactPasswordStrength-strength-desc {
+    margin-right: 8px;
+  }
+}
+.recoveryKeyPopup {
+  .explained {
+    margin-top: 24px;
+  }
+  .important {
+    background: $red-lightest;
+    border-radius: 12px;
+    padding: 16px;
+    color: $red-darker;
+
+    .extra {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
+  .recoveryKey {
+    border: 1px solid $lightgrey-darker;
+    border-radius: 8px;
+    padding: 10px 47px;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    grid-row-gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(16px, 32px));
+
+    span {
+      grid-column: span 2;
+      width: 64px;
+      height: 32px;
+      text-align: center;
+      border-radius: 4px;
+      background-color: $lightgrey-lightest;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+      outline: none;
+      border: 0;
+      line-height: 32px;
+    }
+  }
+}
+.nameFormPopup {
+  p {
+    margin-top: 24px;
+  }
+  .textField {
+    margin-top: 24px;
+  }
+  .promoCode {
+    margin-top: 24px;
+    button {
+      font-size: 12px;
+      span {
+        color: $primarygreen;
+      }
+    }
+    .textField {
+      margin-top: 12px;
+    }
+  }
+}
+.twoFactor {
+  p {
+    margin-top: 24px;
+  }
+  #twoFactorForm {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    input {
+      text-align: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 4px;
+      background: #f5f5f5ff;
+      box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
+      outline: none;
+      border: 0;
+      margin: 0 8px;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+      }
+    }
+  }
+}
+.firstLogin {
+  p {
+    margin-top: 24px;
+  }
+}
+
+.changePassword {
+  .textField {
+    margin-top: 24px;
+  }
+  .error {
+    background: $red-lightest;
+    border-radius: 12px;
+    padding: 16px;
+    top: unset !important;
+    position: unset !important;
+    text-align: center;
+    margin-top: 24px;
+  }
+}

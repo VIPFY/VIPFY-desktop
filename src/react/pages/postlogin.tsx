@@ -5,7 +5,6 @@ import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
-import DataNameForm from "../components/dataForms/NameForm";
 import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import moment from "moment";
@@ -92,32 +91,34 @@ class PostLogin extends React.Component<PostLoginProps, State> {
 
             pureProps.impersonation = true;
           }
+          const setupfinished = data.me.company.setupfinished;
 
-          if (!data.me.company.setupfinished) {
+          if (data.me.firstlogin && !this.state.firstLogin && !isImpersonating) {
             return (
-              <div className="centralize backgroundLogo">
-                <DataNameForm moveTo={this.props.moveTo} />
+              <div className="loginHolder">
+                <div className="loginCard">
+                  <FirstLogin
+                    setFirstLogin={() => this.setState({ firstLogin: true })}
+                    {...pureProps}
+                  />
+                </div>
               </div>
             );
           }
 
-          if (data.me.firstlogin && !this.state.firstLogin && !isImpersonating) {
-            return (
-              <FirstLogin
-                setFirstLogin={() => this.setState({ firstLogin: true })}
-                {...pureProps}
-              />
-            );
-          }
-
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
-            return <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />;
+            return (
+              <div className="loginHolder">
+                <div className="loginCard">
+                  <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />
+                </div>
+              </div>
+            );
           }
 
           if (data.me.needstwofa) {
             return (
               <div style={{ display: "flex", flexFlow: "column", alignItems: "center" }}>
-                <h1>Please set up Two-Factor Authentication</h1>
                 <GoogleAuth
                   dontClose={true}
                   finishSetup={() => {
@@ -171,6 +172,8 @@ class PostLogin extends React.Component<PostLoginProps, State> {
                   <Area
                     {...pureProps}
                     showVIPFYPlanPopup={e2}
+                    setupfinished={setupfinished}
+                    globalMeRefetch={() => refetch()}
                     style={context.isActive ? { height: "calc(100% - 40px)" } : {}}
                   />
                 );

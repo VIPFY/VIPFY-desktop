@@ -314,7 +314,7 @@ async function showDevToolsToolBar() {
   return await mainWindow.webContents.executeJavaScript(`
   (function(){
     let app = document.querySelector("#App");
-    app.style.marginRight = "600px";
+    app.classList.add("appWithOpenedDevTools");
     let dt = document.querySelector("#DevToolToolBar");
     dt.style.display = "block";
   })();
@@ -326,7 +326,7 @@ async function closeDevTools(closeToolbar = true) {
     await mainWindow.webContents.executeJavaScript(`
       (function(){
         let app = document.querySelector("#App");
-        app.style.marginRight = "0";
+        app.classList.remove("appWithOpenedDevTools");
         let dt = document.querySelector("#DevToolToolBar");
         dt.style.display = "none";
       })();

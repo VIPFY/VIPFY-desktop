@@ -28,6 +28,7 @@ const { session } = remote;
 import { version } from "../../package.json";
 import UniversalLoginTestFetcher from "./components/admin/UniversalLoginTest/UniversalLoginTestFetcher";
 import UniversalLoginTest from "./components/admin/UniversalLoginTest/UniversalLoginTest";
+import config from "../configurationManager";
 
 interface IndexProps {
   client: ApolloClient<InMemoryCache>;
@@ -55,7 +56,7 @@ class Application extends React.Component<IndexProps> {
   };
 
   componentDidMount() {
-    if (process.env.DEVELOPMENT) {
+    if (config.allowDevTools) {
       window.addEventListener("keyup", this.implementShortCuts, true);
     }
 

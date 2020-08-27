@@ -32,7 +32,6 @@
 @import "./vacation";
 @import "./vipfyPlanPopup";
 @import "./workspace";
-@import "./textInput";
 
 ::-webkit-scrollbar-thumb {
   background: #ccc;
@@ -1590,34 +1589,6 @@ option {
   top: 1px;
   left: 27px;
   font-size: 13px;
-}
-
-.passwordStrength {
-  display: inline-block;
-  position: relative;
-  border: 0;
-  font-family: inherit;
-  padding: 0;
-  line-height: 32px;
-  width: calc(100% - 32px);
-
-  .universalTextInput {
-    text-align: left;
-
-    &:hover {
-      background-color: unset;
-    }
-  }
-
-  .ReactPasswordStrength-strength-desc {
-    width: auto;
-    font-size: 80%;
-    padding: 0;
-  }
-
-  input {
-    box-sizing: content-box;
-  }
 }
 
 .loginspinner {

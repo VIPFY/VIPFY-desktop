@@ -8,6 +8,7 @@ import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
 import passwordForgot from "../../../images/forgot-password-new.png";
+import PopupBase from "../../popups/universalPopups/popupBase";
 
 const SAVE_RECOVERY_KEY = gql`
   mutation onSaveRecoveryKey($keyPair: RecoveryKeyInput!) {
@@ -98,70 +99,98 @@ const RecoveryKey = (props: Props) => {
   };
 
   return (
-    <div className="recovery-screen">
-      <div className="holder">
-        <div className="logo" />
-        <img src={passwordForgot} className="illustration-login" />
-
-        <div className="explanation">
-          <h1>Here is your recovery code</h1>
-          <div className="attention-box">
-            <i className="fal fa-exclamation-triangle" />
-            <div className="recovery-text">
-              With the following code you can recover access to your account. This is the only time
-              it is displayed to you. You should print it and store it securely, for example in a
-              bank vault.
-            </div>
-            <div>If you already have a code, it is no longer valid.</div>
-          </div>
-
-          <div className="recovery-code-holder">
-            <span>Your code is:</span>
-            <IconButton
-              title="Print recovery code"
-              onClick={() => {
-                const printers = codeWindow.webContents.getPrinters();
-
-                codeWindow.webContents.print(
-                  {
-                    header: "Your VIPFY Recovery Code",
-                    // Without the deviceName property, the printer select menu does not show up
-                    deviceName: (printers && printers[0].name) || ""
-                  },
-                  (_success, errorType) => {
-                    if (errorType) {
-                      setPrintError(new Error(errorType));
-                    }
-                  }
-                );
-              }}
-              icon="print"
-            />
-            <div className="recovery-code">{generateReadableKey()}</div>
-          </div>
-          <ErrorComp error={printError} />
-          <Mutation<WorkAround, WorkAround> mutation={SAVE_RECOVERY_KEY}>
-            {(mutate, { error }) => (
-              <React.Fragment>
-                <ErrorComp error={error} />
-                <UniversalButton
-                  label={localError ? "skip" : "login"}
-                  type="high"
-                  className="continue-button"
-                  onClick={async () => {
-                    if (localError) {
-                      props.continue();
-                    } else {
-                      mutate({ variables: { keyPair } });
-                    }
-                  }}
-                />
-              </React.Fragment>
-            )}
-          </Mutation>
+    <PopupBase small={true}>
+      <div className="recoveryKeyPopup">
+        <h1>Recovery Key</h1>
+        <div className="explained">
+          <p>Your safety is our top priority. Therefore, all your credentials are encrypted.</p>
+          <p>VIPFY cannot decrypt, view nor recover your credentials at any time!</p>
+          <p className="important">
+            <span>
+              It is important that you download the Recovery Key and keep it in a safe place.
+            </span>
+            <span className="extra">Only</span>
+            <span> with the Recovery Key you can recover your credentials if you need.</span>
+          </p>
+          <p>If you already had a code, it is no longer valid.</p>
         </div>
+
+        <div className="recoveryKey">{generateReadableKey()}</div>
+        <ErrorComp error={printError} />
+        <Mutation<WorkAround, WorkAround> mutation={SAVE_RECOVERY_KEY}>
+          {(mutate, { error }) => (
+            <React.Fragment>
+              <ErrorComp error={error} />
+              {!localError && (
+                <>
+                  <UniversalButton
+                    label="Print and continue"
+                    type="high"
+                    className="continue-button"
+                    onClick={async () => {
+                      const printers = codeWindow.webContents.getPrinters();
+
+                      await codeWindow.webContents.print(
+                        {
+                          header: "Your VIPFY Recovery Code",
+                          // Without the deviceName property, the printer select menu does not show up
+                          deviceName: (printers && printers[0].name) || ""
+                        },
+                        (_success, errorType) => {
+                          if (errorType) {
+                            setPrintError(new Error(errorType));
+                          }
+                          mutate({ variables: { keyPair } });
+                        }
+                      );
+                    }}
+                    customButtonStyles={{ width: "100%", marginTop: "24px" }}
+                  />
+
+                  <UniversalButton
+                    label="Download and continue"
+                    type="low"
+                    className="continue-button"
+                    onClick={async () => {
+                      const fs = require("fs");
+                      const path = require("path");
+                      const os = require("os");
+                      await codeWindow.webContents
+                        .printToPDF({
+                          header: "Your VIPFY Recovery Code"
+                        })
+                        .then(async data => {
+                          const pdfPath = await remote.dialog.showSaveDialogSync({
+                            title: "Save Recovery Code",
+                            defaultPath: "RecoveryCodeVipfy.pdf"
+                          });
+                          fs.writeFile(pdfPath, data, error => {
+                            if (error) {
+                              throw error;
+                            }
+                            mutate({ variables: { keyPair } });
+                          });
+                        })
+                        .catch(error => {
+                          console.log(`Failed to write PDF to ${pdfPath}: `, error);
+                        });
+                    }}
+                    customButtonStyles={{ width: "100%", marginTop: "24px" }}
+                  />
+                </>
+              )}
+              <UniversalButton
+                label="Don't download and continue"
+                type="low"
+                className="continue-button"
+                onClick={() => props.continue()}
+                customButtonStyles={{ width: "100%", marginTop: "24px" }}
+              />
+            </React.Fragment>
+          )}
+        </Mutation>
       </div>
-    </div>
+    </PopupBase>
   );
 };
 

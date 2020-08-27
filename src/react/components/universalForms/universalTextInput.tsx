@@ -1,5 +1,6 @@
 import * as React from "react";
 import { clipboard } from "electron";
+import zxcvbn from "zxcvbn";
 
 interface Props {
   id: string;
@@ -33,12 +34,16 @@ interface Props {
   labelClick?: Function;
   labelStyles?: Object;
   holderStyles?: Object;
+  form?: String;
+  checkPassword?: Function;
+  additionalPasswordChecks?: String[];
 }
 
 interface State {
   value: string;
   error: string | null;
   inputFocus: Boolean;
+  firstFocus: Boolean;
   eyeopen: Boolean;
   notypeing: Boolean;
   errorfaded: Boolean;
@@ -46,6 +51,7 @@ interface State {
   context: Boolean;
   clientX: number;
   clientY: number;
+  passwordData: Object | null;
 }
 
 class UniversalTextInput extends React.Component<Props, State> {
@@ -53,13 +59,15 @@ class UniversalTextInput extends React.Component<Props, State> {
     value: this.props.startvalue || "",
     error: null,
     inputFocus: false,
+    firstFocus: false,
     eyeopen: false,
     notypeing: true,
     errorfaded: false,
     currentid: "",
     context: false,
     clientX: 0,
-    clientY: 0
+    clientY: 0,
+    passwordData: null
   };
 
   wrapper = React.createRef<Element>();
@@ -84,7 +92,7 @@ class UniversalTextInput extends React.Component<Props, State> {
       this.setState({ value: "", currentid: props.id });
     }
 
-    setTimeout(() => this.setState({ errorfaded: props.errorEvaluation }), 1);
+    setTimeout(() => this.setState({ errorfaded: props.errorEvaluation || this.state.error }), 1);
   };
 
   componentDidUpdate(prevProps, _prevState) {
@@ -99,12 +107,14 @@ class UniversalTextInput extends React.Component<Props, State> {
 
   toggleInput = bool => {
     this.setState({ inputFocus: bool });
-    if (!bool && this.props.endvalue) {
-      this.setState({ error: null });
+    if (!bool && !this.state.error && this.props.endvalue) {
       this.props.endvalue(this.state.value);
     }
+    if (!bool && !this.state.error && this.props.checkPassword) {
+      this.props.checkPassword({ password: this.state.value, ...this.state.passwordData });
+    }
     if (!bool) {
-      this.setState({ notypeing: true });
+      this.setState({ notypeing: true, firstFocus: true });
       clearTimeout(this.timeout);
     }
   };
@@ -127,13 +137,34 @@ class UniversalTextInput extends React.Component<Props, State> {
       value = " ";
     }
 
-    this.setState({ value, notypeing: false });
+    let passwordError = undefined;
+    let passwordData = undefined;
+
+    if (this.props.checkPassword) {
+      if (value.length < 10) {
+        passwordError = "A Password need a minimum length of 10";
+      } else {
+        const result = zxcvbn(value, this.props.additionalPasswordChecks || []);
+        if (result.score < 2) {
+          passwordError =
+            result.feedback.warning != ""
+              ? result.feedback.warning
+              : "Password is too weak. Please use another one";
+        }
+        passwordData = { score: result.score, isValid: result.score >= 2 };
+      }
+    }
+
+    this.setState({ value, notypeing: false, error: passwordError, passwordData });
     // @ts-ignore
-    this.timeout = setTimeout(() => this.setState({ notypeing: true }), 400);
+    this.timeout = setTimeout(() => {
+      this.setState({ notypeing: true });
+    }, 400);
   }
 
   handleKeyUp = e => {
     if (e.key == "Enter" && this.props.onEnter) {
+      this.toggleInput(false);
       this.props.onEnter();
     }
   };
@@ -152,9 +183,9 @@ class UniversalTextInput extends React.Component<Props, State> {
             htmlFor={this.props.id}
             className="universalLabel"
             style={Object.assign(
-              (this.props.errorEvaluation ||
-                (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
-                this.state.notypeing
+              this.state.firstFocus &&
+                this.state.notypeing &&
+                (this.props.errorEvaluation || this.state.error)
                 ? { color: "#e32022" }
                 : {},
               this.props.labelStyles || {}
@@ -174,10 +205,10 @@ class UniversalTextInput extends React.Component<Props, State> {
               : {},
             this.props.smallTextField ? { height: "30px" } : { height: "38px" },
             { ...this.props.style },
-            { ...(this.props.focus ? { borderColor: "#20baa9" } : {}) },
-            (this.props.errorEvaluation ||
-              (this.props.required && this.state.value == "" && !this.state.inputFocus)) &&
-              this.state.notypeing
+            { ...(!this.state.firstFocus && this.props.focus ? { borderColor: "#20baa9" } : {}) },
+            this.state.firstFocus &&
+              this.state.notypeing &&
+              (this.props.errorEvaluation || this.state.error)
               ? { borderColor: "#e32022" }
               : {}
           )}
@@ -201,7 +232,7 @@ class UniversalTextInput extends React.Component<Props, State> {
           ) : (
             <input
               // @ts-ignore
-              autoFocus={this.props.focus || false}
+              autoFocus={(!this.state.firstFocus && this.props.focus) || false}
               id={this.props.id}
               type={
                 this.props.type == "password"
@@ -232,7 +263,9 @@ class UniversalTextInput extends React.Component<Props, State> {
                       fontFamily: "'Roboto', sans-serif"
                     }
                   : {}),
-                ...(this.props.errorEvaluation && this.state.notypeing
+                ...(this.state.firstFocus &&
+                this.state.notypeing &&
+                (this.props.errorEvaluation || this.state.error)
                   ? {
                       borderBottomColor: "#e32022"
                     }
@@ -246,6 +279,7 @@ class UniversalTextInput extends React.Component<Props, State> {
                 // @ts-ignore
                 this.nameInput = input;
               }}
+              form={this.props.form}
             />
           )}
 
@@ -320,14 +354,32 @@ class UniversalTextInput extends React.Component<Props, State> {
             </button>
           )}
         </div>
-        {(this.props.helperText || (this.props.errorEvaluation && this.props.errorhint)) && (
+        {(this.props.helperText ||
+          (this.props.required && this.state.value == "") ||
+          (this.state.firstFocus &&
+            this.state.notypeing &&
+            (this.props.errorEvaluation || this.state.error))) && (
           <div
             className="universalHelperText"
-            style={this.props.errorhint ? { color: "#e32022" } : {}}>
-            {this.props.errorhint ? (
+            style={
+              (this.props.required && this.state.value == "") ||
+              (this.state.firstFocus &&
+                this.state.notypeing &&
+                (this.props.errorEvaluation || this.state.error))
+                ? { color: "#e32022" }
+                : {}
+            }>
+            {this.state.firstFocus &&
+            this.state.notypeing &&
+            (this.props.errorEvaluation || this.state.error) ? (
               <span>
                 <i className="fal fa-exclamation-circle" style={{ marginRight: "4px" }}></i>
-                {this.props.errorhint}
+                {this.props.errorhint || this.state.error}
+              </span>
+            ) : this.props.required && this.state.value == "" ? (
+              <span>
+                <i className="fal fa-exclamation-circle" style={{ marginRight: "4px" }}></i>
+                Required Field
               </span>
             ) : (
               this.props.helperText
