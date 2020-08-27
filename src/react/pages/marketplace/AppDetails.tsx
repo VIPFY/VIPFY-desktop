@@ -10,11 +10,11 @@ import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
 
+import { showStars } from "../../common/functions";
 import Tag from "../../common/Tag";
 import ServiceLogo from "../../components/services/ServiceLogo";
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
-import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
@@ -74,10 +74,7 @@ const DUMMY_APP = {
   category: "Communication",
   pricing: "Starts at USD 30/months",
   languages: "English, German",
-  links: [
-    { title: "Website", url: "https://www.surveymonkey.com/" },
-    { title: "Support Website", url: "https://www.surveymonkey.com/mp/contact-sales/" }
-  ],
+  supportURL: "https://www.surveymonkey.com/mp/contact-sales/",
   features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"],
   pics: [onboarding, dashboard, forgot_password, logo_hell, login_new_user, logo_dunkel],
   description:
@@ -216,7 +213,20 @@ const DUMMY_APP = {
       ]
     }
   ],
-  alternatives: [APP_ALTERNATIVE_1, APP_ALTERNATIVE_2, APP_ALTERNATIVE_3]
+  alternatives: [
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3,
+    APP_ALTERNATIVE_1,
+    APP_ALTERNATIVE_2,
+    APP_ALTERNATIVE_3
+  ]
 };
 
 interface Plan {
@@ -296,6 +306,9 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
               </SeparatedSection>
             )}
           </div>
+          <Tag div={true} className="buyPlanButton">
+            <p>Add to Basket</p>
+          </Tag>
         </div>
         <div className="features">
           <div>
@@ -415,32 +428,34 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   <div className="title details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
-                      <span className="fal fa-comments-alt fa-fw" />
-                      {DUMMY_APP.category}
+                      <p className="starRating">{showStars(3, 5)}</p>
                     </div>
                     <div>
                       <Tag className="pricingTag">{DUMMY_APP.pricing}</Tag>
                     </div>
                     <div>
+                      <span className="fal fa-comments-alt fa-fw" />
+                      {DUMMY_APP.category}
+                    </div>
+                    <div>
                       <span className="fal fa-globe fa-fw" />
                       {DUMMY_APP.languages}
                     </div>
-                    {DUMMY_APP.links.map((link, i) => (
-                      <div className="link" key={i}>
-                        {link.title}
-                        <span className="fal fa-external-link fa-fw" />
-                      </div>
-                    ))}
+                    <div className="link">
+                      Support Website
+                      <span className="fal fa-external-link fa-fw" />
+                    </div>
                   </div>
 
                   <div className="licenseTags">
-                    <Tag
-                      div={true}
-                      style={{ marginBottom: "16px", backgroundColor: "#20baa9", color: "white" }}>
-                      Buy new license
+                    <Tag div={true} className="buyLicenseButton">
+                      Buy New License
                     </Tag>
-                    <Tag div={true} className={"marketplaceTag"} style={{ textTransform: "none" }}>
-                      Integrate existing license
+                    <Tag div={true} className="marketplaceTag" style={{ textTransform: "none" }}>
+                      Integrate Existing License
+                    </Tag>
+                    <Tag div={true} className="featureTag" style={{ textTransform: "none" }}>
+                      Write Review
                     </Tag>
                   </div>
                 </CardSection>
@@ -455,12 +470,9 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   </CardSection>
                 )}
 
-                <CardSection style={{ alignItems: "center", display: "flex" }}>
-                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />{" "}
-                  {/* TODO make functional */}
-                  <span style={{ fontSize: "14px", lineHeight: "24px", marginLeft: "8px" }}>
-                    Compare Service
-                  </span>
+                <CardSection className="compareServiceCheckbox">
+                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
+                  <span>Compare Service</span>
                 </CardSection>
               </div>
             </CardSection>
@@ -501,9 +513,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   {DUMMY_APP.reviews.map((review, i) => (
                     <div className="card" key={i}>
                       <CardSection>
-                        <h2>
-                          <blockquote>{review.text}</blockquote>
-                        </h2>
+                        <blockquote>{review.text}</blockquote>
                       </CardSection>
                       <CardSection>
                         {review.reviewer}, {review.industry}
@@ -592,16 +602,20 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             {DUMMY_APP.alternatives && DUMMY_APP.alternatives.length && (
               <CardSection>
                 <h2>Alternatives</h2>
-                <div className="apps">
-                  <div className="grid3Cols smGrid1Col">
-                    {DUMMY_APP.alternatives.map((alternative, i) => (
-                      <AppOverviewCard
-                        key={i}
-                        app={alternative}
-                        onClick={() => this.goToApp(alternative.id)}
-                      />
-                    ))}
-                  </div>
+                <div className="grid3Cols smGrid2Cols">
+                  {DUMMY_APP.alternatives.map(alternative => (
+                    <div className="card alternative" key={alternative.id}>
+                      <div>
+                        <ServiceLogo icon={DUMMY_APP.icon} />
+                        {DUMMY_APP.name}
+                      </div>
+                      <div>VS</div>
+                      <div>
+                        <ServiceLogo icon={alternative.icon} />
+                        {alternative.name}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </CardSection>
             )}

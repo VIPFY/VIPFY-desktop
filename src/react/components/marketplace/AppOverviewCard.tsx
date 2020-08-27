@@ -2,6 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 import CardSection from "../CardSection";
@@ -33,7 +34,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         <div className="title">
           <div>
             {this.props.app.name}
-            <p className="rating">{showStars(4, 5)}</p>
+            <p className="starRating">{showStars(4, 5)}</p>
           </div>
         </div>
         {isWideFormat && (
@@ -101,6 +102,11 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
             ))}
           </CardSection>
         )}
+
+        <CardSection className="compareServiceCheckbox">
+          <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
+          <span>Compare Service</span>
+        </CardSection>
       </div>
     );
   }

@@ -6,7 +6,7 @@ import Area from "./area";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import DataNameForm from "../components/dataForms/NameForm";
-import { addToLoggerContext } from "../../logger";
+// import { addToLoggerContext } from "../../logger";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
 import moment from "moment";
 import { concatName } from "../common/functions";
@@ -71,11 +71,11 @@ class PostLogin extends React.Component<PostLoginProps, State> {
             });
           }
 
-          addToLoggerContext("userid", data.me.id);
-          addToLoggerContext("isadmin", data.me.isadmin);
-          addToLoggerContext("language", data.me.language);
-          addToLoggerContext("companyid", data.me.company.unit.id);
-          addToLoggerContext("companyname", data.me.company.name);
+          // addToLoggerContext("userid", data.me.id);
+          // addToLoggerContext("isadmin", data.me.isadmin);
+          // addToLoggerContext("language", data.me.language);
+          // addToLoggerContext("companyid", data.me.company.unit.id);
+          // addToLoggerContext("companyname", data.me.company.name);
 
           if (isImpersonating) {
             context.addHeaderNotification(

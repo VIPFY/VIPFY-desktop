@@ -1,7 +1,8 @@
 import * as React from "react";
+import { withRouter } from "react-router-dom";
 import classNames from "classnames";
-import UniversalButton from "./universalButtons/universalButton";
 import BreadCrumbs from "./BreadCrumbs";
+import UniversalButton from "./universalButtons/universalButton";
 import UniversalSearchBox from "../components/universalSearchBox";
 import Tag from "../common/Tag";
 
@@ -53,6 +54,7 @@ interface PageHeaderProps {
   pagination?: Pagination;
   children?: any;
   disabled?: boolean;
+  history: any; // provided automatically by "withRouter()" wraooer
 }
 
 interface PageHeaderState {
@@ -64,6 +66,11 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   constructor(props) {
     super(props);
     this.state = { loading: false, activeFilters: [] };
+    this.goBack = this.goBack.bind(this);
+  }
+
+  goBack() {
+    this.props.history.goBack();
   }
 
   clearFilters() {
@@ -88,7 +95,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
 
     return (
       <div className="pageHeader">
-        {showBreadCrumbs && <BreadCrumbs />}
+        <div>
+          <UniversalButton label="Back" onClick={this.goBack} className="backButton" />
+          {showBreadCrumbs && <BreadCrumbs />}
+        </div>
 
         <div className="titleRow">
           <h1>{title}</h1>
@@ -167,4 +177,4 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   }
 }
 
-export default PageHeader;
+export default withRouter(PageHeader);

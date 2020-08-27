@@ -67,6 +67,15 @@
           border-radius: 8px;
           font-size: 14px;
         }
+
+        .featureTag {
+          margin-top: 16px;
+        }
+
+        .buyLicenseButton {
+          background-color: $primarygreen;
+          color: $white;
+        }
       }
     }
   }
@@ -115,7 +124,7 @@
     }
 
     .lineClamp {
-      height: 5em;
+      height: 7em;
       overflow: hidden;
     }
   }
@@ -127,6 +136,11 @@
 
       :first-child {
         flex-grow: 1;
+      }
+
+      blockquote {
+        font-size: 20px;
+        line-height: 28px;
       }
     }
   }
@@ -228,6 +242,14 @@
       }
     }
 
+    .buyPlanButton {
+      width: calc(100% - 10px);
+      min-height: 32px;
+      margin-top: 16px;
+      background-color: $primarygreen;
+      color: $white;
+    }
+
     .pricing {
       background-color: $primarygreen-light;
 
@@ -260,6 +282,31 @@
 
     .features {
       flex: 2 2 0;
+    }
+  }
+
+  .alternative {
+    padding: 16px;
+    display: flex;
+
+    .service-logo-circle {
+      margin-bottom: 8px;
+      width: 48px;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    :not(:last-child) {
+      margin-right: 16px;
+    }
+
+    :nth-child(odd) {
+      flex-grow: 1;
     }
   }
 }

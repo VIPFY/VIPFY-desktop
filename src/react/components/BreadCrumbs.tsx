@@ -4,7 +4,7 @@ import withBreadcrumbs from "react-router-breadcrumbs-hoc";
 import routes from "../routes";
 
 const Breadcrumbs = ({ breadcrumbs }) => (
-  <div className="breadCrumbs">
+  <span className="breadCrumbs">
     {breadcrumbs.map(({ match, breadcrumb }, i: number) => {
       // don't render the first breadcrumb: it links to "#/", which doesn't work in our app
       if (i == 0) {
@@ -23,7 +23,7 @@ const Breadcrumbs = ({ breadcrumbs }) => (
         </React.Fragment>
       );
     })}
-  </div>
+  </span>
 );
 
 // FIXME: The "routes" param doesn't seem to be respected while the routes are also imported in area.tsx.
