@@ -89,7 +89,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
 
         {hasPros && (
           <CardSection>
-            <ProsConsList prosCons={app.pros} />
+            <ProsConsList points={app.pros} type="pros" />
           </CardSection>
         )}
 

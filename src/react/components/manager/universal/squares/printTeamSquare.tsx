@@ -74,11 +74,11 @@ export default (props: Props) => {
       <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid: team }}>
         {({ loading, error = null, data }) => {
           if (loading) {
-            <div>Loading...</div>;
+            return <div>Loading...</div>;
           }
 
           if (error) {
-            <div>Error! {error.message}</div>;
+            return <div>Error! {error.message}</div>;
           }
 
           const fetchedteam = data.fetchTeam;

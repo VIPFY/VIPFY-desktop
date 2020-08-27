@@ -1,21 +1,22 @@
 import * as React from "react";
 import classNames from "classnames";
 
-interface ProsConsListProps {
-  prosCons: string[];
-  cons?: boolean; // if <false>, the arguments are displayed as "pros". if <true>, you get a list of "cons".
+interface Props {
+  points: string[];
+  type: "pros" | "cons";
 }
 
-class ProsConsList extends React.Component<ProsConsListProps> {
+class ProsConsList extends React.PureComponent<Props> {
   render() {
-    const { prosCons, cons } = this.props;
+    const { points, type } = this.props;
+    const isPros = type === "pros";
 
-    return prosCons.map((argument, i) => (
-      <div className={classNames("argument", { pro: !cons, con: cons })} key={i}>
+    return points.map(point => (
+      <div className={classNames("point", { pro: isPros, con: !isPros })} key={point}>
         <div>
-          <span className={classNames("fal", "fa-fw", { "fa-plus": !cons, "fa-minus": cons })} />
+          <span className={classNames("fal fa-fw", { "fa-plus": isPros, "fa-minus": !isPros })} />
         </div>
-        <p>{argument}</p>
+        <p>{point}</p>
       </div>
     ));
   }
