@@ -2593,10 +2593,6 @@ progress[value] {
 }
 
 .tag {
-  padding: 2px 5px;
-  font-size: 10px;
-  border-radius: 4px;
-
   &.warn {
     background-color: #ffc15d;
     color: $white;

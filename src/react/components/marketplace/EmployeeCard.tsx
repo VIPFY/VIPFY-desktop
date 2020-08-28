@@ -4,7 +4,6 @@ import UniversalCheckbox from "../../components/universalForms/universalCheckbox
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 import Tag from "../../common/Tag";
-import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import ServiceLogo from "../services/ServiceLogo";
 
 interface EmployeeCardProps {
@@ -25,7 +24,8 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
             className="pic"
             size={40}
             employee={employee}
-            style={{ marginTop: "0", borderRadius: "20px", fontSize: "14px" }}
+            circle={true}
+            style={{ marginTop: "0", fontSize: "14px" }}
           />
 
           <div className="title">{concatName(employee)}</div>
