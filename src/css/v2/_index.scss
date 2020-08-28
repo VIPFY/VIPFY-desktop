@@ -5,13 +5,14 @@
 @import "mixins";
 @import "util";
 
+@import "formElements/index";
+
 // please add in alphabetical order
 @import "appDetails";
 @import "appOverviewCard";
 @import "breadCrumbs";
 @import "browser";
 @import "card";
-@import "checkbox";
 @import "checkout";
 @import "click-tracking-study";
 @import "employeeCard";
@@ -23,7 +24,6 @@
 @import "pageHeader";
 @import "prosConsList";
 @import "tags";
-@import "textInput";
 @import "vipfy";
 
 // last add macos specials

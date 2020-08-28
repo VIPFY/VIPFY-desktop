@@ -1,11 +1,9 @@
 import * as React from "react";
-import ReactPasswordStrength from "react-password-strength";
 import { decode } from "jsonwebtoken";
 import { useApolloClient } from "react-apollo";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
 import { PW_MIN_LENGTH } from "../../common/constants";
-import IconButton from "../../common/IconButton";
 import {
   hashPassword,
   generateNewKeypair,
@@ -204,8 +202,8 @@ export default (props: PasswordChangeProps) => {
     <div style={{ position: "relative" }}>
       <h1>Please set your new password</h1>
       <div>
-        You successfully recovered your account. Please set a new password. A valid password must
-        have at least {PW_MIN_LENGTH} characters.
+        You successfully recovered your account. A valid password is at least {PW_MIN_LENGTH}{" "}
+        characters long.
       </div>
 
       <form ref={form} onSubmit={handleSubmit} id="password-fields">
@@ -237,7 +235,7 @@ export default (props: PasswordChangeProps) => {
       <UniversalButton
         disabled={!canSubmit() || loading}
         form="password-fields"
-        label="Set new Password"
+        label="Set New Password"
         type="high"
         customButtonStyles={{ width: "100%", marginTop: "24px" }}
       />

@@ -106,7 +106,7 @@ class DataNameForm extends React.Component<Props, State> {
                         showPromoInput: !prevState.showPromoInput
                       }))
                     }>
-                    {`${showPromoInput ? "No promocode?" : "Do you have a promocode?"}`}{" "}
+                    {`${showPromoInput ? "No promo code?" : "Do you have a promo code?"}`}{" "}
                     <span>Click here</span>
                   </button>
 
@@ -119,7 +119,7 @@ class DataNameForm extends React.Component<Props, State> {
                     ) : (
                       <UniversalTextInput
                         id="promocode"
-                        label="Promocode"
+                        label="Promo Code"
                         disabled={loading}
                         livevalue={v => this.setState({ promocode: v })}
                         errorEvaluation={error}

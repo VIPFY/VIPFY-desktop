@@ -8,6 +8,7 @@ import PasswordRecovery from "../components/signin/PasswordRecovery";
 import NewPassword from "../components/signin/NewPassword";
 import RecoveryKey from "../components/signin/RecoveryKey";
 import TwoFactor from "./TwoFactor";
+import CardSection from "../components/CardSection";
 
 interface Props {
   login: Function;
@@ -51,7 +52,6 @@ class SignIn extends React.Component<Props, State> {
   };
 
   loginComponent = () => {
-    console.log("STATE", this.state, this.props);
     const store = new Store();
     if (this.props.twoFactor) {
       return (
@@ -132,8 +132,8 @@ class SignIn extends React.Component<Props, State> {
       default:
         return (
           <div className="footerLinks">
-            <span>Don't have an account yet?</span>
-            <a onClick={() => this.changeProgress("registerCompany")}>Create a new company!</a>
+            <span>Don't have an account? </span>
+            <a onClick={() => this.changeProgress("registerCompany")}>Create a company account</a>
           </div>
         );
     }
@@ -142,14 +142,9 @@ class SignIn extends React.Component<Props, State> {
   render() {
     return (
       <div className="loginHolder">
-        <div className="loginCard">
-          {this.loginComponent()}
-          {!this.props.twoFactor && (
-            <>
-              <hr />
-              {this.printNavLink()}
-            </>
-          )}
+        <div className="card loginCard">
+          <CardSection>{this.loginComponent()}</CardSection>
+          {!this.props.twoFactor && <CardSection>{this.printNavLink()}</CardSection>}
         </div>
       </div>
     );

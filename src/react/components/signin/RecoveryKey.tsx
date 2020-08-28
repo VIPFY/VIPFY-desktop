@@ -3,11 +3,9 @@ import { remote } from "electron";
 import gql from "graphql-tag";
 import { Mutation, useApolloClient } from "react-apollo";
 import UniversalButton from "../universalButtons/universalButton";
-import IconButton from "../../common/IconButton";
 import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
-import passwordForgot from "../../../images/forgot-password-new.png";
 import PopupBase from "../../popups/universalPopups/popupBase";
 
 const SAVE_RECOVERY_KEY = gql`
@@ -112,7 +110,7 @@ const RecoveryKey = (props: Props) => {
             <span className="extra">Only</span>
             <span> with the Recovery Key you can recover your credentials if you need.</span>
           </p>
-          <p>If you already had a code, it is no longer valid.</p>
+          <p>If you already had a Recovery Key, it is no longer valid.</p>
         </div>
 
         <div className="recoveryKey">{generateReadableKey()}</div>

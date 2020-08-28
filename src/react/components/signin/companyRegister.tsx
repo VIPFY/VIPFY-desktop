@@ -149,7 +149,7 @@ class RegisterCompany extends React.Component<Props, State> {
           <UniversalTextInput
             id="emailreg"
             errorEvaluation={!email.match(emailRegex)}
-            errorhint="A valid Email looks like this john@vipfy.com"
+            errorhint="A valid email address looks like this: yourfirstname@vipfy.com"
             label="Email"
             livevalue={v => this.setState({ email: v })}
             focus={true}
@@ -192,7 +192,7 @@ class RegisterCompany extends React.Component<Props, State> {
             <div className="agreementText">
               By registering I agree to the
               <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-                Terms of Service of VIPFY
+                VIPFY Terms of Service
               </a>
             </div>
           </UniversalCheckbox>
@@ -201,7 +201,7 @@ class RegisterCompany extends React.Component<Props, State> {
             <div className="agreementText">
               By registering I agree to the
               <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                Privacy Agreement of VIPFY
+                VIPFY Privacy Agreement
               </a>
             </div>
           </UniversalCheckbox>
@@ -218,7 +218,7 @@ class RegisterCompany extends React.Component<Props, State> {
             this.state.passwordData.score < 2
           }
           onClick={this.continue}
-          customButtonStyles={{ width: "100%", marginTop: "24px" }}
+          customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
         />
         {this.state.register && (
           <PopupBase

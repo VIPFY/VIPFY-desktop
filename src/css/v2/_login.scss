@@ -1,36 +1,21 @@
 .loginHolder {
   height: 100%;
   width: 100%;
+  background-color: $lightgrey-lighter;
   background-image: url("../../images/loginBackground_large.png");
   background-repeat: no-repeat;
   background-size: contain;
-  background-position: center;
-  background-color: #eaf1f8;
-  background-position-x: left;
+  background-position: left center;
   display: flex;
   align-items: center;
   justify-content: flex-end;
 
   .loginCard {
     width: 384px;
-    height: 488px;
+    //height: 488px;
     margin-right: 10%;
-    background-color: $white;
-    box-shadow: 0px 6px 10px #00000026;
-    border: 1px solid $lightgrey-lightest;
     border-radius: 20px;
-    padding: 32px;
-    display: grid;
-    grid-template-rows: 1fr 16px 19px;
-
-    > hr {
-      border: none;
-      border-top: 1px solid $lightgrey-dark;
-
-      &:last-child {
-        display: none;
-      }
-    }
+    padding: 16px;
 
     h1 {
       line-height: 32px;
@@ -103,7 +88,7 @@
       }
 
       &:invalid + div > button:last-of-type > .universalButton {
-        background: #ccc;
+        background: $lightgrey-darker;
         cursor: not-allowed;
       }
     }
@@ -123,41 +108,6 @@
       font-size: 12px;
       color: $red-darker;
     }
-  }
-}
-.passwordStrength {
-  display: inline-block;
-  position: relative;
-  border: 0;
-  font-family: inherit;
-  padding: 0;
-  line-height: 32px;
-  width: calc(100% - 32px);
-
-  .universalTextInput {
-    text-align: left;
-
-    &:hover {
-      background-color: unset;
-    }
-  }
-
-  .ReactPasswordStrength-strength-desc {
-    width: auto;
-    font-size: 80%;
-    padding: 0;
-  }
-
-  input {
-    box-sizing: content-box;
-  }
-}
-.passwordStrength-40 {
-  @extend .passwordStrength;
-  line-height: 40px;
-
-  .ReactPasswordStrength-strength-desc {
-    margin-right: 8px;
   }
 }
 .recoveryKeyPopup {
@@ -234,7 +184,7 @@
       width: 48px;
       height: 48px;
       border-radius: 4px;
-      background: #f5f5f5ff;
+      background: $lightgrey-lightest;
       box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
       outline: none;
       border: 0;

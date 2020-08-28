@@ -5,6 +5,7 @@ import { decode } from "jsonwebtoken";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
+import { emailRegex } from "../../common/constants";
 import { decryptMessage } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
 import { WorkAround } from "../../interfaces";
@@ -38,6 +39,7 @@ export default (props: Props) => {
   const [twoLoading, setTwoLoading] = React.useState(null);
   const [fullCode, setCode] = React.useState(null);
   const [email, setEmail] = React.useState(null);
+  const [liveEmail, setLiveEmail] = React.useState("");
   const [allFilled, setallFilled] = React.useState(null);
   const { data, loading, error: queryError } = useQuery(FETCH_RECOVERY_CHALLENGE, {
     variables: { email: email },
@@ -134,10 +136,13 @@ export default (props: Props) => {
         id="email"
         type="email"
         label="Email"
+        errorEvaluation={!liveEmail || !liveEmail.match(emailRegex)}
+        errorhint="A valid Email looks like this john@vipfy.com"
+        livevalue={liveEmail => setLiveEmail(liveEmail)}
         onEnter={() => null}
         endvalue={email => setEmail(email)}
       />
-      {email ? (
+      {email && email.match(emailRegex) && (
         <Mutation<WorkAround, WorkAround>
           mutation={RECOVER_PASSWORD}
           onCompleted={async ({ recoverPassword }) => {
@@ -178,7 +183,6 @@ export default (props: Props) => {
                 setLocalError(e3);
               }
             };
-
             return (
               <React.Fragment>
                 {loading ? (
@@ -187,8 +191,8 @@ export default (props: Props) => {
                   !queryError && (
                     <React.Fragment>
                       <p style={{ textAlign: "left" }}>
-                        Please put in your 44 characters long recovery code you got in the beginning
-                        to set a new password.
+                        To reset your password, enter the recovery code you got when you created
+                        your account.
                       </p>
 
                       <form onSubmit={handleSubmit} id="recovery-form">
@@ -199,7 +203,7 @@ export default (props: Props) => {
                           <i
                             className="fal fa-exclamation-circle"
                             style={{ marginRight: "4px" }}></i>
-                          Email and Revocery Key don't match!
+                          Email and recovery key don’t match.
                         </span>
                       )}
                     </React.Fragment>
@@ -209,28 +213,25 @@ export default (props: Props) => {
             );
           }}
         </Mutation>
-      ) : (
-        <div style={{ height: "226px" }}>
-          <span>Please enter the email of the account you want to reset.</span>
-        </div>
       )}
 
-      <span>Missing your recovery code? </span>
-      <a href="mailto: support@vipfy.store">Contact our support</a>
+      <span>Can’t find your recovery code? </span>
+      <a href="mailto: support@vipfy.store">Contact Support</a>
       <UniversalButton
-        label="Reset Password"
+        label={email && email.match(emailRegex) ? "Reset Password" : "Next"}
         form="recovery-form"
         type="high"
         disabled={
-          !email ||
-          email == "" ||
-          twoLoading ||
-          loading ||
-          queryError ||
-          !document.querySelector("#recovery-form > input") ||
-          !allFilled
+          (!email && !liveEmail.match(emailRegex)) ||
+          (email &&
+            (!email.match(emailRegex) ||
+              twoLoading ||
+              loading ||
+              queryError ||
+              !document.querySelector("#recovery-form > input") ||
+              !allFilled))
         }
-        customButtonStyles={{ width: "100%", marginTop: "24px" }}
+        customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
       />
     </div>
   );

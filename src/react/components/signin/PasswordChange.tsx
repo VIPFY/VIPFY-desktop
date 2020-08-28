@@ -6,9 +6,7 @@ import { ApolloClient } from "apollo-client";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
-import { PW_MIN_LENGTH } from "../../common/constants";
 import { updatePassword } from "../../common/passwords";
-import welcomeImage from "../../../images/forgot-password-new.png";
 
 interface PasswordChangeProps {
   logMeOut: Function;
@@ -102,11 +100,13 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
 
     return (
       <div className="changePassword">
-        <h1>{firstLogin ? "Admin forces Password Reset" : "Please set your password"}</h1>
+        <h1>
+          {firstLogin ? "Password Reset Required by Administration" : "Please set your password"}
+        </h1>
         <div>
           {firstLogin
-            ? "Your Admin forces you to reset your password."
-            : "Your initial password has been sent to your email. Please replace it to continue."}
+            ? "Your company’s administration requests you reset your password."
+            : "Your initial password was sent to you via email. Please choose a new one to continue."}
         </div>
 
         <div className="password-fields">
@@ -127,7 +127,7 @@ class PasswordChange extends React.Component<PasswordChangeProps, PasswordChange
           <UniversalTextInput
             id="repeat"
             livevalue={e => this.repeatPasswordChanged(e)}
-            label="Repeat"
+            label="Repeat New Password"
             errorEvaluation={
               this.state.newPassword !== null &&
               this.state.repeatPassword !== null &&
