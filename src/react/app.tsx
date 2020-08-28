@@ -17,7 +17,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import SignIn from "./pages/signin";
-import { resetLoggingContext } from "../logger";
+import { setClient } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
@@ -115,6 +115,7 @@ class App extends React.Component<AppProps, AppState> {
   references: { key; element; listener?; action? }[] = [];
 
   async componentDidMount() {
+    setClient(this.props.client); // client never gets swapped out at runtime, so doing this at mount is enough
     this.props.logoutFunction(this.logMeOut);
     this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
@@ -230,7 +231,6 @@ class App extends React.Component<AppProps, AppState> {
 
         await localStorage.removeItem("token");
         await this.props.client.cache.reset(); // clear graphql cache
-        await resetLoggingContext();
         await this.props.history.push("/");
       } finally {
         location.reload();

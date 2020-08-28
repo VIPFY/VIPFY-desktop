@@ -1,22 +1,22 @@
 import * as React from "react";
 import classNames from "classnames";
-import Tag from "../../common/Tag";
 
-interface ProsConsListProps {
-  prosCons: string[];
-  cons?: boolean;
+interface Props {
+  points: string[];
+  type: "pros" | "cons";
 }
 
-class ProsConsList extends React.Component<ProsConsListProps> {
+class ProsConsList extends React.PureComponent<Props> {
   render() {
-    const { prosCons, cons } = this.props;
+    const { points, type } = this.props;
+    const isPros = type === "pros";
 
-    return prosCons.map((argument, i) => (
-      <div className={classNames("argument", { pro: !cons, con: cons })} key={i}>
-        <Tag>
-          <span className={classNames("fal", "fa-fw", { "fa-plus": !cons, "fa-minus": cons })} />
-        </Tag>
-        <p>{argument}</p>
+    return points.map(point => (
+      <div className={classNames("point", { pro: isPros, con: !isPros })} key={point}>
+        <div>
+          <span className={classNames("fal fa-fw", { "fa-plus": isPros, "fa-minus": !isPros })} />
+        </div>
+        <p>{point}</p>
       </div>
     ));
   }

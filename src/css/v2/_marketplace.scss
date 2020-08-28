@@ -195,22 +195,6 @@
     }
   }
 
-  .featureTag {
-    padding: 5px 12px;
-  }
-
-  .pricingTag {
-    height: 20px;
-    padding: 1px 12px;
-    border: 1px solid $lightgrey-darker;
-    background-color: $white;
-    font-size: 12px;
-  }
-
-  .freeTrialTag {
-    text-transform: uppercase;
-  }
-
   .starRating {
     .fa-star {
       color: $midgrey-dark;
@@ -228,6 +212,7 @@
     }
   }
 }
+
 .tooManyFieldDropdown {
   margin-top: 16px;
 }
