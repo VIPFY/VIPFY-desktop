@@ -40,7 +40,7 @@ export default (props: Props) => {
           <h1>Two Factor Authentication</h1>
           {props.twoFactor.startsWith("otpauth://") ? (
             <React.Fragment>
-              <p>Please enter the six-character digit code to authenticate yourself.</p>
+              <p>Please enter the six digit code that is displayed on your Google Authenticator.</p>
               <TwoFactorForm
                 handleSubmit={values => handleSubmit(values, validateToken)}
                 fieldNumber={6}

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { clipboard } from "electron";
 import zxcvbn from "zxcvbn";
+import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
 
 interface Props {
   id: string;
@@ -141,17 +142,17 @@ class UniversalTextInput extends React.Component<Props, State> {
     let passwordData = undefined;
 
     if (this.props.checkPassword) {
-      if (value.length < 10) {
-        passwordError = "A Password need a minimum length of 10";
+      if (value.length < PW_MIN_LENGTH) {
+        passwordError = `A Password need a minimum length of ${PW_MIN_LENGTH}`;
       } else {
         const result = zxcvbn(value, this.props.additionalPasswordChecks || []);
-        if (result.score < 2) {
+        if (result.score < PW_MIN_STRENGTH) {
           passwordError =
             result.feedback.warning != ""
               ? result.feedback.warning
               : "Password is too weak. Please use another one";
         }
-        passwordData = { score: result.score, isValid: result.score >= 2 };
+        passwordData = { score: result.score, isValid: result.score >= PW_MIN_STRENGTH };
       }
     }
 

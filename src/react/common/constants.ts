@@ -2,6 +2,7 @@ export const unitPicFolder =
   "https://storage.googleapis.com/vipfy-imagestore-01/unit_profilepicture/";
 export const defaultPic = `${unitPicFolder}default.png`;
 export const PW_MIN_LENGTH = 10;
+export const PW_MIN_STRENGTH = 10;
 export const preAppImageUrl = "https://appimages.vipfy.store/140/140/fit/";
 export const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 export const vipfyVacationAdmins = [
