@@ -149,7 +149,7 @@ class RegisterCompany extends React.Component<Props, State> {
           <UniversalTextInput
             id="emailreg"
             errorEvaluation={!email.match(emailRegex)}
-            errorhint="A valid email address looks like this: yourfirstname@vipfy.com"
+            errorhint="A valid email address looks like: name@vipfy.com"
             label="Email"
             livevalue={v => this.setState({ email: v })}
             focus={true}
@@ -162,7 +162,7 @@ class RegisterCompany extends React.Component<Props, State> {
         <div className="UniversalInputHolder">
           <UniversalTextInput
             id="companyreg"
-            label="Companyname"
+            label="Company Name"
             livevalue={v => this.setState({ company: v })}
             onEnter={() =>
               document.querySelector("[name='password_input']") &&
@@ -178,34 +178,29 @@ class RegisterCompany extends React.Component<Props, State> {
           additionalPasswordChecks={[this.state.email, this.state.company]}
         />
 
-        <div
-          className="agreementBox"
-          style={{
-            marginTop: "16px",
-            display: "flex",
-            flexFlow: "column",
-            alignItems: "unset",
-            justifyContent: "space-around",
-            height: "92px"
-          }}>
-          <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
-            <div className="agreementText">
-              By registering I agree to the
-              <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-                VIPFY Terms of Service
-              </a>
-            </div>
-          </UniversalCheckbox>
+        <UniversalCheckbox
+          name="tos"
+          liveValue={v => this.setState({ tos: v })}
+          style={{ marginTop: "16px" }}>
+          <div className="agreementText">
+            By registering I agree to the
+            <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
+              VIPFY Terms of Service
+            </a>
+          </div>
+        </UniversalCheckbox>
 
-          <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
-            <div className="agreementText">
-              By registering I agree to the
-              <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                VIPFY Privacy Agreement
-              </a>
-            </div>
-          </UniversalCheckbox>
-        </div>
+        <UniversalCheckbox
+          name="privacy"
+          liveValue={v => this.setState({ privacy: v })}
+          style={{ marginTop: "16px" }}>
+          <div className="agreementText">
+            By registering I agree to the
+            <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
+              VIPFY Privacy Agreement
+            </a>
+          </div>
+        </UniversalCheckbox>
 
         <UniversalButton
           label="Sign up for free"

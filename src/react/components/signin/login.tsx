@@ -46,8 +46,7 @@ class Login extends React.Component<Props, State> {
     this.setState({ submitting: true });
     const hasError = await this.props.continueFunction(this.state.email, this.state.field2);
     if (hasError) {
-      this.setState({ showError: true });
-      this.setState({ submitting: false });
+      this.setState({ showError: true, submitting: false });
     }
   };
 

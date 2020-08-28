@@ -16,7 +16,7 @@ interface State {
   value: any;
 }
 
-class UniversalCheckbox extends React.Component<Props, State> {
+class UniversalRadiobutton extends React.Component<Props, State> {
   state = {
     value: this.props.startingvalue || false
   };
@@ -29,12 +29,12 @@ class UniversalCheckbox extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="genericCheckboxHolder" style={this.props.style || {}}>
+      <div className="genericRadioHolder" style={this.props.style || {}}>
         <input
           type="checkbox"
           disabled={this.props.disabled}
-          className="checkbox"
-          id={`checkbox-${this.props.name}`}
+          className="radio"
+          id={`radio-${this.props.name}`}
           checked={this.state.value == true}
           name={this.props.name}
           onChange={e => {
@@ -43,21 +43,23 @@ class UniversalCheckbox extends React.Component<Props, State> {
           }}
           form={this.props.form}
         />
-        <label htmlFor={`checkbox-${this.props.name}`} className="genericFormCheckbox">
-          <div
-            className="styleCheckbox"
-            style={
-              this.props.checkboxSmall
-                ? { width: "12px", height: "12px" }
-                : { width: "20px", height: "20px" }
-            }>
-            <div className={classNames("checkboxSquare", this.state.value && "active")}></div>
-            <div className="iconHolder">
-              <i
-                className={`fal fa-${this.state.value == true ? "check" : "minus"}`}
-                style={this.props.checkboxSmall ? { fontSize: "12px" } : { fontSize: "16px" }}
-              />
-            </div>
+        <label htmlFor={`radio-${this.props.name}`} className="genericFormRadiobutton">
+          <div className="outerCircle">
+            <i
+              className="far fa-circle"
+              style={this.props.checkboxSmall ? { fontSize: "16px" } : { fontSize: "24px" }}
+            />
+            <div
+              className="innerCircle"
+              style={
+                this.state.value
+                  ? {
+                      ...(this.props.checkboxSmall
+                        ? { width: "8px", height: "8px" }
+                        : { width: "12px", height: "12px" })
+                    }
+                  : {}
+              }></div>
           </div>
           {this.props.children}
         </label>
@@ -66,4 +68,4 @@ class UniversalCheckbox extends React.Component<Props, State> {
   }
 }
 
-export default UniversalCheckbox;
+export default UniversalRadiobutton;
