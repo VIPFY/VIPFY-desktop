@@ -47,7 +47,7 @@ export default (props: Props) => {
 
     const initialList = name ? name.replace("-", " ").match(/\b(\w)/g) : [];
 
-    initials = initialList.length > 0 ? initialList.join("").toUpperCase() : "?";
+    initials = initialList && initialList.length > 0 ? initialList.join("").toUpperCase() : "?";
 
     if (initials.length > 3) {
       initials = initials.charAt(0) + initials.slice(-2);
