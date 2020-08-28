@@ -10,6 +10,10 @@
     display: flex;
   }
 
+  .backButton {
+    margin-right: 16px;
+  }
+
   h1 {
     flex-grow: 1;
   }
@@ -36,12 +40,6 @@
   .collectionRow {
     display: flex;
     align-items: center;
-
-    .headerSearch {
-      width: 25%;
-      max-width: 25%;
-      margin-right: 24px;
-    }
 
     .headerFilter {
       margin-right: 16px;
