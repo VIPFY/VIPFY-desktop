@@ -45,48 +45,56 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
 
   render() {
     return (
-      <section className="welcome">
-        <div className="welcome-holder">
-          <img src={welcomeImage} alt="Welcome" />
-          <div className="welcome-text">
-            <h1>Welcome to VIPFY!</h1>
-            <div>
-              With VIPFY you can use many services. Your administrator decides which services you
-              can use. If you need access to additional services, simply request them through the
-              marketplace or ask your administrator. <br />
-              Please be aware that your administrator could access any data you enter through VIPFY.
-            </div>
+      <div className="firstLogin">
+        <h1>Welcome to VIPFY!</h1>
+        <p>
+          With VIPFY you can use the services you need in one secure enviroment with just one login.
+        </p>
+        <p>
+          Please be aware that your administrator could access any data you enter through VIPFY.
+        </p>
 
-            <div className="checkboxes">
-              <UniversalCheckbox name="tos" liveValue={value => this.setState({ tos: value })}>
-                <span style={{ lineHeight: "18px" }}>
-                  I agree to the Terms of Service of VIPFY.
-                </span>
-              </UniversalCheckbox>
-              <div style={{ height: "8px" }}></div>
-              <UniversalCheckbox
-                name="privacy"
-                liveValue={value => this.setState({ privacy: value })}>
-                <span style={{ lineHeight: "18px" }}>
-                  I agree to the Privacy Agreement of VIPFY.
-                </span>
-              </UniversalCheckbox>
+        <div
+          className="agreementBox"
+          style={{
+            marginTop: "16px",
+            display: "flex",
+            flexFlow: "column",
+            alignItems: "unset",
+            justifyContent: "space-around",
+            height: "92px"
+          }}>
+          <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
+            <div className="agreementText">
+              By registering I agree to the
+              <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
+                VIPFY Terms of Service
+              </a>
             </div>
+          </UniversalCheckbox>
 
-            <UniversalButton
-              disabled={!this.state.privacy || !this.state.tos}
-              customStyles={{ width: "105px" }}
-              label="continue"
-              type="high"
-              onClick={() => this.confirm()}
-            />
-
-            <div className={this.state.error === null ? "formError noError" : "formError oneError"}>
-              {this.state.error}
+          <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
+            <div className="agreementText">
+              By registering I agree to the
+              <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
+                VIPFY Privacy Agreement
+              </a>
             </div>
-          </div>
+          </UniversalCheckbox>
         </div>
-      </section>
+
+        <UniversalButton
+          disabled={!this.state.privacy || !this.state.tos}
+          label="continue"
+          type="high"
+          onClick={() => this.confirm()}
+          customButtonStyles={{ width: "100%", marginTop: "24px" }}
+        />
+
+        <div className={this.state.error === null ? "formError noError" : "formError oneError"}>
+          {this.state.error}
+        </div>
+      </div>
     );
   }
 }

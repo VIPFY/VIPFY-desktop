@@ -101,58 +101,6 @@
   }
 }
 
-.generic-checkbox-holder {
-  display: flex;
-  align-items: center;
-  position: relative;
-
-  .cool-checkbox {
-    opacity: 0;
-    position: absolute;
-    z-index: -1;
-  }
-
-  .generic-form-checkbox {
-    cursor: pointer;
-    height: 18px;
-    display: flex;
-
-    & > .checkboxSquare {
-      width: 15px;
-      height: 15px;
-      opacity: 1;
-      border: 1.5px solid #c8ccd4;
-      border-radius: 2px;
-      color: $white;
-      background-color: $white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: all 300ms;
-      text-align: center;
-      & > i {
-        opacity: 0;
-        font-size: 15px;
-        line-height: 16px;
-        width: 16px;
-        height: 16px;
-      }
-      &Active {
-        @extend .checkboxSquare;
-        background-color: $primarygreen;
-        border: 1.5px solid $primarygreen;
-        & > i {
-          opacity: 1;
-        }
-      }
-    }
-
-    & > span {
-      margin-left: 16px;
-    }
-  }
-}
-
 .removeList {
   li {
     margin-bottom: 12px !important;
@@ -176,11 +124,6 @@
   padding: 0px 48px 0px 48px;
   margin-bottom: 24px;
   overflow: auto;
-}
-
-#agb-checkbox {
-  opacity: 0;
-  position: absolute;
 }
 
 .card-element {

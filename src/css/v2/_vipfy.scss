@@ -2,3 +2,10 @@
   color: $midgrey-dark;
   font-family: "Roboto", sans-serif;
 }
+.appWithOpenedDevTools {
+  margin-right: 600px;
+
+  .backgroundPopup {
+    width: calc(100% - 600px);
+  }
+}

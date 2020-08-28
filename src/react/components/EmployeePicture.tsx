@@ -45,13 +45,9 @@ export default (props: Props) => {
   if (employee) {
     name = concatName(employee);
 
-    initials = name
-      ? name
-          .replace("-", " ")
-          .match(/\b(\w)/g)
-          .join("")
-          .toUpperCase()
-      : "?";
+    const initialList = name ? name.replace("-", " ").match(/\b(\w)/g) : [];
+
+    initials = initialList && initialList.length > 0 ? initialList.join("").toUpperCase() : "?";
 
     if (initials.length > 3) {
       initials = initials.charAt(0) + initials.slice(-2);

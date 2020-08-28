@@ -7,6 +7,7 @@ interface Props {
   fieldNumber: number;
   buttonLabel?: string;
   buttonStyles?: object;
+  customButtonStyles?: object;
   disabled?: boolean;
   ref?: any;
 }
@@ -78,9 +79,10 @@ class TwoFactorForm extends React.Component<Props, State> {
     this.props.handleSubmit(Object.values(this.state).reduce((acc, cv) => acc + cv));
   };
 
-  mapFields = items =>
-    items.map(item => (
+  mapFields = (items, first) =>
+    items.map((item, k) => (
       <input
+        autoFocus={k == 0 && item && first}
         key={item}
         ref={node => (this[item] = node)}
         onChange={this.handleChange}
@@ -91,7 +93,7 @@ class TwoFactorForm extends React.Component<Props, State> {
         min="0"
         max="9"
         step="1"
-        form="two-factor-form"
+        form="twoFactorForm"
       />
     ));
 
@@ -108,18 +110,18 @@ class TwoFactorForm extends React.Component<Props, State> {
       }
     }
 
-    content.push(this.mapFields(first));
+    content.push(this.mapFields(first, true));
 
     if (this.props.seperator) {
       content.push(
         <i className="fal fa-minus" style={{ display: "flex", alignItems: "center" }} />
       );
-      content.push(this.mapFields(second));
+      content.push(this.mapFields(second, false));
     }
 
     return (
       <React.Fragment>
-        <form ref={this.props.ref || null} id="two-factor-form" onSubmit={this.handleSubmit}>
+        <form ref={this.props.ref || null} id="twoFactorForm" onSubmit={this.handleSubmit}>
           {content}
         </form>
 
@@ -127,6 +129,7 @@ class TwoFactorForm extends React.Component<Props, State> {
           disabled={!this.isValid() || this.props.disabled}
           label={this.props.buttonLabel ? this.props.buttonLabel : "Continue"}
           type="high"
+          customButtonStyles={this.props.customButtonStyles}
           customStyles={this.props.buttonStyles}
           onClick={this.handleSubmit}
         />

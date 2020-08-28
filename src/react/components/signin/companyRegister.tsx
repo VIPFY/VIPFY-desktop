@@ -1,5 +1,4 @@
 import * as React from "react";
-import ReactPasswordStrength from "react-password-strength";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
@@ -91,52 +90,46 @@ class RegisterCompany extends React.Component<Props, State> {
 
   continue = async () => {
     try {
-      if (this.state.privacy && this.state.tos) {
-        this.setState({ register: true, error: "" });
-        const {
-          passwordData: { password }
-        } = this.state;
+      this.setState({ register: true, error: "" });
+      const {
+        passwordData: { password }
+      } = this.state;
 
-        const salt = await crypto.getRandomSalt();
-        const { loginkey, encryptionkey1 } = await crypto.hashPassword(
-          this.props.client,
-          this.state.email,
-          password,
-          salt
-        );
+      const salt = await crypto.getRandomSalt();
+      const { loginkey, encryptionkey1 } = await crypto.hashPassword(
+        this.props.client,
+        this.state.email,
+        password,
+        salt
+      );
 
-        const passwordMetrics = {
-          passwordlength: password.length,
-          passwordstrength: computePasswordScore(password)
-        };
+      const passwordMetrics = {
+        passwordlength: password.length,
+        passwordstrength: computePasswordScore(password)
+      };
 
-        const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
-        const adminKey = await crypto.generateAdminKeypair(
-          Buffer.from(personalKey.publickey, "hex")
-        );
+      const personalKey = await crypto.generatePersonalKeypair(encryptionkey1);
+      const adminKey = await crypto.generateAdminKeypair(Buffer.from(personalKey.publickey, "hex"));
 
-        const res = await this.props.signUp({
-          variables: {
-            email: this.state.email,
-            name: this.state.company,
-            privacy: this.state.privacy,
-            tOS: this.state.tos,
-            // Registration for private persons is currently not possible
-            isPrivate: false,
-            passkey: loginkey.toString("hex"),
-            passwordMetrics,
-            personalKey,
-            adminKey,
-            passwordsalt: salt
-          }
-        });
-        const { token } = res.data.signUp;
-        localStorage.setItem("token", token);
-        localStorage.setItem("key1", encryptionkey1.toString("hex"));
-        this.props.continueFunction();
-      } else {
-        this.setState({ error: "Please accept our Terms of Service and Privacy Agreement" });
-      }
+      const res = await this.props.signUp({
+        variables: {
+          email: this.state.email,
+          name: this.state.company,
+          privacy: this.state.privacy,
+          tOS: this.state.tos,
+          // Registration for private persons is currently not possible
+          isPrivate: false,
+          passkey: loginkey.toString("hex"),
+          passwordMetrics,
+          personalKey,
+          adminKey,
+          passwordsalt: salt
+        }
+      });
+      const { token } = res.data.signUp;
+      localStorage.setItem("token", token);
+      localStorage.setItem("key1", encryptionkey1.toString("hex"));
+      this.props.continueFunction();
     } catch (err) {
       this.setState({
         error:
@@ -149,162 +142,105 @@ class RegisterCompany extends React.Component<Props, State> {
     const { email } = this.state;
 
     return (
-      <div className="dataGeneralForm">
-        <div className="holder">
-          <div className="logo" />
-          <img src={welcomeBack} className="illustration-login" />
+      <div>
+        <h1>Register your Company</h1>
 
-          <div className="holder-right register-company-holder">
-            <h1>Register your Company</h1>
+        <div className="UniversalInputHolder">
+          <UniversalTextInput
+            id="emailreg"
+            errorEvaluation={!email.match(emailRegex)}
+            errorhint="A valid email address looks like: name@vipfy.com"
+            label="Email"
+            livevalue={v => this.setState({ email: v })}
+            focus={true}
+            onEnter={() =>
+              document.querySelector("#companyreg") && document.querySelector("#companyreg").focus()
+            }
+          />
+        </div>
 
-            <div className="UniversalInputHolder">
-              <UniversalTextInput
-                id="emailreg"
-                width="312px"
-                errorEvaluation={email.length > 5 && !email.match(emailRegex)}
-                errorhint="A valid Email looks like this john@vipfy.com"
-                label="Email"
-                livevalue={v => this.setState({ email: v })}
-                focus={true}
-                required={true}
-              />
-            </div>
+        <div className="UniversalInputHolder">
+          <UniversalTextInput
+            id="companyreg"
+            label="Company Name"
+            livevalue={v => this.setState({ company: v })}
+            onEnter={() =>
+              document.querySelector("[name='password_input']") &&
+              document.querySelector("[name='password_input']").focus()
+            }
+          />
+        </div>
+        <UniversalTextInput
+          id="newPassword"
+          label="New Password"
+          type="password"
+          checkPassword={passwordData => this.setState({ passwordData })}
+          additionalPasswordChecks={[this.state.email, this.state.company]}
+        />
 
-            <div className="UniversalInputHolder">
-              <UniversalTextInput
-                id="companyreg"
-                width="312px"
-                label="Companyname"
-                livevalue={v => this.setState({ company: v })}
-              />
-            </div>
+        <UniversalCheckbox
+          name="tos"
+          liveValue={v => this.setState({ tos: v })}
+          style={{ marginTop: "16px" }}>
+          <div className="agreementText">
+            By registering I agree to the
+            <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
+              VIPFY Terms of Service
+            </a>
+          </div>
+        </UniversalCheckbox>
 
-            <div className="password-container">
-              <div className="textField" style={{ width: "312px", textAlign: "left" }}>
-                <label htmlFor="passwordNew" className="universalLabel">
-                  New Password
-                </label>
-                <div className="universalLabelInput" style={{ height: "32px" }}>
-                  <ReactPasswordStrength
-                    className="passwordStrength"
-                    minLength={PW_MIN_LENGTH}
-                    minScore={2}
-                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                    tooShortWord={"too short"}
-                    inputProps={{
-                      name: "password_input",
-                      autoComplete: "off",
-                      placeholder: "New Password",
-                      className: "cleanup universalTextInput toggle-password"
-                    }}
-                    changeCallback={state => this.handlePasswordChange(state)}
-                  />
-                  <IconButton
-                    icon={`eye${this.state.passwordData.show ? "" : "-slash"}`}
-                    onClick={() =>
-                      this.setState(prevState => {
-                        const passwordField = document.querySelector(".toggle-password");
+        <UniversalCheckbox
+          name="privacy"
+          liveValue={v => this.setState({ privacy: v })}
+          style={{ marginTop: "16px" }}>
+          <div className="agreementText">
+            By registering I agree to the
+            <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
+              VIPFY Privacy Agreement
+            </a>
+          </div>
+        </UniversalCheckbox>
 
-                         passwordField.type = prevState.passwordData.show ? "password" : "text";
-
-                        return {
-                          ...prevState,
-                          passwordData: {
-                            ...prevState.passwordData,
-                            show: !prevState.passwordData.show
-                          }
-                        };
-                      })
-                    }
-                  />
+        <UniversalButton
+          label="Sign up for free"
+          type="high"
+          disabled={
+            !this.state.email.match(emailRegex) ||
+            !this.state.email ||
+            !this.state.privacy ||
+            !this.state.tos ||
+            this.state.passwordData.score < 2
+          }
+          onClick={this.continue}
+          customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
+        />
+        {this.state.register && (
+          <PopupBase
+            close={() => this.setState({ register: false, error: "" })}
+            small={true}
+            fullMiddle={true}
+            noSidebar={true}>
+            {this.state.error != "" ? (
+              <React.Fragment>
+                <div>{this.state.error}</div>
+                <UniversalButton
+                  type="high"
+                  closingPopup={true}
+                  label="Ok"
+                  closingAllPopups={true}
+                />
+              </React.Fragment>
+            ) : (
+              <div>
+                <div style={{ fontSize: "32px", textAlign: "center" }}>
+                  <i className="fal fa-spinner fa-spin" />
+                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
                 </div>
               </div>
-            </div>
-
-            <div
-              className="agreementBox"
-              style={{
-                marginTop: "16px",
-                display: "flex",
-                flexFlow: "column",
-                alignItems: "unset",
-                justifyContent: "space-around",
-                height: "92px"
-              }}>
-              <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
-                <div className="agreement-text">
-                  By registering I agree to the
-                  <div
-                    className="fancy-link"
-                    style={{ color: "#20baa9" }}
-                    onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-                    Terms of Service of VIPFY
-                  </div>
-                </div>
-              </UniversalCheckbox>
-
-              <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
-                <div className="agreement-text">
-                  By registering I agree to the
-                  <div
-                    className="fancy-link"
-                    style={{ color: "#20baa9" }}
-                    onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                    Privacy Agreement of VIPFY
-                  </div>
-                </div>
-              </UniversalCheckbox>
-            </div>
-
-            <div className="login-buttons">
-              <UniversalButton
-                label="Cancel"
-                type="low"
-                onClick={() => this.props.backFunction()}
-              />
-              <UniversalButton
-                label="Continue"
-                type="high"
-                disabled={
-                  !this.state.email.match(emailRegex) ||
-                  !this.state.email ||
-                  !this.state.privacy ||
-                  !this.state.tos ||
-                  this.state.passwordData.score < 2
-                }
-                onClick={this.continue}
-              />
-            </div>
-            {this.state.register && (
-              <PopupBase
-                close={() => this.setState({ register: false, error: "" })}
-                small={true}
-                fullMiddle={true}
-                noSidebar={true}>
-                {this.state.error != "" ? (
-                  <React.Fragment>
-                    <div>{this.state.error}</div>
-                    <UniversalButton
-                      type="high"
-                      closingPopup={true}
-                      label="Ok"
-                      closingAllPopups={true}
-                    />
-                  </React.Fragment>
-                ) : (
-                  <div>
-                    <div style={{ fontSize: "32px", textAlign: "center" }}>
-                      <i className="fal fa-spinner fa-spin" />
-                      <div style={{ marginTop: "32px", fontSize: "16px" }}>
-                        Setting up your company
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </PopupBase>
             )}
-          </div>
-        </div>
+          </PopupBase>
+        )}
       </div>
     );
   }
