@@ -181,7 +181,6 @@ export const fetchCompanyService = gql`
         logo
         needssubdomain
         description
-        internaldata
         icon
         website
         supportwebsite
