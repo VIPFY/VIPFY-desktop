@@ -157,9 +157,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {activeFilters.length > 0 && (
               <div className="tagsRow">
                 {activeFilters.map(filter => (
-                  <Tag key={filter} className="filterTag">
-                    {filter}
-                  </Tag>
+                  <div key={filter} className="filterPill">
+                    <span className="filterName">{filter}</span>
+                    <span className="fal fa-fw fa-times" />
+                  </div>
                 ))}
                 <span className="verticalSeparator" />
                 <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>

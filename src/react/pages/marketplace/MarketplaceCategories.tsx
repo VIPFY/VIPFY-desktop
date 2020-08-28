@@ -50,12 +50,10 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     icon = "fa-star";
 
     return (
-      <Tag key={categoryName}>
-        <>
-          <div className={classNames("fal", "fa-fw", icon)} />
-          <div className="categoryName">{categoryName}</div>
-        </>
-      </Tag>
+      <div key={categoryName} className="category">
+        <div className={classNames("fal", "fa-fw", icon)} />
+        <div className="categoryName">{categoryName}</div>
+      </div>
     );
   }
 

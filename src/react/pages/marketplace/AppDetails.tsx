@@ -393,14 +393,14 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     );
   };
 
-  renderProsAndConsCard = (headline: string, prosCons: string[], cons?: boolean) => {
+  renderProsAndConsCard = (headline: string, prosCons: string[], type: "pros" | "cons") => {
     return (
       <div className="card">
         <CardSection>
           <h3>{headline}</h3>
         </CardSection>
         <CardSection>
-          <ProsConsList prosCons={prosCons} cons={cons} />
+          <ProsConsList points={prosCons} type={type} />
         </CardSection>
       </div>
     );
@@ -451,10 +451,10 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                     <Tag div={true} className="buyLicenseButton">
                       Buy New License
                     </Tag>
-                    <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
+                    <Tag div={true} className="marketplaceTag" style={{ textTransform: "none" }}>
                       Integrate Existing License
                     </Tag>
-                    <Tag div={true} className={"featureTag"} style={{ textTransform: "none" }}>
+                    <Tag div={true} className="featureTag" style={{ textTransform: "none" }}>
                       Write Review
                     </Tag>
                   </div>
@@ -463,7 +463,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 {hasFeatures && (
                   <CardSection className="tagsRow">
                     {DUMMY_APP.features.map((feature, i) => (
-                      <Tag className="featureTag" key={i}>
+                      <Tag className="marketplaceTag" key={i}>
                         {feature}
                       </Tag>
                     ))}
@@ -546,8 +546,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               <CardSection>
                 <h2>Pros and Cons</h2>
                 <div className="grid2Cols smGrid1Col">
-                  {DUMMY_APP.pros && this.renderProsAndConsCard("Pros", DUMMY_APP.pros)}
-                  {DUMMY_APP.cons && this.renderProsAndConsCard("Cons", DUMMY_APP.cons, true)}
+                  {DUMMY_APP.pros && this.renderProsAndConsCard("Pros", DUMMY_APP.pros, "pros")}
+                  {DUMMY_APP.cons && this.renderProsAndConsCard("Cons", DUMMY_APP.cons, "cons")}
                 </div>
               </CardSection>
             )}
