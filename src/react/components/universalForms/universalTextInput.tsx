@@ -152,7 +152,11 @@ class UniversalTextInput extends React.Component<Props, State> {
               ? result.feedback.warning
               : "Password is too weak. Please use another one";
         }
-        passwordData = { score: result.score, isValid: result.score >= PW_MIN_STRENGTH };
+        passwordData = {
+          password: value,
+          score: result.score,
+          isValid: result.score >= PW_MIN_STRENGTH
+        };
       }
     }
 

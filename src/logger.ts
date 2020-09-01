@@ -136,7 +136,7 @@ const _trace = console.trace;
 
 // monkey-patch console.* (at least the ones we use)
 // graylog has three log levels above error
-console.emergency = (...params) => {
+/*console.emergency = (...params) => {
   _error(...params);
   gelf.emergency(makeLogString(params), makeExtraData(params));
 };
@@ -178,6 +178,6 @@ console.assert = (assert, ...params) => {
   params.push(new Error("Assertion failed"));
   _warn(...params, new Error().stack);
   gelf.warn(makeLogString(params));
-};
+};*/
 
 export const logger = gelf;
