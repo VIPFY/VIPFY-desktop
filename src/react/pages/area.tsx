@@ -20,15 +20,13 @@ import ForcedPasswordChange from "../popups/universalPopups/ForcedPasswordChange
 import TutorialBase from "../tutorials/tutorialBase";
 import { fetchUserLicences } from "../queries/departments";
 import RecoveryKey from "../components/signin/RecoveryKey";
-import Order from "./marketplace/order";
 import FloatingNotifications from "../components/notifications/floatingNotifications";
 import { WorkAround, Expired_Plan } from "../interfaces";
-import config from "../../configurationManager";
-import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
 import DataNameForm from "../components/dataForms/NameForm";
 import Browser from "./browser";
 import routes from "../routes";
+import AdminSidebar from "../components/AdminSidebar";
 
 interface AreaProps {
   id: string;
@@ -84,132 +82,6 @@ class Area extends React.Component<AreaProps, AreaState> {
     allowSkip: false,
     openServices: [],
     showService: null
-  };
-
-  categories = {
-    PROFILE: [
-      {
-        label: "Company Profile",
-        location: "company",
-        icon: "building",
-        show: this.props.isadmin,
-        highlight: "companyprofile"
-      }
-    ],
-    MANAGEMENT: [
-      {
-        label: "Team Manager",
-        location: "dmanager",
-        icon: "user-tag",
-        show: this.props.isadmin,
-        highlight: "dmanager"
-      },
-      {
-        label: "Employee Manager",
-        location: "emanager",
-        icon: "users-cog",
-        show: this.props.isadmin,
-        highlight: "emanager"
-      },
-      {
-        label: "Service Manager",
-        location: "lmanager",
-        icon: "credit-card-blank",
-        show: this.props.isadmin,
-        highlight: "lmanager"
-      }
-    ],
-    BILLING: [
-      {
-        label: "Billing Information",
-        location: "billing",
-        icon: "file-invoice-dollar",
-        show: this.props.isadmin && config.showBilling,
-        highlight: "billingelement"
-      },
-      {
-        label: "Billing History",
-        location: "billing",
-        icon: "file-invoice-dollar",
-        show: this.props.isadmin && config.showBilling,
-        highlight: "billingelement"
-      },
-      {
-        label: "Payment Method",
-        location: "paymentdata",
-        icon: "file-invoice-dollar",
-        show: this.props.isadmin && config.showBilling,
-        highlight: "billingelement"
-      }
-    ],
-    STATISTICS: [
-      {
-        label: "Billing Statistics",
-        location: "billing",
-        icon: "file-invoice-dollar",
-        show: this.props.isadmin && config.showBilling,
-        highlight: "billingelement"
-      },
-      {
-        label: "Usage Statistics",
-        location: "usage",
-        icon: "chart-line",
-        show: this.props.isadmin,
-        highlight: "usage"
-      }
-    ],
-    SECURITY: [
-      {
-        label: "Overview",
-        location: "security",
-        icon: "user-shield",
-        show: this.props.isadmin,
-        highlight: "securityelement"
-      }
-    ],
-    "VIPFY ADMIN": [
-      {
-        label: "Tools",
-        location: "admin",
-        icon: "layer-plus",
-        show: config.showAdmin && vipfyAdmins.find(admin => admin == this.props.id),
-        highlight: "adminelement"
-      },
-      {
-        label: "Vacation Requests",
-        location: "vacation",
-        icon: "umbrella-beach",
-        show:
-          config.showVacationRequests && vipfyVacationAdmins.find(admin => admin == this.props.id),
-        highlight: "vacation"
-      },
-      {
-        label: "SSO Configurator",
-        location: "ssoconfig",
-        icon: "dice-d12",
-        show: this.props.isadmin && config.showSsoConfig && this.props.company.unit.id == 14,
-        highlight: "ssoconfig"
-      },
-      {
-        label: "SSO Tester",
-        location: "ssotest",
-        icon: "dragon",
-        show: false,
-        highlight: "ssotest"
-      },
-      {
-        label: "Marketplace",
-        location: "marketplace",
-        show: config.showMarketplace,
-        highlight: "marketplace"
-      },
-      {
-        label: "Market Categories",
-        location: "marketplace/categories",
-        show: config.showMarketplace,
-        highlight: "marketplace"
-      }
-    ]
   };
 
   componentDidMount = async () => {
@@ -289,13 +161,13 @@ class Area extends React.Component<AreaProps, AreaState> {
           [licenceID]:
             prevState.openInstances && prevState.openInstances[licenceID]
               ? {
-                  ...prevState.openInstances[licenceID],
+                ...prevState.openInstances[licenceID],
 
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-                }
+                [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+              }
               : {
-                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-                }
+                [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+              }
         },
         app: opendirect ? licenceID : prevState.app,
         licenceID: opendirect ? licenceID : prevState.licenceID,
@@ -311,15 +183,15 @@ class Area extends React.Component<AreaProps, AreaState> {
         ...prevState.openInstances,
         [licenceID]:
           prevState.openInstances &&
-          prevState.openInstances[licenceID] &&
-          prevState.openInstances[licenceID][viewID]
+            prevState.openInstances[licenceID] &&
+            prevState.openInstances[licenceID][viewID]
             ? {
-                ...prevState.openInstances[licenceID],
-                [viewID]: {
-                  instanceTitle: title,
-                  instanceId: viewID
-                }
+              ...prevState.openInstances[licenceID],
+              [viewID]: {
+                instanceTitle: title,
+                instanceId: viewID
               }
+            }
             : { ...prevState.openInstances[licenceID] }
       },
       webviews: prevState.webviews.map(view => {
@@ -435,45 +307,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       return pathStart === location;
     })?.admin;
   };
-
-  renderCategories = (categories, category, addRenderElement) => (
-    <li key={category}>
-      <div className={"adminHeadline-categoryTitle"}>{category}</div>
-      {categories[category].map(({ label, location, highlight, ...categoryProps }) => {
-        let buttonClass = "naked-button adminHeadline-categoryElement";
-
-        const id = label.toString() + location.toString();
-
-        if (
-          this.props.location.pathname.startsWith(`/area/${location}`) ||
-          `${this.props.location.pathname}/dashboard`.startsWith(`/area/${location}`)
-        ) {
-          buttonClass += " selected";
-        }
-
-        return (
-          <button
-            ref={element => addRenderElement({ key: highlight, element })}
-            key={label}
-            id={id}
-            className={buttonClass}
-            onMouseDown={() => {
-              document.getElementById(id).className =
-                "naked-button adminHeadline-categoryElement active";
-            }}
-            onMouseUp={() => {
-              document.getElementById(id).className = buttonClass;
-              this.moveTo(location);
-            }}
-            onMouseLeave={() => {
-              document.getElementById(id).className = buttonClass;
-            }}>
-            <div className="label">{label}</div>
-          </button>
-        );
-      })}
-    </li>
-  );
 
   render() {
     const {
@@ -637,27 +470,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   style={{ marginLeft: `${marginLeft}px` }}>
                                   <ResizeAware>
                                     {admin && (
-                                      <div
-                                        className={`sidebar-adminpanel${
-                                          sidebarOpen ? "" : " small"
-                                        }`}
-                                        ref={element =>
-                                          context.addRenderElement({
-                                            key: "adminSideBar",
-                                            element
-                                          })
-                                        }>
-                                        <div className="adminHeadline">ADMIN PANEL</div>
-                                        <ul>
-                                          {Object.keys(this.categories).map(categorie =>
-                                            this.renderCategories(
-                                              this.categories,
-                                              categorie,
-                                              context.addRenderElement
-                                            )
-                                          )}
-                                        </ul>
-                                      </div>
+                                      <AdminSidebar sidebarOpen={sidebarOpen} moveTo={this.moveTo} />
                                     )}
 
                                     <RouteComponent
@@ -685,7 +498,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             <div
                               className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                 sidebarOpen ? "sidebar-open" : ""
-                              }`}>
+                                }`}>
                               <Domains setDomain={this.setDomain} {...this.props} {...props} />
                             </div>
                           )}
@@ -698,7 +511,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             <div
                               className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                 sidebarOpen ? "sidebar-open" : ""
-                              }`}>
+                                }`}>
                               <Domains setDomain={this.setDomain} {...this.props} {...props} />
                             </div>
                           )}
@@ -743,7 +556,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                               <div
                                 className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                   sidebarOpen ? "sidebar-open" : ""
-                                }`}>
+                                  }`}>
                                 <ErrorPage />
                               </div>
                             );

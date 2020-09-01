@@ -27,7 +27,7 @@ const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { WorkAround } from "./interfaces";
+import { Expired_Plan } from "./interfaces";
 import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
@@ -55,7 +55,7 @@ interface AppProps {
   saveCookies: Function;
 }
 
-interface PopUp {
+export interface PopUp {
   show: boolean;
   header: string;
   body: any;
@@ -112,7 +112,7 @@ const SAVE_COOKIES = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element; listener?; action? }[] = [];
+  references: { key; element; listener?; action?}[] = [];
 
   async componentDidMount() {
     setClient(this.props.client); // client never gets swapped out at runtime, so doing this at mount is enough
@@ -311,8 +311,8 @@ class App extends React.Component<AppProps, AppState> {
   renderComponents = () => {
     if (localStorage.getItem("token")) {
       return (
-        <Query<WorkAround, WorkAround> query={me} fetchPolicy="network-only">
-          {({ data, loading, error }) => {
+        <Query query={me} fetchPolicy="network-only">
+          {({ data, loading, error = null }) => {
             if (loading) {
               return <LoadingDiv />;
             }
