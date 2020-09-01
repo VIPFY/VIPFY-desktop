@@ -13,9 +13,13 @@ export type MoveToType = (string) => void;
 interface Props {
     sidebarOpen: boolean;
     moveTo: MoveToType;
-    history: History;
     location: Location;
+}
+
+interface OuterProps extends Props {
+    // we don't want them, they are just in the Props because the wrapper gives them to us
     match: match;
+    history: History;
 }
 
 interface InnerProps extends Props {
@@ -23,6 +27,8 @@ interface InnerProps extends Props {
     companyid: string;
     isAdmin: boolean;
     addRenderElement: AppContextContent["addRenderElement"];
+
+
 }
 
 interface Link {
@@ -33,7 +39,9 @@ interface Link {
     highlight: string;
 }
 
-const categories = (unitid: string, companyid: string, isAdmin: boolean): { [key: string]: Link[] } => {
+type Categories = { [key: string]: Link[] };
+
+const categories = (unitid: string, companyid: string, isAdmin: boolean): Categories => {
     return {
         PROFILE: [
             {
@@ -163,7 +171,7 @@ const categories = (unitid: string, companyid: string, isAdmin: boolean): { [key
     }
 };
 
-const renderCategories = (categories, category, addRenderElement, currentLocation: Location, moveTo: MoveToType) => (
+const renderCategories = (categories: Categories, category: string, addRenderElement: AppContextContent["addRenderElement"], currentLocation: Location, moveTo: MoveToType) => (
     <li key={category}>
         <div className={"adminHeadline-categoryTitle"}>{category}</div>
         {categories[category].map(({ label, location, highlight, ...categoryProps }) => {
@@ -202,7 +210,7 @@ const renderCategories = (categories, category, addRenderElement, currentLocatio
     </li>
 );
 
-const AdminSidebarInner: React.FC<InnerProps> = React.memo((props: InnerProps) => {
+const AdminSidebarInner: React.FC<InnerProps> = React.memo((props) => {
     const categoryList = categories(props.unitid, props.companyid, props.isAdmin);
     return (
         <div
@@ -231,7 +239,7 @@ const AdminSidebarInner: React.FC<InnerProps> = React.memo((props: InnerProps) =
     )
 });
 
-const AdminSidebar: React.FC<Props> = (props: Props) => {
+const AdminSidebar: React.FC<OuterProps> = (props) => {
     const { loading, error, data } = useQuery(me);
 
     if (loading || error || !data || !data.me || !data.me.company || !data.me.company.unit) {
@@ -241,7 +249,15 @@ const AdminSidebar: React.FC<Props> = (props: Props) => {
     return (
         <AppContext.Consumer>
             {context => (
-                <AdminSidebarInner {...props} unitid={data.me.id} companyid={data.me.company.unit.id} isAdmin={data.me.isadmin} addRenderElement={context.addRenderElement} />
+                <AdminSidebarInner
+                    // explicitly list props to prevent rerenders from junk we don't use
+                    sidebarOpen={props.sidebarOpen}
+                    moveTo={props.moveTo}
+                    location={props.location}
+                    unitid={data.me.id}
+                    companyid={data.me.company.unit.id}
+                    isAdmin={data.me.isadmin}
+                    addRenderElement={context.addRenderElement} />
             )}
         </AppContext.Consumer>
     )

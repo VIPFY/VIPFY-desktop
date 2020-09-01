@@ -8,7 +8,7 @@ import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, getMyUnitId } from "./common/functions";
+import { AppContext, getMyUnitId, AppContextContent } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
@@ -444,18 +444,23 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
+  // generate functions once to avoid changing context values just because provider was rerendered
+  appContextFixedValues = {
+    showPopup: (data: PopUp) => this.renderPopup(data),
+    logOut: this.logMeOut,
+    setrenderElements: e => this.setrenderElements(e),
+    addRenderElement: e => this.addRenderElement(e),
+    addRenderAction: e => this.addRenderAction(e),
+    setreshowTutorial: this.setreshowTutorial
+  };
+
   render() {
     const { placeid, popup } = this.state;
     return (
       <AppContext.Provider
         value={{
-          showPopup: (data: PopUp) => this.renderPopup(data),
+          ...this.appContextFixedValues,
           placeid,
-          logOut: this.logMeOut,
-          setrenderElements: e => this.setrenderElements(e),
-          addRenderElement: e => this.addRenderElement(e),
-          addRenderAction: e => this.addRenderAction(e),
-          setreshowTutorial: this.setreshowTutorial,
           references: this.references
         }}
         className="full-size">

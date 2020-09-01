@@ -12,7 +12,7 @@ import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
 import { App } from "../interfaces";
-import Popup from "../components/Popup";
+import { PopUp } from "../app";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -116,8 +116,8 @@ export const filterError = error => {
 };
 
 export interface AppContextContent {
-  showPopup: (data: Popup) => void,
-  placeid: Number,
+  showPopup: (data: PopUp) => void,
+  placeid: string,
   logOut: () => Promise<void>,
   setrenderElements: (any) => void,
   addRenderElement: (any) => void,
