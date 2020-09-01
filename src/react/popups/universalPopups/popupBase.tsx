@@ -18,6 +18,7 @@ interface Props {
   styles?: Object;
   additionalclassName?: string;
   innerRef?: any;
+  children?: React.ReactNode;
 }
 
 interface State {
@@ -88,9 +89,9 @@ class PopupBase extends React.Component<Props, State> {
   componentDidUpdate(_prevProps, prevState) {
     if (!prevState.isopen && this.state.isopen) {
       if (document.activeElement) {
-        document.activeElement.blur();
+        (document.activeElement as HTMLElement).blur();
       }
-      let firstinput = document.querySelector("#" + this.state.id)!.querySelector("input,button");
+      let firstinput = document.querySelector("#" + this.state.id)!.querySelector<HTMLElement>("input,button");
       if (firstinput) {
         firstinput.focus();
       }
@@ -179,8 +180,8 @@ class PopupBase extends React.Component<Props, State> {
       autoclosing = this.state.autoclosing
         ? { maxWidth: "0rem", transition: `max-width ${closingtime}ms linear` }
         : this.props.small
-        ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
-        : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
+          ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
+          : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
     return (
       <SideBarContext.Consumer>
@@ -232,7 +233,7 @@ class PopupBase extends React.Component<Props, State> {
                 <div
                   className={`contentPopup ${
                     this.props.additionalclassName ? this.props.additionalclassName : ""
-                  }`}>
+                    }`}>
                   {this.renderChildren(this.props.children)}
                 </div>
                 {this.props.autoclosing && !this.props.notimer && (
@@ -246,4 +247,4 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
-export default React.forwardRef((props, ref) => <PopupBase innerRef={ref} {...props} />);
+export default React.forwardRef<HTMLElement, Props>((props, ref) => <PopupBase innerRef={ref} {...props} />);
