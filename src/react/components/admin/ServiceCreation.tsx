@@ -57,68 +57,70 @@ const ServiceUpload: React.FunctionComponent = () => {
     try {
       const fullList = Object.values(services);
       const PARTS = 10;
-      const DIVIDE_BY = Math.floor(fullList.length / PARTS);
+      const divideBY = Math.floor(fullList.length / PARTS);
 
-      if (fullList.length > 3) {
-        for (let i = 0; i < PARTS; i++) {
-          const apps = fullList.slice(
-            DIVIDE_BY * i,
-            i == PARTS - 1 ? fullList.length + 1 : DIVIDE_BY * (i + 1)
-          );
+      if (fullList.length < 4) {
+        return;
+      }
 
-          const normalizedApps = apps.map(app => {
-            const returnApp: App = {
-              ...app,
-              externalid: toString(app.id),
-              externalstatistics: {
-                jobDistribution: app.JobDistribution,
-                industryDistribution: app.industryDistribution,
-                companySizes: app.companySizes
-              }
-            };
+      for (let i = 0; i < PARTS; i++) {
+        const apps = fullList.slice(
+          divideBY * i,
+          i == PARTS - 1 ? fullList.length + 1 : divideBY * (i + 1)
+        );
 
-            delete returnApp.pricing;
-            delete returnApp.categories;
-            delete returnApp.id;
-            delete returnApp.JobDistribution;
-            delete returnApp.industryDistribution;
-            delete returnApp.companySizes;
-
-            if (app.description && app.description.g2Long) {
-              returnApp.description = app.description.g2Long;
-              returnApp.teaserdescription = app.description.g2Short;
-            } else if (app.description && typeof app.description == "object") {
-              returnApp.description = app.description.capterraLong;
-              returnApp.teaserdescription = app.description.capterraShort;
+        const normalizedApps = apps.map(app => {
+          const returnApp: App = {
+            ...app,
+            externalid: toString(app.id),
+            externalstatistics: {
+              jobDistribution: app.JobDistribution,
+              industryDistribution: app.industryDistribution,
+              companySizes: app.companySizes
             }
+          };
 
-            delete returnApp.alternatives;
-            // Maybe needed when Conrad finishes the alternative logic
-            // if (Object.keys(app.alternatives).length > 0) {
-            //   const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
-            //     return { externalid: appID, ...app.alternatives[appID] };
-            //   });
+          delete returnApp.pricing;
+          delete returnApp.categories;
+          delete returnApp.id;
+          delete returnApp.JobDistribution;
+          delete returnApp.industryDistribution;
+          delete returnApp.companySizes;
 
-            //   app.alternatives = normalizedAlternatives;
-            // }
+          if (app.description && app.description.g2Long) {
+            returnApp.description = app.description.g2Long;
+            returnApp.teaserdescription = app.description.g2Short;
+          } else if (app.description && typeof app.description == "object") {
+            returnApp.description = app.description.capterraLong;
+            returnApp.teaserdescription = app.description.capterraShort;
+          }
 
-            // TODO: [VIP-1337] Change as soon as the proper data is given by Conrad
-            returnApp.tags = [];
+          delete returnApp.alternatives;
+          // Maybe needed when Conrad finishes the alternative logic
+          // if (Object.keys(app.alternatives).length > 0) {
+          //   const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
+          //     return { externalid: appID, ...app.alternatives[appID] };
+          //   });
 
-            // TODO: [VIP-1336] Add pros and cons when Conrad has the data
+          //   app.alternatives = normalizedAlternatives;
+          // }
 
-            return returnApp;
-          });
+          // TODO: [VIP-1337] Change as soon as the proper data is given by Conrad
+          returnApp.tags = [];
 
-          // All hail to Stack Overflow
-          // https://stackoverflow.com/questions/53929108/how-to-convert-a-javascript-object-to-utf-8-blob-for-download
-          // Thanks to Bergi https://stackoverflow.com/users/1048572/bergi
-          const str = JSON.stringify(normalizedApps);
-          const bytes = new TextEncoder().encode(str);
-          const blob = new Blob([bytes], { type: "application/json;charset=utf-8" });
+          // TODO: [VIP-1336] Add pros and cons when Conrad has the data
 
-          await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
-        }
+          return returnApp;
+        });
+
+        // All hail to Stack Overflow
+        // https://stackoverflow.com/questions/53929108/how-to-convert-a-javascript-object-to-utf-8-blob-for-download
+        // Thanks to Bergi https://stackoverflow.com/users/1048572/bergi
+        const str = JSON.stringify(normalizedApps);
+        const bytes = new TextEncoder().encode(str);
+        const blob = new Blob([bytes], { type: "application/json;charset=utf-8" });
+
+        await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
       }
     } catch (error) {
       throw new Error(error);
@@ -155,7 +157,7 @@ const ServiceUpload: React.FunctionComponent = () => {
 
     return (
       <ul className="list">
-        <li className="list-headline">{headline}</li>
+        <li className="listHeadline">{headline}</li>
         {Object.keys(objectList).map((dataKey, key) => (
           <li key={key}>{`${dataKey}: ${objectList[dataKey]}`}</li>
         ))}
@@ -164,10 +166,10 @@ const ServiceUpload: React.FunctionComponent = () => {
   };
 
   return (
-    <section id="service-creation" className="admin">
+    <section id="serviceCreation" className="admin">
       <h1>Integrate or update a Service in the Marketplace</h1>
 
-      <label className="input-label">Load a json file</label>
+      <label className="inputLabel">Load a json file</label>
       <input type="file" accept=".json" onChange={handleFileLoad} />
 
       {jsonLoading ? (
@@ -195,12 +197,12 @@ const ServiceUpload: React.FunctionComponent = () => {
             <React.Fragment>
               <img src={service.logo} />
               <ul className="list">
-                <li className="list-headline">Service Name</li>
+                <li className="listHeadline">Service Name</li>
                 <li>{service.name}</li>
               </ul>
 
               <ul className="list">
-                <li className="list-headline">Service Website</li>
+                <li className="listHeadline">Service Website</li>
                 <li>{service.website}</li>
               </ul>
 
@@ -208,7 +210,7 @@ const ServiceUpload: React.FunctionComponent = () => {
               {renderList("Ratings", service.ratings)}
 
               <ul className="list">
-                <li className="list-headline">Alternatives</li>
+                <li className="listHeadline">Alternatives</li>
                 {service &&
                   service.alternatives &&
                   Object.keys(service.alternatives).map(id => (

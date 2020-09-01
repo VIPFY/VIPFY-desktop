@@ -1,7 +1,7 @@
-#service-creation {
+#serviceCreation {
   height: 100%;
 
-  .input-label {
+  .inputLabel {
     display: block;
     margin-bottom: 16px;
   }
@@ -21,7 +21,7 @@
       margin: 8px 0 0 8px;
     }
 
-    .list-headline {
+    .listHeadline {
       font-weight: 700;
       margin-left: 0;
     }
@@ -41,6 +41,6 @@
     margin: 16px 0;
     font-size: 1.3rem;
     font-weight: 700;
-    color: $vipfy-positive;
+    color: $primarygreen;
   }
 }
