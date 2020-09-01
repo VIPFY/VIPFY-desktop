@@ -242,7 +242,7 @@ export const AppIcon = ({ app }) => (
 
 export const ConsentText = () => (
   <span>
-    This App uses software to analyse your use in order to continously improve it's functionality
+    Your VIPFY usage can be analyzed to continuously improve the app's functionality
     and to provide content from third parties. This is outlined in our{" "}
     <span
       style={{ color: "#20BAA9" }}
