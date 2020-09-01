@@ -95,12 +95,7 @@ class Dashboard extends React.Component<Props, State> {
     return (
       <div className="managerPage dashboard">
         <div className="heading">
-          <h1
-            onClick={() =>
-              this.props.triggerTestJob()
-            }>
-            Dashboard
-          </h1>
+          <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
@@ -150,4 +145,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default compose(graphql(TRIGGERTESTJOB, { name: "triggerTestJob" }))(Dashboard);
+export default Dashboard;
