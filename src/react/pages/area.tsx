@@ -26,6 +26,7 @@ import { WorkAround, Expired_Plan } from "../interfaces";
 import config from "../../configurationManager";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { AppContext } from "../common/functions";
+import DataNameForm from "../components/dataForms/NameForm";
 import Browser from "./browser";
 import routes from "../routes";
 
@@ -92,7 +93,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "company",
         icon: "building",
         show: this.props.isadmin,
-        important: false,
         highlight: "companyprofile"
       }
     ],
@@ -102,7 +102,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "dmanager",
         icon: "user-tag",
         show: this.props.isadmin,
-        important: false,
         highlight: "dmanager"
       },
       {
@@ -110,7 +109,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "emanager",
         icon: "users-cog",
         show: this.props.isadmin,
-        important: false,
         highlight: "emanager"
       },
       {
@@ -118,7 +116,6 @@ class Area extends React.Component<AreaProps, AreaState> {
         location: "lmanager",
         icon: "credit-card-blank",
         show: this.props.isadmin,
-        important: false,
         highlight: "lmanager"
       }
     ],
@@ -458,7 +455,6 @@ class Area extends React.Component<AreaProps, AreaState> {
           <button
             ref={element => addRenderElement({ key: highlight, element })}
             key={label}
-            {...categoryProps}
             id={id}
             className={buttonClass}
             onMouseDown={() => {
@@ -507,16 +503,6 @@ class Area extends React.Component<AreaProps, AreaState> {
       style,
       showVIPFYPlanPopup
     } = this.props;
-
-    const isImpersonating = !!localStorage.getItem("impersonator-token");
-
-    if (!allowSkip && !recoverypublickey && !isImpersonating && isadmin) {
-      return (
-        <div className="centralize backgroundLogo">
-          <RecoveryKey continue={() => this.setState({ allowSkip: true })} />
-        </div>
-      );
-    }
 
     const browserlist: JSX.Element[] = [];
 
@@ -629,6 +615,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                           let marginLeft = 64;
 
                           if (admin || sidebarOpen) {
+                            marginLeft += 176;
+                          }
+
+                          if (admin && sidebarOpen) {
                             marginLeft += 176;
                           }
 
@@ -781,6 +771,19 @@ class Area extends React.Component<AreaProps, AreaState> {
                         <TutorialBase {...this.props} />
                       )}
 
+                      {!this.props.setupfinished && (
+                        <DataNameForm
+                          moveTo={this.props.moveTo}
+                          globalMeRefetch={this.props.globalMeRefetch}
+                        />
+                      )}
+
+                      {!this.state.allowSkip &&
+                        !this.props.recoverypublickey &&
+                        !localStorage.getItem("impersonator-token") &&
+                        isadmin && (
+                          <RecoveryKey continue={() => this.setState({ allowSkip: true })} />
+                        )}
                       {consentPopup && (
                         <Consent close={() => this.setState({ consentPopup: false })} />
                       )}

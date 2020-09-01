@@ -2,6 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
+import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
 import ServiceLogo from "../services/ServiceLogo";
 import CardSection from "../CardSection";
@@ -33,13 +34,13 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         <div className="title">
           <div>
             {this.props.app.name}
-            <p className="rating">{showStars(4, 5)}</p>
+            <p className="starRating">{showStars(4, 5)}</p>
           </div>
         </div>
         {isWideFormat && (
           <div className="headerTags tags">
             <div>
-              {hasFreeTrial && this.renderPricingTag("Free trial", true, "freeTrialTag")}
+              {hasFreeTrial && this.renderPricingTag("Free trial", true, "infoTag")}
               {this.renderPricingTag("19.99$ p.m.", true)}
             </div>
           </div>
@@ -81,26 +82,31 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
 
         {!isWideFormat && (
           <CardSection className="tagsRow">
-            {hasFreeTrial && this.renderPricingTag("Free trial", false, "freeTrialTag")}
+            {hasFreeTrial && this.renderPricingTag("Free trial", false, "infoTag")}
             {this.renderPricingTag("19.99$ p.m.")}
           </CardSection>
         )}
 
         {hasPros && (
           <CardSection>
-            <ProsConsList prosCons={app.pros} />
+            <ProsConsList points={app.pros} type="pros" />
           </CardSection>
         )}
 
         {hasFeatures && (
           <CardSection className="tagsRow">
             {app.features.map((feature: string, i: number) => (
-              <Tag className="featureTag" key={i}>
+              <Tag className="marketplaceTag" key={i}>
                 {feature}
               </Tag>
             ))}
           </CardSection>
         )}
+
+        <CardSection className="compareServiceCheckbox">
+          <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
+          <span>Compare Service</span>
+        </CardSection>
       </div>
     );
   }

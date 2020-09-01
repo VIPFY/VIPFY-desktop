@@ -134,8 +134,7 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
         variables: {
           data: {
             loginUrl: this.props.data.startUrl,
-            internalData: { loginFields },
-            options: { type: "universalLogin", noError: true, deleteCookies: true },
+            options: { type: "universalLogin", noError: true, deleteCookies: true, loginFields },
             appId: this.props.data.appId,
             manager: this.props.data.manager,
             login: loginValues
@@ -147,12 +146,13 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
         variables: {
           data: {
             loginUrl: this.props.data.startUrl,
-            internalData: { loginFields, execute: [{ key: "Login", script }] },
+            internalData: { execute: [{ key: "Login", script }] },
             options: {
               execute: script,
               type: "execute",
               deleteCookies: true,
-              continueExecute: true
+              continueExecute: true,
+              loginFields
             },
             appId: this.props.data.appId,
             manager: this.props.data.manager,
@@ -274,7 +274,8 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
             <div>
               <div style={{ marginBottom: "24px" }}>
                 <div>
-                  Please provide the new {this.state.needSecurityCode} sent to you by the service provider.
+                  Please provide the new {this.state.needSecurityCode} sent to you by the service
+                  provider.
                 </div>
                 <span style={{ lineHeight: "24px", width: "100%" }}>
                   <UniversalTextInput

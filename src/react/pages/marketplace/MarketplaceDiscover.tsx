@@ -3,7 +3,6 @@ import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { App } from "../../interfaces";
-import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
@@ -52,8 +51,6 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
         </ErrorPage>
       );
     }
-
-    const sortedApps = sortApps(marketplaceApps);
 
     return (
       <div className="marketplace">

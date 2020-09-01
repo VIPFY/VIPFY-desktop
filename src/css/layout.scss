@@ -32,7 +32,6 @@
 @import "./vacation";
 @import "./vipfyPlanPopup";
 @import "./workspace";
-@import "./textInput";
 
 ::-webkit-scrollbar-thumb {
   background: #ccc;
@@ -1592,34 +1591,6 @@ option {
   font-size: 13px;
 }
 
-.passwordStrength {
-  display: inline-block;
-  position: relative;
-  border: 0;
-  font-family: inherit;
-  padding: 0;
-  line-height: 32px;
-  width: calc(100% - 32px);
-
-  .universalTextInput {
-    text-align: left;
-
-    &:hover {
-      background-color: unset;
-    }
-  }
-
-  .ReactPasswordStrength-strength-desc {
-    width: auto;
-    font-size: 80%;
-    padding: 0;
-  }
-
-  input {
-    box-sizing: content-box;
-  }
-}
-
 .loginspinner {
   height: 1.5rem;
   width: 1.5rem;
@@ -2593,10 +2564,6 @@ progress[value] {
 }
 
 .tag {
-  padding: 2px 5px;
-  font-size: 10px;
-  border-radius: 4px;
-
   &.warn {
     background-color: #ffc15d;
     color: $white;

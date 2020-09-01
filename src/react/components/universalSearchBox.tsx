@@ -164,7 +164,7 @@ class UniversalSearchBox extends React.Component<Props, State> {
     return (
       <div
         className="genericSearchHolder"
-        style={this.props.boxStyles}
+        style={this.props.boxStyles || {}}
         onMouseLeave={() => this.toggleSearch(false)}
         onMouseEnter={() => (this.timeout ? this.cTimeout() : "")}
         ref={this.wrapper}>

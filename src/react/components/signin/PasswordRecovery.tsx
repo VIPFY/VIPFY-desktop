@@ -5,10 +5,12 @@ import { decode } from "jsonwebtoken";
 import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
+import { emailRegex } from "../../common/constants";
 import { decryptMessage } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
 import { WorkAround } from "../../interfaces";
 import { FETCH_RECOVERY_CHALLENGE } from "../../queries/auth";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 const RECOVER_PASSWORD = gql`
   mutation onRecoverPassword($token: String!, $secret: String!, $email: String!) {
@@ -26,7 +28,6 @@ const RECOVER_PASSWORD = gql`
 
 interface Props {
   backFunction: Function;
-  email: string;
   setResponseData: Function;
   continueFunction: Function;
 }
@@ -35,13 +36,27 @@ export default (props: Props) => {
   const MAX_LENGTH = 4;
   const fields = [...Array(11).keys()];
   const [localError, setLocalError] = React.useState(null);
+  const [twoLoading, setTwoLoading] = React.useState(null);
   const [fullCode, setCode] = React.useState(null);
+  const [email, setEmail] = React.useState(null);
+  const [liveEmail, setLiveEmail] = React.useState("");
+  const [allFilled, setallFilled] = React.useState(null);
   const { data, loading, error: queryError } = useQuery(FETCH_RECOVERY_CHALLENGE, {
-    variables: { email: props.email },
-    fetchPolicy: "network-only",
+    variables: { email: email },
+    fetchPolicy: "network-only"
   });
+  React.useEffect(() => {
+    if (data && !loading && document.querySelector("#recovery-form > input")) {
+      document.querySelector("#recovery-form > input").focus();
+    }
+  }, [data, loading]);
 
   const onKeyUp = (e, number) => {
+    setallFilled(
+      Array.from(document.querySelectorAll("#recovery-form > input")).every(
+        i => i.value.length == 4
+      )
+    );
     if (e.keyCode == 17 || e.key == "Control") {
       return;
     }
@@ -95,109 +110,129 @@ export default (props: Props) => {
     }
   };
 
-  const renderRows = (items) =>
-    items.map((number) => (
+  const renderRows = items =>
+    items.map(number => (
       <React.Fragment>
         <input
           id={`input-${number}`}
           key={number}
           required
           maxLength={number < fields.length - 1 ? null : 4}
-          onKeyUp={(e) => onKeyUp(e, number)}
+          onKeyUp={e => onKeyUp(e, number)}
         />
-        <i className="fal fa-minus" />
+        <i className="fal fa-minus" id={`sep-${number}`} />
       </React.Fragment>
     ));
 
   return (
-    <div className="password-recovery">
-      <div className="holder">
-        <div className="logo" />
-        <img src={passwordForgot} className="illustration-login" />
+    <div style={{ position: "relative" }}>
+      <h1>
+        <a onClick={() => props.backFunction()}>
+          <i className="fal fa-arrow-left"></i>
+        </a>
+        Recover your account
+      </h1>
+      <UniversalTextInput
+        id="email"
+        type="email"
+        label="Email"
+        errorEvaluation={!liveEmail || !liveEmail.match(emailRegex)}
+        errorhint="A valid Email looks like this john@vipfy.com"
+        livevalue={liveEmail => setLiveEmail(liveEmail)}
+        onEnter={() => null}
+        endvalue={email => setEmail(email)}
+      />
+      {email && email.match(emailRegex) && (
+        <Mutation<WorkAround, WorkAround>
+          mutation={RECOVER_PASSWORD}
+          onCompleted={async ({ recoverPassword }) => {
+            delete recoverPassword.__typename;
+            props.setResponseData({ ...recoverPassword, email: email, code: fullCode });
+            setCode(null);
+            props.continueFunction();
+          }}>
+          {(mutate, { loading, error: e2 }) => {
+            if (loading != twoLoading) {
+              setTwoLoading(loading);
+            }
+            const handleSubmit = async e => {
+              try {
+                e.preventDefault();
+                setLocalError(null);
+                const code = Object.values(e.target)
+                  .filter(node => node.value)
+                  .map(node => node.value)
+                  .reduce((acc, cv) => acc + cv, "");
 
-        <div className="holder-right">
-          <h1>Recover your account</h1>
-          <Mutation<WorkAround, WorkAround>
-            mutation={RECOVER_PASSWORD}
-            onCompleted={async ({ recoverPassword }) => {
-              delete recoverPassword.__typename;
-              props.setResponseData({ ...recoverPassword, email: props.email, code: fullCode });
-              setCode(null);
-              props.continueFunction();
-            }}>
-            {(mutate, { loading: l2, error: e2 }) => {
-              const handleSubmit = async (e) => {
-                try {
-                  e.preventDefault();
-                  setLocalError(null);
-                  const code = Object.values(e.target)
-                    .filter((node) => node.value)
-                    .map((node) => node.value)
-                    .reduce((acc, cv) => acc + cv, "");
+                const { token, publicKey } = data.fetchRecoveryChallenge;
+                const keyBytes = await base64ToArrayBuffer(code);
 
-                  const { token, publicKey } = data.fetchRecoveryChallenge;
-                  const keyBytes = await base64ToArrayBuffer(code);
+                const { encryptedSecret } = decode(token);
 
-                  const { encryptedSecret } = decode(token);
+                let secret = await decryptMessage(
+                  Buffer.from(encryptedSecret, "hex"),
+                  Buffer.from(publicKey, "hex"),
+                  Buffer.from(keyBytes)
+                );
 
-                  let secret = await decryptMessage(
-                    Buffer.from(encryptedSecret, "hex"),
-                    Buffer.from(publicKey, "hex"),
-                    Buffer.from(keyBytes)
-                  );
+                await setCode(code);
+                mutate({ variables: { token, secret: secret.toString(), email: email } });
 
-                  await setCode(code);
-                  mutate({ variables: { token, secret: secret.toString(), email: props.email } });
+                secret = null;
+              } catch (e3) {
+                setLocalError(e3);
+              }
+            };
+            return (
+              <React.Fragment>
+                {loading ? (
+                  <LoadingDiv />
+                ) : (
+                  !queryError && (
+                    <React.Fragment>
+                      <p style={{ textAlign: "left" }}>
+                        To reset your password, enter the recovery code you got when you created
+                        your account.
+                      </p>
 
-                  secret = null;
-                } catch (e3) {
-                  setLocalError(e3);
-                }
-              };
+                      <form onSubmit={handleSubmit} id="recovery-form">
+                        {renderRows(fields)}
+                      </form>
+                      {(e2 || queryError || localError) && (
+                        <span className="error">
+                          <i
+                            className="fal fa-exclamation-circle"
+                            style={{ marginRight: "4px" }}></i>
+                          Email and recovery key don’t match.
+                        </span>
+                      )}
+                    </React.Fragment>
+                  )
+                )}
+              </React.Fragment>
+            );
+          }}
+        </Mutation>
+      )}
 
-              return (
-                <React.Fragment>
-                  {loading ? (
-                    <LoadingDiv />
-                  ) : (
-                    !queryError && (
-                      <React.Fragment>
-                        <p style={{ textAlign: "left" }}>
-                          Please put in your 44 characters long recovery code you got in the
-                          beginning to set a new password.
-                        </p>
-
-                        <form onSubmit={handleSubmit} id="recovery-form">
-                          {renderRows(fields)}
-                        </form>
-                      </React.Fragment>
-                    )
-                  )}
-
-                  <ErrorComp error={e2 || queryError || localError} />
-
-                  <div className="login-buttons">
-                    <UniversalButton
-                      label="Cancel"
-                      type="low"
-                      disabled={l2}
-                      onClick={props.backFunction}
-                    />
-                    {!queryError && (
-                      <UniversalButton
-                        label="Reset Password"
-                        form="recovery-form"
-                        type="high"
-                        disabled={l2 || loading}
-                      />
-                    )}
-                  </div>
-                </React.Fragment>
-              );
-            }}
-          </Mutation>
-        </div>
-      </div>
+      <span>Can’t find your recovery code? </span>
+      <a href="mailto: support@vipfy.store">Contact Support</a>
+      <UniversalButton
+        label={email && email.match(emailRegex) ? "Reset Password" : "Next"}
+        form="recovery-form"
+        type="high"
+        disabled={
+          (!email && !liveEmail.match(emailRegex)) ||
+          (email &&
+            (!email.match(emailRegex) ||
+              twoLoading ||
+              loading ||
+              queryError ||
+              !document.querySelector("#recovery-form > input") ||
+              !allFilled))
+        }
+        customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
+      />
     </div>
   );
 };

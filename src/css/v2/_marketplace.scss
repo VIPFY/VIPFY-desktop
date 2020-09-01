@@ -198,22 +198,24 @@
     }
   }
 
-  .featureTag {
-    padding: 5px 12px;
+  .starRating {
+    .fa-star {
+      color: $midgrey-dark;
+    }
   }
 
-  .pricingTag {
-    height: 20px;
-    padding: 1px 12px;
-    border: 1px solid $lightgrey-darker;
-    background-color: $white;
-    font-size: 12px;
-  }
+  .compareServiceCheckbox {
+    display: flex;
+    align-items: center;
 
-  .freeTrialTag {
-    text-transform: uppercase;
+    > span {
+      margin-left: 8px;
+      font-size: 14px;
+      line-height: 24px;
+    }
   }
 }
+
 .tooManyFieldDropdown {
   margin-top: 16px;
 }

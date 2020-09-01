@@ -44,6 +44,7 @@ export interface User extends Unit {
   companyban: boolean;
   country: string;
   config: JSON;
+  color?: string;
 }
 
 export interface SecurityUser {

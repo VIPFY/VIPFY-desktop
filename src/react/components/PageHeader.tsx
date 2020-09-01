@@ -1,7 +1,8 @@
 import * as React from "react";
+import { withRouter } from "react-router-dom";
 import classNames from "classnames";
-import UniversalButton from "./universalButtons/universalButton";
 import BreadCrumbs from "./BreadCrumbs";
+import UniversalButton from "./universalButtons/universalButton";
 import UniversalSearchBox from "../components/universalSearchBox";
 import Tag from "../common/Tag";
 
@@ -53,6 +54,7 @@ interface PageHeaderProps {
   pagination?: Pagination;
   children?: any;
   disabled?: boolean;
+  history: any; // provided automatically by "withRouter()" wraooer
 }
 
 interface PageHeaderState {
@@ -64,6 +66,11 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   constructor(props) {
     super(props);
     this.state = { loading: false, activeFilters: [] };
+    this.goBack = this.goBack.bind(this);
+  }
+
+  goBack() {
+    this.props.history.goBack();
   }
 
   clearFilters() {
@@ -88,7 +95,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
 
     return (
       <div className="pageHeader">
-        {showBreadCrumbs && <BreadCrumbs />}
+        <div>
+          <UniversalButton label="Back" onClick={this.goBack} className="backButton" />
+          {showBreadCrumbs && <BreadCrumbs />}
+        </div>
 
         <div className="titleRow">
           <h1>{title}</h1>
@@ -130,7 +140,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {showSecondLine && (
               <div className="collectionRow">
                 {searchConfig && (
-                  <UniversalSearchBox placeholder={searchConfig.text} boxStyles="headerSearch" />
+                  <UniversalSearchBox
+                    placeholder={searchConfig.text}
+                    boxStyles={{ width: "25%", maxWidth: "25%", marginRight: "24px" }}
+                  />
                 )}
                 {filterConfig && <div className="headerFilter">Filter By</div>}
                 {pagination && (
@@ -144,9 +157,10 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             {activeFilters.length > 0 && (
               <div className="tagsRow">
                 {activeFilters.map(filter => (
-                  <Tag key={filter} className="filterTag">
-                    {filter}
-                  </Tag>
+                  <div key={filter} className="filterPill">
+                    <span className="filterName">{filter}</span>
+                    <span className="fal fa-fw fa-times" />
+                  </div>
                 ))}
                 <span className="verticalSeparator" />
                 <span className="clearFiltersBtn" onClick={() => this.clearFilters()}>
@@ -163,4 +177,4 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
   }
 }
 
-export default PageHeader;
+export default withRouter(PageHeader);
