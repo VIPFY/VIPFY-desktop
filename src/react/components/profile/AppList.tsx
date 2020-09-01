@@ -11,11 +11,16 @@ interface Props {
   header?: string;
   dragStartFunction: Function;
   dragEndFunction: Function;
+  licence: Licence;
+}
+
+function useForceUpdate() {
+  const [_value, setValue] = React.useState(0); // integer state
+  return () => setValue(value => ++value); // update the state to force render
 }
 
 export default (props: Props) => {
   const [sortBy, setSortBy] = React.useState("A-Z");
-
   const handleName = licence =>
     licence.boughtplanid.alias
       ? licence.boughtplanid.alias
@@ -24,17 +29,18 @@ export default (props: Props) => {
   if (props.licences.length == 0) {
     return null;
   }
-
   let anyapp = false;
+  const forceUpdate = useForceUpdate();
 
   return (
-    /*<Collapsible  title={props.header ? props.header : "Apps"}>*/
-
     <div className="section">
       <div className="heading">
         <h1>{props.header ? props.header : "Apps"}</h1>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ fontSize: "12px" }}>Sort by</span>
+        <div
+          className="sort-apps"
+          style={{
+            display: props.header == "My Favorites" ? "none" : ""
+          }}>
           <DropDown
             option={sortBy}
             defaultValue="A-Z"
@@ -119,11 +125,13 @@ export default (props: Props) => {
             return (
               <AppTile
                 key={key}
+                forceUpdate={forceUpdate}
                 dragStartFunction={props.dragStartFunction}
                 dragEndFunction={props.dragEndFunction}
                 handleDrop={() => null}
                 licence={licence}
                 setTeam={props.setApp}
+                header={props.header}
               />
             );
           })}
@@ -134,7 +142,6 @@ export default (props: Props) => {
             <div style={{ width: "450px" }}>Sorry, no apps here</div>
           ))}
       </div>
-      {/*</Collapsible>*/}
     </div>
   );
 };

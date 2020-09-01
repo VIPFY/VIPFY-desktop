@@ -1,0 +1,341 @@
+.dashboard {
+  width: 95%;
+  margin: 0 auto;
+  max-width: 1440px;
+
+  & > .heading {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    margin: 1em 0;
+    background-color: $lightgrey-lightest;
+    position: sticky;
+    top: 0px;
+    z-index: 1000;
+
+    & > .genericSearchHolder .genericSearchBox {
+      background-color: $white;
+      color: $midgrey-dark;
+    }
+
+    & > h1 {
+      all: unset;
+      font-size: 32px;
+      font-weight: 700;
+      padding-top: 16px;
+      padding-bottom: 16px;
+    }
+  }
+
+  .section {
+    display: flex;
+    margin: 1em 0;
+    flex-direction: column;
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      height: 42px;
+
+      h1 {
+        all: unset;
+        font-size: 21px;
+        font-weight: 700;
+        color: $midgrey-dark;
+      }
+    }
+
+    .sort-apps {
+      display: flex;
+      align-items: center;
+
+      .dropdown {
+        width: 125px;
+        background-color: $white;
+        border: 1px solid $lightgrey-darker;
+        border-radius: 8px;
+        opacity: 1;
+        height: 32px;
+
+        .dropdown-header {
+          padding-top: 4px;
+          color: $midgrey-dark;
+        }
+      }
+    }
+  }
+
+  .appGrid {
+    padding: 10px 0px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+
+    .favourite {
+      background-color: $fullworking-background;
+      box-shadow: 0 0 2px $lightgrey-darker;
+      height: 120px;
+      position: relative;
+      border-radius: 4px;
+      border: 1px dashed black;
+
+      i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        color: $primarygreen;
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .service-box {
+      background: $white 0% 0% no-repeat padding-box;
+      box-shadow: 0px 1px 1px $lightgrey-darker;
+      border: 1px solid $lightgrey-lighter;
+      border-radius: 12px;
+      opacity: 1;
+      width: 22.08%;
+      height: 124px;
+      margin: 10px 5px;
+
+      &:hover {
+        box-shadow: 0px 3px 4px $lightgrey-darker;
+        position: relative;
+        top: -1px;
+      }
+
+      .service-box-top {
+        padding-top: 19px;
+        padding-left: 16px;
+        height: 53px;
+        width: auto;
+
+        .service-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          float: left;
+          background-size: contain;
+        }
+
+        .service-box-top-text {
+          padding-top: 10px;
+          font-size: Medium;
+          padding-left: 8px;
+          letter-spacing: 0px;
+          opacity: 1;
+          float: left;
+          font-weight: bold;
+        }
+
+        .heart-icon {
+          height: 16px;
+          width: 18.5px;
+          float: right;
+          padding-right: 12px;
+          color: $lightgrey-darker;
+        }
+      }
+
+      .service-box-border-line {
+        border: 1px solid $lightgrey-darker;
+        border-radius: 12px;
+        opacity: 1;
+        margin-left: 16px;
+        margin-right: 16px;
+      }
+
+      .service-box-bottom {
+        padding-bottom: 16px;
+        padding-left: 16px;
+        margin-top: 5px;
+
+        .service-box-bottom-button {
+          background: $white 0% 0% no-repeat padding-box;
+          box-shadow: 0px 1px 1px $lightgrey-darker;
+          border: 1px solid $lightgrey-darker;
+          border-radius: 12px;
+          opacity: 1;
+          height: 24px;
+          width: fit-content;
+          margin-top: 5px;
+
+          .service-box-bottom-button-text {
+            text-align: left;
+            letter-spacing: 0.12px;
+            opacity: 1;
+            font-size: 12px;
+            margin-top: 3px;
+            padding-left: 8px;
+            padding-right: 8px;
+            display: inline-block;
+            font: normal 10px/13px Roboto;
+          }
+        }
+      }
+    }
+
+    .hovered {
+      opacity: 0.6;
+
+      .dashboard-app-image {
+        width: calc(8rem - 10px * 2);
+        height: calc(8rem - 10px * 2);
+        border: 10px solid $primarygreen;
+      }
+    }
+  }
+
+  &-app-image {
+    margin-bottom: 12px;
+    box-shadow: 1px 3px 4px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 0.5em;
+    width: 8rem;
+    height: 8rem;
+    cursor: pointer;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transition: all 300ms ease-in-out;
+  }
+
+  &-app-name {
+    font-size: 0.75rem;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  &-apps {
+    padding: 56px 32px 26px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 8rem);
+    grid-template-rows: 170px;
+    grid-column-gap: 56px;
+    grid-row-gap: 32px;
+    position: relative;
+
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    grid-column-gap: 24px;
+    grid-row-gap: 16px;
+
+    .dropdown {
+      position: absolute;
+      right: 32px;
+      top: 16px;
+    }
+  }
+
+  .dashboard-app {
+    display: flex;
+    flex-flow: column;
+    text-align: center;
+    animation: fadeIn 300ms ease-out normal backwards;
+    transition: all 300ms ease-in-out;
+    margin: 1em 0;
+
+    @for $x from 1 through 40 {
+      &:nth-child(#{$x}) {
+        animation-delay: $x * 50ms;
+      }
+    }
+
+    &:nth-child(4n + 1):nth-last-child(-n + 4) ~ .dashboard-app {
+      margin-left: calc(18.5% * 0.176);
+      margin-right: auto;
+    }
+
+    &:nth-child(4n + 3):nth-last-child(-n + 4):last-child {
+      margin-left: -22.5%;
+    }
+  }
+
+  .no-apps {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 600px;
+    width: 500px;
+    color: #7c7c7cff;
+    font-size: 20px;
+    text-align: center;
+
+    img {
+      width: 192px;
+      height: 224px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 44px;
+    }
+  }
+}
+
+.shaking {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  animation-iteration-count: infinite;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  font-size: 5rem !important;
+  line-height: 8rem !important;
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    transform: scale(0);
+  }
+
+  70% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 1240px) {
+  .dashboard .dashboard-app {
+    width: 48%;
+  }
+
+  .dashboard .dashboard-app:nth-child(4n + 1):nth-last-child(-n + 4) ~ .dashboard-app {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .dashboard .section .appGrid .service-box {
+    width: 48%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}

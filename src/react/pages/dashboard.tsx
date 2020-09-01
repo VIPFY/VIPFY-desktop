@@ -1,8 +1,7 @@
 import * as React from "react";
 import moment from "moment";
 import AppList from "../components/profile/AppList";
-import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp, filterError, filterLicences } from "../common/functions";
+import { filterLicences } from "../common/functions";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
 import { Licence } from "../interfaces";
@@ -49,13 +48,13 @@ class Dashboard extends React.Component<Props, State> {
 
   render() {
     const appLists: {
-      "My Apps": Licence[];
+      "My Favorites": Licence[];
+      "My Services": Licence[];
       "Pending Apps": Licence[];
-      "Temporary Apps": Licence[];
     } = {
-      "My Apps": [],
-      "Pending Apps": [],
-      "Temporary Apps": []
+      "My Favorites": [],
+      "My Services": [],
+      "Pending Apps": []
     };
 
     const licenceCheck = this.props.licences && this.props.licences.length > 0;
@@ -74,35 +73,30 @@ class Dashboard extends React.Component<Props, State> {
               favourites[licence.dashboard] = licence;
             }
             if (licence.pending) {
-              //appLists["Pending Apps"].push(licence);
-            } else if (licence.tags.length > 0) {
-              if (
-                licence.tags.includes("vacation") &&
-                licence.vacationstart &&
-                moment().isBefore(moment(licence.vacationend))
-              ) {
-                appLists["Temporary Apps"].push(licence);
-              } else {
-                appLists["My Apps"].push(licence);
-              }
+              appLists["Pending Apps"].push(licence);
             } else {
-              appLists["My Apps"].push(licence);
+              if (licence.tags.includes("favorite")) {
+                appLists["My Favorites"].push(licence);
+              } else {
+                appLists["My Services"].push(licence);
+              }
             }
           }
         }
       });
     }
+
     return (
-      <div className="managerPage dashboard">
+      <div className="dashboard">
         <div className="heading">
-          <h1>Dashboard</h1>
+          <h1 onClick={() => this.props.triggerTestJob()}>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
           <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
             <div className="no-apps">
               <div>This is your</div>
-              <h1>DASHBOARD</h1>
+              <h1>MY DASHBOARD</h1>
               <div>
                 It's a central point of information about your connected services and licenses.
               </div>
@@ -132,6 +126,7 @@ class Dashboard extends React.Component<Props, State> {
                     licences={filterLicences(appLists[list])}
                     setApp={this.setApp}
                     width={this.props.width}
+                    userid={this.props.id}
                   />
                 );
               } else {
@@ -145,4 +140,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default Dashboard;
+export default compose(graphql(TRIGGERTESTJOB, { name: "triggerTestJob" }))(Dashboard);
