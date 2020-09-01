@@ -151,6 +151,7 @@
     "subscriptions-transport-ws": "^0.9.15",
     "tslib": "^1.11.1",
     "uuid": "^8.0.0",
+    "vipfy-components": "file:../vipfy-components",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {

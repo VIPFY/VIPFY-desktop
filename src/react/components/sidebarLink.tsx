@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
 import Tooltip from "react-tooltip-lite";
-import ServiceLogo from "./services/ServiceLogo";
+import ServiceLogo from "vipfy-components";
 
 interface Props {
   disabled: boolean;
