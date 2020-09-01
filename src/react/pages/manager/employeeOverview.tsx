@@ -12,7 +12,9 @@ import EmployeePicture from "../../components/EmployeePicture";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
-
+import Table from "../../components/table";
+import { WorkAround } from "../../interfaces";
+import PageHeader from "../../components/PageHeader";
 interface Props {
   moveTo: Function;
   isadmin?: boolean;
@@ -25,6 +27,30 @@ interface State {
   add: Boolean;
   willdeleting: number | null;
 }
+const tableHeaders: {
+  headers: object;
+  selectRow: string;
+} = {
+  headers: [
+    {
+      title: "Name",
+      sortable: true
+    },
+    {
+      title: "Status",
+      sortable: true
+    },
+    {
+      title: "Teams",
+      sortable: false
+    },
+    {
+      title: "Services",
+      sortable: false
+    }
+  ],
+  selectRow: "Name"
+};
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
@@ -99,32 +125,20 @@ class EmployeeOverview extends React.Component<Props, State> {
   render() {
     return (
       <div className="managerPage">
-        <div className="heading">
-          <h1>Employee Manager</h1>
-          <UniversalSearchBox getValue={v => this.setState({ search: v })} />
-        </div>
-        <div className="section">
-          <AppContext.Consumer>
-            {({ addRenderElement }) => (
-              <div className="heading">
-                <h1>Employees</h1>
-                <UniversalButton
-                  innerRef={el => addRenderElement({ key: "addEmp", element: el })}
-                  type="high"
-                  label="Add Employee"
-                  customStyles={{
-                    fontSize: "12px",
-                    lineHeight: "24px",
-                    fontWeight: "700",
-                    marginRight: "16px",
-                    width: "92px"
-                  }}
-                  onClick={() => this.setState({ add: true })}
-                />
-              </div>
-            )}
-          </AppContext.Consumer>
-          <Query query={fetchDepartmentsData} fetchPolicy="network-only">
+        <PageHeader
+          title="Employee Manager"
+          buttonConfig={{
+            label: "Create Employee",
+            onClick: () => console.log("TEST"),
+            icon: "plus"
+          }}
+          searchConfig={{
+            text: "Search Employees",
+            searchValue: v => this.setState({ search: v })
+          }}
+        />
+        <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
+          <Query<WorkAround, WorkAround> query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
@@ -256,202 +270,77 @@ class EmployeeOverview extends React.Component<Props, State> {
                   employees = interemployees;
                 }
               }
+              const tabledata = [];
+              employees.forEach(e =>
+                tabledata.push([
+                  {
+                    component: (
+                      <div>
+                        {/* <PrintEmployeeSquare employee={e} className="managerSquare" />*/}
+                        <span className="name" title={concatName(e)}>
+                          {e.firstname} {e.lastname}
+                        </span>
+                      </div>
+                    ),
+                    index: concatName(e),
+                    header: "Name"
+                  },
+                  {
+                    conponent: (
+                      <div
+                        className="status"
+                        style={
+                          e.isonline
+                            ? {
+                                backgroundColor: "#29CC94",
+                                marginTop: "18px",
+                                marginLeft: "0px",
+                                width: "100%"
+                              }
+                            : {
+                                backgroundColor: "#DB4D3F",
+                                marginTop: "18px",
+                                marginLeft: "0px",
+                                width: "100%"
+                              }
+                        }>
+                        {e.isonline ? "Online" : "Offline"}
+                      </div>
+                    ),
+                    index: e.isonline ? "Online" : "Offline",
+                    header: "Status"
+                  },
+                  {
+                    component: <div>teams</div>,
+                    index: "none",
+                    header: "Teams"
+                  },
+                  {
+                    component: <div>Services</div>,
+                    index: "none",
+                    header: "Services"
+                  }
+                ])
+              );
               return (
                 <>
-                  <div className="table">
-                    <div className="tableHeading">
-                      <div className="tableMain">
-                        <div
-                          className="tableColumnBig"
-                          style={{ width: "20%" }}
-                          onClick={() => this.handleSortClick("Name")}>
-                          <h1>
-                            Name
-                            {this.state.sort == "Name" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                              ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
-                            ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
-                          </h1>
+                  <Table
+                    title="Employer"
+                    tableHeaders={tableHeaders}
+                    additionalHeader={{
+                      rowCount: [2, 4]
+                    }}
+                    tableData={tabledata}
+                    dropDown={{
+                      component: (
+                        <div style={{ display: "flex", flexDirection: "column" }}>
+                          <a>Click 1</a>
+                          <a>Click 2</a>
                         </div>
-                        <div
-                          className="tableColumnSmall"
-                          style={{ width: "10%" }}
-                          onClick={() => this.handleSortClick("Status")}>
-                          <h1>
-                            Status
-                            {this.state.sort == "Status" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                              ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
-                            ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
-                          </h1>
-                        </div>
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
-                          <h1>Teams</h1>
-                        </div>
-                        <div className="tableColumnBig" style={{ width: "30%" }}>
-                          <h1>Services</h1>
-                        </div>
-                      </div>
-                      <div className="tableEnd"></div>
-                    </div>
-                    {employees.length > 0 &&
-                      employees.map(employee => (
-                        <div
-                          key={employee.id}
-                          className="tableRow"
-                          onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
-                          <div className="tableMain">
-                            <div className="tableColumnBig" style={{ width: "20%" }}>
-                              <EmployeePicture employee={employee} className="managerSquare" />
-                              <span className="name" title={concatName(employee)}>
-                                {employee.firstname} {employee.lastname}
-                              </span>
-                            </div>
-                            <div className="tableColumnSmall" style={{ width: "10%" }}>
-                              <div
-                                className="status"
-                                style={
-                                  employee.isonline
-                                    ? {
-                                        backgroundColor: "#29CC94",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
-                                    : {
-                                        backgroundColor: "#DB4D3F",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
-                                }>
-                                {employee.isonline ? "Online" : "Offline"}
-                              </div>
-                            </div>
-                            <Query
-                              pollInterval={60 * 10 * 1000 + 600}
-                              query={fetchTeams}
-                              fetchPolicy="network-only" //TODO make better
-                              variables={{ userid: employee.id }}>
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return (
-                                    <ColumnTeams
-                                      {...this.props}
-                                      style={{ width: "20%" }}
-                                      teams={[]}
-                                      teamidFunction={team => team}
-                                      fake={true}
-                                    />
-                                  );
-                                }
-                                if (error) {
-                                  return `Error! ${error.message}`;
-                                }
-                                return (
-                                  <ColumnTeams
-                                    {...this.props}
-                                    style={{ width: "20%" }}
-                                    teams={data.fetchTeams}
-                                    teamidFunction={team => team}
-                                    fake={false}
-                                  />
-                                );
-                              }}
-                            </Query>
-                            <Query
-                              pollInterval={60 * 10 * 1000 + 300}
-                              query={fetchUserLicences}
-                              variables={{ unitid: employee.id }}
-                              fetchPolicy="network-only" //TODO make better
-                            >
-                              {({ loading, error, data }) => {
-                                if (loading) {
-                                  return (
-                                    <ColumnServices
-                                      {...this.props}
-                                      style={{ width: "30%" }}
-                                      services={[]}
-                                      checkFunction={element =>
-                                        !element.disabled &&
-                                        !element.boughtplanid.planid.appid.disabled &&
-                                        element.vacationstart <= now() &&
-                                        element.vacationend > now()
-                                      }
-                                      appidFunction={element => element.boughtplanid.planid.appid}
-                                      overlayFunction={service =>
-                                        service.options &&
-                                        service.options.nosetup && (
-                                          <div className="licenceError">
-                                            <i className="fal fa-exclamation-circle" />
-                                          </div>
-                                        )
-                                      }
-                                      fake={true}
-                                    />
-                                  );
-                                }
-                                if (error) {
-                                  return `Error! ${error.message}`;
-                                }
-                                return (
-                                  <ColumnServices
-                                    {...this.props}
-                                    style={{ width: "30%" }}
-                                    services={data.fetchUserLicenceAssignments}
-                                    checkFunction={element =>
-                                      !element.disabled &&
-                                      !element.boughtplanid.planid.appid.disabled &&
-                                      element.vacationstart <= now() &&
-                                      element.vacationend > now()
-                                    }
-                                    appidFunction={element => element.boughtplanid.planid.appid}
-                                    overlayFunction={service =>
-                                      service.options &&
-                                      service.options.nosetup && (
-                                        <div className="licenceError">
-                                          <i className="fal fa-exclamation-circle" />
-                                        </div>
-                                      )
-                                    }
-                                    fake={false}
-                                    unitid={employee.id}
-                                  />
-                                );
-                              }}
-                            </Query>
-                          </div>
-                          <div className="tableEnd">
-                            <div className="editOptions">
-                              <i className="fal fa-external-link-alt editbuttons" />
-                              {this.props.id != employee.id && (
-                                <i
-                                  className="fal fa-trash-alt editbuttons"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    this.setState({ willdeleting: employee });
-                                  }}
-                                />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                      ),
+                      showOnHover: false
+                    }}></Table>
+
                   {this.state.add && (
                     <AppContext.Consumer>
                       {({ addRenderElement }) => (
