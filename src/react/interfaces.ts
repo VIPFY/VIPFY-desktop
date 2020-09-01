@@ -183,6 +183,7 @@ export interface App {
   hidden: boolean;
   hasboughtplan: boolean;
   category?: string;
+  externalid?: string;
 }
 
 export interface Option {

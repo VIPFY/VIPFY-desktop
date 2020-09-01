@@ -2,9 +2,6 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { useMutation } from "react-apollo";
 import { Link } from "react-router-dom";
-import UniversalTextArea from "../universalForms/UniversalTextArea";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
 import UniversalButton from "../universalButtons/universalButton";
 import { App } from "../../interfaces";
 import LoadingDiv from "../LoadingDiv";
@@ -46,6 +43,7 @@ interface ScrapedApps extends Excluded {
   pricing?: string;
   tags: string[];
   categories?: string[];
+  capid?: string;
 }
 
 const ServiceUpload: React.FunctionComponent = () => {
@@ -69,32 +67,57 @@ const ServiceUpload: React.FunctionComponent = () => {
           );
 
           const normalizedApps = apps.map(app => {
-            delete app.pricing;
-            delete app.categories;
+            const returnApp: App = {
+              ...app,
+              externalid: toString(app.id),
+              externalstatistics: {
+                jobDistribution: app.JobDistribution,
+                industryDistribution: app.industryDistribution,
+                companySizes: app.companySizes
+              }
+            };
+
+            delete returnApp.pricing;
+            delete returnApp.categories;
+            delete returnApp.id;
+            delete returnApp.JobDistribution;
+            delete returnApp.industryDistribution;
+            delete returnApp.companySizes;
 
             if (app.description && app.description.g2Long) {
-              app.description = app.description.g2Long;
-              app.teaserdescription = app.description.g2Short || null;
-            } else {
-              app.description = app.description.capterraLong;
-              app.teaserdescription = app.description.capterraShort || null;
+              returnApp.description = app.description.g2Long;
+              returnApp.teaserdescription = app.description.g2Short;
+            } else if (app.description && typeof app.description == "object") {
+              returnApp.description = app.description.capterraLong;
+              returnApp.teaserdescription = app.description.capterraShort;
             }
 
-            // Change as soon as the proper data is given by Conrad
-            app.tags = [];
+            delete returnApp.alternatives;
+            // Maybe needed when Conrad finishes the alternative logic
+            // if (Object.keys(app.alternatives).length > 0) {
+            //   const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
+            //     return { externalid: appID, ...app.alternatives[appID] };
+            //   });
 
-            return app;
+            //   app.alternatives = normalizedAlternatives;
+            // }
+
+            // TODO: [VIP-1337] Change as soon as the proper data is given by Conrad
+            returnApp.tags = [];
+
+            // TODO: [VIP-1336] Add pros and cons when Conrad has the data
+
+            return returnApp;
           });
-          console.log(normalizedApps[4]);
+
           // All hail to Stack Overflow
           // https://stackoverflow.com/questions/53929108/how-to-convert-a-javascript-object-to-utf-8-blob-for-download
           // Thanks to Bergi https://stackoverflow.com/users/1048572/bergi
           const str = JSON.stringify(normalizedApps);
           const bytes = new TextEncoder().encode(str);
-          const blob = new Blob([bytes], {
-            type: "application/json;charset=utf-8"
-          });
-          // await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
+          const blob = new Blob([bytes], { type: "application/json;charset=utf-8" });
+
+          await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
         }
       }
     } catch (error) {
@@ -117,14 +140,28 @@ const ServiceUpload: React.FunctionComponent = () => {
     fileReader.readAsText(e.target.files[0], "UTF-8");
   };
 
-  const renderList = (headline: string, objectList: object) => (
-    <ul className="list">
-      <li className="list-headline">{headline}</li>
-      {Object.keys(objectList).map((dataKey, key) => (
-        <li key={key}>{`${dataKey}: ${objectList[dataKey]}`}</li>
-      ))}
-    </ul>
-  );
+  const handleChange = (value, property) => {
+    setServices(oldServices => {
+      oldServices[service.id][property] = value;
+
+      return oldServices;
+    });
+  };
+
+  const renderList = (headline: string, objectList: object) => {
+    if (!objectList) {
+      return null;
+    }
+
+    return (
+      <ul className="list">
+        <li className="list-headline">{headline}</li>
+        {Object.keys(objectList).map((dataKey, key) => (
+          <li key={key}>{`${dataKey}: ${objectList[dataKey]}`}</li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <section id="service-creation" className="admin">
@@ -153,65 +190,27 @@ const ServiceUpload: React.FunctionComponent = () => {
               ))}
             </select>
           )}
-          {/* <UniversalDropdown
-   options={this.state.services}
-   id="selectService"
-   livevalue={v => this.fillFields(v)}
- /> */}
 
           {service && (
             <React.Fragment>
-              <UniversalTextInput
-                id="servicename"
-                label="Service Name"
-                startvalue={service.name || ""}
-                update={true}
-                livevalue={v => this.setState({ name: v })}
-              />
-
               <img src={service.logo} />
+              <ul className="list">
+                <li className="list-headline">Service Name</li>
+                <li>{service.name}</li>
+              </ul>
 
-              <UniversalTextInput
-                id="websiteUrl"
-                label="Website URL"
-                startvalue={service && service.website}
-                update={true}
-                livevalue={v =>
-                  setServices(services => {
-                    services[service.id].url = v;
+              <ul className="list">
+                <li className="list-headline">Service Website</li>
+                <li>{service.website}</li>
+              </ul>
 
-                    return services;
-                  })
-                }
-              />
-
-              <UniversalTextArea
-                rows={5}
-                handleChange={v => this.setState({ teaserdescription: v })}
-                label="Teaserdescription"
-                styles={{ marginTop: "24px", display: "block" }}
-              />
-
-              <UniversalTextArea
-                rows={5}
-                handleChange={v => this.setState({ description: v })}
-                label="Description"
-                styles={{ marginTop: "24px", display: "block" }}
-                value={(service && JSON.stringify(service.description)) || ""}
-              />
-
+              {renderList("Descriptions", service.description)}
               {renderList("Ratings", service.ratings)}
-              {/* <ul className="list">
-            <li className="list-headline"></li>
-            {service &&
-              Object.keys(service.ratings).map((rating, key) => (
-                <li key={key}>{`${rating}: ${service.ratings[rating]}`}</li>
-              ))}
-          </ul> */}
 
               <ul className="list">
                 <li className="list-headline">Alternatives</li>
                 {service &&
+                  service.alternatives &&
                   Object.keys(service.alternatives).map(id => (
                     <li className="alternatives" key={id}>
                       <span>Name: {service.alternatives[id].name}</span>
@@ -224,18 +223,6 @@ const ServiceUpload: React.FunctionComponent = () => {
               {renderList("Job Distribution", service.JobDistribution)}
               {renderList("Company Sizes", service.companySizes)}
               {renderList("Industry Distribution", service.industryDistribution)}
-
-              {/* {service &&
-            service.headlines &&
-            service.headlines.map((h, k) => (
-              <UniversalCheckbox
-                liveValue={v => console.log("TEST2", v)}
-                name={`headline-${k}`}
-                style={{ marginTop: "24px" }}
-                startingvalue={true}>
-                {h}
-              </UniversalCheckbox>
-            ))} */}
             </React.Fragment>
           )}
           <ErrorComp error={error} />
