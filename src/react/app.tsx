@@ -17,7 +17,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import SignIn from "./pages/signin";
-import { resetLoggingContext } from "../logger";
+import { setClient } from "../logger";
 import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
@@ -115,6 +115,7 @@ class App extends React.Component<AppProps, AppState> {
   references: { key; element; listener?; action? }[] = [];
 
   async componentDidMount() {
+    setClient(this.props.client); // client never gets swapped out at runtime, so doing this at mount is enough
     this.props.logoutFunction(this.logMeOut);
     this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
@@ -127,32 +128,10 @@ class App extends React.Component<AppProps, AppState> {
     if (this.props.history.location.pathname != "/area") {
       this.props.history.push("/area");
     }
-    //this.redeemSetupToken();
   }
 
   componentWillUnmount = async () => {
-    await this.logMeOut();
-  };
-
-  redeemSetupToken = async refetch => {
-    try {
-      const store = new Store();
-      if (!store.has("setupkey")) {
-        return;
-      }
-      const setuptoken = store.get("setupkey");
-      const res = await this.props.client.mutate({
-        mutation: REDEEM_SETUPTOKEN,
-        variables: { setuptoken }
-      });
-      const { token } = res.data.redeemSetupToken;
-      localStorage.setItem("token", token);
-      store.delete("setupkey");
-      refetch();
-    } catch (err) {
-      const store = new Store();
-      store.delete("setupkey");
-    }
+    await setTimeout(() => this.logMeOut(), 2000);
   };
 
   renderPopup = (data: PopUp) => {
@@ -252,7 +231,6 @@ class App extends React.Component<AppProps, AppState> {
 
         await localStorage.removeItem("token");
         await this.props.client.cache.reset(); // clear graphql cache
-        await resetLoggingContext();
         await this.props.history.push("/");
       } finally {
         location.reload();
@@ -334,24 +312,24 @@ class App extends React.Component<AppProps, AppState> {
     if (localStorage.getItem("token")) {
       return (
         <Query<WorkAround, WorkAround> query={me} fetchPolicy="network-only">
-          {({ data, loading, error, refetch }) => {
+          {({ data, loading, error }) => {
             if (loading) {
               return <LoadingDiv />;
             }
 
             if (error || !data || !data.me) {
               this.props.client.cache.reset(); // clear graphql cache
-              this.redeemSetupToken(refetch);
 
               return (
-                <div className="centralize backgroundLogo">
-                  <SignIn
-                    login={(a, b) => this.logMeIn(a, b)}
-                    moveTo={this.moveTo}
-                    error={error && error.networkError ? "network" : filterError(error)}
-                    resetError={() => this.setState({ error: "" })}
-                  />
-                </div>
+                <SignIn
+                  login={(a, b) => this.logMeIn(a, b)}
+                  logout={this.logMeOut}
+                  moveTo={this.moveTo}
+                  error={error && error.networkError ? "network" : filterError(error)}
+                  resetError={() => this.setState({ error: "" })}
+                  twoFactor={this.state.twofactor}
+                  unitid={this.state.unitid}
+                />
               );
             }
 
@@ -406,26 +384,17 @@ class App extends React.Component<AppProps, AppState> {
           }}
         </Query>
       );
-    } else if (this.state.twofactor) {
-      return (
-        <TwoFactor
-          moveTo={this.moveTo}
-          twoFactor={this.state.twofactor}
-          unitid={this.state.unitid!}
-        />
-      );
     } else {
-      this.redeemSetupToken(() => this.forceUpdate());
-
       return (
-        <div className="centralize backgroundLogo">
-          <SignIn
-            resetError={() => this.setState({ error: "" })}
-            login={(a, b) => this.logMeIn(a, b, () => this.forceUpdate())}
-            moveTo={this.moveTo}
-            error={this.state.error}
-          />
-        </div>
+        <SignIn
+          resetError={() => this.setState({ error: "" })}
+          login={(a, b) => this.logMeIn(a, b, () => this.forceUpdate())}
+          logout={this.logMeOut}
+          moveTo={this.moveTo}
+          error={this.state.error}
+          twoFactor={this.state.twofactor}
+          unitid={this.state.unitid}
+        />
       );
     }
   };

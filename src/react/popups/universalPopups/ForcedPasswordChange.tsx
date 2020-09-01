@@ -1,5 +1,4 @@
 import * as React from "react";
-import ReactPasswordStrength from "react-password-strength";
 import { withApollo } from "react-apollo";
 import { PW_MIN_LENGTH } from "../../common/constants";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -76,25 +75,13 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
                 type="password"
                 style={{ marginTop: "10px" }}
               />
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label>
-                  <ReactPasswordStrength
-                    className="passwordStrength"
-                    minLength={PW_MIN_LENGTH}
-                    minScore={2}
-                    scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                    tooShortWord={"too short"}
-                    inputProps={{
-                      name: "password_input",
-                      autoComplete: "off",
-                      placeholder: "New Password",
-                      className: "cleanup universalTextInput",
-                      style: { width: "384px" }
-                    }}
-                    changeCallback={(state, feedback) => this.passwordChanged(state, feedback)}
-                  />
-                </label>
-              </div>
+
+              <UniversalTextInput
+                id="newPassword"
+                label="New Password"
+                type="password"
+                checkPassword={passwordData => this.passwordChanged(passwordData, null)}
+              />
 
               <UniversalTextInput
                 id="repeat"

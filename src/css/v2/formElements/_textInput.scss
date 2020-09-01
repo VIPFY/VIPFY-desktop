@@ -48,6 +48,7 @@
 }
 
 .textField {
+  position: relative;
   &.disabled {
     border-color: $lightgrey-light;
     color: $midgrey-light;
@@ -67,5 +68,7 @@
 .universalHelperText {
   font-size: 12px;
   padding-top: 4px;
+  position: absolute;
+  top: 56px;
   color: $midgrey-dark;
 }

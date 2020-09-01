@@ -16,6 +16,7 @@ jobs:
           keys:
             - windows-dependencies
       - run: npm install
+      - run: npm rebuild
       - save_cache:
           paths:
             - node_modules

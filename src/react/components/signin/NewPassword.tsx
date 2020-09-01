@@ -1,23 +1,22 @@
 import * as React from "react";
-import ReactPasswordStrength from "react-password-strength";
 import { decode } from "jsonwebtoken";
 import { useApolloClient } from "react-apollo";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
 import { PW_MIN_LENGTH } from "../../common/constants";
-import IconButton from "../../common/IconButton";
 import {
   hashPassword,
   generateNewKeypair,
   encryptPrivateKey,
   encryptLicence,
   decryptMessage,
-  decryptLicence,
+  decryptLicence
 } from "../../common/crypto";
 import { computePasswordScore } from "../../common/passwords";
 import welcomeImage from "../../../images/forgot-password-new.png";
 import { FETCH_RECOVERY_CHALLENGE } from "../../queries/auth";
 import gql from "graphql-tag";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 interface PasswordChangeProps {
   continueFunction: Function;
@@ -49,7 +48,7 @@ export default (props: PasswordChangeProps) => {
     isValid: false,
     password: "",
     feedback: "",
-    show: false,
+    show: false
   };
 
   const [pw, setPassword] = React.useState(INITIAL_STATE);
@@ -75,15 +74,15 @@ export default (props: PasswordChangeProps) => {
   };
 
   const updateState = (state, misc, stateFunction): void => {
-    stateFunction((oldState) => ({
+    stateFunction(oldState => ({
       ...oldState,
       ...state,
-      feedback: misc && misc.feedback ? misc.feedback.warning : "",
+      feedback: misc && misc.feedback ? misc.feedback.warning : ""
     }));
   };
 
   const togglePasswordShow = (passwordField: HTMLInputElement, stateFunction: Function): void => {
-    stateFunction((prevState) => {
+    stateFunction(prevState => {
       if (prevState.show) {
         passwordField.type = "password";
       } else {
@@ -112,7 +111,7 @@ export default (props: PasswordChangeProps) => {
         // Get the challenge from the cache
         const { data } = await client.query({
           query: FETCH_RECOVERY_CHALLENGE,
-          variables: { email: variables.email },
+          variables: { email: variables.email }
         });
 
         const keyBytes = await base64ToArrayBuffer(code);
@@ -140,7 +139,7 @@ export default (props: PasswordChangeProps) => {
         const newKey = {
           privatekey: encPrivateKey.toString("hex"),
           publickey: publicKey.toString("hex"),
-          encryptedby: null,
+          encryptedby: null
         };
 
         const priv = await encryptLicence(decryptedPrivateKey, publicKey);
@@ -150,7 +149,7 @@ export default (props: PasswordChangeProps) => {
           id: currentKey.id,
           publickey: currentKey.publickey,
           privatekey: priv.toString("hex"),
-          encryptedby: "new",
+          encryptedby: "new"
         };
 
         const passwordMetrics = { passwordlength: pw.password.length, passwordstrength };
@@ -169,9 +168,9 @@ export default (props: PasswordChangeProps) => {
               newPasskey: newKeys.loginkey.toString("hex"),
               passwordMetrics,
               newKey,
-              replaceKeys: [replaceKey],
-            },
-          },
+              replaceKeys: [replaceKey]
+            }
+          }
         });
 
         // Overwrite it for security
@@ -196,86 +195,51 @@ export default (props: PasswordChangeProps) => {
     name: "password_input",
     disabled: loading,
     autoComplete: "off",
-    className: "cleanup universalTextInput",
+    className: "cleanup universalTextInput"
   };
 
   return (
-    <section className="new-password">
-      <div className="welcome-holder">
-        <img src={welcomeImage} alt="Welcome" />
-        <div className="welcome-text">
-          <h1>Please set your new password</h1>
-          <div>
-            You successfully recovered your account. Please set a new password. A valid password
-            must have at least {PW_MIN_LENGTH} characters.
-          </div>
-
-          <form ref={form} onSubmit={handleSubmit} id="password-fields">
-            <label>
-              <ReactPasswordStrength
-                className="passwordStrength"
-                minLength={PW_MIN_LENGTH}
-                minScore={2}
-                scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                tooShortWord={`Min length is ${PW_MIN_LENGTH}`}
-                inputProps={{ ...inputProps, placeholder: "New Password" }}
-                changeCallback={(state, misc) => updateState(state, misc, setPassword)}
-              />
-
-              <IconButton
-                icon={`eye${pw.show ? "" : "-slash"}`}
-                onClick={() => {
-                  togglePasswordShow(
-                    document.querySelector("#password-fields input:first-of-type"),
-                    setPassword
-                  );
-                }}
-              />
-              <div className={`password-hint ${pw.feedback ? "" : "hide"}`}>
-                {pw.feedback || "Looking good"}
-              </div>
-            </label>
-
-            <label>
-              <ReactPasswordStrength
-                className="passwordStrength"
-                minLength={PW_MIN_LENGTH}
-                minScore={2}
-                disabled={loading}
-                scoreWords={[""]}
-                tooShortWord={""}
-                inputProps={{ ...inputProps, placeholder: "Repeat new Password" }}
-                changeCallback={(state, misc) => updateState(state, misc, setPasswordRepeat)}
-              />
-
-              <IconButton
-                icon={`eye${pwR.show ? "" : "-slash"}`}
-                onClick={() => {
-                  togglePasswordShow(
-                    document.querySelector("#password-fields label:last-of-type input"),
-                    setPasswordRepeat
-                  );
-                }}
-              />
-            </label>
-          </form>
-
-          {error ? (
-            <ErrorComp error={error} />
-          ) : (
-            <div className={showError() ? "password-match" : "hide"}>Passwords don't match</div>
-          )}
-
-          <div className="universal-buttons">
-            <UniversalButton
-              disabled={!canSubmit() || loading}
-              form="password-fields"
-              label="continue"
-              type="high"
-            />
-          </div>
-        </div>
+    <div style={{ position: "relative" }}>
+      <h1>Please set your new password</h1>
+      <div>
+        You successfully recovered your account. A valid password is at least {PW_MIN_LENGTH}{" "}
+        characters long.
       </div>
-    </section>
+
+      <form ref={form} onSubmit={handleSubmit} id="password-fields">
+        <UniversalTextInput
+          id="newPassword"
+          label="New Password"
+          type="password"
+          checkPassword={passwordData => updateState(passwordData, null, setPassword)}
+        />
+
+        <UniversalTextInput
+          id="repeatPassword"
+          label="Repeat New Password"
+          type="password"
+          checkPassword={passwordData => updateState(passwordData, null, setPasswordRepeat)}
+        />
+      </form>
+
+      {error ? (
+        <ErrorComp error={error} />
+      ) : (
+        showError() && (
+          <div className="error" style={{ top: "240px" }}>
+            Passwords don't match
+          </div>
+        )
+      )}
+
+      <UniversalButton
+        disabled={!canSubmit() || loading}
+        form="password-fields"
+        label="Set New Password"
+        type="high"
+        customButtonStyles={{ width: "100%", marginTop: "24px" }}
+      />
+      {error && <ErrorComp error={error} />}
+    </div>
   );
 };

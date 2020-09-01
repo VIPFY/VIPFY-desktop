@@ -158,7 +158,7 @@ class ChangeAccount extends React.Component<Props, State> {
   };
 
   printFields = () => {
-    if (!this.props.app.internaldata || !this.props.app.internaldata.loginFields) {
+    if (!this.props.app.options || !this.props.app.options.loginFields) {
       return (
         <>
           <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
@@ -231,7 +231,7 @@ class ChangeAccount extends React.Component<Props, State> {
       );
     }
     const editedFields: JSX.Element[] = [];
-    this.props.app.internaldata.loginFields.forEach((lF, k) => {
+    this.props.app.options.loginFields.forEach((lF, k) => {
       editedFields.push(
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }} key={k}>
           <span style={{ lineHeight: "24px", width: "84px", textTransform: "capitalize" }}>
@@ -678,17 +678,17 @@ class ChangeAccount extends React.Component<Props, State> {
                   newaccount
                     ? !(
                         (this.state.changeda && this.state.changede && this.state.changedp) ||
-                        (this.props.app.internaldata &&
+                        (this.props.app.options &&
                           Object.keys(this.state.loginValues).length ==
-                            this.props.app.internaldata.loginFields.length)
+                            this.props.app.options.loginFields.length)
                       )
                     : (((this.state.changede || this.state.changedp) &&
                         !(this.state.changede && this.state.changedp)) ||
                         (this.state.changedl && !(this.state.changede && this.state.changedp))) &&
                       !(
-                        this.props.app.internaldata &&
+                        this.props.app.options &&
                         Object.keys(this.state.loginValues).length ==
-                          this.props.app.internaldata.loginFields.length
+                          this.props.app.options.loginFields.length
                       )
                 }
                 onClick={async () => {

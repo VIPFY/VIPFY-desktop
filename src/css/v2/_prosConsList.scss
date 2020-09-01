@@ -1,4 +1,4 @@
-.argument {
+.point {
   display: flex;
   align-items: center;
 
@@ -7,26 +7,28 @@
   }
 
   &.pro {
-    .tag {
+    div {
       color: $primarygreen;
       background-color: $primarygreen-light;
     }
   }
 
   &.con {
-    .tag {
+    div {
       color: $red-darker;
       background-color: $red-lightest;
     }
   }
 
-  .tag {
-    padding: 0;
+  div {
+    border-radius: 6px;
     margin-right: 8px;
     min-width: 24px;
     height: 24px;
     font-size: 14px;
-    color: $white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     > .span {
       font-size: 12px;
