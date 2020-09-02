@@ -1,9 +1,8 @@
 import * as React from "react";
 import { AppContext, AppContextContent } from "../common/functions";
 import config from "../../configurationManager";
-import { withRouter } from "react-router";
-import type { match } from "react-router";
-import type { History, Location } from "history";
+import { useLocation } from "react-router";
+import type { Location } from "history";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { useQuery } from "react-apollo";
 import { me } from "../queries/auth";
@@ -16,19 +15,11 @@ interface Props {
     location: Location;
 }
 
-interface OuterProps extends Props {
-    // we don't want them, they are just in the Props because the wrapper gives them to us
-    match: match;
-    history: History;
-}
-
 interface InnerProps extends Props {
     unitid: string;
     companyid: string;
     isAdmin: boolean;
     addRenderElement: AppContextContent["addRenderElement"];
-
-
 }
 
 interface Link {
@@ -41,7 +32,7 @@ interface Link {
 
 type Categories = { [key: string]: Link[] };
 
-const categories = (unitid: string, companyid: string, isAdmin: boolean): Categories => {
+const calculateCategories = (unitid: string, companyid: string, isAdmin: boolean): Categories => {
     return {
         PROFILE: [
             {
@@ -211,7 +202,7 @@ const renderCategories = (categories: Categories, category: string, addRenderEle
 );
 
 const AdminSidebarInner: React.FC<InnerProps> = React.memo((props) => {
-    const categoryList = categories(props.unitid, props.companyid, props.isAdmin);
+    const categoryList = calculateCategories(props.unitid, props.companyid, props.isAdmin);
     return (
         <div
             className={`sidebar-adminpanel${
@@ -239,8 +230,9 @@ const AdminSidebarInner: React.FC<InnerProps> = React.memo((props) => {
     )
 });
 
-const AdminSidebar: React.FC<OuterProps> = (props) => {
+const AdminSidebar: React.FC<Props> = (props) => {
     const { loading, error, data } = useQuery(me);
+    let location = useLocation();
 
     if (loading || error || !data || !data.me || !data.me.company || !data.me.company.unit) {
         return null;    // this should never happen. app.tsx makes the same query and this data should come straight from cache
@@ -253,7 +245,7 @@ const AdminSidebar: React.FC<OuterProps> = (props) => {
                     // explicitly list props to prevent rerenders from junk we don't use
                     sidebarOpen={props.sidebarOpen}
                     moveTo={props.moveTo}
-                    location={props.location}
+                    location={location}
                     unitid={data.me.id}
                     companyid={data.me.company.unit.id}
                     isAdmin={data.me.isadmin}
@@ -263,4 +255,4 @@ const AdminSidebar: React.FC<OuterProps> = (props) => {
     )
 }
 
-export default withRouter(AdminSidebar);
+export default AdminSidebar;

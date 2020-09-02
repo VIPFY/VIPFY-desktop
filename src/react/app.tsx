@@ -8,7 +8,7 @@ import Store from "electron-store";
 
 import { SIGN_OUT, signInUser, REDEEM_SETUPTOKEN } from "./mutations/auth";
 import { me } from "./queries/auth";
-import { AppContext, getMyUnitId, AppContextContent } from "./common/functions";
+import { AppContext, getMyUnitId } from "./common/functions";
 import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
