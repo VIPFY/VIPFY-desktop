@@ -40,6 +40,7 @@ const CANCEL_FINISH = gql`
 
 export default () => {
   const [sortBy, setSort] = React.useState({ column: "registerDate", direction: "down" });
+  const [_onlyForUpdate, forceUpdate] = React.useState(false);
 
   const tableHeads = [
     { label: "Email" },
@@ -177,7 +178,7 @@ export default () => {
                                   "DD.MM.YY"
                                 ),
                                 "days"
-                              ) >= 30 &&
+                              ) >= 28 &&
                               participants[id].amountFiles >= 336
                           }
                         )}
@@ -219,7 +220,7 @@ export default () => {
 
                               data.adminFetchStudyData[id].voucher = !data.adminFetchStudyData[id]
                                 .voucher;
-
+                              forceUpdate(prev => !prev);
                               proxy.writeQuery({ query: FETCH_STUDY_DATA, data });
                             }}
                             mutation={participants[id].voucher ? CANCEL_FINISH : FINISH_STUDY}>
