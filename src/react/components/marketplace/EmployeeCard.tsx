@@ -1,10 +1,10 @@
 import * as React from "react";
+import { ServiceLogo } from "vipfy-components";
 import { concatName } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 import Tag from "../../common/Tag";
-import ServiceLogo from "../services/ServiceLogo";
 
 interface EmployeeCardProps {
   employee: any;

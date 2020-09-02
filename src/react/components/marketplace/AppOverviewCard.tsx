@@ -1,10 +1,10 @@
 import * as React from "react";
 import classNames from "classnames";
+import { ServiceLogo } from "vipfy-components";
 import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
-import ServiceLogo from "../services/ServiceLogo";
 import CardSection from "../CardSection";
 import ProsConsList from "./ProsConsList";
 
@@ -26,6 +26,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   }
 
   renderMainInfo(isWideFormat: boolean, hasFreeTrial: boolean) {
+    console.log({ ServiceLogo });
     return (
       <>
         <div className="pic">

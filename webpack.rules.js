@@ -50,7 +50,7 @@ const rules = [
             }
           }
         ],
-    include: path.resolve(__dirname, "src")
+    include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "../vipfy-components")]
   }
 ];
 

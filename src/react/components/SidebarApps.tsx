@@ -2,7 +2,6 @@ import * as React from "react";
 import SidebarLink from "./sidebarLink";
 import { Licence } from "../interfaces";
 import Tooltip from "react-tooltip-lite";
-import ServiceLogo from "./services/ServiceLogo";
 
 interface Props {
   sidebarOpen: boolean;
