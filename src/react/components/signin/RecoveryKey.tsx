@@ -31,11 +31,13 @@ const RecoveryKey = (props: Props) => {
   const [localError, setLocalError] = React.useState(null);
   const [keyPair, setkeyPair] = React.useState(null);
 
-  React.useEffect(async () => {
+  // use effect functions can't be async, so we call this in a normal function
+  const effectFunction = async () => {
     try {
       const thisWindow = await remote.getCurrentWindow();
       setWindow(thisWindow);
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error);
     }
 
@@ -72,13 +74,15 @@ const RecoveryKey = (props: Props) => {
       });
 
       setKey(recoveryKeys.privateKey.toString("base64"));
-    } catch (error) {
+    }
+    catch (error) {
       console.error(error);
       setLocalError(
         "Sorry, something went wrong. You can skip this step for now. If it happens again, please contact support."
       );
     }
-  }, []);
+  };
+  React.useEffect(() => { effectFunction() }, []);
 
   const generateReadableKey = () => {
     if (!encryptionKey) {
@@ -87,8 +91,8 @@ const RecoveryKey = (props: Props) => {
 
     let keyParts = [];
     for (let i = 0; i < encryptionKey.length; i += 4) {
-      keyParts.push(<span>{encryptionKey.substring(i, i + 4)}</span>);
-      keyParts.push(<i className="fal fa-minus" />);
+      keyParts.push(<span key={`keyspan${i}`}>{encryptionKey.substring(i, i + 4)}</span>);
+      keyParts.push(<i key={`keydivider${i}`} className="fal fa-minus" />);
     }
 
     keyParts.pop();
@@ -151,8 +155,6 @@ const RecoveryKey = (props: Props) => {
                     className="continue-button"
                     onClick={async () => {
                       const fs = require("fs");
-                      const path = require("path");
-                      const os = require("os");
                       await codeWindow.webContents
                         .printToPDF({
                           header: "Your VIPFY Recovery Code"
@@ -170,7 +172,7 @@ const RecoveryKey = (props: Props) => {
                           });
                         })
                         .catch(error => {
-                          console.log(`Failed to write PDF to ${pdfPath}: `, error);
+                          console.log(`Failed to write PDF to file: `, error);
                         });
                     }}
                     customButtonStyles={{ width: "100%", marginTop: "24px" }}
