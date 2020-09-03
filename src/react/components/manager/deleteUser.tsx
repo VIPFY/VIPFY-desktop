@@ -1,11 +1,12 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
 import { graphql } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
+import UniversalCheckbox from "../universalForms/universalCheckbox";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
 import { fetchDepartmentsData } from "../../queries/departments";
+import UserName from "../../components/UserName";
 
 interface Props {
   user: any;
@@ -44,7 +45,9 @@ class DeleteUser extends React.Component<Props, State> {
         nooutsideclose={true}
         additionalclassName="assignNewAccountPopup"
         buttonStyles={{ justifyContent: "space-between" }}>
-        <h1>Delete User</h1>
+        <h1>
+          Delete User: <UserName unitid={this.props.user.id} />
+        </h1>
         <div
           style={{
             display: "flex",
