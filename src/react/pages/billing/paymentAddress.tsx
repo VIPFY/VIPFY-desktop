@@ -220,7 +220,7 @@ class PaymentAddress extends Component<Props, State> {
 
     const responses = await Promise.all(promises);
 
-    if (responses[0].errors && responses[0].errors.length > 0) {
+    if (responses && responses[0] && responses[0].errors && responses[0].errors.length > 0) {
       responses[0].errors.forEach(error => {
         const functionName = error.path[0];
         switch (functionName) {
