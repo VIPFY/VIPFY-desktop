@@ -2,10 +2,10 @@ import * as React from "react";
 import { withApollo } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
+import { shell } from "electron";
 import { agreeTos } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import welcomeImage from "../../../images/onboarding.png";
 
 interface FirstLoginProps {
   logMeOut: Function;
