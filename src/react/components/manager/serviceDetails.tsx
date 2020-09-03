@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query, withApollo } from "react-apollo";
 import gql from "graphql-tag";
 import moment from "moment";
+import { getMyUnitId } from "../../common/functions";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import TerminateAssignedAccount from "./universal/adding/terminateAssignedAccount";
 import { shortEnglishHumanizer } from "../../common/duration";
@@ -13,6 +14,7 @@ interface Props {
   moveTo: Function;
   employee: any;
   isadmin: boolean;
+  client: any;
 }
 
 interface State {
@@ -195,7 +197,9 @@ class ServiceDetails extends React.Component<Props, State> {
           {this.props.isadmin && (
             <div className="editOptions">
               <i className="fal fa-link editbuttons" />
-              {(!e.options || !e.options.private) && (
+              {(!e.options ||
+                !e.options.private ||
+                e.unitid.id == getMyUnitId(this.props.client)) && (
                 <i
                   className="fal fa-trash-alt editbuttons"
                   onClick={e => {
@@ -220,4 +224,4 @@ class ServiceDetails extends React.Component<Props, State> {
     );
   }
 }
-export default ServiceDetails;
+export default withApollo(ServiceDetails);
