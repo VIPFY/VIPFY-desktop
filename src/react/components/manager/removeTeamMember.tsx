@@ -141,6 +141,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
         additionalclassName="assignNewAccountPopup"
         buttonStyles={{ justifyContent: "space-between" }}>
         <h1>Remove Member</h1>
+        {/* Quick fix. Database has to be changed
         <div style={{ position: "relative", marginLeft: "16px" }}>
           <div
             style={{
@@ -194,7 +195,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
               </PopupBase>
             )}
           </div>
-        </div>
+                </div>*/}
         <div
           style={{
             display: "flex",

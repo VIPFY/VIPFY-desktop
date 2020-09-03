@@ -4,13 +4,13 @@ import compose from "lodash.flowright";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
+import moment from "moment";
 import { fetchCompanyService } from "../../queries/products";
 import ServiceGeneralData from "../../components/manager/serviceGeneralData";
 import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import OrbitSection from "../../components/manager/orbitSection";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
-import { now } from "moment";
 import { resizeImage } from "../../common/images";
 import { AppContext } from "../../common/functions";
 
@@ -71,10 +71,10 @@ class ServiceDetails extends React.Component<Props, State> {
         fetchPolicy="network-only">
         {({ loading, error = null, data, refetch }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
 
           const service = data.fetchCompanyService;
@@ -93,7 +93,10 @@ class ServiceDetails extends React.Component<Props, State> {
 
             service.orbitids.forEach(element => {
               element.accounts.forEach(account => {
-                if (account != null && (account.endtime > now() || account.endtime == null)) {
+                if (
+                  account != null &&
+                  (moment(account.endtime) > moment() || account.endtime == null)
+                ) {
                   accounts.push(account);
                   account.assignments.forEach(checkunit => {
                     if (
@@ -128,12 +131,6 @@ class ServiceDetails extends React.Component<Props, State> {
                   </span>
                   <span className="h2">{service.app.name}</span>
                 </span>
-
-                {/*<UniversalSearchBox
-                  getValue={v => {
-                    this.setState({ search: v });
-                  }}
-                />*/}
               </div>
               <div className="section">
                 <div className="heading">
@@ -162,7 +159,7 @@ class ServiceDetails extends React.Component<Props, State> {
               </div>
               {!service.app.options.pending &&
                 service.orbitids
-                  .filter(o => o.endtime == null || o.endtime > now())
+                  .filter(o => o.endtime == null || moment(o.endtime) > moment())
                   .map(orbit => (
                     <OrbitSection
                       key={orbit.id}
