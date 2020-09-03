@@ -388,6 +388,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                               this.setState({ showall: false });
                               this.setState({ team: team });
                             }}
+                            customButtonStyles={{ maxWidth: "100%" }}
                           />
                         </div>
                       ))}
