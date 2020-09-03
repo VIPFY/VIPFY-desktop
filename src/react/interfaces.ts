@@ -273,3 +273,25 @@ export interface Expired_Plan {
     integrations?: number;
   };
 }
+
+export interface PopUp {
+  show: boolean;
+  header: string;
+  body: any;
+  props: any;
+  type: string;
+  info: string;
+}
+
+export interface AppContextContent {
+  showPopup: (data: PopUp) => void;
+  placeid: string;
+  logOut: () => Promise<void>;
+  setrenderElements: (any) => void;
+  addRenderElement: (any) => void;
+  addRenderAction: (any) => void;
+  setreshowTutorial: (any) => void;
+  references: any[];
+}
+
+export type MoveToType = (string) => void;

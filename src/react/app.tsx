@@ -27,7 +27,7 @@ const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { Expired_Plan } from "./interfaces";
+import { Expired_Plan, PopUp } from "./interfaces";
 import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
@@ -53,15 +53,6 @@ interface AppProps {
   endImpersonation: Function;
   location: any;
   saveCookies: Function;
-}
-
-export interface PopUp {
-  show: boolean;
-  header: string;
-  body: any;
-  props: any;
-  type: string;
-  info: string;
 }
 
 interface AppState {

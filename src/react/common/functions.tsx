@@ -11,8 +11,7 @@ import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
-import { App } from "../interfaces";
-import { PopUp } from "../app";
+import { App, AppContextContent } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -115,16 +114,6 @@ export const filterError = error => {
   }
 };
 
-export interface AppContextContent {
-  showPopup: (data: PopUp) => void,
-  placeid: string,
-  logOut: () => Promise<void>,
-  setrenderElements: (any) => void,
-  addRenderElement: (any) => void,
-  addRenderAction: (any) => void,
-  setreshowTutorial: (any) => void,
-  references: any[]
-}
 export const AppContext: React.Context<AppContextContent> = React.createContext();
 
 // TODO: [VIP-433] Better logic in case of an undefined error

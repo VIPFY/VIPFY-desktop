@@ -1,13 +1,12 @@
 import * as React from "react";
-import { AppContext, AppContextContent } from "../common/functions";
+import { AppContext } from "../common/functions";
 import config from "../../configurationManager";
 import { useLocation } from "react-router";
 import type { Location } from "history";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
 import { useQuery } from "react-apollo";
 import { me } from "../queries/auth";
-
-export type MoveToType = (string) => void;
+import type { AppContextContent, MoveToType } from "../interfaces";
 
 interface Props {
     sidebarOpen: boolean;
