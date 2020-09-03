@@ -140,7 +140,7 @@ const uploadLink = createUploadLink({
 const batchLink = new BatchHttpLink({
   uri: `http${secure}://${SERVER_NAME}:${SERVER_PORT}/graphql`,
   credentials: "same-origin",
-  batchMax: 100
+  batchMax: 30  // server allows 100KB in a request, some graphql queries are 2KB each
 });
 
 const httpLink = split(operation => operation.getContext().hasUpload, uploadLink, batchLink);

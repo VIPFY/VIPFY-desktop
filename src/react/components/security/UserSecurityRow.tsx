@@ -109,7 +109,7 @@ class UserSecurityRow extends React.Component<Props, State> {
                 data: { fetchUserSecurityOverview }
               });
             }}>
-            {(mutate, { loading, error }) => (
+            {(mutate, { loading, error = null }) => (
               <React.Fragment>
                 <label className="switch">
                   <input
@@ -208,7 +208,7 @@ class UserSecurityRow extends React.Component<Props, State> {
 
         <td>
           {user.twofactormethods.length > 0
-            ? user.twofactormethods.map((method, key) => <span key={key}>{method.twofatype}</span>)
+            ? user.twofactormethods.map(method => method.twofatype).join(" ")
             : "OFF"}
         </td>
 

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default (_props: any) => {
   const links = [
-    { icon: "plus", link: "service-creation", label: "Create a new Service" },
+    { icon: "cloud-upload-alt", link: "service-creation", label: "Upload crawled Service data" },
     { icon: "dice-d12", link: "service-creation-external", label: "Create a new External Service" },
     { icon: "pencil-alt", link: "service-edit", label: "Edit a Service" },
     { icon: "brackets-curly", link: "universal-login-test", label: "Test Universal Login" },
