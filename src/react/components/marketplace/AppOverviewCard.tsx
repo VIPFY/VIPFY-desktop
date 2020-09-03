@@ -26,7 +26,6 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   }
 
   renderMainInfo(isWideFormat: boolean, hasFreeTrial: boolean) {
-    console.log({ ServiceLogo });
     return (
       <>
         <div className="pic">
