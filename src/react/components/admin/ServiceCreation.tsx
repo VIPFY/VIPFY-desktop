@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { useMutation } from "react-apollo";
 import { Link } from "react-router-dom";
 import UniversalButton from "../universalButtons/universalButton";
-import { App } from "../../interfaces";
+import { App, CompanySizes, IndustryDistribution } from "../../interfaces";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 
@@ -13,9 +13,9 @@ const PROCESS_APPS = gql`
   }
 `;
 
-type Excluded = Pick<App, Exclude<keyof App, "description">>;
+type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings">>;
 
-interface ScrapedApps extends Excluded {
+interface ScrapedApp extends Excluded {
   alternatives: { [id: number]: { name: string; rating: number; reviews } };
   ratings: {
     overallRating: number;
@@ -28,9 +28,9 @@ interface ScrapedApps extends Excluded {
     G2_EaseOfAdminRating?: number;
   };
   quotes: any[];
-  JobDistribution: object;
-  companySizes: object;
-  industryDistribution: object;
+  JobDistribution: { [industry: string]: number } | {};
+  companySizes: CompanySizes | {};
+  industryDistribution: IndustryDistribution | {};
   description:
     | string
     | {
@@ -47,8 +47,8 @@ interface ScrapedApps extends Excluded {
 }
 
 const ServiceUpload: React.FunctionComponent = () => {
-  const [services, setServices] = React.useState<{ [appID: string]: ScrapedApps } | {}>({});
-  const [service, setService] = React.useState<ScrapedApps | null>(null);
+  const [services, setServices] = React.useState<{ [appID: string]: ScrapedApp } | {}>({});
+  const [service, setService] = React.useState<ScrapedApp | null>(null);
   const [jsonError, setError] = React.useState<string | null>(null);
   const [jsonLoading, setLoading] = React.useState<boolean>(false);
   const [processApps, { loading, data, error }] = useMutation(PROCESS_APPS);
@@ -69,14 +69,24 @@ const ServiceUpload: React.FunctionComponent = () => {
           i == PARTS - 1 ? fullList.length + 1 : divideBY * (i + 1)
         );
 
-        const normalizedApps = apps.map(app => {
+        const normalizedApps = apps.map((app: ScrapedApp) => {
           const returnApp: App = {
             ...app,
-            externalid: toString(app.id),
+            externalid: app.id.toString(),
             externalstatistics: {
               jobDistribution: app.JobDistribution,
               industryDistribution: app.industryDistribution,
               companySizes: app.companySizes
+            },
+            ratings: {
+              overallRating: app.ratings.overallRating,
+              combinedCustomerSupportRating: app.ratings.combinedCustomerSupportRating,
+              combinedEaseOfUseRating: app.ratings.CombinedEaseOfUseRating,
+              combinedFunctionalityRating: app.ratings.CombinedFunctionalityRating,
+              valueForMoneyRating: app.ratings.CT_valueForMoneyRating,
+              recommendationRating: app.ratings.CT_recommendationRating,
+              easeOfSetupRating: app.ratings.G2_EaseOfSetupRating,
+              easeOfAdminRating: app.ratings.G2_EaseOfAdminRating
             }
           };
 
@@ -142,14 +152,6 @@ const ServiceUpload: React.FunctionComponent = () => {
     fileReader.readAsText(e.target.files[0], "UTF-8");
   };
 
-  const handleChange = (value, property) => {
-    setServices(oldServices => {
-      oldServices[service.id][property] = value;
-
-      return oldServices;
-    });
-  };
-
   const renderList = (headline: string, objectList: object) => {
     if (!objectList) {
       return null;
@@ -159,7 +161,10 @@ const ServiceUpload: React.FunctionComponent = () => {
       <ul className="list">
         <li className="listHeadline">{headline}</li>
         {Object.keys(objectList).map((dataKey, key) => (
-          <li key={key}>{`${dataKey}: ${objectList[dataKey]}`}</li>
+          <li key={key}>
+            <span className="list-key">{dataKey}</span>
+            <span>{objectList[dataKey]}</span>
+          </li>
         ))}
       </ul>
     );
