@@ -11,7 +11,7 @@ import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
-import { App } from "../interfaces";
+import { App, AppContextContent } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -114,7 +114,7 @@ export const filterError = error => {
   }
 };
 
-export const AppContext = React.createContext();
+export const AppContext: React.Context<AppContextContent> = React.createContext();
 
 // TODO: [VIP-433] Better logic in case of an undefined error
 export const ErrorComp = props => (
