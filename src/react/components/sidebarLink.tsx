@@ -1,6 +1,6 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
-import { ServiceLogo } from "vipfy-ui-lib";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 import { Licence } from "../interfaces";
 
 interface Props {

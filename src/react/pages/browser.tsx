@@ -7,7 +7,7 @@ import { parse } from "url";
 import psl from "psl";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ServiceLogo } from "vipfy-ui-lib";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 import BrowserNavigationButton from "../components/universalButtons/browserNavigationButton";
 import BrowserTab from "../components/browserTab";
 import BrowserOverflowTab from "../components/browserOverflowTab";
