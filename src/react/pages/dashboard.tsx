@@ -6,9 +6,6 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
 import { Licence } from "../interfaces";
 import dashboardPic from "../../images/dashboard.png";
-import { graphql } from "react-apollo";
-import compose from "lodash.flowright";
-import gql from "graphql-tag";
 
 const favourites: { [key: number]: Licence | null } = {};
 [...Array(8).keys()].map(n => (favourites[n] = null));
@@ -27,12 +24,6 @@ interface State {
   dragItem: number | null;
   showDeletion: boolean;
 }
-
-const TRIGGERTESTJOB = gql`
-  mutation performCronjobTasks {
-    performCronjobTasks
-  }
-`;
 
 class Dashboard extends React.Component<Props, State> {
   state = { search: "", dragItem: null, showDeletion: false };
@@ -87,16 +78,16 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     return (
-      <div className="dashboard">
+      <div className="dashboard page">
         <div className="heading">
-          <h1 onClick={() => this.props.triggerTestJob()}>Dashboard</h1>
+          <h1>Dashboard</h1>
           <UniversalSearchBox getValue={v => this.setState({ search: v })} />
         </div>
         {!licenceCheck ? (
           <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
             <div className="no-apps">
               <div>This is your</div>
-              <h1>MY DASHBOARD</h1>
+              <h1>DASHBOARD</h1>
               <div>
                 It's a central point of information about your connected services and licenses.
               </div>
@@ -125,8 +116,6 @@ class Dashboard extends React.Component<Props, State> {
                     search={this.state.search}
                     licences={filterLicences(appLists[list])}
                     setApp={this.setApp}
-                    width={this.props.width}
-                    userid={this.props.id}
                   />
                 );
               } else {
@@ -140,4 +129,4 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default compose(graphql(TRIGGERTESTJOB, { name: "triggerTestJob" }))(Dashboard);
+export default Dashboard;

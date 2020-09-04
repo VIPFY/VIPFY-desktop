@@ -14,11 +14,6 @@ interface Props {
   licence: Licence;
 }
 
-function useForceUpdate() {
-  const [_value, setValue] = React.useState(0); // integer state
-  return () => setValue(value => ++value); // update the state to force render
-}
-
 export default (props: Props) => {
   const [sortBy, setSortBy] = React.useState("A-Z");
   const handleName = licence =>
@@ -30,16 +25,15 @@ export default (props: Props) => {
     return null;
   }
   let anyapp = false;
-  const forceUpdate = useForceUpdate();
 
   return (
     <div className="section">
       <div className="heading">
-        <h1>{props.header ? props.header : "Apps"}</h1>
+        <h3>{props.header || "Apps"}</h3>
         <div
           className="sort-apps"
           style={{
-            display: props.header == "My Favorites" ? "none" : ""
+            display: props.header === "My Favorites" && "none"
           }}>
           <DropDown
             option={sortBy}
@@ -50,97 +44,79 @@ export default (props: Props) => {
           />
         </div>
       </div>
-      <div
-        /*ref={this.favouriteListRef} className="favourite-apps"*/ className="appGrid"
-        style={
-          props.width
-            ? {
-                gridColumnGap:
-                  24 +
-                  ((props.width - 64 - 64 + 24) % (128 + 24)) /
-                    (Math.floor((props.width - 64 - 64 + 24) / (128 + 24)) - 1)
+      <div className="dashboard-apps">
+        <div className="grid4Cols smGrid2Cols">
+          {props.licences
+            .filter(licence => {
+              if (props.search) {
+                const name = handleName(licence);
+
+                return name.toUpperCase().includes(props.search.toUpperCase());
+              } else {
+                return true;
               }
-            : {}
-        }>
-        {props.licences
-          .filter(licence => {
-            if (props.search) {
-              const name = handleName(licence);
+            })
+            .sort((a, b) => {
+              const aName = handleName(a).toUpperCase();
+              const bName = handleName(b).toUpperCase();
+              const defaultValue = a.starttime - b.starttime > 0;
 
-              return name.toUpperCase().includes(props.search.toUpperCase());
-            } else {
-              return true;
-            }
-          })
-          .sort((a, b) => {
-            const aName = handleName(a).toUpperCase();
-            const bName = handleName(b).toUpperCase();
-            const defaultValue = a.starttime - b.starttime > 0;
-
-            switch (sortBy) {
-              case "A-Z": {
-                if (aName < bName) {
-                  return -1;
-                } else if (aName > bName) {
-                  return 1;
-                } else {
-                  return 0;
+              switch (sortBy) {
+                case "A-Z": {
+                  if (aName < bName) {
+                    return -1;
+                  } else if (aName > bName) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
                 }
+
+                case "Z-A": {
+                  if (bName < aName) {
+                    return -1;
+                  } else if (bName > aName) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
+                }
+
+                case "Oldest First":
+                  return defaultValue ? 1 : -1;
+
+                case "Newest First":
+                  return a.starttime - b.starttime < 0 ? 1 : -1;
+
+                case "Most Used":
+                  return handleName(b).value - handleName(a).value;
+
+                case "Least Used":
+                  return handleName(a).value - handleName(b).value;
+
+                default:
+                  if (aName < bName) {
+                    return -1;
+                  } else if (aName > bName) {
+                    return 1;
+                  } else {
+                    return 0;
+                  }
               }
-
-              case "Z-A": {
-                if (bName < aName) {
-                  return -1;
-                } else if (bName > aName) {
-                  return 1;
-                } else {
-                  return 0;
-                }
-              }
-
-              case "Oldest First":
-                return defaultValue ? 1 : -1;
-
-              case "Newest First":
-                return a.starttime - b.starttime < 0 ? 1 : -1;
-
-              case "Most Used":
-                return handleName(b).value - handleName(a).value;
-
-              case "Least Used":
-                return handleName(a).value - handleName(b).value;
-
-              default:
-                if (aName < bName) {
-                  return -1;
-                } else if (aName > bName) {
-                  return 1;
-                } else {
-                  return 0;
-                }
-            }
-          })
-          .map((licence, key) => {
-            anyapp = true;
-            return (
-              <AppTile
-                key={key}
-                forceUpdate={forceUpdate}
-                dragStartFunction={props.dragStartFunction}
-                dragEndFunction={props.dragEndFunction}
-                handleDrop={() => null}
-                licence={licence}
-                setTeam={props.setApp}
-                header={props.header}
-              />
-            );
-          })}
-        {!anyapp &&
-          (props.search ? (
-            <div style={{ width: "450px" }}>Sorry, there are no apps matching your search</div>
-          ) : (
-            <div style={{ width: "450px" }}>Sorry, no apps here</div>
-          ))}
+            })
+            .map((licence, key) => {
+              anyapp = true;
+              return (
+                <AppTile key={key} licence={licence} setTeam={props.setApp} header={props.header} />
+              );
+            })}
+          {!anyapp &&
+            (props.search ? (
+              <div style={{ width: "450px" }}>Sorry, there are no apps matching your search</div>
+            ) : (
+              <div style={{ width: "450px" }}>Sorry, no apps here</div>
+            ))}
+        </div>
       </div>
     </div>
   );
