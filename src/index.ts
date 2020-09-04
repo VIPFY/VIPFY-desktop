@@ -201,6 +201,14 @@ const createWindow = async () => {
       logger.warn(`failed loading; ${isMainFrame} ${code} ${url}`, event);
     });
 
+    mainWindow.webContents.on("render-process-gone", async (e, details) => {
+      logger.critical(new Error("renderer process gone"), details);
+    });
+
+    mainWindow.webContents.on("unresponsive", async (e) => {
+      logger.warn("renderer unresponsive");
+    });
+
     if (isDevMode) {
       await openDevTools(mainWindow.webContents.id);
       mainWindow.webContents.on("dom-ready", async e => {
