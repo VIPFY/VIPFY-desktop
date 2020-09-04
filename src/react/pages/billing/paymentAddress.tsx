@@ -171,7 +171,7 @@ class PaymentAddress extends Component<Props, State> {
       promises.push(
         this.props.client.mutate({
           mutation: gql`
-            mutation saveVatStatus($vat: Vat!, $country: String!) {
+            mutation saveVatStatus($vat: VatInput!, $country: String!) {
               saveVatStatus(vat: $vat, country: $country)
             }
           `,

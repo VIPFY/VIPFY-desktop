@@ -147,7 +147,7 @@ class TeamOverview extends React.Component<Props, State> {
             pollInterval={60 * 10 * 1000 + 600}
             query={fetchCompanyTeams}
             fetchPolicy="network-only">
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
                 return (
                   <div className="table" key="table">
