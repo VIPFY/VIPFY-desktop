@@ -1,6 +1,8 @@
 import * as React from "react";
-import ColumnEmployees from "./universal/columns/columnEmployee";
 import moment, { now } from "moment";
+import { withApollo } from "react-apollo";
+import { getMyUnitId } from "../../common/functions";
+import ColumnEmployees from "./universal/columns/columnEmployee";
 import ChangeAccount from "./universal/changeAccount";
 import ColumnTeams from "./universal/columns/columnTeams";
 import Tag from "../../common/Tag";
@@ -10,6 +12,7 @@ interface Props {
   orbit: any;
   app: any;
   refetch: Function;
+  client: any;
 }
 
 interface State {
@@ -130,7 +133,9 @@ class AccountRow extends React.Component<Props, State> {
         </div>
         <div className="tableEnd">
           <div className="editOptions">
-            {(!account.options || (account.options && !account.options.private)) && (
+            {(!account.options ||
+              (account.options && !account.options.private) ||
+              account.assignments.some(as => as.unitid.id == getMyUnitId(this.props.client))) && (
               <i
                 className="fal fa-pen editbuttons"
                 title="Edit account settings"
@@ -139,7 +144,9 @@ class AccountRow extends React.Component<Props, State> {
             )}
           </div>
         </div>
-        {(!account.options || (account.options && !account.options.private)) &&
+        {(!account.options ||
+          (account.options && !account.options.private) ||
+          account.assignments.some(as => as.unitid.id == getMyUnitId(this.props.client))) &&
           this.state.change && (
             <ChangeAccount
               account={account}
@@ -153,4 +160,4 @@ class AccountRow extends React.Component<Props, State> {
     );
   }
 }
-export default AccountRow;
+export default withApollo(AccountRow);
