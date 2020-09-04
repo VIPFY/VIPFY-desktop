@@ -1,4 +1,4 @@
-// these must be imported first
+// These must be imported first
 @import "reset";
 @import "elements";
 @import "constants";
@@ -7,7 +7,7 @@
 
 @import "formElements/index";
 
-// please add in alphabetical order
+// Please add in alphabetical order
 @import "appDetails";
 @import "appOverviewCard";
 @import "breadCrumbs";
@@ -16,6 +16,8 @@
 @import "checkout";
 @import "click-tracking-study";
 @import "dashboard";
+@import "clickTrackingStudy";
+@import "dropDownWithIcon";
 @import "employeeCard";
 @import "loading";
 @import "login";
@@ -24,8 +26,9 @@
 @import "page";
 @import "pageHeader";
 @import "prosConsList";
+@import "serviceCreation";
 @import "tags";
 @import "vipfy";
 
-// last add macos specials
+// Last add macos specials
 @import "macosx";
