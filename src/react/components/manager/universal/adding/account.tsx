@@ -105,6 +105,7 @@ class CreateAccount extends React.Component<Props, State> {
                   width="300px"
                   id="domain"
                   className="scrollable"
+                  inputStyles={{ minWidth: "100px" }}
                   startvalue={this.state.loginurl}
                   livevalue={value => {
                     let domain = value;
@@ -233,11 +234,12 @@ class CreateAccount extends React.Component<Props, State> {
                 onClick={async () => {
                   this.setState({ saving: true });
                   try {
+                    const unencryptedLoginData = {
+                      username: this.state.email,
+                      password: this.state.password
+                    };
                     const logindata = await createEncryptedLicenceKeyObject(
-                      {
-                        username: this.state.email,
-                        password: this.state.password
-                      },
+                      unencryptedLoginData,
                       undefined,
                       this.props.client
                     );
@@ -297,7 +299,12 @@ class CreateAccount extends React.Component<Props, State> {
                     });
                     this.setState({ saved: true });
                     setTimeout(
-                      () => this.props.close({ ...account.data.createAccount, new: true }),
+                      () =>
+                        this.props.close({
+                          ...account.data.createAccount,
+                          new: true,
+                          unencryptedLoginData
+                        }),
                       1000
                     );
                   } catch (err) {

@@ -98,17 +98,17 @@ class AddVacation extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 1000}
         query={fetchUserLicences}
         variables={{ unitid: this.props.employeeid }}>
-        {({ loading, error, data }) => {
+        {({ loading, error = null, data }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           let appArray: JSX.Element[] = [];
           const assignments = [];
           if (data.fetchUserLicenceAssignments) {
-            data.fetchUserLicenceAssignments.sort(function(a, b) {
+            data.fetchUserLicenceAssignments.sort(function (a, b) {
               let nameA = a.boughtplanid.alias
                 ? a.boughtplanid.alias.toUpperCase()
                 : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
@@ -139,6 +139,7 @@ class AddVacation extends React.Component<Props, State> {
             assignments.forEach((e, k) => {
               appArray.push(
                 <AssignVacation
+                  employeeid={this.props.employeeid}
                   e={e}
                   liveid={id => {
                     this.setState(oldstate => (oldstate.users[k] = id));
@@ -450,106 +451,112 @@ class AddVacation extends React.Component<Props, State> {
                   </div>
                   <span style={{ lineHeight: "24px" }}>
                     <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
-                      {({ loading, error, data }) => {
+                      {({ loading, error = null, data }) => {
                         if (loading) {
-                          return "Loading...";
+                          return <div>Loading...</div>;
                         }
                         if (error) {
-                          return `Error! ${error.message}`;
+                          return <div>Error! {error.message}</div>;
                         }
-                        const employees = data.fetchDepartmentsData[0].employees;
-                        return (
-                          <>
-                            <UniversalDropDownInput
-                              id="employee-search-new"
-                              label="Search for users"
-                              options={employees}
-                              noFloating={true}
-                              resetPossible={true}
-                              width="276px"
-                              styles={{ marginBottom: "0px" }}
-                              codeFunction={employee => employee.id}
-                              nameFunction={employee => concatName(employee)}
-                              renderOption={(possibleValues, i, click, value) => (
-                                <div
-                                  key={`searchResult-${i}`}
-                                  className="searchResult"
-                                  onClick={() => click(possibleValues[i])}>
-                                  <span className="resultHighlight">
-                                    {concatName(possibleValues[i]).substring(0, value.length)}
-                                  </span>
-                                  <span>
-                                    {concatName(possibleValues[i]).substring(value.length)}
-                                  </span>
-                                </div>
-                              )}
-                              alternativeText={inputelement => (
-                                <span
-                                  className="inputInsideButton"
-                                  style={{
-                                    width: "auto",
-                                    backgroundColor: "transparent",
-                                    cursor: "text"
-                                  }}>
+                        const employees = data.fetchDepartmentsData[0].employees.filter(
+                          emp => emp.id != this.props.employeeid
+                        );
+                        if (employees.length > 0) {
+                          return (
+                            <>
+                              <UniversalDropDownInput
+                                id="employee-search-new"
+                                label="Search for users"
+                                options={employees}
+                                noFloating={true}
+                                resetPossible={true}
+                                width="276px"
+                                styles={{ marginBottom: "0px" }}
+                                codeFunction={employee => employee.id}
+                                nameFunction={employee => concatName(employee)}
+                                renderOption={(possibleValues, i, click, value) => (
+                                  <div
+                                    key={`searchResult-${i}`}
+                                    className="searchResult"
+                                    onClick={() => click(possibleValues[i])}>
+                                    <span className="resultHighlight">
+                                      {concatName(possibleValues[i]).substring(0, value.length)}
+                                    </span>
+                                    <span>
+                                      {concatName(possibleValues[i]).substring(value.length)}
+                                    </span>
+                                  </div>
+                                )}
+                                alternativeText={inputelement => (
                                   <span
-                                    onClick={() => inputelement.focus()}
-                                    style={{ marginRight: "4px", fontSize: "12px" }}>
-                                    Start typing or
-                                  </span>
-                                  <UniversalButton
-                                    type="low"
-                                    tabIndex={-1}
-                                    onClick={() => {
-                                      this.setState({ showall: true });
-                                    }}
-                                    label="show all"
-                                    customStyles={{ lineHeight: "24px" }}
-                                  />
-                                </span>
-                              )}
-                              startvalue={
-                                this.state.user
-                                  ? employees.find(a => a.id == this.state.user).id
-                                  : ""
-                              }
-                              noNoResults={true}
-                              livecode={c => {
-                                this.setState({ user: c });
-                              }}
-                              fewResults={true}
-                              noFixed={true}
-                            />
-                            {this.state.showall && (
-                              <PopupBase
-                                nooutsideclose={true}
-                                small={true}
-                                close={() => this.setState({ showall: false })}
-                                buttonStyles={{ justifyContent: "space-between" }}>
-                                <h1>All Employees</h1>
-                                {employees.map(employee => (
-                                  <div className="listingDiv" key={employee.id}>
+                                    className="inputInsideButton"
+                                    style={{
+                                      width: "auto",
+                                      backgroundColor: "transparent",
+                                      cursor: "text"
+                                    }}>
+                                    <span
+                                      onClick={() => inputelement.focus()}
+                                      style={{ marginRight: "4px", fontSize: "12px" }}>
+                                      Start typing or
+                                    </span>
                                     <UniversalButton
                                       type="low"
-                                      label={concatName(employee)}
+                                      tabIndex={-1}
                                       onClick={() => {
-                                        this.setState({ showall: false });
-                                        this.setState({ user: employee.id });
+                                        this.setState({ showall: true });
                                       }}
+                                      label="show all"
+                                      customStyles={{ lineHeight: "24px" }}
                                     />
-                                  </div>
-                                ))}
-                                {/* <div className="listingDiv" key="new">
+                                  </span>
+                                )}
+                                startvalue={
+                                  this.state.user
+                                    ? employees.find(a => a.id == this.state.user).id
+                                    : ""
+                                }
+                                noNoResults={true}
+                                livecode={c => {
+                                  this.setState({ user: c });
+                                }}
+                                fewResults={true}
+                                noFixed={true}
+                              />
+                              {this.state.showall && (
+                                <PopupBase
+                                  nooutsideclose={true}
+                                  small={true}
+                                  close={() => this.setState({ showall: false })}
+                                  buttonStyles={{ justifyContent: "space-between" }}>
+                                  <h1>All Employees</h1>
+                                  {employees.map(employee => (
+                                    <div className="listingDiv" key={employee.id}>
+                                      <UniversalButton
+                                        type="low"
+                                        label={concatName(employee)}
+                                        onClick={() => {
+                                          this.setState({ showall: false });
+                                          this.setState({ user: employee.id });
+                                        }}
+                                      />
+                                    </div>
+                                  ))}
+                                  {/* <div className="listingDiv" key="new">
                                   <UniversalButton
                                     type="low"
                                     label="Create new User"
                                     onClick={() => this.setState({ showall: false })}
                                   />
                                     </div> */}
-                                <UniversalButton type="low" label="Cancel" closingPopup={true} />
-                              </PopupBase>
-                            )}
-                          </>
-                        );
+                                  <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                                </PopupBase>
+                              )}
+                            </>
+                          );
+                        } else {
+                          return <div>There is no other employee</div>;
+                        }
                       }}
                     </Query>
                   </span>

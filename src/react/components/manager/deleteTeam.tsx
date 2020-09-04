@@ -237,6 +237,7 @@ class DeleteTeam extends React.Component<Props, State> {
         additionalclassName="assignNewAccountPopup"
         buttonStyles={{ justifyContent: "space-between" }}>
         <h1>Delete Team</h1>
+        {/*Quick fix since we have to change the database otherwise
         <div style={{ position: "relative", marginLeft: "16px" }}>
           <div
             style={{
@@ -290,7 +291,7 @@ class DeleteTeam extends React.Component<Props, State> {
               </PopupBase>
             )}
           </div>
-        </div>
+                </div>*/}
         <div
           style={{
             display: "flex",
@@ -347,7 +348,6 @@ class DeleteTeam extends React.Component<Props, State> {
           type="high"
           label="Save"
           onClick={async () => {
-            console.log("STATE", this.state, this.props);
             try {
               this.setState({ saving: true });
               await this.props.deleteTeam({

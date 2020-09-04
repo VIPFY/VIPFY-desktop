@@ -163,6 +163,29 @@ export interface Plan {
   hidden: boolean;
 }
 
+export interface IndustryDistribution {
+  Business: number;
+  ResearchAndDevelopment: number;
+  Education: number;
+  CustomerRelations: number;
+  Accounting: number;
+  Administration: number;
+  Design: number;
+}
+
+export interface CompanySizes {
+  "201-500 employees": 0;
+  "5001-10,000 employees": 0;
+  "51-200 employees": 0;
+  "11-50 employees": 0;
+  Unspecified: 0;
+  "10,001+ employees": 0;
+  "1-10 employees": 0;
+  "501-1000 employees": 0;
+  "Self-employed": 0;
+  "1001-5000 employees": 0;
+}
+
 export interface App {
   id: string;
   name: string;
@@ -176,13 +199,30 @@ export interface App {
   logo: string;
   images: string[];
   features: JSON;
-  options: { marketplace?: boolean };
+  options: { marketplace?: boolean; [option: string]: any };
   developer: Unit;
   supportunit: Unit;
   color: string;
   deprecated: boolean;
   hidden: boolean;
   hasboughtplan: boolean;
+  category?: string;
+  externalid?: string;
+  externalstatistics?: {
+    jobDistribution: { [industry: string]: number } | {};
+    industryDistribution: IndustryDistribution | {};
+    companySizes: CompanySizes | {};
+  };
+  ratings?: {
+    overallRating: number;
+    combinedCustomerSupportRating: number;
+    combinedEaseOfUseRating: number;
+    combinedFunctionalityRating: number;
+    valueForMoneyRating: number;
+    recommendationRating: number;
+    easeOfSetupRating: number;
+    easeOfAdminRating: number;
+  };
 }
 
 export interface Option {
@@ -271,3 +311,25 @@ export interface Expired_Plan {
     integrations?: number;
   };
 }
+
+export interface PopUp {
+  show: boolean;
+  header: string;
+  body: any;
+  props: any;
+  type: string;
+  info: string;
+}
+
+export interface AppContextContent {
+  showPopup: (data: PopUp) => void;
+  placeid: string;
+  logOut: () => Promise<void>;
+  setrenderElements: (any) => void;
+  addRenderElement: (any) => void;
+  addRenderAction: (any) => void;
+  setreshowTutorial: (any) => void;
+  references: any[];
+}
+
+export type MoveToType = (string) => void;

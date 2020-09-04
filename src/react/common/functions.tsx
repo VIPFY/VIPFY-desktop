@@ -11,7 +11,7 @@ import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
-import { App } from "../interfaces";
+import { App, AppContextContent } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -114,7 +114,7 @@ export const filterError = error => {
   }
 };
 
-export const AppContext = React.createContext();
+export const AppContext: React.Context<AppContextContent> = React.createContext();
 
 // TODO: [VIP-433] Better logic in case of an undefined error
 export const ErrorComp = props => (
@@ -453,7 +453,7 @@ export function base64ToArrayBuffer(base64) {
 }
 
 export function renderNotificatonMessage(message, client) {
-  const ure = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const ure = /^(.*)([uU]ser [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/m;
   const usermatch = message.match(ure);
   if (usermatch) {
     return (
@@ -464,7 +464,7 @@ export function renderNotificatonMessage(message, client) {
       </>
     );
   }
-  const tre = /^(.*)([tT]eam [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const tre = /^(.*)([tT]eam [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/m;
   const teammatch = message.match(tre);
   if (teammatch) {
     return (
@@ -475,7 +475,7 @@ export function renderNotificatonMessage(message, client) {
       </>
     );
   }
-  const ore = /^(.*)([oO]rbit [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const ore = /^(.*)([oO]rbit [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/m;
   const orbitmatch = message.match(ore);
   if (orbitmatch) {
     return (
@@ -486,7 +486,7 @@ export function renderNotificatonMessage(message, client) {
       </>
     );
   }
-  const are = /^(.*)([aA]ccount [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const are = /^(.*)([aA]ccount [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/m;
   const accountmatch = message.match(are);
   if (accountmatch) {
     return (
@@ -497,7 +497,7 @@ export function renderNotificatonMessage(message, client) {
       </>
     );
   }
-  const sre = /^(.*)([sS]ervice [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/;
+  const sre = /^(.*)([sS]ervice [a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})(.*)$/m;
   const servicematch = message.match(sre);
   if (servicematch) {
     return (

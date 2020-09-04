@@ -177,7 +177,7 @@ class ChangeAccount extends React.Component<Props, State> {
                     this.setState(oldstate => {
                       return {
                         loginValues: { ...oldstate.loginValues, email: v },
-                        changedp: true
+                        changede: true
                       };
                     });
                     if (!this.state.aliastouched) {
@@ -187,7 +187,7 @@ class ChangeAccount extends React.Component<Props, State> {
                     this.setState(oldstate => {
                       return {
                         loginValues: { ...oldstate.loginValues, email: v },
-                        changedp: false
+                        changede: false
                       };
                     });
                   }
@@ -292,7 +292,7 @@ class ChangeAccount extends React.Component<Props, State> {
             }}
             additionalclassName="assignNewAccountPopup"
             buttonStyles={{ justifyContent: "space-between" }}>
-            <h1>{!newaccount ? "Change Account Settings" : "Add new Account"}</h1>
+            <h1>{!newaccount ? "Change Account Settings" : "Insert new Account"}</h1>
             {!newaccount && (
               <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
                 <span style={{ lineHeight: "24px", width: "84px" }}>Alias:</span>
@@ -356,6 +356,7 @@ class ChangeAccount extends React.Component<Props, State> {
                   width="300px"
                   id="domain"
                   className="scrollable"
+                  inputStyles={{minWidth: "100px"}}
                   startvalue={this.state.loginurl}
                   livevalue={value => {
                     let domain = value;
@@ -644,8 +645,9 @@ class ChangeAccount extends React.Component<Props, State> {
                       />
                     )
                 )}
-
-                <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
+                {(!account.options || !account.options.private) && (
+                  <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
+                )}
               </>
             )}
 
@@ -679,6 +681,8 @@ class ChangeAccount extends React.Component<Props, State> {
                     ? !(
                         (this.state.changeda && this.state.changede && this.state.changedp) ||
                         (this.props.app.options &&
+                          this.props.app.options.loginFields &&
+                          this.state.loginValues &&
                           Object.keys(this.state.loginValues).length ==
                             this.props.app.options.loginFields.length)
                       )
@@ -687,6 +691,8 @@ class ChangeAccount extends React.Component<Props, State> {
                         (this.state.changedl && !(this.state.changede && this.state.changedp))) &&
                       !(
                         this.props.app.options &&
+                        this.props.app.options.loginFields &&
+                        this.state.loginValues &&
                         Object.keys(this.state.loginValues).length ==
                           this.props.app.options.loginFields.length
                       )
