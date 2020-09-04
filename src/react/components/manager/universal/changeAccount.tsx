@@ -356,6 +356,7 @@ class ChangeAccount extends React.Component<Props, State> {
                   width="300px"
                   id="domain"
                   className="scrollable"
+                  inputStyles={{minWidth: "100px"}}
                   startvalue={this.state.loginurl}
                   livevalue={value => {
                     let domain = value;

@@ -105,6 +105,7 @@ class CreateAccount extends React.Component<Props, State> {
                   width="300px"
                   id="domain"
                   className="scrollable"
+                  inputStyles={{ minWidth: "100px" }}
                   startvalue={this.state.loginurl}
                   livevalue={value => {
                     let domain = value;
@@ -155,8 +156,8 @@ class CreateAccount extends React.Component<Props, State> {
                         </option>
                       </select>
                     ) : (
-                        this.props.orbit.options.predomain
-                      )
+                      this.props.orbit.options.predomain
+                    )
                   }
                   suffix={this.state.selfhosting ? undefined : this.props.orbit.options.afterdomain}
                 />
@@ -236,7 +237,7 @@ class CreateAccount extends React.Component<Props, State> {
                     const unencryptedLoginData = {
                       username: this.state.email,
                       password: this.state.password
-                    }
+                    };
                     const logindata = await createEncryptedLicenceKeyObject(
                       unencryptedLoginData,
                       undefined,
@@ -266,11 +267,11 @@ class CreateAccount extends React.Component<Props, State> {
                       } else {
                         logindata.loginurl = `${this.props.orbit.options.predomain || ""}${
                           this.state.loginurl
-                          }${this.props.orbit.options.afterdomain || ""}`;
+                        }${this.props.orbit.options.afterdomain || ""}`;
 
                         options.loginurl = `${this.props.orbit.options.predomain || ""}${
                           this.state.loginurl
-                          }${this.props.orbit.options.afterdomain || ""}`;
+                        }${this.props.orbit.options.afterdomain || ""}`;
                       }
                     }
                     let employeeOrbitid = undefined;
@@ -298,7 +299,12 @@ class CreateAccount extends React.Component<Props, State> {
                     });
                     this.setState({ saved: true });
                     setTimeout(
-                      () => this.props.close({ ...account.data.createAccount, new: true, unencryptedLoginData }),
+                      () =>
+                        this.props.close({
+                          ...account.data.createAccount,
+                          new: true,
+                          unencryptedLoginData
+                        }),
                       1000
                     );
                   } catch (err) {
@@ -313,20 +319,20 @@ class CreateAccount extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}></div>
+                    }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                      }`}>
+                    }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}
