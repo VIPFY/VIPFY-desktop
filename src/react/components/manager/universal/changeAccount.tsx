@@ -644,8 +644,9 @@ class ChangeAccount extends React.Component<Props, State> {
                       />
                     )
                 )}
-
-                <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
+                {(!account.options || !account.options.private) && (
+                  <ShowAndAddEmployee account={account} refetch={this.props.refetch} />
+                )}
               </>
             )}
 

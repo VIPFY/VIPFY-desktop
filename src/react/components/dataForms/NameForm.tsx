@@ -90,9 +90,7 @@ class DataNameForm extends React.Component<Props, State> {
           <Mutation<WorkAround, WorkAround>
             mutation={ADD_PROMOCODE}
             onCompleted={() => {
-              if (this.state.name) {
-                setTimeout(() => this.continue(), 1000);
-              }
+              this.setState({ newError: true });
             }}>
             {(mutate, { data, loading, error }) => (
               <React.Fragment>
@@ -121,9 +119,9 @@ class DataNameForm extends React.Component<Props, State> {
                         id="promocode"
                         label="Promo Code"
                         disabled={loading}
-                        livevalue={v => this.setState({ promocode: v })}
+                        livevalue={v => this.setState({ promocode: v, newError: false })}
                         errorEvaluation={error}
-                        errorhint={error && filterError(error)}
+                        errorhint={error && this.state.newError && filterError(error)}
                       />
                     )
                   ) : (
@@ -142,6 +140,7 @@ class DataNameForm extends React.Component<Props, State> {
                         await mutate({ variables: { promocode } });
                         await this.continue();
                       } catch (err) {
+                        this.setState({ register: false });
                         console.log("Error-Promocode", err);
                       }
                     } else {

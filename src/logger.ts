@@ -106,7 +106,7 @@ gelf.setConfig({
         message.user_language = me.language;
         message.user_companyid = me.company.unitid.id;
         message.user_employees = me.company.employees; // number of employees in company
-      } catch {} // readQuery always throws if info is not in cache. That means the user isn't logged in
+      } catch { } // readQuery always throws if info is not in cache. That means the user isn't logged in
       return message;
     }
   ]
@@ -118,7 +118,19 @@ function makeLogString(params: any[]): gelf.Message {
     return params.join(" ");
   } else {
     // it's complicated, so create less pretty but more accurate representation
-    return inspect(params, { depth: Infinity });
+    // do a simple heuristic to go deeper into simple objects
+    // some objects like react references quickly become huge at high depths
+    const cutoffLarge = 100000; // largest reasonable log message
+    const inspectShallow = inspect(params, { depth: 4 });
+    if (inspectShallow.length < 2000 && inspectShallow.indexOf("[") !== -1) {
+      const inspectDeep = inspect(params, { depth: 6 });
+      if (inspectDeep.length < cutoffLarge) {
+        return inspectDeep; // limit network data size
+      }
+    } else if (inspectShallow.length > cutoffLarge) {
+      return inspect(params, { depth: 2 });
+    }
+    return inspectShallow;
   }
 }
 
@@ -136,7 +148,7 @@ const _trace = console.trace;
 
 // monkey-patch console.* (at least the ones we use)
 // graylog has three log levels above error
-/*console.emergency = (...params) => {
+console.emergency = (...params) => {
   _error(...params);
   gelf.emergency(makeLogString(params), makeExtraData(params));
 };
@@ -178,6 +190,6 @@ console.assert = (assert, ...params) => {
   params.push(new Error("Assertion failed"));
   _warn(...params, new Error().stack);
   gelf.warn(makeLogString(params));
-};*/
+};
 
 export const logger = gelf;

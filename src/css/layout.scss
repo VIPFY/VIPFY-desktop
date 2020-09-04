@@ -2648,6 +2648,8 @@ progress[value] {
   border-radius: 4px;
   letter-spacing: 0.02em;
   display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
 
   &.high {
     &.useable {

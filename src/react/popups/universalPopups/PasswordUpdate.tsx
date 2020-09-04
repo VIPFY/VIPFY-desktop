@@ -1,7 +1,7 @@
 import * as React from "react";
 import { withApollo } from "react-apollo";
 import ReactPasswordStrength from "react-password-strength";
-import { PW_MIN_LENGTH } from "../../common/constants";
+import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
 import { ErrorComp } from "../../common/functions";
 import UserName from "../../components/UserName";
 import PopupBase from "./popupBase";
@@ -12,6 +12,7 @@ import { updatePassword } from "../../common/passwords";
 import { updateEmployeePassword } from "../../common/passwords";
 import IconButton from "../../common/IconButton";
 import { WorkAround } from "../../interfaces";
+import UniversalTextInput from "../../components/universalForms/universalTextInput";
 
 interface Password {
   score: number;
@@ -26,19 +27,24 @@ interface Props {
 }
 
 interface State {
-  password: null | Password;
-  passwordRepeat: null | Password;
-  currentPassword: null | Password;
-  showPassword: boolean;
+  currentPassword: null | String;
+  newPassword: null | String;
+  repeatNewPassword: null | String;
+  passwordData: null | Password;
 }
 
 class PasswordUpdate extends React.Component<Props, State> {
-  state = { password: null, passwordRepeat: null, currentPassword: null, showPassword: false };
+  state = {
+    currentPassword: null,
+    newPassword: null,
+    repeatNewPassword: null,
+    passwordData: null
+  };
 
   handlePasswordChange = (name, values) => this.setState({ [name]: values });
 
   render() {
-    const { password, passwordRepeat, currentPassword } = this.state;
+    const { currentPassword } = this.state;
     const { unitid, client } = this.props;
 
     return (
@@ -51,8 +57,14 @@ class PasswordUpdate extends React.Component<Props, State> {
                 small={true}
                 close={() => this.props.closeFunction()}>
                 <div className="update-password">
-                  <h1>Update Password of</h1>
-                  <h1>{userid == unitid ? "Yourself" : <UserName unitid={unitid} />}</h1>
+                  <h1>
+                    <span>Update Password</span>
+                  </h1>
+                  {userid != unitid && (
+                    <h2>
+                      of <UserName unitid={unitid} />
+                    </h2>
+                  )}
                   {data ? (
                     <React.Fragment>
                       <div className="sub-header">Updating Password was successful</div>
@@ -60,103 +72,57 @@ class PasswordUpdate extends React.Component<Props, State> {
                     </React.Fragment>
                   ) : (
                     <React.Fragment>
-                      <div className="sub-header">
-                        {`You can enter a new password for ${
-                          userid == unitid ? "yourself" : "the user"
-                        } here`}
-                      </div>
-
                       {userid == unitid && (
-                        <ReactPasswordStrength
-                          className="passwordStrength not-show-bar"
-                          minLength={0}
-                          minScore={0}
-                          scoreWords={[]}
-                          tooShortWord={""}
-                          inputProps={{
-                            name: "password_input_current",
-                            autoComplete: "off",
-                            placeholder: "Current Password",
-                            className: "cleanup universalTextInput"
-                          }}
-                          changeCallback={state =>
-                            this.handlePasswordChange("currentPassword", state)
-                          }
+                        <UniversalTextInput
+                          id="currentPW"
+                          type="password"
+                          label="Current Password"
+                          livevalue={v => this.setState({ currentPassword: v })}
+                          onEnter={async () => document.querySelector("#newPassword").focus()}
+                          holderStyles={{ width: "300px" }}
                         />
                       )}
-
-                      <div className="password-container">
-                        <ReactPasswordStrength
-                          className="passwordStrength"
-                          minLength={PW_MIN_LENGTH}
-                          minScore={2}
-                          scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-                          tooShortWord={"too short"}
-                          inputProps={{
-                            name: "password_input",
-                            autoComplete: "off",
-                            placeholder: "New Password",
-                            className: "cleanup universalTextInput toggle-password"
-                          }}
-                          changeCallback={state => this.handlePasswordChange("password", state)}
-                        />
-
-                        <IconButton
-                          icon={`eye${this.state.showPassword ? "" : "-slash"}`}
-                          onClick={() =>
-                            this.setState(prevState => {
-                              const passwordField = document.querySelector(".toggle-password");
-
-                              if (prevState.showPassword) {
-                                passwordField.type = "password";
-                              } else {
-                                passwordField.type = "text";
-                              }
-
-                              return { ...prevState, showPassword: !prevState.showPassword };
-                            })
-                          }
-                        />
-                      </div>
-
-                      <ReactPasswordStrength
-                        className="passwordStrength not-show-bar"
-                        minLength={PW_MIN_LENGTH}
-                        minScore={2}
-                        scoreWords={[]}
-                        tooShortWord=""
-                        inputProps={{
-                          name: "password_input_repeat",
-                          autoComplete: "off",
-                          placeholder: "Repeat Password",
-                          className: "cleanup universalTextInput"
-                        }}
-                        changeCallback={state => this.handlePasswordChange("passwordRepeat", state)}
+                      <UniversalTextInput
+                        id="newPassword"
+                        label="New Password"
+                        type="password"
+                        livevalue={v => this.setState({ newPassword: v })}
+                        checkPassword={passwordData => this.setState({ passwordData })}
+                        additionalPasswordChecks={[this.state.currentPassword]}
+                        errorhint={
+                          this.state.newPassword &&
+                          this.state.newPassword != "" &&
+                          this.state.currentPassword == this.state.newPassword &&
+                          "You can't use the same password again"
+                        }
+                        errorEvaluation={
+                          this.state.newPassword &&
+                          this.state.newPassword != "" &&
+                          this.state.currentPassword == this.state.newPassword
+                        }
+                        onEnter={async () => document.querySelector("#repeatNewPassword").focus()}
+                        holderStyles={{ width: "300px" }}
                       />
-
+                      <UniversalTextInput
+                        id="repeatNewPassword"
+                        label="Repeat New Password"
+                        type="password"
+                        livevalue={v => this.setState({ repeatNewPassword: v })}
+                        holderStyles={{ width: "300px" }}
+                        errorhint={
+                          this.state.repeatNewPassword &&
+                          this.state.newPassword != this.state.repeatNewPassword &&
+                          "Passwords don't match"
+                        }
+                        errorEvaluation={
+                          this.state.repeatNewPassword &&
+                          this.state.newPassword != this.state.repeatNewPassword
+                        }
+                      />
                       {error && <ErrorComp error={error} />}
-
-                      <div
-                        style={{
-                          opacity:
-                            password &&
-                            passwordRepeat &&
-                            password.password.length >= PW_MIN_LENGTH &&
-                            password.password != passwordRepeat.password
-                              ? 1
-                              : 0
-                        }}
-                        className="error-field">
-                        Passwords don't match
-                      </div>
                     </React.Fragment>
                   )}
                 </div>
-
-                {/*
-                 * The Popup doesn't like Fragments, so every Button needs it's
-                 * own check
-                 */}
 
                 {!data && (
                   <UniversalButton
@@ -170,28 +136,25 @@ class PasswordUpdate extends React.Component<Props, State> {
                   <UniversalButton
                     type="high"
                     disabled={
-                      unitid == userid
-                        ? !currentPassword || !currentPassword.password
-                        : false ||
-                          !password ||
-                          !passwordRepeat ||
-                          password.score < 2 ||
-                          password.password != passwordRepeat.password ||
-                          loading
+                      !this.state.repeatNewPassword ||
+                      this.state.newPassword != this.state.repeatNewPassword ||
+                      !this.state.passwordData ||
+                      (this.state.passwordData &&
+                        this.state.passwordData.score < PW_MIN_STRENGTH) ||
+                      (this.state.passwordData &&
+                        this.state.passwordData.password.length < PW_MIN_LENGTH) ||
+                      (unitid == userid && !this.state.currentPassword) ||
+                      loading
                     }
                     onClick={() => {
                       if (unitid == userid) {
-                        if (password.password !== passwordRepeat.password) {
-                          return null;
-                        }
-
                         return updatePassword(
                           client,
-                          currentPassword?.password,
-                          password?.password
+                          currentPassword,
+                          this.state.passwordData.password
                         );
                       }
-                      return updatePassword(client, unitid, password.password);
+                      return updatePassword(client, unitid, this.state.passwordData.password);
                     }}
                     label="Update Password"
                   />
