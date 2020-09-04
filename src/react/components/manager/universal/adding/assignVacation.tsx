@@ -93,107 +93,113 @@ class AssignVacation extends React.Component<Props, State> {
               if (error) {
                 return `Error! ${error.message}`;
               }
-              const employees = data.fetchDepartmentsData[0].employees;
-              return (
-                <>
-                  <UniversalDropDownInput
-                    id={`employee-search-${
-                      this.state.user
-                        ? this.state.user.id
-                        : this.props.forceUser
-                        ? this.props.forceUser.id
-                        : ""
-                    }`}
-                    label="Search for users"
-                    options={employees}
-                    noFloating={true}
-                    resetPossible={true}
-                    width="276px"
-                    styles={{ marginBottom: "0px" }}
-                    codeFunction={employee => employee.id}
-                    nameFunction={employee => concatName(employee)}
-                    renderOption={(possibleValues, i, click, value) => (
-                      <div
-                        key={`searchResult-${i}`}
-                        className="searchResult"
-                        onClick={() => click(possibleValues[i])}>
-                        <span className="resultHighlight">
-                          {concatName(possibleValues[i]).substring(0, value.length)}
-                        </span>
-                        <span>{concatName(possibleValues[i]).substring(value.length)}</span>
-                      </div>
-                    )}
-                    alternativeText={inputelement => (
-                      <span
-                        className="inputInsideButton"
-                        style={{
-                          width: "auto",
-                          backgroundColor: "transparent",
-                          cursor: "text"
-                        }}>
+              const employees = data.fetchDepartmentsData[0].employees.filter(
+                emp => emp.id != this.props.employeeid
+              );
+              if (employees.length > 0) {
+                return (
+                  <>
+                    <UniversalDropDownInput
+                      id={`employee-search-${
+                        this.state.user
+                          ? this.state.user.id
+                          : this.props.forceUser
+                          ? this.props.forceUser.id
+                          : ""
+                      }`}
+                      label="Search for users"
+                      options={employees}
+                      noFloating={true}
+                      resetPossible={true}
+                      width="276px"
+                      styles={{ marginBottom: "0px" }}
+                      codeFunction={employee => employee.id}
+                      nameFunction={employee => concatName(employee)}
+                      renderOption={(possibleValues, i, click, value) => (
+                        <div
+                          key={`searchResult-${i}`}
+                          className="searchResult"
+                          onClick={() => click(possibleValues[i])}>
+                          <span className="resultHighlight">
+                            {concatName(possibleValues[i]).substring(0, value.length)}
+                          </span>
+                          <span>{concatName(possibleValues[i]).substring(value.length)}</span>
+                        </div>
+                      )}
+                      alternativeText={inputelement => (
                         <span
-                          onClick={() => inputelement.focus()}
-                          style={{ marginRight: "4px", fontSize: "12px" }}>
-                          Start typing or
-                        </span>
-                        <UniversalButton
-                          type="low"
-                          tabIndex={-1}
-                          onClick={() => {
-                            this.setState({ showall: true });
-                          }}
-                          label="show all"
-                          customStyles={{ lineHeight: "24px" }}
-                        />
-                      </span>
-                    )}
-                    startvalue={
-                      this.state.user && employees.find(a => a.id == this.state.user.id)
-                        ? employees.find(a => a.id == this.state.user.id).id
-                        : this.props.forceUser
-                        ? this.props.forceUser.id
-                        : ""
-                    }
-                    noNoResults={true}
-                    livecode={c => {
-                      this.setState({ user: employees.find(a => a.id == c) });
-                      this.props.liveid(c);
-                    }}
-                    fewResults={true}
-                    noFixed={true}
-                  />
-                  {this.state.showall && (
-                    <PopupBase
-                      nooutsideclose={true}
-                      small={true}
-                      close={() => this.setState({ showall: false })}
-                      buttonStyles={{ justifyContent: "space-between" }}>
-                      <h1>All Employees</h1>
-                      {employees.map(employee => (
-                        <div className="listingDiv" key={employee.id}>
+                          className="inputInsideButton"
+                          style={{
+                            width: "auto",
+                            backgroundColor: "transparent",
+                            cursor: "text"
+                          }}>
+                          <span
+                            onClick={() => inputelement.focus()}
+                            style={{ marginRight: "4px", fontSize: "12px" }}>
+                            Start typing or
+                          </span>
                           <UniversalButton
                             type="low"
-                            label={concatName(employee)}
+                            tabIndex={-1}
                             onClick={() => {
-                              this.setState({ showall: false });
-                              this.setState({ user: employee });
-                              this.props.liveid(employee.id);
+                              this.setState({ showall: true });
                             }}
+                            label="show all"
+                            customStyles={{ lineHeight: "24px" }}
                           />
-                        </div>
-                      ))}
-                      {/*<div className="listingDiv" key="new">
+                        </span>
+                      )}
+                      startvalue={
+                        this.state.user && employees.find(a => a.id == this.state.user.id)
+                          ? employees.find(a => a.id == this.state.user.id).id
+                          : this.props.forceUser
+                          ? this.props.forceUser.id
+                          : ""
+                      }
+                      noNoResults={true}
+                      livecode={c => {
+                        this.setState({ user: employees.find(a => a.id == c) });
+                        this.props.liveid(c);
+                      }}
+                      fewResults={true}
+                      noFixed={true}
+                    />
+                    {this.state.showall && (
+                      <PopupBase
+                        nooutsideclose={true}
+                        small={true}
+                        close={() => this.setState({ showall: false })}
+                        buttonStyles={{ justifyContent: "space-between" }}>
+                        <h1>All Employees</h1>
+                        {employees.map(employee => (
+                          <div className="listingDiv" key={employee.id}>
+                            <UniversalButton
+                              type="low"
+                              label={concatName(employee)}
+                              onClick={() => {
+                                this.setState({ showall: false });
+                                this.setState({ user: employee });
+                                this.props.liveid(employee.id);
+                              }}
+                            />
+                          </div>
+                        ))}
+                        {/*<div className="listingDiv" key="new">
                         <UniversalButton
                           type="low"
                           label="Create new User"
                           onClick={() => this.setState({ showall: false })}
                         />
                           </div>*/}
-                      <UniversalButton type="low" label="Cancel" closingPopup={true} />
-                    </PopupBase>
-                  )}
-                </>
-              );
+                        <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                      </PopupBase>
+                    )}
+                  </>
+                );
+              } else {
+                return <div>There is no other employee</div>;
+              }
             }}
           </Query>
         </span>
