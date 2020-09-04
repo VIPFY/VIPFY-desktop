@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ServiceLogo } from "vipfy-components";
+import { ServiceLogo } from "vipfy-ui-lib";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";

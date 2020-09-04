@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ServiceLogo } from "vipfy-components";
+import { ServiceLogo } from "vipfy-ui-lib";
 import { concatName } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import { ServiceLogo } from "vipfy-components";
+import { ServiceLogo } from "vipfy-ui-lib";
 import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";

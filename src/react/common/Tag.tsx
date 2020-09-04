@@ -1,7 +1,7 @@
 import React from "react";
 import type { ReactChildren, ReactChild, FunctionComponent } from "react";
 import classNames from "classnames";
-import { ServiceLogo } from "vipfy-components";
+import { ServiceLogo } from "vipfy-ui-lib";
 import { App, User } from "../interfaces";
 import { concatName } from "../common/functions";
 import EmployeePicture from "../components/EmployeePicture";
