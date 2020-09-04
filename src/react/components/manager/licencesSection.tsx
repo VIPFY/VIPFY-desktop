@@ -3,8 +3,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import ServiceDetails from "../../components/manager/serviceDetails";
 import { Query } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
-import { now } from "moment";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
+import moment from "moment";
 import AssignNewAccount from "./universal/adding/assignNewAccount";
 
 interface Props {
@@ -31,7 +30,7 @@ class LicencesSection extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 1000}
         query={fetchUserLicences}
         variables={{ unitid: employeeid }}>
-        {({ loading, error, data, refetch }) => {
+        {({ loading, error = null, data, refetch }) => {
           if (loading) {
             return <div>Loading...</div>;
           }
@@ -62,8 +61,8 @@ class LicencesSection extends React.Component<Props, State> {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
-                (e.endtime > now() || e.endtime == null) &&
-                (e.boughtplanid.endtime > now() || e.boughtplanid.endtime == null)
+                (moment(e.endtime) > moment() || e.endtime == null) &&
+                (moment(e.boughtplanid.endtime) > moment() || e.boughtplanid.endtime == null)
               ) {
                 appArray.push(
                   <ServiceDetails
