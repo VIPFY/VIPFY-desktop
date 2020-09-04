@@ -89,7 +89,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (data.me.firstlogin && !this.state.firstLogin && !isImpersonating) {
             return (
               <div className="loginHolder">
-                <div className="loginCard">
+                <div className="card loginCard">
                   <FirstLogin
                     setFirstLogin={() => this.setState({ firstLogin: true })}
                     {...pureProps}
@@ -102,7 +102,7 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
             return (
               <div className="loginHolder">
-                <div className="loginCard">
+                <div className="card loginCard">
                   <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />
                 </div>
               </div>

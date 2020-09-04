@@ -13,13 +13,14 @@ import gql from "graphql-tag";
 import { fetchUserLicences } from "../../../../queries/departments";
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
-import { createLicenceKeyFragmentForUser } from "../../../../common/licences";
+import { encryptForUser, createLicenceKeyFragmentForUser } from "../../../../common/licences";
 
 interface Props {
   employee: any;
   close: Function;
   assignAccount: Function;
   service?: any;
+  moveTo: Function;
 
   refetch?: Function;
   noServiceEdit?: Boolean;
@@ -282,11 +283,11 @@ class AssignNewAccount extends React.Component<Props, State> {
                     </div>
                   </>
                 ) : (
-                  <AssignAccount
-                    orbit={this.state.orbit}
-                    continue={a => this.setState({ account: a })}
-                  />
-                )}
+                    <AssignAccount
+                      orbit={this.state.orbit}
+                      continue={a => this.setState({ account: a })}
+                    />
+                  )}
               </>
             ) : this.state.service.options.pending ? (
               <div>
@@ -294,18 +295,18 @@ class AssignNewAccount extends React.Component<Props, State> {
                 been solved
               </div>
             ) : (
-              <AssignOrbit
-                service={this.state.service}
-                continue={o => this.setState({ orbit: o })}
-              />
-            )}
+                  <AssignOrbit
+                    service={this.state.service}
+                    continue={o => this.setState({ orbit: o })}
+                  />
+                )}
           </>
         ) : (
-          <AssignServiceToUser
-            continue={s => this.setState({ service: s })}
-            moveTo={this.props.moveTo}
-          />
-        )}
+            <AssignServiceToUser
+              continue={s => this.setState({ service: s })}
+              moveTo={this.props.moveTo}
+            />
+          )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
           <UniversalButton
@@ -315,11 +316,14 @@ class AssignNewAccount extends React.Component<Props, State> {
             onClick={async () => {
               this.setState({ saving: true });
               try {
-                const keyfragment = await createLicenceKeyFragmentForUser(
-                  this.state.account!.id,
-                  this.props.employee.id,
-                  this.props.client
-                );
+                const keyfragment = this.state.account!.unencryptedLoginData ?
+                  await encryptForUser(this.props.employee.id, this.state.account!.unencryptedLoginData, this.props.client)
+                  : await createLicenceKeyFragmentForUser(
+                    this.state.account!.id,
+                    this.props.employee.id,
+                    this.props.client
+                  );
+
                 await this.props.assignAccount({
                   variables: {
                     licenceid: this.state.account!.id,
@@ -353,20 +357,20 @@ class AssignNewAccount extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

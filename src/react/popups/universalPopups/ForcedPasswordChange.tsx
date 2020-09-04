@@ -1,6 +1,6 @@
 import * as React from "react";
 import { withApollo } from "react-apollo";
-import { PW_MIN_LENGTH } from "../../common/constants";
+import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import PopupBase from "./popupBase";
@@ -15,37 +15,19 @@ interface PasswordChangeProps {
 interface PasswordChangeState {
   oldPassword: string;
   newPassword: string | null;
-  newPasswordValid: boolean;
   repeatPassword: string | null;
-  showForgotSuccess: boolean;
   showError: boolean;
+  passwordData: any;
 }
 
 class ForcedPasswordChange extends React.Component<PasswordChangeProps, PasswordChangeState> {
   state = {
     oldPassword: "",
     newPassword: null,
-    newPasswordValid: false,
     repeatPassword: null,
-    showForgotSuccess: false,
-    showError: false
+    showError: false,
+    passwordData: null
   };
-
-  private passwordChanged(
-    { password, isValid }: { score: number; password: string; isValid: boolean },
-    _feedback: any
-  ): void {
-    this.setState({ newPasswordValid: isValid, newPassword: password });
-  }
-
-  private repeatPasswordChanged = (repeatPassword): void => this.setState({ repeatPassword });
-
-  private oldPasswordChanged = (oldPassword): void => this.setState({ oldPassword });
-
-  canSubmit = (): boolean =>
-    (this.state.oldPassword &&
-      this.state.newPasswordValid &&
-      this.state.newPassword == this.state.repeatPassword) === true;
 
   render() {
     return (
@@ -69,48 +51,71 @@ class ForcedPasswordChange extends React.Component<PasswordChangeProps, Password
 
               <UniversalTextInput
                 id="oldPassword"
-                livevalue={e => this.oldPasswordChanged(e)}
-                label="Current Password"
-                width="384px"
                 type="password"
-                style={{ marginTop: "10px" }}
+                label="Current Password"
+                livevalue={oldPassword => this.setState({ oldPassword })}
+                onEnter={async () => document.querySelector("#newPassword").focus()}
+                holderStyles={{ width: "300px" }}
               />
-
               <UniversalTextInput
                 id="newPassword"
                 label="New Password"
                 type="password"
-                checkPassword={passwordData => this.passwordChanged(passwordData, null)}
+                livevalue={v => this.setState({ newPassword: v })}
+                checkPassword={passwordData => this.setState({ passwordData })}
+                additionalPasswordChecks={[this.state.oldPassword]}
+                errorhint={
+                  this.state.newPassword &&
+                  this.state.newPassword != "" &&
+                  this.state.oldPassword == this.state.newPassword &&
+                  "You can't use the same password again"
+                }
+                errorEvaluation={
+                  this.state.newPassword &&
+                  this.state.newPassword != "" &&
+                  this.state.oldPassword == this.state.newPassword
+                }
+                onEnter={async () => document.querySelector("#repeatNewPassword").focus()}
+                holderStyles={{ width: "300px" }}
               />
 
               <UniversalTextInput
-                id="repeat"
-                livevalue={e => this.repeatPasswordChanged(e)}
-                label="Repeat"
-                errorEvaluation={
-                  this.state.newPassword !== null &&
-                  this.state.repeatPassword !== null &&
-                  this.state.newPassword !== this.state.repeatPassword
-                }
-                errorhint="Passwords don't match"
-                width="384px"
-                style={{ marginTop: "40px" }}
+                id="repeatNewPassword"
+                label="Repeat New Password"
                 type="password"
+                livevalue={v => this.setState({ repeatPassword: v })}
+                holderStyles={{ width: "300px" }}
+                errorhint={
+                  this.state.repeatPassword &&
+                  this.state.newPassword != this.state.repeatPassword &&
+                  "Passwords don't match"
+                }
+                errorEvaluation={
+                  this.state.repeatPassword && this.state.newPassword != this.state.repeatPassword
+                }
               />
+
               <div className="buttonsPopup" style={{ justifyContent: "flex-end" }}>
                 <UniversalButton
-                  disabled={!this.canSubmit() || loading}
                   customStyles={{ width: "96px" }}
                   label="save"
                   type="high"
+                  disabled={
+                    !this.state.repeatPassword ||
+                    this.state.newPassword != this.state.repeatPassword ||
+                    !this.state.passwordData ||
+                    (this.state.passwordData && this.state.passwordData.score < PW_MIN_STRENGTH) ||
+                    (this.state.passwordData &&
+                      this.state.passwordData.password.length < PW_MIN_LENGTH) ||
+                    !this.state.oldPassword ||
+                    loading
+                  }
                   onClick={() => {
-                    if (this.state.newPassword == this.state.repeatPassword) {
-                      updatePassword(
-                        this.props.client,
-                        this.state.oldPassword,
-                        this.state.newPassword
-                      );
-                    }
+                    return updatePassword(
+                      this.props.client,
+                      this.state.oldPassword,
+                      this.state.passwordData.password
+                    );
                   }}
                 />
               </div>
