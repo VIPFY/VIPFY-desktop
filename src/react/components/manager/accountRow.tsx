@@ -126,22 +126,6 @@ class AccountRow extends React.Component<Props, State> {
                       justifyContent: "center"
                     }}></div>
                 );
-              } else if (e.endtime != 8640000000000000) {
-                return (
-                  <div
-                    className="fad fa-exclamation-triangle warningColor"
-                    title={`Assignment ends ${moment(e.endtime).fromNow()}`}
-                    style={{
-                      position: "absolute",
-                      width: "100%",
-                      height: "100%",
-                      top: 0,
-                      left: 0,
-                      alignItems: "center",
-                      display: "flex",
-                      justifyContent: "center"
-                    }}></div>
-                );
               }
               return "";
             }}
