@@ -10,18 +10,18 @@ import { parse } from "url";
 import psl from "psl";
 import gql from "graphql-tag";
 import { withApollo } from "react-apollo";
-import brain from "brain.js";
+//import brain from "brain.js";
 import PopupBase from "../popups/universalPopups/popupBase";
-import {
+/*import {
   substrings as substringsNN,
   attributes as attributesNN,
   networkDef
-} from "./loginDetectionNet";
+} from "./loginDetectionNet";*/
 const { session, webContents } = remote;
 const os = require("os");
 
-const loginDetector = new brain.NeuralNetwork();
-loginDetector.fromJSON(networkDef as brain.INeuralNetworkJSON);
+//const loginDetector = new brain.NeuralNetwork();
+//loginDetector.fromJSON(networkDef as brain.INeuralNetworkJSON);
 
 interface Props {
   loginUrl: string;

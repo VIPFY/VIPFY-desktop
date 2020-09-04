@@ -12,10 +12,6 @@
       background-color: $white;
       color: $midgrey-dark;
     }
-
-    & > h1 {
-      padding: 16px 0;
-    }
   }
 
   .section {
@@ -56,51 +52,19 @@
       min-height: 40px;
       display: flex;
       flex-direction: row;
+      align-items: center;
 
       .service-box-top-text {
-        padding-top: 10px;
-        font-size: Medium;
         margin-left: 8px;
-        font-weight: 500;
       }
 
       .heart-icon {
         height: 16px;
         width: 18.5px;
         color: $lightgrey-darker;
-        line-height: 40px;
         margin-left: auto;
       }
     }
-
-    .service-box-bottom {
-      .service-box-bottom-button {
-        background: $white 0% 0% no-repeat padding-box;
-        border: 1px solid $lightgrey-light;
-        border-radius: 12px;
-        height: 24px;
-        width: fit-content;
-
-        .service-box-bottom-button-text {
-          letter-spacing: 0.12px;
-          font-size: 12px;
-          line-height: 14px;
-          padding: 0 8px;
-          display: inline-block;
-        }
-
-        &:hover,
-        &:active {
-          box-shadow: 0px 1px 1px $lightgrey-light;
-        }
-      }
-    }
-  }
-
-  &-app-name {
-    font-size: 0.75rem;
-    text-align: left;
-    font-weight: bold;
   }
 
   .no-apps {

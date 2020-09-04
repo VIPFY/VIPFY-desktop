@@ -11,8 +11,6 @@ interface Props {
   licence: Licence;
   setTeam?: Function;
   tileTitle?: string;
-  empty?: boolean;
-  header: string;
 }
 const ADD_FAVORITE = gql`
   mutation onAddFavorite($licenceId: ID!) {
@@ -44,8 +42,8 @@ export default (props: Props) => {
     empty
   } = props;
   const name = alias ? alias : planid.appid.name;
-  const licenceId = props.licence.id;
-  const isFavorite = props.licence.tags.indexOf("favorite");
+  const licenceId = id;
+  const isFavorite = props.licence.tags.indexOf("favorite") > -1;
   const [addFavorite] = useMutation(ADD_FAVORITE);
   const [removeFavorite] = useMutation(REMOVE_FAVORITE);
   let tagIcon = props.licence.rightscount > 1 ? "fal fa-users" : "fal fa-user";
@@ -71,11 +69,11 @@ export default (props: Props) => {
         <React.Fragment>
           <CardSection className="service-box-top">
             <ServiceLogo icon={planid.appid.icon} size={40}></ServiceLogo>
-            <span className="service-box-top-text">{planid.appid.name}</span>
+            <h2 className="service-box-top-text">{planid.appid.name}</h2>
             <i
               onClick={async e => {
                 e.stopPropagation();
-                if (isFavorite > -1) {
+                if (isFavorite) {
                   await removeFavorite({
                     variables: { licenceId }
                   });
@@ -86,9 +84,9 @@ export default (props: Props) => {
                 }
               }}
               style={{
-                color: isFavorite > -1 && "red"
+                color: isFavorite && "red"
               }}
-              className={isFavorite > -1 ? "fa fa-heart heart-icon" : "fal fa-heart heart-icon"}
+              className={isFavorite ? "fa fa-heart heart-icon" : "fal fa-heart heart-icon"}
             />
           </CardSection>
           <CardSection className="service-box-bottom">

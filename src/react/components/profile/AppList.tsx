@@ -11,7 +11,6 @@ interface Props {
   header?: string;
   dragStartFunction: Function;
   dragEndFunction: Function;
-  licence: Licence;
 }
 
 export default (props: Props) => {
@@ -30,11 +29,7 @@ export default (props: Props) => {
     <div className="section">
       <div className="heading">
         <h3>{props.header || "Apps"}</h3>
-        <div
-          className="sort-apps"
-          style={{
-            display: props.header === "My Favorites" && "none"
-          }}>
+        {props.header === "My Favorites" && (
           <DropDown
             option={sortBy}
             defaultValue="A-Z"
@@ -42,7 +37,7 @@ export default (props: Props) => {
             // TODO: [VIP-449] Implement Statistics to sort by "Most Used", "Least Used"
             options={["A-Z", "Z-A", "Newest First", "Oldest First"]}
           />
-        </div>
+        )}
       </div>
       <div className="dashboard-apps">
         <div className="grid4Cols smGrid2Cols">
