@@ -150,6 +150,7 @@ class CreateOrbit extends React.Component<Props, State> {
                   width="300px"
                   id="domain"
                   className="scrollable"
+                  inputStyles={{ minWidth: "100px" }}
                   livevalue={value => {
                     let domain = value;
                     let protocol = undefined;
@@ -217,6 +218,8 @@ class CreateOrbit extends React.Component<Props, State> {
                 startvalue={
                   (!this.props.alias && this.state.domain) || this.props.alias || undefined
                 }
+                errorhint={this.state.alias && this.state.alias.length > 50 && "Alias too long"}
+                errorEvaluation={this.state.alias && this.state.alias.length > 50}
                 update={!this.state.aliastouched}
               />
             </div>
