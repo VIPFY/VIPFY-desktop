@@ -27,7 +27,7 @@ const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { WorkAround } from "./interfaces";
+import { Expired_Plan, PopUp } from "./interfaces";
 import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
@@ -53,15 +53,6 @@ interface AppProps {
   endImpersonation: Function;
   location: any;
   saveCookies: Function;
-}
-
-interface PopUp {
-  show: boolean;
-  header: string;
-  body: any;
-  props: any;
-  type: string;
-  info: string;
 }
 
 interface AppState {
@@ -112,7 +103,7 @@ const SAVE_COOKIES = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element; listener?; action? }[] = [];
+  references: { key; element; listener?; action?}[] = [];
 
   async componentDidMount() {
     setClient(this.props.client); // client never gets swapped out at runtime, so doing this at mount is enough
@@ -311,8 +302,8 @@ class App extends React.Component<AppProps, AppState> {
   renderComponents = () => {
     if (localStorage.getItem("token")) {
       return (
-        <Query<WorkAround, WorkAround> query={me} fetchPolicy="network-only">
-          {({ data, loading, error }) => {
+        <Query query={me} fetchPolicy="network-only">
+          {({ data, loading, error = null }) => {
             if (loading) {
               return <LoadingDiv />;
             }
@@ -444,18 +435,23 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
+  // generate functions once to avoid changing context values just because provider was rerendered
+  appContextFixedValues = {
+    showPopup: (data: PopUp) => this.renderPopup(data),
+    logOut: this.logMeOut,
+    setrenderElements: e => this.setrenderElements(e),
+    addRenderElement: e => this.addRenderElement(e),
+    addRenderAction: e => this.addRenderAction(e),
+    setreshowTutorial: this.setreshowTutorial
+  };
+
   render() {
     const { placeid, popup } = this.state;
     return (
       <AppContext.Provider
         value={{
-          showPopup: (data: PopUp) => this.renderPopup(data),
+          ...this.appContextFixedValues,
           placeid,
-          logOut: this.logMeOut,
-          setrenderElements: e => this.setrenderElements(e),
-          addRenderElement: e => this.addRenderElement(e),
-          addRenderAction: e => this.addRenderAction(e),
-          setreshowTutorial: this.setreshowTutorial,
           references: this.references
         }}
         className="full-size">
