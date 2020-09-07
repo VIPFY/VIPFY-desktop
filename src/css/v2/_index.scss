@@ -1,13 +1,5 @@
 // these must be imported first
-@import "reset";
-@import "elements";
-@import "constants";
-@import "mixins";
-@import "util";
-
-// @import "~vipfy-ui-lib/src/css/variables";
-
-@import "formElements/index";
+@import "~@vipfy-private/vipfy-ui-lib/src/css/importFirst/index";
 
 // please add in alphabetical order
 @import "appDetails";
@@ -18,6 +10,7 @@
 @import "checkout";
 @import "click-tracking-study";
 @import "employeeCard";
+@import "formElements/index";
 @import "loading";
 @import "login";
 @import "marketplace";
@@ -28,5 +21,5 @@
 @import "tags";
 @import "vipfy";
 
-// last add macos specials
-@import "macosx";
+// last must be imported last
+@import "~@vipfy-private/vipfy-ui-lib/src/css/importLast/index";
