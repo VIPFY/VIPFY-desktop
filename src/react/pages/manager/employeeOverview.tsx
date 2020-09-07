@@ -12,7 +12,7 @@ import EmployeePicture from "../../components/EmployeePicture";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
-import Table from "../../components/table";
+import Table from "../../components/Table";
 import { WorkAround } from "../../interfaces";
 import PageHeader from "../../components/PageHeader";
 interface Props {
@@ -276,7 +276,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                   {
                     component: (
                       <div>
-                        {/* <PrintEmployeeSquare employee={e} className="managerSquare" />*/}
                         <span className="name" title={concatName(e)}>
                           {e.firstname} {e.lastname}
                         </span>
@@ -286,7 +285,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                     header: "Name"
                   },
                   {
-                    conponent: (
+                    component: (
                       <div
                         className="status"
                         style={

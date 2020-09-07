@@ -6,37 +6,31 @@
     top: 64px;
     z-index: 5;
     background-color: $lightgrey-lightest;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin: 8px 0;
 
     .extended-header-row {
       .extended-header-right-col {
         padding-bottom: 16px;
         float: right;
+
         .row-count-text {
-          text-align: left;
-          font: Regular 14px/19px Roboto;
-          letter-spacing: 0px;
-          color: $midgrey-light;
-          opacity: 1;
-          margin-left: 16px;
           line-height: 32px;
-          margin-right: 8px;
+          margin: 0 8px;
         }
+
         .dropdown {
           width: fit-content;
           background: $white;
+
           .naked-button {
             span {
               margin-right: 4px;
-              font: Regular 14px/38px Roboto;
-              letter-spacing: 0px;
-              color: $midgrey-dark;
-              opacity: 1;
             }
           }
+
           .dropdown-header {
             line-height: 24px;
+
             i {
               font-size: 14px;
             }
@@ -60,15 +54,13 @@
       background: $white 0% 0% no-repeat padding-box;
       box-shadow: 0px 1px 1px $boxshadow-black;
       border-radius: 12px;
-      opacity: 1;
       display: flex;
       margin-top: 4px;
 
       .table-checkbox-column {
         width: 32px;
-        padding-top: 16px;
-        padding-left: 16px;
-        padding-right: 2px;
+        padding: 12px 2px 0 16px;
+
       }
 
       .table-body-cols {
@@ -76,7 +68,8 @@
         width: calc(100% - 112px);
 
         .table-col {
-          padding-top: 15px;
+          margin: 0 8px;
+          line-height: 48px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
@@ -87,5 +80,23 @@
         min-width: 64px;
       }
     }
+  }
+}
+
+@include lg {
+  .colSm {
+    flex: 0 0 50%;
+    max-width: 50%;
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+@include sm {
+  .colSm {
+    flex: 0 0 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: row;
   }
 }

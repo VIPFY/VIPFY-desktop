@@ -8,21 +8,21 @@ import UniversalTextInput from "./universalForms/universalTextInput";
 interface Props {
   title: string;
   tableHeaders: object;
-  tableData: any;
-  dropDown: any;
-  additionalHeader: any;
+  tableData: object;
+  dropDown: JSX.Element;
+  additionalHeader: boolean;
 }
 
 interface State {
-  data: any;
+  data: object;
   search: string;
   sort: string;
-  sortforward: boolean;
-  var_arr: any;
-  global_checkbox: boolean;
+  sortForward: boolean;
+  checkBoxStatusArray: object;
+  globalCheckbox: boolean;
   currentPage: number;
-  postPerPage: number;
-  currentPost: any;
+  rowsPerPage: number;
+  currentRows: object;
 }
 
 class Table extends React.Component<Props, State> {
@@ -30,13 +30,13 @@ class Table extends React.Component<Props, State> {
     data: this.props.tableData,
     search: "",
     sort: "",
-    sortforward: false,
-    var_arr: this.initializeArray(),
-    global_checkbox: false,
+    sortForward: false,
+    checkBoxStatusArray: this.initializeArray(),
+    globalCheckbox: false,
     rowCount: 2,
     currentPage: 1,
-    postPerPage: 2,
-    currentPost: []
+    rowsPerPage: 2,
+    currentRows: []
   };
 
   getWidth() {
@@ -46,7 +46,6 @@ class Table extends React.Component<Props, State> {
       return "100%";
     }
   }
-
   initializeArray() {
     let array = [];
     if (this.props.tableData.length > 0) {
@@ -58,150 +57,124 @@ class Table extends React.Component<Props, State> {
   }
 
   getData() {
-    let indexOfLastPost = this.state.currentPage * this.state.postPerPage;
-    let indexOfFirstPost = indexOfLastPost - this.state.postPerPage;
-    this.state.currentPost = this.state.data.slice(indexOfFirstPost, indexOfLastPost);
-    return this.state.currentPost;
+    const indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
+    return this.state.data.slice(indexOfFirstRow, indexOfLastRow);
   }
 
   sortTable(sorted: any) {
-    let sortforward = this.state.sortforward;
-    let stringA = "";
-    let stringB = "";
-
-    this.state.data.sort(function (a, b) {
+    let { data, sortForward } = this.state;
+    data.sort(function (a, b) {
+      let stringA = "";
+      let stringB = "";
       a.forEach(element => {
-        if (element.header == sorted) {
+        if (element.header === sorted) {
           stringA = `${element.index}`.toUpperCase();
         }
       });
       b.forEach(element => {
-        if (element.header == sorted) {
+        if (element.header === sorted) {
           stringB = `${element.index}`.toUpperCase();
         }
       });
 
       if (stringA < stringB) {
-        if (sortforward) {
-          return -1;
-        } else {
-          return 1;
-        }
+        return sortForward ? -1 : 1;
       }
-
       if (stringA > stringB) {
-        if (sortforward) {
-          return 1;
-        } else {
-          return -1;
-        }
+        return sortForward ? 1 : -1;
       }
       return 0;
     });
   }
 
-  searchInTable(search: String) {
+  searchTerm(search: String) {
     const data = [];
-    if (search != "") {
+    if (!search) {
+      this.setState({ data: this.props.tableData });
+    } else {
       this.props.tableData.map(element => {
         element.map(e => {
           if (`${e.index}`.toUpperCase().includes(search.toUpperCase())) {
-            if (data.indexOf(element) > -1) {
-            } else {
+            if (data.indexOf(element) === -1) {
               data.push(element);
             }
           }
         });
       });
-
       this.setState({ data: data });
-    } else {
-      this.setState({ data: this.props.tableData });
     }
   }
 
   handleSortClick(sorted: any) {
     if (sorted != this.state.sort) {
-      this.setState({ sortforward: true, sort: sorted });
+      this.setState({ sortForward: true, sort: sorted });
     } else {
       this.setState(oldstate => {
-        return { sortforward: !oldstate.sortforward };
+        return { sortForward: !oldstate.sortForward };
       });
     }
     this.sortTable(sorted);
   }
 
   checkboxStatus(b) {
-    let arr = [];
-    let checkbox;
-    if (b) {
-      this.state.data.map((element, index) => {
-        arr[index] = true;
-        checkbox = true;
-      });
-    } else {
-      this.state.data.map((element, index) => {
-        arr[index] = false;
-        checkbox = false;
-      });
-    }
-    this.setState({ global_checkbox: checkbox, var_arr: arr });
+    let checkBoxStatusArray = [];
+    let checkbox = false;
+    this.state.data.forEach((_el, index) => {
+      checkBoxStatusArray[index] = b ? true : false;
+      checkbox = b ? true : false;
+    });
+    this.setState({ globalCheckbox: checkbox, checkBoxStatusArray: checkBoxStatusArray });
   }
 
   changeCheckboxState(e, index) {
-    this.setState({ global_checkbox: false });
-    if (e && !this.state.var_arr.includes(index)) {
-      this.setState(oldstate => (oldstate.var_arr[index] = true));
-    } else {
-      this.setState(oldstate => (oldstate.var_arr[index] = false));
-    }
+    this.setState({ globalCheckbox: false });
+    this.setState(
+      oldstate =>
+        (oldstate.checkBoxStatusArray[index] = e && !this.state.checkBoxStatusArray.includes(index))
+    );
   }
 
-  //paginate = pageNumber => this.setState({ currentPage: pageNumber });
-  paginate(pageNumber) {
+  goToPage(pageNumber) {
     this.setState({ currentPage: pageNumber });
-    let indexOfLastPost = this.state.currentPage * this.state.postPerPage;
-    let indexOfFirstPost = indexOfLastPost - this.state.postPerPage;
-    let currentPost = this.state.data.slice(indexOfFirstPost, indexOfLastPost);
-    this.setState({ currentPost: currentPost });
+    let indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
+    let indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
+    let currentRows = this.state.data.slice(indexOfFirstRow, indexOfLastRow);
+    this.setState({ currentRows });
   }
-
-  indexOfLastPost = this.state.currentPage * this.state.postPerPage;
-  indexOfFirstPost = this.indexOfLastPost - this.state.postPerPage;
 
   render() {
     return (
       <section className="table-section">
-        {this.props.additionalHeader ? (
+        {this.props.additionalHeader && (
           <div className="extended-header">
             <div className="row extended-header-row">
-              <div className="col-sm-6">
+              <div className="colSm">
                 <UniversalTextInput
                   id="tablesearchbox"
                   placeHolder="Search"
-                  livevalue={v => this.searchInTable(v)}
-                  icon="far fa-search"></UniversalTextInput>
+                  livevalue={v => this.searchTerm(v)}
+                  icon="far fa-search"
+                />
               </div>
-              <div className="col-sm-6 extended-header-right-col">
-                <div className="row-count-text">Rows per page:</div>
+              <div className="colSm extended-header-right-col">
+                <p className="row-count-text">Rows per page:</p>
                 <DropDown
-                  header={"Rows per page"}
-                  option={this.state.postPerPage}
-                  defaultValue={this.state.postPerPage}
-                  handleChange={value => this.setState({ postPerPage: value, currentPage: 1 })}
+                  header="Rows per page"
+                  option={this.state.rowsPerPage}
+                  defaultValue={this.state.rowsPerPage}
+                  handleChange={value => this.setState({ rowsPerPage: value, currentPage: 1 })}
                   options={[2, 4]}
                 />
                 <Pagination
-                  postsPerPage={this.state.postPerPage}
+                  rowsPerPage={this.state.rowsPerPage}
                   totalPosts={this.state.data.length}
-                  paginate={number => this.paginate(number)}
+                  goToPage={pageNumber => this.goToPage(pageNumber)}
                   currentPage={this.state.currentPage}
                 />
               </div>
             </div>
           </div>
-        ) : (
-          ""
         )}
         <div className="table">
           <div className="table-rows table-header">
@@ -211,7 +184,7 @@ class Table extends React.Component<Props, State> {
                 liveValue={b => {
                   this.checkboxStatus(b);
                 }}
-                startingvalue={this.state.global_checkbox}
+                startingvalue={this.state.globalCheckbox}
               />
             </div>
             <div className="table-body-cols">
@@ -225,26 +198,24 @@ class Table extends React.Component<Props, State> {
                     }}
                     key={header.title}>
                     {header.title}
-                    {header.sortable ? (
-                      header.title == this.state.sort ? (
-                        this.state.sortforward ? (
+                    {header.sortable &&
+                      (header.title === this.state.sort ? (
+                        this.state.sortForward ? (
                           <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                         ) : (
                           <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
                         )
                       ) : (
                         <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                      )
-                    ) : (
-                      ""
-                    )}
+                      ))}
                   </div>
                 ))}
             </div>
-            {this.props.dropDown ? <div className="table-dropdown-col" /> : ""}
+            {this.props.dropDown && <div className="table-dropdown-col" />}
           </div>
           <div className="table-body" style={{ flexDirection: "column" }}>
             {this.getData().map((element, index) => (
+              /* I am using index as key as element is an array of objects */
               <div className="table-rows" key={index}>
                 <div className="table-checkbox-column">
                   <UniversalCheckbox
@@ -252,7 +223,7 @@ class Table extends React.Component<Props, State> {
                     liveValue={e => {
                       this.changeCheckboxState(e, index);
                     }}
-                    startingvalue={this.state.var_arr[index]}
+                    startingvalue={this.state.checkBoxStatusArray[index]}
                   />
                 </div>
                 <div className="table-body-cols">
@@ -261,16 +232,14 @@ class Table extends React.Component<Props, State> {
                       className="table-col"
                       style={{ width: this.getWidth() + "%" }}
                       key={data.header}>
-                      {data.index}
+                      {data.component}
                     </div>
                   ))}
                 </div>
-                {this.props.dropDown ? (
+                {this.props.dropDown && (
                   <div className="table-dropdown-col">
-                    <DropdownWithIcon dropDownComponent={this.props.dropDown}></DropdownWithIcon>
+                    <DropdownWithIcon dropDownComponent={this.props.dropDown} />
                   </div>
-                ) : (
-                  ""
                 )}
               </div>
             ))}

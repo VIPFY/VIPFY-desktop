@@ -35,8 +35,8 @@ interface Props {
   labelClick?: Function;
   labelStyles?: Object;
   holderStyles?: Object;
-  placeHolder?: String;
-  icon?: String;
+  placeHolder?: string;
+  icon?: string;
   form?: String;
   checkPassword?: Function;
   additionalPasswordChecks?: String[];
@@ -237,12 +237,10 @@ class UniversalTextInput extends React.Component<Props, State> {
 
           {this.props.icon && (
             <i
-              className={`${this.props.icon}`}
-              style={
-                this.props.smallTextField
-                  ? { lineHeight: "30px", marginLeft: "8px" }
-                  : { lineHeight: "38px", marginLeft: "8px" }
-              }></i>
+              className={`${this.props.icon} ${
+                this.props.smallTextField ? "smallTextField" : "largeTextField"
+              }`}
+            />
           )}
 
           {this.props.inputElement ? (
