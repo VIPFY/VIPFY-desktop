@@ -48,7 +48,9 @@ const cache = new InMemoryCache({
           return null;
         }
       case "Department":
-        if (object.unitid !== undefined && object.unitid.id !== undefined) {
+        if (object.id !== undefined) {
+          return `${object.__typename}:${object.id}`;
+        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
           return `${object.__typename}:${object.unitid.id}`;
         } else if (object.unit !== undefined && object.unit.id !== undefined) {
           return `${object.__typename}:${object.unit.id}`;
@@ -56,8 +58,22 @@ const cache = new InMemoryCache({
           return null;
         }
       case "Team":
-        if (object.unitid !== undefined && object.unitid.id !== undefined) {
+        if (object.id !== undefined) {
+          return `${object.__typename}:${object.id}`;
+        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
           return `${object.__typename}:${object.unitid.id}`;
+        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
+          return `${object.__typename}:${object.unitid.id}`;
+        } else {
+          return null;
+        }
+      case "PublicTeam":
+        if (object.id !== undefined) {
+          return `Team:${object.id}`;
+        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
+          return `Team:${object.unitid.id}`;
+        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
+          return `Team:${object.unitid.id}`;
         } else {
           return null;
         }
@@ -127,7 +143,21 @@ const cache = new InMemoryCache({
   cacheRedirects: {
     Query: {
       fetchPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid })
+        getCacheKey({ __typename: "User", id: args.userid }),
+      fetchSemiPublicUser: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "User", id: args.userid }),
+      fetchTeam: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Team", id: args.teamid }),
+      fetchPublicTeam: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Team", id: args.teamid }),
+      fetchAppById: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "AppDetails", id: args.id }),
+      fetchLicence: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Licence", id: args.licenceid }),
+      fetchOrbit: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Orbit", id: args.orbitid }),
+      fetchKey: (_, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Key", id: args.id }),
     }
   }
 });
