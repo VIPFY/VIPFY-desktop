@@ -201,12 +201,12 @@ class Table extends React.Component<Props, State> {
                     {header.sortable &&
                       (header.title === this.state.sort ? (
                         this.state.sortForward ? (
-                          <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                          <i className="fad fa-sort-up sortIcon"></i>
                         ) : (
-                          <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                          <i className="fad fa-sort-down sortIcon"></i>
                         )
                       ) : (
-                        <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                        <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
                       ))}
                   </div>
                 ))}
