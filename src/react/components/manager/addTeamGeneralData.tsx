@@ -22,8 +22,15 @@ interface State {
 }
 
 const CREATE_TEAM = gql`
-  mutation onCreateTeam($teamdata: JSON!, $addemployees: [JSON]!, $apps: [JSON]!) {
-    createTeam(team: $teamdata, addemployees: $addemployees, apps: $apps)
+  mutation onCreateTeam($name: String!, $profilepicture: Upload) {
+    createTeamV2(name: $name, profilepicture: $profilepicture) {
+      id
+      unitid {
+        id
+      }
+      name
+      profilepicture
+    }
   }
 `;
 
@@ -94,13 +101,7 @@ export default class AddTeamGeneralData extends React.Component<Props, State> {
             onCompleted={data =>
               this.props.savingFunction!({
                 action: "success",
-                content: {
-                  unitid: { id: data.createTeam },
-                  name: this.state.name,
-                  profilepicture: this.state.picture,
-                  employees: [],
-                  services: []
-                }
+                content: data.createTeamV2
               })
             }
             onError={error =>
@@ -114,9 +115,8 @@ export default class AddTeamGeneralData extends React.Component<Props, State> {
                 saveFunction={() => {
                   createTeam({
                     variables: {
-                      teamdata: { name: this.state.name, profilepicture: this.state.picture },
-                      addemployees: [],
-                      apps: []
+                      name: this.state.name,
+                      profilepicture: this.state.picture
                     },
                     context: { hasUpload: true },
                     refetchQueries: [{ query: fetchCompanyTeams }]

@@ -20,7 +20,7 @@ interface State {}
 class PaymentAddress extends Component<Props, State> {
   state = { emaildelete: [], emailadd: [], error: {} };
 
-  save = async ({ addressId, phoneId, companyId }) => {
+  save = async ({ addressId, phoneId, companyId, stripeid }) => {
     const promises = [];
     if (this.state.companyName) {
       //Update Companyname
@@ -171,7 +171,7 @@ class PaymentAddress extends Component<Props, State> {
       promises.push(
         this.props.client.mutate({
           mutation: gql`
-            mutation saveVatStatus($vat: Vat!, $country: String!) {
+            mutation saveVatStatus($vat: VatInput!, $country: String!) {
               saveVatStatus(vat: $vat, country: $country)
             }
           `,
@@ -218,9 +218,22 @@ class PaymentAddress extends Component<Props, State> {
       );
     }
 
+    if (!stripeid) {
+      promises.push(
+        this.props.client.mutate({
+          mutation: gql`
+            mutation createStripeUser {
+              createStripeUser
+            }
+          `,
+          errorPolicy: "all"
+        })
+      );
+    }
+
     const responses = await Promise.all(promises);
 
-    if (responses[0].errors && responses[0].errors.length > 0) {
+    if (responses && responses[0] && responses[0].errors && responses[0].errors.length > 0) {
       responses[0].errors.forEach(error => {
         const functionName = error.path[0];
         switch (functionName) {
@@ -322,7 +335,8 @@ class PaymentAddress extends Component<Props, State> {
               vatstatus,
               emails,
               promoCode,
-              companyId
+              companyId,
+              stripeid
             } = paymentData || {};
             const { number: phone, id: phoneId } = allphone || {};
             const { country, address, id: addressId } = address2 || {};
@@ -344,7 +358,7 @@ class PaymentAddress extends Component<Props, State> {
                     label: "Save",
                     onClick: async () => {
                       try {
-                        await this.save({ addressId, phoneId, companyId });
+                        await this.save({ addressId, phoneId, companyId, stripeid });
                         await refetch();
                         this.unblock();
                         this.props.moveTo("paymentdata");
@@ -668,7 +682,7 @@ class PaymentAddress extends Component<Props, State> {
                         label="Save"
                         onClick={async () => {
                           try {
-                            await this.save({ addressId, phoneId, companyId });
+                            await this.save({ addressId, phoneId, companyId, stripeid });
                             await refetch();
                             this.unblock();
                             this.props.moveTo(this.state.unsavedChanges.pathname.substring(6));

@@ -22,9 +22,13 @@ class AssignAccount extends React.Component<Props, State> {
   state = { newaccount: false, showall: false, newaccountname: null };
 
   render() {
-    const accounts = this.props.accountFunction
+    const allAccounts = this.props.accountFunction
       ? this.props.accountFunction(this.props.orbit)
       : this.props.orbit.licences;
+
+    const accounts =
+      allAccounts && allAccounts.filter(a => a && (!a.options || !a.options.private));
+
     return (
       <>
         <div

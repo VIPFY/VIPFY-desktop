@@ -308,7 +308,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                     <span style={{ lineHeight: "24px", width: "84px" }}>Team:</span>
                     <UniversalDropDownInput
                       id="employee-search-new"
-                      label="Search for users"
+                      label="Search for teams"
                       options={teams}
                       noFloating={true}
                       resetPossible={true}
@@ -388,6 +388,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                               this.setState({ showall: false });
                               this.setState({ team: team });
                             }}
+                            customButtonStyles={{ maxWidth: "100%" }}
                           />
                         </div>
                       ))}

@@ -1,14 +1,15 @@
 // these must be imported first
 @import "~@vipfy-private/vipfy-ui-lib/src/css/importFirst/index";
 
-// please add in alphabetical order
+// Please add in alphabetical order
 @import "appDetails";
 @import "appOverviewCard";
 @import "breadCrumbs";
 @import "browser";
 @import "card";
 @import "checkout";
-@import "click-tracking-study";
+@import "clickTrackingStudy";
+@import "dropDownWithIcon";
 @import "employeeCard";
 @import "formElements/index";
 @import "loading";
@@ -18,6 +19,7 @@
 @import "page";
 @import "pageHeader";
 @import "prosConsList";
+@import "serviceCreation";
 @import "tags";
 @import "vipfy";
 

@@ -25,7 +25,7 @@ export default (props: Props) => {
 
   return (
     <Query pollInterval={60 * 10 * 1000 + 7000} query={FETCH_USER_SECURITY_OVERVIEW}>
-      {({ data, loading, error }) => {
+      {({ data, loading, error = null }) => {
         if (loading) {
           return <LoadingDiv />;
         }
@@ -44,11 +44,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th onClick={() => handleSortClick("Last Active")}>
                   Last Active
@@ -56,11 +56,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th onClick={() => handleSortClick("PW Strength")}>
                   PW Strength
@@ -68,11 +68,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th onClick={() => handleSortClick("Admin Rights")}>
                   Admin Rights
@@ -80,11 +80,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th onClick={() => handleSortClick("Ban User")}>
                   Ban User
@@ -92,11 +92,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th onClick={() => handleSortClick("Two-Factor")}>
                   Two-Factor
@@ -104,11 +104,11 @@ export default (props: Props) => {
                     sortForward ? (
                       <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                     ) : (
-                      <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                    )
+                        <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                      )
                   ) : (
-                    <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                  )}
+                      <i className="fas fa-sort" style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                    )}
                 </th>
                 <th />
               </tr>
@@ -353,8 +353,8 @@ export default (props: Props) => {
                       return 0;
                   }
                 })
-                .map((user, key) => (
-                  <UserSecurityRow {...props} key={key} user={user} />
+                .map((user) => (
+                  <UserSecurityRow {...props} key={user.unitid} user={user} />
                 ))}
             </tbody>
           </table>

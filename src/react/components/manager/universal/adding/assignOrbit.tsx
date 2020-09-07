@@ -23,19 +23,21 @@ class AssignOrbit extends React.Component<Props, State> {
 
   render() {
     return (
-      <Query query={FETCH_ALL_BOUGHTPLANS_LICENCES} variables={{ appid: this.props.service.id }}>
-        {({ loading, error, data }) => {
+      <Query
+        query={FETCH_ALL_BOUGHTPLANS_LICENCES}
+        variables={{ appid: this.props.service.id }}
+        fetchPolicy="network-only">
+        {({ loading, error = null, data }) => {
           if (loading) {
-            return "Loading...";
+            return <div>Loading...</div>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <div>Error! {error.message}</div>;
           }
           let orbits = data.fetchBoughtPlansOfCompany.filter(o => {
-            return o.endtime == null || moment(o.endtime).toDate() >= moment().toDate();
+            return o.endtime == null || moment(new Date(parseInt(o.endtime))).isSameOrAfter();
           });
-
-          orbits.sort(function(a, b) {
+          orbits.sort(function (a, b) {
             let nameA = a.alias.toUpperCase(); // ignore upper and lowercase
             let nameB = b.alias.toUpperCase(); // ignore upper and lowercase
             if (nameA < nameB) {
