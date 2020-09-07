@@ -2,29 +2,29 @@ import * as React from "react";
 
 interface Props {
   rowsPerPage: number;
-  totalPosts: number;
+  totalRows: number;
   goToPage: Function;
   currentPage: number;
 }
 
 export default (props: Props) => {
   const calculateUpperBound = () => {
-    if (props.currentPage * props.rowsPerPage > props.totalPosts) {
-      return props.totalPosts;
+    if (props.currentPage * props.rowsPerPage > props.totalRows) {
+      return props.totalRows;
     } else {
       return props.currentPage * props.rowsPerPage;
     }
   };
 
   const lowerBound = () => {
-    if (props.totalPosts == 0) {
+    if (props.totalRows == 0) {
       return 0;
     } else {
       return props.currentPage * props.rowsPerPage - props.rowsPerPage + 1;
     }
   };
 
-  const isLastPage = props.currentPage * props.rowsPerPage <= props.totalPosts;
+  const isLastPage = props.currentPage * props.rowsPerPage <= props.totalRows;
 
   return (
     <div className="pagination">
@@ -40,7 +40,7 @@ export default (props: Props) => {
       <span>
         {lowerBound()} - {calculateUpperBound()}
       </span>
-      <span className="turnPage"> of </span> {props.totalPosts}
+      <span className="turnPage"> of </span> {props.totalRows}
       {isLastPage ? (
         <div onClick={() => props.goToPage(props.currentPage + 1)} className="turnPage">
           <i className="fas fa-chevron-right"></i>

@@ -1,14 +1,14 @@
 import * as React from "react";
 import UniversalCheckbox from "./universalForms/universalCheckbox";
-import DropdownWithIcon from "./DropdownWithIcon";
+import DropdownWithIcon from "./DropDownWithIcon";
 import DropDown from "../common/DropDown";
 import Pagination from "./Pagination";
 import UniversalTextInput from "./universalForms/universalTextInput";
 
 interface Props {
   title: string;
-  tableHeaders: object;
-  tableData: object;
+  tableHeaders: { headline: string; sortable?: boolean }[];
+  tableData: object[];
   dropDown: JSX.Element;
   additionalHeader: boolean;
 }
@@ -23,6 +23,7 @@ interface State {
   currentPage: number;
   rowsPerPage: number;
   currentRows: object;
+  rowCount: number;
 }
 
 class Table extends React.Component<Props, State> {
@@ -40,12 +41,13 @@ class Table extends React.Component<Props, State> {
   };
 
   getWidth() {
-    if (this.props.tableHeaders.headers.length > 0) {
-      return Math.round(100 / this.props.tableHeaders.headers.length);
-    } else {
+    if (!this.props.tableHeaders) {
       return "100%";
     }
+
+    return Math.round(100 / this.props.tableHeaders.length);
   }
+
   initializeArray() {
     let array = [];
     if (this.props.tableData.length > 0) {
@@ -168,7 +170,7 @@ class Table extends React.Component<Props, State> {
                 />
                 <Pagination
                   rowsPerPage={this.state.rowsPerPage}
-                  totalPosts={this.state.data.length}
+                  totalRows={this.state.data.length}
                   goToPage={pageNumber => this.goToPage(pageNumber)}
                   currentPage={this.state.currentPage}
                 />
@@ -188,18 +190,18 @@ class Table extends React.Component<Props, State> {
               />
             </div>
             <div className="table-body-cols">
-              {this.props.tableHeaders.headers.length > 0 &&
-                this.props.tableHeaders.headers.map(header => (
+              {this.props.tableHeaders &&
+                this.props.tableHeaders.map(header => (
                   <div
                     className="table-col"
                     style={{ width: this.getWidth() + "%" }}
                     onClick={() => {
-                      this.handleSortClick(header.title);
+                      this.handleSortClick(header.headline);
                     }}
-                    key={header.title}>
-                    {header.title}
+                    key={header.headline}>
+                    {header.headline}
                     {header.sortable &&
-                      (header.title === this.state.sort ? (
+                      (header.headline === this.state.sort ? (
                         this.state.sortForward ? (
                           <i className="fad fa-sort-up sortIcon"></i>
                         ) : (

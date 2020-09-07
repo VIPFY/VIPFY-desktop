@@ -1,8 +1,6 @@
 import * as React from "react";
-import UniversalSearchBox from "../../components/universalSearchBox";
-import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
-import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
+import { fetchDepartmentsData } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -15,6 +13,7 @@ import { concatName } from "../../common/functions";
 import Table from "../../components/Table";
 import { WorkAround } from "../../interfaces";
 import PageHeader from "../../components/PageHeader";
+
 interface Props {
   moveTo: Function;
   isadmin?: boolean;
@@ -27,30 +26,23 @@ interface State {
   add: Boolean;
   willdeleting: number | null;
 }
-const tableHeaders: {
-  headers: object;
-  selectRow: string;
-} = {
-  headers: [
-    {
-      title: "Name",
-      sortable: true
-    },
-    {
-      title: "Status",
-      sortable: true
-    },
-    {
-      title: "Teams",
-      sortable: false
-    },
-    {
-      title: "Services",
-      sortable: false
-    }
-  ],
-  selectRow: "Name"
-};
+
+const tableHeaders = [
+  {
+    headline: "Name",
+    sortable: true
+  },
+  {
+    headline: "Status",
+    sortable: true
+  },
+  {
+    headline: "Teams"
+  },
+  {
+    headline: "Services"
+  }
+];
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
@@ -139,7 +131,7 @@ class EmployeeOverview extends React.Component<Props, State> {
         />
         <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
           <Query<WorkAround, WorkAround> query={fetchDepartmentsData} fetchPolicy="network-only">
-            {({ loading, error, data, refetch }) => {
+            {({ loading, error = null, data, refetch }) => {
               if (loading) {
                 return (
                   <div className="table">
@@ -157,18 +149,10 @@ class EmployeeOverview extends React.Component<Props, State> {
                           onClick={() => this.handleSortClick("Status")}>
                           <h1>Status</h1>
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          style={{ width: "20%" }}
-                          //onClick={() => this.handleSortClick("Teams")}
-                        >
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
                           <h1>Teams</h1>
                         </div>
-                        <div
-                          className="tableColumnBig"
-                          style={{ width: "30%" }}
-                          //onClick={() => this.handleSortClick("Services")}
-                        >
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -178,8 +162,9 @@ class EmployeeOverview extends React.Component<Props, State> {
                   </div>
                 );
               }
+
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error: {error.message}</div>;
               }
 
               // Sort employees
@@ -270,6 +255,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                   employees = interemployees;
                 }
               }
+
               const tabledata = [];
               employees.forEach(e =>
                 tabledata.push([
@@ -326,19 +312,14 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <Table
                     title="Employer"
                     tableHeaders={tableHeaders}
-                    additionalHeader={{
-                      rowCount: [2, 4]
-                    }}
+                    additionalHeader={true}
                     tableData={tabledata}
-                    dropDown={{
-                      component: (
-                        <div style={{ display: "flex", flexDirection: "column" }}>
-                          <a>Click 1</a>
-                          <a>Click 2</a>
-                        </div>
-                      ),
-                      showOnHover: false
-                    }}></Table>
+                    dropDown={
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <a>Click 1</a>
+                        <a>Click 2</a>
+                      </div>
+                    }></Table>
 
                   {this.state.add && (
                     <AppContext.Consumer>
