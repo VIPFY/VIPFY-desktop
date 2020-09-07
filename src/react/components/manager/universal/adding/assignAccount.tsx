@@ -26,7 +26,8 @@ class AssignAccount extends React.Component<Props, State> {
       ? this.props.accountFunction(this.props.orbit)
       : this.props.orbit.licences;
 
-    const accounts = allAccounts && allAccounts.filter(a => !a.options || !a.options.private);
+    const accounts =
+      allAccounts && allAccounts.filter(a => a && (!a.options || !a.options.private));
 
     return (
       <>
