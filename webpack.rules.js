@@ -50,7 +50,10 @@ const rules = [
             }
           }
         ],
-    include: [path.resolve(__dirname, "src"), path.resolve(__dirname, "../vipfy-ui-lib")]
+    include: [
+      path.resolve(__dirname, "src"),
+      path.resolve(__dirname, "node_modules/@vipfy-private")
+    ]
   }
 ];
 
