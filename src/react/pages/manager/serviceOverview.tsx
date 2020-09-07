@@ -166,19 +166,18 @@ class ServiceOverview extends React.Component<Props, State> {
         });
 
         service.orbitids.forEach(element => {
-          if (element.endtime == null || moment(element.endtime).toDate() < new Date()) {
+          if (element.endtime == null || moment(element.endtime).isSameOrAfter()) {
             element.accounts.forEach(account => {
               if (
                 account != null &&
-                (account.endtime == null || moment(account.endtime).toDate() > new Date()) &&
-                moment(account.starttime).toDate() < new Date()
+                (account.endtime == null || moment(account.endtime).isSameOrAfter()) &&
+                moment(account.starttime).isSameOrBefore()
               ) {
                 accounts.push(account);
                 account.assignments.forEach(checkunit => {
                   if (
                     checkunit &&
-                    (checkunit.endtime == null ||
-                      moment(checkunit.endtime).toDate() > new Date()) &&
+                    (checkunit.endtime == null || moment(checkunit.endtime).isSameOrAfter()) &&
                     !singleAccounts.find(
                       s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
                     )
