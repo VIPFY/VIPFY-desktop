@@ -5,36 +5,45 @@ import DropDownWithIcon from "./DropDownWithIcon";
 import UniversalCheckbox from "./universalForms/universalCheckbox";
 import UniversalTextInput from "./universalForms/universalTextInput";
 
+interface TableCell {
+  component: JSX.Element;
+  searchableText?: string;
+}
+
+interface TableRow {
+  cells: TableCell[];
+}
+
 interface Props {
   title: string;
   headers: { headline: string; sortable?: boolean }[];
-  tableData: object[];
-  dropDown: JSX.Element;
+  data: TableRow[];
+  actionButtonComponent: JSX.Element;
 }
 
 interface State {
-  data: object[];
+  data: TableRow[];
+  rowsPerPage: number;
+  currentRows: TableRow[];
+  currentPage: number;
   search: string;
-  sort: string;
-  sortForward: boolean;
+  sortBy: string;
+  sortAscending: boolean;
   checkBoxStatusArray: object;
   isAllRowsCheckboxChecked: boolean;
-  currentPage: number;
-  rowsPerPage: number;
-  currentRows: object[];
 }
 
 class Table extends React.Component<Props, State> {
   state = {
-    data: this.props.tableData,
-    search: "",
-    sort: "",
-    sortForward: false,
-    checkBoxStatusArray: this.initializeArray(),
-    isAllRowsCheckboxChecked: false,
+    data: this.props.data,
     currentPage: 1,
     rowsPerPage: 20,
-    currentRows: this.getCurrentRows(this.props.tableData, 1, 20)
+    currentRows: this.getCurrentRows(this.props.data, 1, 20),
+    search: "",
+    sortBy: "",
+    sortAscending: false,
+    checkBoxStatusArray: this.initializeArray(),
+    isAllRowsCheckboxChecked: false
   };
 
   getWidth() {
@@ -47,57 +56,29 @@ class Table extends React.Component<Props, State> {
 
   initializeArray() {
     let array = [];
-    if (this.props.tableData.length) {
-      this.props.tableData.forEach((_, index) => {
+    if (this.props.data.length) {
+      this.props.data.forEach((_, index) => {
         array[index] = false;
       });
     }
     return array;
   }
 
-  sortTable(sorted: any) {
-    let { data, sortForward } = this.state;
-    data.sort(function (a, b) {
-      let stringA = "";
-      let stringB = "";
-      a.forEach(element => {
-        if (element.header === sorted) {
-          stringA = `${element.index}`.toUpperCase();
-        }
-      });
-      b.forEach(element => {
-        if (element.header === sorted) {
-          stringB = `${element.index}`.toUpperCase();
-        }
-      });
-
-      if (stringA < stringB) {
-        return sortForward ? -1 : 1;
-      }
-
-      if (stringA > stringB) {
-        return sortForward ? 1 : -1;
-      }
-
-      return 0;
-    });
-  }
-
   searchTerm(searchTerm: String) {
     if (!searchTerm) {
-      this.setState({ data: this.props.tableData });
+      this.setState({ data: this.props.data });
       return;
     }
 
     const data = [];
 
-    this.props.tableData.map(element => {
-      element.map(e => {
+    this.props.data.map(row => {
+      row.cells.map(cell => {
         if (
-          `${e.index}`.toUpperCase().includes(searchTerm.toUpperCase()) &&
-          !data.includes(element)
+          `${cell.searchableText}`.toUpperCase().includes(searchTerm.toUpperCase()) &&
+          !data.includes(row)
         ) {
-          data.push(element);
+          data.push(row);
         }
       });
     });
@@ -105,16 +86,20 @@ class Table extends React.Component<Props, State> {
     this.setState({ data });
   }
 
-  handleSortClick(sorted: any) {
-    if (sorted !== this.state.sort) {
-      this.setState({ sortForward: true, sort: sorted });
-    } else {
-      this.setState(oldstate => {
-        return { sortForward: !oldstate.sortForward };
-      });
-    }
+  handleSortClick(sortBy: string) {
+    const sortAscending = sortBy === this.state.sortBy ? !this.state.sortAscending : true;
+    const columnIndex = this.props.headers.findIndex(header => header.headline === sortBy);
 
-    this.sortTable(sorted);
+    const sortedData = this.state.data.sort(function (rowA: TableRow, rowB: TableRow) {
+      const stringA = rowA.cells[columnIndex].searchableText;
+      const stringB = rowB.cells[columnIndex].searchableText;
+      const comparison = stringA.localeCompare(stringB, undefined, { sensitivity: "base" });
+
+      return sortAscending ? comparison : -comparison;
+    });
+
+    this.setState({ data: sortedData, sortBy, sortAscending });
+    this.goToPage(1);
   }
 
   checkOrUncheckAllRows(check: boolean) {
@@ -174,7 +159,7 @@ class Table extends React.Component<Props, State> {
                   this.setState({
                     rowsPerPage: value,
                     currentPage: 1,
-                    currentRows: this.props.tableData.slice(0, value)
+                    currentRows: this.props.data.slice(0, value)
                   })
                 }
                 options={[10, 20, 50]}
@@ -210,8 +195,8 @@ class Table extends React.Component<Props, State> {
                     key={header.headline}>
                     {header.headline}
                     {header.sortable &&
-                      (header.headline === this.state.sort ? (
-                        this.state.sortForward ? (
+                      (header.headline === this.state.sortBy ? (
+                        this.state.sortAscending ? (
                           <i className="fad fa-sort-up sortIcon"></i>
                         ) : (
                           <i className="fad fa-sort-down sortIcon"></i>
@@ -222,34 +207,34 @@ class Table extends React.Component<Props, State> {
                   </div>
                 ))}
             </div>
-            {this.props.dropDown && <div className="table-dropdown-col" />}
+            {this.props.actionButtonComponent && <div className="table-dropdown-col" />}
           </div>
           <div className="table-body" style={{ flexDirection: "column" }}>
-            {this.state.currentRows.map((element, index) => (
+            {this.state.currentRows.map((row: TableRow, i: number) => (
               /* I am using index as key as element is an array of objects */
-              <div className="table-rows" key={index}>
+              <div className="table-rows" key={i}>
                 <div className="table-checkbox-column">
                   <UniversalCheckbox
-                    name={`table-${index}`}
+                    name={`table-${i}`}
                     liveValue={e => {
-                      this.setRowsCheckboxStati(e, index);
+                      this.setRowsCheckboxStati(e, i);
                     }}
-                    startingvalue={this.state.checkBoxStatusArray[index]}
+                    startingvalue={this.state.checkBoxStatusArray[i]}
                   />
                 </div>
                 <div className="table-body-cols">
-                  {element.map(data => (
+                  {row.cells.map((cell, j) => (
                     <div
                       className="table-col"
                       style={{ width: this.getWidth() + "%" }}
-                      key={data.header}>
-                      {data.component}
+                      key={this.props.headers[j].headline}>
+                      {cell.component}
                     </div>
                   ))}
                 </div>
-                {this.props.dropDown && (
+                {this.props.actionButtonComponent && (
                   <div className="table-dropdown-col">
-                    <DropDownWithIcon dropDownComponent={this.props.dropDown} />
+                    <DropDownWithIcon dropDownComponent={this.props.actionButtonComponent} />
                   </div>
                 )}
               </div>

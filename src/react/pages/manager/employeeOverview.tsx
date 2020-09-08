@@ -258,62 +258,58 @@ class EmployeeOverview extends React.Component<Props, State> {
 
               const tabledata = [];
               employees.forEach(e =>
-                tabledata.push([
-                  {
-                    component: (
-                      <div>
-                        <span className="name" title={concatName(e)}>
-                          {e.firstname} {e.lastname}
-                        </span>
-                      </div>
-                    ),
-                    index: concatName(e),
-                    header: "Name"
-                  },
-                  {
-                    component: (
-                      <div
-                        className="status"
-                        style={
-                          e.isonline
-                            ? {
-                                backgroundColor: "#29CC94",
-                                marginTop: "18px",
-                                marginLeft: "0px",
-                                width: "100%"
-                              }
-                            : {
-                                backgroundColor: "#DB4D3F",
-                                marginTop: "18px",
-                                marginLeft: "0px",
-                                width: "100%"
-                              }
-                        }>
-                        {e.isonline ? "Online" : "Offline"}
-                      </div>
-                    ),
-                    index: e.isonline ? "Online" : "Offline",
-                    header: "Status"
-                  },
-                  {
-                    component: <div>teams</div>,
-                    index: "none",
-                    header: "Teams"
-                  },
-                  {
-                    component: <div>Services</div>,
-                    index: "none",
-                    header: "Services"
-                  }
-                ])
+                tabledata.push({
+                  cells: [
+                    {
+                      component: (
+                        <div>
+                          <span className="name" title={concatName(e)}>
+                            {e.firstname} {e.lastname}
+                          </span>
+                        </div>
+                      ),
+                      searchableText: concatName(e)
+                    },
+                    {
+                      component: (
+                        <div
+                          className="status"
+                          style={
+                            e.isonline
+                              ? {
+                                  backgroundColor: "#29CC94",
+                                  marginTop: "18px",
+                                  marginLeft: "0px",
+                                  width: "100%"
+                                }
+                              : {
+                                  backgroundColor: "#DB4D3F",
+                                  marginTop: "18px",
+                                  marginLeft: "0px",
+                                  width: "100%"
+                                }
+                          }>
+                          {e.isonline ? "Online" : "Offline"}
+                        </div>
+                      ),
+                      searchableText: e.isonline ? "Online" : "Offline"
+                    },
+                    {
+                      component: <div>teams</div>
+                    },
+                    {
+                      component: <div>Services</div>
+                    }
+                  ]
+                })
               );
               return (
                 <>
                   <Table
                     title="Employer"
                     headers={headers}
-                    tableData={tabledata}
-                    dropDown={
+                    data={tabledata}
+                    actionButtonComponent={
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         <a>Click 1</a>
                         <a>Click 2</a>
