@@ -5,7 +5,7 @@ import newMethod from "../../../images/undraw_pay_online_b1hk.png";
 import gql from "graphql-tag";
 import CardSetupFormContainer from "../../components/billing/CardSetupForm";
 import CreditCardNew from "../../components/billing/CreditCardNew";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import CardSection from "../../components/CardSection";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -155,23 +155,23 @@ class PaymentMethod extends Component<Props, State> {
                           </CardSection>
                         </>
                       ) : (
-                        <CardSection
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center"
-                          }}>
-                          <div>
-                            <img src={newMethod} height={88} />
-                          </div>
-                          <UniversalButton
-                            label="Add new Card"
-                            type="low"
-                            customStyles={{ marginTop: "28px" }}
-                            onClick={async () => {
-                              let secret = null;
-                              secret = await this.props.client.mutate({
-                                mutation: gql`
+                          <CardSection
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center"
+                            }}>
+                            <div>
+                              <img src={newMethod} height={88} />
+                            </div>
+                            <UniversalButton
+                              label="Add new Card"
+                              type="low"
+                              customStyles={{ marginTop: "28px" }}
+                              onClick={async () => {
+                                let secret = null;
+                                secret = await this.props.client.mutate({
+                                  mutation: gql`
                                   mutation startRecurringBillingIntent {
                                     startRecurringBillingIntent {
                                       secret
@@ -179,16 +179,16 @@ class PaymentMethod extends Component<Props, State> {
                                     }
                                   }
                                 `
-                              });
-                              this.setState({
-                                edit: true,
-                                secret: secret.data.startRecurringBillingIntent.secret,
-                                setupid: secret.data.startRecurringBillingIntent.setupid
-                              });
-                            }}
-                          />
-                        </CardSection>
-                      )}
+                                });
+                                this.setState({
+                                  edit: true,
+                                  secret: secret.data.startRecurringBillingIntent.secret,
+                                  setupid: secret.data.startRecurringBillingIntent.setupid
+                                });
+                              }}
+                            />
+                          </CardSection>
+                        )}
                     </div>
                   </div>
                   {this.state.missingAddress && (

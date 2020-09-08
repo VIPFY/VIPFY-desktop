@@ -8,7 +8,7 @@ import UniversalButton from "../../universalButtons/universalButton";
 import { TestResult } from "../../../interfaces";
 import { remote } from "electron";
 import { tests } from "./tests";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import gql from "graphql-tag";
 
 const { session, dialog } = remote;
@@ -313,18 +313,18 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               <i className="fal fa-pause fa-2x" style={{ padding: "8px" }}></i>
             </span>
           ) : (
-            <span
-              onClick={async () => {
-                await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
-                this.advance(true);
-              }}>
-              <i
-                className="fal fa-fast-forward fa-2x"
-                style={{ padding: "8px" }}
-                id="startBatchRunIcon"
-              />
-            </span>
-          )}
+              <span
+                onClick={async () => {
+                  await this.setState({ runningInBatchMode: true, siteIndexUnderTest: -1 });
+                  this.advance(true);
+                }}>
+                <i
+                  className="fal fa-fast-forward fa-2x"
+                  style={{ padding: "8px" }}
+                  id="startBatchRunIcon"
+                />
+              </span>
+            )}
           {this.state.takeScreenshots ? (
             <span onClick={() => this.setState({ takeScreenshots: false })}>
               <span className="fa-stack" style={{ verticalAlign: "top", padding: "8px" }}>
@@ -333,13 +333,13 @@ class UniversalLoginTest extends React.PureComponent<Props, State> {
               </span>
             </span>
           ) : (
-            <span
-              onClick={async () => {
-                await this.setState({ takeScreenshots: true });
-              }}>
-              <i className="fal fa-camera fa-2x" style={{ padding: "8px" }} />
-            </span>
-          )}
+              <span
+                onClick={async () => {
+                  await this.setState({ takeScreenshots: true });
+                }}>
+                <i className="fal fa-camera fa-2x" style={{ padding: "8px" }} />
+              </span>
+            )}
           <span
             onClick={async () => {
               const res = await dialog.showOpenDialog({

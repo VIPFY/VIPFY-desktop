@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { WorkAround } from "./../../interfaces";
 
@@ -12,7 +12,7 @@ interface Props {
   moveTo: Function;
 }
 
-interface State {}
+interface State { }
 
 class Emails extends React.Component<Props, State> {
   state = {};

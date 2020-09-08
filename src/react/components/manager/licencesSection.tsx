@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import ServiceDetails from "../../components/manager/serviceDetails";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchUserLicences } from "../../queries/departments";
 import moment from "moment";
 import AssignNewAccount from "./universal/adding/assignNewAccount";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment, { now } from "moment";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import { getMyUnitId } from "../../common/functions";
 import ColumnEmployees from "./universal/columns/columnEmployee";
 import ChangeAccount from "./universal/changeAccount";
@@ -136,12 +136,12 @@ class AccountRow extends React.Component<Props, State> {
             {(!account.options ||
               (account.options && !account.options.private) ||
               account.assignments.some(as => as.unitid.id == getMyUnitId(this.props.client))) && (
-              <i
-                className="fal fa-pen editbuttons"
-                title="Edit account settings"
-                onClick={() => this.setState({ change: true })}
-              />
-            )}
+                <i
+                  className="fal fa-pen editbuttons"
+                  title="Edit account settings"
+                  onClick={() => this.setState({ change: true })}
+                />
+              )}
           </div>
         </div>
         {(!account.options ||

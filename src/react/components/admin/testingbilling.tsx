@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalButton from "../universalButtons/universalButton";
 import CardSetupFormContainer from "../billing/CardSetupForm";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import gql from "graphql-tag";
 
 interface Props {

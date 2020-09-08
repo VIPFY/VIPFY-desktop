@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchApps } from "../../../../queries/products";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import { now } from "moment";
@@ -120,7 +120,7 @@ class ServiceGrid extends React.Component<Props, State> {
               e.name.toUpperCase().includes(this.props.search.toUpperCase())
             );
 
-            apps.sort(function(a, b) {
+            apps.sort(function (a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
               let nameB = b.name.toUpperCase(); // ignore upper and lowercase
               if (nameA < nameB) {

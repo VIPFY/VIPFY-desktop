@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { shell } from "electron";
 import { fetchAppById, fetchReviews, fetchPlans, fetchRecommendedApps } from "../queries/products";
@@ -391,7 +391,7 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
                 backgroundImage:
                   appDetails.images &&
                   `url(https://storage.googleapis.com/vipfy-imagestore-01/${appDetails.name}/${
-                    appDetails.images[this.state.imageindex]
+                  appDetails.images[this.state.imageindex]
                   })`
               }}>
               <div className="galleryDots">
@@ -441,8 +441,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
                   </p>
                 </span>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               <span className="appDescriptionHeading">Support</span>
             </div>
             <div className="app-description-item">
@@ -481,8 +481,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               plans={plans}
             />
           ) : (
-            ""
-          )}
+              ""
+            )}
           <div className="detail-comments">
             <div className="detail-comments-holder">
               <div className="commentOverviewBlock">
@@ -525,8 +525,8 @@ class AppPage extends React.Component<AppPageProps, AppPageState> {
               info={this.state.popupInfo}
             />
           ) : (
-            ""
-          )}
+              ""
+            )}
           {this.state.create && (
             <CreateOrbit service={appDetails} close={() => this.setState({ create: false })} />
           )}

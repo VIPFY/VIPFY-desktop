@@ -3,7 +3,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import { shell } from "electron";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -232,13 +232,13 @@ class RegisterCompany extends React.Component<Props, State> {
                 />
               </React.Fragment>
             ) : (
-              <div>
-                <div style={{ fontSize: "32px", textAlign: "center" }}>
-                  <i className="fal fa-spinner fa-spin" />
-                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
+                <div>
+                  <div style={{ fontSize: "32px", textAlign: "center" }}>
+                    <i className="fal fa-spinner fa-spin" />
+                    <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </PopupBase>
         )}
       </div>

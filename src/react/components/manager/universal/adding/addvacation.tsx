@@ -3,10 +3,10 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
-import { Query, graphql } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { fetchUserLicences, fetchDepartmentsData } from "../../../../queries/departments";
-import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import { concatName } from "../../../../common/functions";
 import AssignVacation from "./assignVacation";
@@ -151,15 +151,15 @@ class AddVacation extends React.Component<Props, State> {
                   forceValue={this.state.checked[k]}
                   forceUser={
                     this.props.editVacation &&
-                    this.props.editVacation.options.find(o => o.originalassignment == e.id)
+                      this.props.editVacation.options.find(o => o.originalassignment == e.id)
                       ? {
-                          id: this.props.editVacation.options.find(
-                            o => o.originalassignment == e.id
-                          ).userid
-                        }
+                        id: this.props.editVacation.options.find(
+                          o => o.originalassignment == e.id
+                        ).userid
+                      }
                       : this.state.users[k]
-                      ? { id: this.state.users[k] }
-                      : null
+                        ? { id: this.state.users[k] }
+                        : null
                   }
                 />
               );
@@ -191,11 +191,11 @@ class AddVacation extends React.Component<Props, State> {
                     {this.props.editVacation && this.state.fromdate <= now() ? (
                       ""
                     ) : (
-                      <i
-                        className="fal fa-pen editbutton"
-                        onClick={() => this.setState({ editfrom: true })}
-                      />
-                    )}
+                        <i
+                          className="fal fa-pen editbutton"
+                          onClick={() => this.setState({ editfrom: true })}
+                        />
+                      )}
                     {this.state.editfrom && (
                       <PopupBase
                         styles={{ maxWidth: "fit-content" }}
@@ -360,12 +360,12 @@ class AddVacation extends React.Component<Props, State> {
                             vacationid: this.props.editVacation.id,
                             starttime:
                               moment(this.state.fromdate).toISOString() !=
-                              moment(this.props.editVacation.starttime).toISOString()
+                                moment(this.props.editVacation.starttime).toISOString()
                                 ? moment(this.state.fromdate).toDate()
                                 : moment(this.props.editVacation.starttime).toDate(),
                             endtime:
                               moment(this.state.todate).toISOString() !=
-                              moment(this.props.editVacation.endtime).toISOString()
+                                moment(this.props.editVacation.endtime).toISOString()
                                 ? moment(this.state.todate).toDate()
                                 : moment(this.props.editVacation.endtime).toDate(),
                             assignments: assignmentSending
@@ -593,20 +593,20 @@ class AddVacation extends React.Component<Props, State> {
                   <div
                     className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                    }`}>
+                      }`}>
                     <div
                       className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                         this.state.error ? "loadError" : ""
-                      }`}></div>
+                        }`}></div>
                   </div>
                   <div
                     className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                    }`}>
+                      }`}>
                     <div
                       className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                         this.state.error ? "load-error" : ""
-                      }`}>
+                        }`}>
                       <div
                         className="checkmark draw"
                         style={this.state.saved ? { display: "block" } : {}}

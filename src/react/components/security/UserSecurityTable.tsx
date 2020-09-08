@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { concatName, ErrorComp } from "../../common/functions";
 import UserSecurityRow from "./UserSecurityRow";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./graphqlOperations";

@@ -1,6 +1,6 @@
 import * as React from "react";
 import WebView from "react-electron-web-view";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import Collapsible from "../common/Collapsible";
 import UniversalSearchBox from "../components/universalSearchBox";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
@@ -108,17 +108,17 @@ export default (props: Props) => {
               />
             </div>
           ) : (
-            <div style={loading ? { height: 0 } : {}}>
-              <WebView
-                preload={getPreloadScriptPath("freshdesk.js")}
-                webpreferences="webSecurity=no"
-                src="https://vipfy-support.freshdesk.com/support/tickets/new"
-                partition="vipfy-support"
-                className="support-webview"
-                onIpcMessage={e => onIpcMessage(e)}
-              />
-            </div>
-          )}
+              <div style={loading ? { height: 0 } : {}}>
+                <WebView
+                  preload={getPreloadScriptPath("freshdesk.js")}
+                  webpreferences="webSecurity=no"
+                  src="https://vipfy-support.freshdesk.com/support/tickets/new"
+                  partition="vipfy-support"
+                  className="support-webview"
+                  onIpcMessage={e => onIpcMessage(e)}
+                />
+              </div>
+            )}
 
           {/* <div className="support-options">
             <h2>What can we help you with?</h2>

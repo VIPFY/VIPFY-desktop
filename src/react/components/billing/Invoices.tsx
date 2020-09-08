@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import * as moment from "moment";
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
@@ -95,7 +95,7 @@ export default () => {
                     key={i}
                     className={`naked-button ${
                       currentMonths.find(m => m == month.format("MMMM")) ? "current" : ""
-                    }`}
+                      }`}
                     name={month.format("MMM")}
                     onClick={() => toggleMonths(month.format("MMMM"))}>
                     {month.format("MMM")}
@@ -162,7 +162,7 @@ export default () => {
                           }
                           className={`fal fa-${
                             invoice.paytime ? "money-bill" : "file-invoice-dollar"
-                          }
+                            }
                          `}
                         />
 

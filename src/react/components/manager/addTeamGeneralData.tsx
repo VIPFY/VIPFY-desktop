@@ -3,7 +3,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import TeamGerneralDataAdd from "./universal/adding/teamGeneralDataAdd";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { fetchCompanyTeams } from "../../queries/departments";
 
 interface Props {

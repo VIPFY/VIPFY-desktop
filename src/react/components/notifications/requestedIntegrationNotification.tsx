@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import {

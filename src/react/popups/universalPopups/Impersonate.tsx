@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import UserName from "../../components/UserName";
 import UniversalButton from "../../components/universalButtons/universalButton";

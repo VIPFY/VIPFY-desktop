@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation, Query } from "react-apollo";
+import { Mutation, Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import humanizeDuration from "humanize-duration";
 import moment from "moment";
@@ -154,8 +154,8 @@ class AppListInner extends React.Component<Props, State> {
           stats.minutestotal == 0
             ? "0"
             : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
-                largest: 2
-              });
+              largest: 2
+            });
         let endsAt = "forever";
 
         if (endtime) {

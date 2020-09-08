@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import UserPicture from "../UserPicture";
 import { QUERY_GROUPS } from "./common";
 

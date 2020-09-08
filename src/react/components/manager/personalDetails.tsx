@@ -3,7 +3,8 @@ import moment, { now } from "moment";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import UniversalButton from "../universalButtons/universalButton";
-import { Mutation, graphql } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";
@@ -303,15 +304,15 @@ class PersonalDetails extends React.Component<Props, State> {
                 deleteFunction={
                   (this.state.editvalueArray.length == 0 &&
                     this.props.querydata.emails.length > 1) ||
-                  (this.state.editvalueArray.length > 0 &&
-                    this.props.querydata.emails.length - 1 >
+                    (this.state.editvalueArray.length > 0 &&
+                      this.props.querydata.emails.length - 1 >
                       this.state.editvalueArray.filter(a => a && a.emaildeleted).length)
                     ? () => {
-                        this.setState(({ editvalueArray }) => {
-                          editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
-                          return { editvalueArray };
-                        });
-                      }
+                      this.setState(({ editvalueArray }) => {
+                        editvalueArray[index] = { emaildeleted: true, oldemail: email.email };
+                        return { editvalueArray };
+                      });
+                    }
                     : undefined
                 }
                 style={email.emaildeleted && { display: "none" }}
@@ -962,12 +963,12 @@ class PersonalDetails extends React.Component<Props, State> {
                     savedmessage={`${this.state.edit.label} saved`}
                   />
                 ) : (
-                  /*<PopupBase small={true} close={() => this.setState({ updating: false })}>
-                    <i className="fal fa-spinner fa-spin" />
-                    <span>Saving</span>
-                  </PopupBase>*/
-                  ""
-                )}
+                    /*<PopupBase small={true} close={() => this.setState({ updating: false })}>
+                      <i className="fal fa-spinner fa-spin" />
+                      <span>Saving</span>
+                    </PopupBase>*/
+                    ""
+                  )}
                 {this.state.error ? (
                   <PopupBase small={true} close={() => this.setState({ updating: false })}>
                     <span>Something went wrong :( Please try again or contact support</span>
@@ -978,8 +979,8 @@ class PersonalDetails extends React.Component<Props, State> {
                     />
                   </PopupBase>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </PopupBase>
             )}
           </Mutation>

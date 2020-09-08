@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
@@ -315,13 +315,13 @@ class TeamOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div

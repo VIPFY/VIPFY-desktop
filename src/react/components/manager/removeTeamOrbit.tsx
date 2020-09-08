@@ -3,7 +3,7 @@ import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { fetchTeam } from "../../queries/departments";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import moment, { now } from "moment";
@@ -546,7 +546,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
               <span style={{ lineHeight: "24px", width: "84px" }}>Enddate:</span>
               <span style={{ lineHeight: "24px" }}>
                 {this.state.todate &&
-                moment(this.state.todate!).format("DD.MM.YYYY") !=
+                  moment(this.state.todate!).format("DD.MM.YYYY") !=
                   moment(new Date()).format("DD.MM.YYYY")
                   ? moment(this.state.todate!).format("DD.MM.YYYY")
                   : "Now"}
@@ -1062,20 +1062,20 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

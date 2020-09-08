@@ -1,7 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { CardElement, injectStripe } from "react-stripe-elements";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 
 import LoadingDiv from "../../components/LoadingDiv";
 import { FETCH_CARDS } from "../../queries/billing";
@@ -170,8 +170,8 @@ class StripeBody extends React.Component<Props, State> {
             ))}
           </select>
         ) : (
-          <input className="billing-input" {...field} onChange={this.handleNewAddress} />
-        )}
+            <input className="billing-input" {...field} onChange={this.handleNewAddress} />
+          )}
       </div>
     ));
 
@@ -224,30 +224,30 @@ class StripeBody extends React.Component<Props, State> {
               <div className="billing-addresses">
                 {this.props.emails.length > 0
                   ? this.props.emails.map(({ email }, key) => (
-                      <div className="generic-searchbar" key={`email-${key}`}>
-                        <div className="billing-icon-holder">
-                          <i className="fas fa-envelope" />
-                        </div>
-
-                        <label
-                          title=""
-                          className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
-                          htmlFor={`email-radio-${key}`}>
-                          {email}
-                        </label>
-                        <input
-                          defaultChecked={key == 0 ? true : false}
-                          name="email"
-                          type="radio"
-                          id={`email-radio-${key}`}
-                          className="billing-input"
-                          required={true}
-                          disabled={loading || this.state.showFields}
-                          value={key}
-                          onChange={this.handleChange}
-                        />
+                    <div className="generic-searchbar" key={`email-${key}`}>
+                      <div className="billing-icon-holder">
+                        <i className="fas fa-envelope" />
                       </div>
-                    ))
+
+                      <label
+                        title=""
+                        className={`billing-input ${this.state.showFields ? "disabled" : ""}`}
+                        htmlFor={`email-radio-${key}`}>
+                        {email}
+                      </label>
+                      <input
+                        defaultChecked={key == 0 ? true : false}
+                        name="email"
+                        type="radio"
+                        id={`email-radio-${key}`}
+                        className="billing-input"
+                        required={true}
+                        disabled={loading || this.state.showFields}
+                        value={key}
+                        onChange={this.handleChange}
+                      />
+                    </div>
+                  ))
                   : "Please set an Billing Email first"}
               </div>
             )}
@@ -289,14 +289,14 @@ class StripeBody extends React.Component<Props, State> {
                   {this.state.showFields ? this.renderAddressFields(addressFields) : ""}
                 </React.Fragment>
               ) : (
-                this.renderAddressFields(addressFields)
-              )}
+                  this.renderAddressFields(addressFields)
+                )}
             </div>
 
             <div
               className={`card-element ${
                 this.state.showFields ? "float-to-bottom" : "float-to-top"
-              }`}>
+                }`}>
               <CardElement
                 style={{
                   base: {
@@ -319,8 +319,8 @@ class StripeBody extends React.Component<Props, State> {
             ) : success ? (
               <div className="generic-submit-success">{success}</div>
             ) : (
-              ""
-            )}
+                    ""
+                  )}
 
             <div className="generic-button-holder">
               <UniversalButton

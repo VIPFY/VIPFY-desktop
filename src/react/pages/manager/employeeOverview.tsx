@@ -1,7 +1,7 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
@@ -146,14 +146,14 @@ class EmployeeOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig"
                           style={{ width: "20%" }}
-                          //onClick={() => this.handleSortClick("Teams")}
+                        //onClick={() => this.handleSortClick("Teams")}
                         >
                           <h1>Teams</h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "30%" }}
-                          //onClick={() => this.handleSortClick("Services")}
+                        //onClick={() => this.handleSortClick("Services")}
                         >
                           <h1>Services</h1>
                         </div>
@@ -271,13 +271,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div
@@ -290,13 +290,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div className="tableColumnBig" style={{ width: "20%" }}>
@@ -327,17 +327,17 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 style={
                                   employee.isonline
                                     ? {
-                                        backgroundColor: "#29CC94",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
+                                      backgroundColor: "#29CC94",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "100%"
+                                    }
                                     : {
-                                        backgroundColor: "#DB4D3F",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
+                                      backgroundColor: "#DB4D3F",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "100%"
+                                    }
                                 }>
                                 {employee.isonline ? "Online" : "Offline"}
                               </div>

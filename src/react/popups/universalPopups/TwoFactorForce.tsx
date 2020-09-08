@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import UserName from "../../components/UserName";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -60,29 +60,29 @@ export default (props: Props) => (
             <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            <div className="sub-header">
-              Do you really want to {props.status ? "un" : ""}force{" "}
-              <UserName unitid={props.unitid} /> to use Two-Factor Authentication?
+            <React.Fragment>
+              <div className="sub-header">
+                Do you really want to {props.status ? "un" : ""}force{" "}
+                <UserName unitid={props.unitid} /> to use Two-Factor Authentication?
             </div>
 
-            <ErrorComp error={error} className="error-field" />
-            <UniversalButton
-              type="low"
-              onClick={props.closeFunction}
-              disabled={loading}
-              closingPopup={true}
-              label="no"
-            />
+              <ErrorComp error={error} className="error-field" />
+              <UniversalButton
+                type="low"
+                onClick={props.closeFunction}
+                disabled={loading}
+                closingPopup={true}
+                label="no"
+              />
 
-            <UniversalButton
-              type="low"
-              disabled={loading || data}
-              onClick={() => toggle2FA({ variables: { userid: props.unitid, type: "totp" } })}
-              label="Yes"
-            />
-          </React.Fragment>
-        )}
+              <UniversalButton
+                type="low"
+                disabled={loading || data}
+                onClick={() => toggle2FA({ variables: { userid: props.unitid, type: "totp" } })}
+                label="Yes"
+              />
+            </React.Fragment>
+          )}
       </PopupBase>
     )}
   </Mutation>

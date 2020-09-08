@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import UniversalButton from "../components/universalButtons/universalButton";
@@ -157,31 +157,31 @@ class AddCustomServicePage extends React.Component<Props, State> {
             allowOther={true}
             options={possibleFields}
             livevalue={v =>
-        this.setState(oldstate => {
-          const editedTrackedPlan = [];
-          oldstate.trackedPlan.forEach(tP => {
-            if (tP.args.id == rF.args.id) {
-              editedTrackedPlan.push({
-                ...tP,
-                args: {
-                  ...tP.args,
-                  fillkey: v,
-                  value: v.toLowerCase().includes("security") ? "" : tP.args.value,
-                  isSecurity: v.toLowerCase().includes("security")
-                }
-              });
-            } else {
-              editedTrackedPlan.push(tP);
-            }
-          });
-          return { ...oldstate, trackedPlan: editedTrackedPlan };
-        })
+              this.setState(oldstate => {
+                const editedTrackedPlan = [];
+                oldstate.trackedPlan.forEach(tP => {
+                  if (tP.args.id == rF.args.id) {
+                    editedTrackedPlan.push({
+                      ...tP,
+                      args: {
+                        ...tP.args,
+                        fillkey: v,
+                        value: v.toLowerCase().includes("security") ? "" : tP.args.value,
+                        isSecurity: v.toLowerCase().includes("security")
                       }
+                    });
+                  } else {
+                    editedTrackedPlan.push(tP);
+                  }
+                });
+                return { ...oldstate, trackedPlan: editedTrackedPlan };
+              })
+            }
             style={{ position: "relative" }}
-            />
+          />
         </div>
       );
-      
+
     });
 
     return fields;
@@ -240,8 +240,8 @@ class AddCustomServicePage extends React.Component<Props, State> {
                 />
               </div>
             ) : (
-              <div></div>
-            )}
+                <div></div>
+              )}
           </div>
 
           {this.state.step == "setup" && (

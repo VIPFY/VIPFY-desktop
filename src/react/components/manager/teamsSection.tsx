@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchTeams } from "../../queries/departments";
 import Team from "./employeeDetails/team";
 import AssignNewTeamMemberFromMember from "./universal/adding/assignNewTeamMemberFromMember";

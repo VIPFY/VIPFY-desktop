@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/client/react/hooks";
 import { Link } from "react-router-dom";
 import UniversalButton from "../universalButtons/universalButton";
 import { App, CompanySizes, IndustryDistribution } from "../../interfaces";
@@ -32,13 +32,13 @@ interface ScrapedApp extends Excluded {
   companySizes: CompanySizes | {};
   industryDistribution: IndustryDistribution | {};
   description:
-    | string
-    | {
-        g2Long: string | null;
-        g2Short: string | null;
-        capterraLong: string | null;
-        capterraShort: string | null;
-      };
+  | string
+  | {
+    g2Long: string | null;
+    g2Short: string | null;
+    capterraLong: string | null;
+    capterraShort: string | null;
+  };
   teaserdescription: string;
   pricing?: string;
   tags: string[];
@@ -182,71 +182,71 @@ const ServiceUpload: React.FunctionComponent = () => {
       ) : jsonError ? (
         <ErrorComp error={jsonError} />
       ) : (
-        <React.Fragment>
-          {Object.values(services).length > 0 && (
-            <select
-              onChange={e => {
-                e.preventDefault();
-                setService(services[e.target.value]);
-              }}>
-              <option value="">Select a Service</option>
-              {Object.values(services).map(service => (
-                <option value={service.id} key={service.id}>
-                  {service.name}
-                </option>
-              ))}
-            </select>
-          )}
-
-          {service && (
             <React.Fragment>
-              <img src={service.logo} />
-              <ul className="list">
-                <li className="listHeadline">Service Name</li>
-                <li>{service.name}</li>
-              </ul>
-
-              <ul className="list">
-                <li className="listHeadline">Service Website</li>
-                <li>{service.website}</li>
-              </ul>
-
-              {renderList("Descriptions", service.description)}
-              {renderList("Ratings", service.ratings)}
-
-              <ul className="list">
-                <li className="listHeadline">Alternatives</li>
-                {service &&
-                  service.alternatives &&
-                  Object.keys(service.alternatives).map(id => (
-                    <li className="alternatives" key={id}>
-                      <span>Name: {service.alternatives[id].name}</span>
-                      <span>Rating: {service.alternatives[id].rating}</span>
-                      <span>Reviews: {service.alternatives[id].reviews}</span>
-                    </li>
+              {Object.values(services).length > 0 && (
+                <select
+                  onChange={e => {
+                    e.preventDefault();
+                    setService(services[e.target.value]);
+                  }}>
+                  <option value="">Select a Service</option>
+                  {Object.values(services).map(service => (
+                    <option value={service.id} key={service.id}>
+                      {service.name}
+                    </option>
                   ))}
-              </ul>
+                </select>
+              )}
 
-              {renderList("Job Distribution", service.JobDistribution)}
-              {renderList("Company Sizes", service.companySizes)}
-              {renderList("Industry Distribution", service.industryDistribution)}
+              {service && (
+                <React.Fragment>
+                  <img src={service.logo} />
+                  <ul className="list">
+                    <li className="listHeadline">Service Name</li>
+                    <li>{service.name}</li>
+                  </ul>
+
+                  <ul className="list">
+                    <li className="listHeadline">Service Website</li>
+                    <li>{service.website}</li>
+                  </ul>
+
+                  {renderList("Descriptions", service.description)}
+                  {renderList("Ratings", service.ratings)}
+
+                  <ul className="list">
+                    <li className="listHeadline">Alternatives</li>
+                    {service &&
+                      service.alternatives &&
+                      Object.keys(service.alternatives).map(id => (
+                        <li className="alternatives" key={id}>
+                          <span>Name: {service.alternatives[id].name}</span>
+                          <span>Rating: {service.alternatives[id].rating}</span>
+                          <span>Reviews: {service.alternatives[id].reviews}</span>
+                        </li>
+                      ))}
+                  </ul>
+
+                  {renderList("Job Distribution", service.JobDistribution)}
+                  {renderList("Company Sizes", service.companySizes)}
+                  {renderList("Industry Distribution", service.industryDistribution)}
+                </React.Fragment>
+              )}
+              <ErrorComp error={error} />
+              {data && (
+                <div className="success">{`Upload of ${
+                  Object.keys(services).length
+                  } Services was successful.`}</div>
+              )}
+
+              <UniversalButton
+                disabled={loading || Object.keys(services).length < 1}
+                type="high"
+                label="Create / Update Apps"
+                onClick={handleSubmit}
+              />
             </React.Fragment>
           )}
-          <ErrorComp error={error} />
-          {data && (
-            <div className="success">{`Upload of ${
-              Object.keys(services).length
-            } Services was successful.`}</div>
-          )}
-
-          <UniversalButton
-            disabled={loading || Object.keys(services).length < 1}
-            type="high"
-            label="Create / Update Apps"
-            onClick={handleSubmit}
-          />
-        </React.Fragment>
-      )}
 
       <button className="button-nav">
         <i className="fal fa-arrow-alt-from-right" />

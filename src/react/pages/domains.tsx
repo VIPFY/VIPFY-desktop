@@ -1,5 +1,6 @@
 import * as React from "react";
-import { graphql, Query } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import GenericInputForm from "../components/GenericInputForm";
@@ -227,7 +228,7 @@ class Domains extends React.Component<Props, State> {
           type: "checkbox",
           label: `Do you want to ${!domain.whoisprivacy ? "buy" : "cancel the"} Whois Privacy for ${
             domain.domainname
-          }${!domain.whoisprivacy ? " for 5.99 $" : ""}?`,
+            }${!domain.whoisprivacy ? " for 5.99 $" : ""}?`,
           icon: "user-secret"
         }
       ];
@@ -320,8 +321,8 @@ class Domains extends React.Component<Props, State> {
             {domain.createdate == null ? (
               <i className="fas fa-spinner fa-spin" />
             ) : (
-              new Date(domain.createdate).toDateString()
-            )}
+                new Date(domain.createdate).toDateString()
+              )}
           </span>
 
           <span className="domain-item">
@@ -334,7 +335,7 @@ class Domains extends React.Component<Props, State> {
             <i
               className={`fas fa-${
                 domain.renewalmode == "AUTORENEW" ? "check-circle" : "times-circle"
-              }`}
+                }`}
             />
           </span>
 
@@ -432,7 +433,7 @@ class Domains extends React.Component<Props, State> {
             {this.renderHeaders(headers)}
             <div className="domain-table-body">
               <Query pollInterval={60 * 10 * 1000 + 1000} query={FETCH_DOMAINS}>
-                {({ loading, error, data }) => {
+                {({ loading, error = null, data }) => {
                   if (loading) {
                     return <LoadingDiv text="Loading..." />;
                   }
@@ -490,7 +491,7 @@ class Domains extends React.Component<Props, State> {
             {this.renderHeaders(externalHeaders)}
             <div className="domain-table-body">
               <Query pollInterval={60 * 10 * 1000 + 100} query={FETCH_DOMAINS}>
-                {({ loading, error, data }) => {
+                {({ loading, error = null, data }) => {
                   if (loading) {
                     return <LoadingDiv text="Fetching Domains..." />;
                   }
@@ -514,7 +515,7 @@ class Domains extends React.Component<Props, State> {
 
                 const today = `${year}-${month < 10 ? `0${month}` : month}-${
                   day < 10 ? `0${day}` : day
-                }`;
+                  }`;
 
                 const regProps: {
                   fields: object[];

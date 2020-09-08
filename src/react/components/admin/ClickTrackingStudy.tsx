@@ -5,7 +5,7 @@ import * as moment from "moment";
 import gql from "graphql-tag";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import { WorkAround } from "../../interfaces";
 import Duration from "../../common/duration";
 import IconButton from "../../common/IconButton";
@@ -167,7 +167,7 @@ export default () => {
                             "study-finished":
                               participants[id].registrationDate != "-" &&
                               moment(moment()).diff(participants[id].registrationDate, "days") >=
-                                30 &&
+                              30 &&
                               moment().diff(
                                 moment(
                                   participants[id].dates.reduce((acc, cV) => {
@@ -205,8 +205,8 @@ export default () => {
                               )}
                             />
                           ) : (
-                            "-"
-                          )}
+                              "-"
+                            )}
                         </td>
                         <td>
                           {participants[id].totalByteSize

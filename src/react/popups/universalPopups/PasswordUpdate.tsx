@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import ReactPasswordStrength from "react-password-strength";
 import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
 import { ErrorComp } from "../../common/functions";
@@ -71,57 +71,57 @@ class PasswordUpdate extends React.Component<Props, State> {
                       <UniversalButton onClick={this.props.closeFunction} type="high" label="ok" />
                     </React.Fragment>
                   ) : (
-                    <React.Fragment>
-                      {userid == unitid && (
+                      <React.Fragment>
+                        {userid == unitid && (
+                          <UniversalTextInput
+                            id="currentPW"
+                            type="password"
+                            label="Current Password"
+                            livevalue={v => this.setState({ currentPassword: v })}
+                            onEnter={async () => document.querySelector("#newPassword").focus()}
+                            holderStyles={{ width: "300px" }}
+                          />
+                        )}
                         <UniversalTextInput
-                          id="currentPW"
+                          id="newPassword"
+                          label="New Password"
                           type="password"
-                          label="Current Password"
-                          livevalue={v => this.setState({ currentPassword: v })}
-                          onEnter={async () => document.querySelector("#newPassword").focus()}
+                          livevalue={v => this.setState({ newPassword: v })}
+                          checkPassword={passwordData => this.setState({ passwordData })}
+                          additionalPasswordChecks={[this.state.currentPassword]}
+                          errorhint={
+                            this.state.newPassword &&
+                            this.state.newPassword != "" &&
+                            this.state.currentPassword == this.state.newPassword &&
+                            "You can't use the same password again"
+                          }
+                          errorEvaluation={
+                            this.state.newPassword &&
+                            this.state.newPassword != "" &&
+                            this.state.currentPassword == this.state.newPassword
+                          }
+                          onEnter={async () => document.querySelector("#repeatNewPassword").focus()}
                           holderStyles={{ width: "300px" }}
                         />
-                      )}
-                      <UniversalTextInput
-                        id="newPassword"
-                        label="New Password"
-                        type="password"
-                        livevalue={v => this.setState({ newPassword: v })}
-                        checkPassword={passwordData => this.setState({ passwordData })}
-                        additionalPasswordChecks={[this.state.currentPassword]}
-                        errorhint={
-                          this.state.newPassword &&
-                          this.state.newPassword != "" &&
-                          this.state.currentPassword == this.state.newPassword &&
-                          "You can't use the same password again"
-                        }
-                        errorEvaluation={
-                          this.state.newPassword &&
-                          this.state.newPassword != "" &&
-                          this.state.currentPassword == this.state.newPassword
-                        }
-                        onEnter={async () => document.querySelector("#repeatNewPassword").focus()}
-                        holderStyles={{ width: "300px" }}
-                      />
-                      <UniversalTextInput
-                        id="repeatNewPassword"
-                        label="Repeat New Password"
-                        type="password"
-                        livevalue={v => this.setState({ repeatNewPassword: v })}
-                        holderStyles={{ width: "300px" }}
-                        errorhint={
-                          this.state.repeatNewPassword &&
-                          this.state.newPassword != this.state.repeatNewPassword &&
-                          "Passwords don't match"
-                        }
-                        errorEvaluation={
-                          this.state.repeatNewPassword &&
-                          this.state.newPassword != this.state.repeatNewPassword
-                        }
-                      />
-                      {error && <ErrorComp error={error} />}
-                    </React.Fragment>
-                  )}
+                        <UniversalTextInput
+                          id="repeatNewPassword"
+                          label="Repeat New Password"
+                          type="password"
+                          livevalue={v => this.setState({ repeatNewPassword: v })}
+                          holderStyles={{ width: "300px" }}
+                          errorhint={
+                            this.state.repeatNewPassword &&
+                            this.state.newPassword != this.state.repeatNewPassword &&
+                            "Passwords don't match"
+                          }
+                          errorEvaluation={
+                            this.state.repeatNewPassword &&
+                            this.state.newPassword != this.state.repeatNewPassword
+                          }
+                        />
+                        {error && <ErrorComp error={error} />}
+                      </React.Fragment>
+                    )}
                 </div>
 
                 {!data && (

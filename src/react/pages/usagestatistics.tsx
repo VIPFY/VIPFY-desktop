@@ -3,7 +3,7 @@ import AppTable from "../components/billing/AppTable";
 import AppUsageComanywideChart from "../components/usage/AppUsageCompanywideChart";
 import UniversalSearchBox from "../components/universalSearchBox";
 import SingleStatistic from "../components/usage/SingleStatistic";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { FETCH_TOTAL_APP_USAGE } from "../queries/products";
 
 interface Props {

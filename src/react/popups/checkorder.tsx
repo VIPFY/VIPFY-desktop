@@ -1,10 +1,8 @@
 import * as React from "react";
 
-import { graphql, Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { shell } from "electron";
-import { AppContext } from "../common/functions";
-import WebView from "react-electron-web-view";
 import CreditCard from "../components/billing/CreditCard";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -129,7 +127,7 @@ class CheckOrder extends React.Component<Props, State> {
                   onBlur={e => {
                     let valuenew =
                       Math.ceil((e.target.value - feature.number) / feature.amountper) *
-                        feature.amountper +
+                      feature.amountper +
                       feature.number;
                     this.setState(prevState => ({
                       featurenumbers: { ...prevState.featurenumbers, [i]: valuenew }
@@ -156,11 +154,11 @@ class CheckOrder extends React.Component<Props, State> {
           {this.props.plan.price == 0 ? (
             <div className="addedprice">Free</div>
           ) : (
-            <div className="addedprice">
-              ${this.props.plan.price}
+              <div className="addedprice">
+                ${this.props.plan.price}
               /month
-            </div>
-          )}
+              </div>
+            )}
         </div>
         {boption ? <div className="OOptions">Options</div> : ""}
         <ul className="featureBuy">{featureArray}</ul>
@@ -245,7 +243,7 @@ class CheckOrder extends React.Component<Props, State> {
             featureoptions[feature.key] = {
               amount: Math.ceil(
                 ((this.state.featurenumbers[index] || feature.number) - feature.number) /
-                  feature.amountper
+                feature.amountper
               ),
               value: (this.state.featurenumbers[index] || feature.number) - 0
             };
@@ -343,7 +341,7 @@ class CheckOrder extends React.Component<Props, State> {
                 }
               }
             `}>
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
                 return <span>"Fetching invoice data..."</span>;
               }
@@ -369,8 +367,8 @@ class CheckOrder extends React.Component<Props, State> {
                   {this.state.errordc === key ? (
                     <div className="agreementError">A domainname is required.</div>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </div>
               );
             }}
@@ -411,7 +409,7 @@ class CheckOrder extends React.Component<Props, State> {
       let billingAddresses = null;
       return (
         <Query query={me}>
-          {({ data, loading, error }) => {
+          {({ data, loading, error = null }) => {
             if (loading) {
               return <LoadingDiv text="Loading Data" />;
             }
@@ -427,13 +425,13 @@ class CheckOrder extends React.Component<Props, State> {
                 <div className="checkOrderMain">
                   <div className="checkOrderHolderPart">
                     <Query query={fetchBuyingInput} variables={{ planid: this.props.plan.id }}>
-                      {({ loading, error, data }) => {
+                      {({ loading, error = null, data }) => {
                         if (loading) {
                           return <LoadingDiv text="Fetching invoice data..." />;
                         }
 
                         if (error) {
-                          return "Error loading Billing Data";
+                          return <span>Error loading Billing Data</span>;
                         }
 
                         planInputs = data.fetchPlanInputs;
@@ -441,7 +439,7 @@ class CheckOrder extends React.Component<Props, State> {
 
                         if (billingAddresses && billingAddresses.length >= 1) {
                           if (!billingAddresses[0].address.street) {
-                            return "Please update your address with a valid street.";
+                            return <span>Please update your address with a valid street.</span>;
                           }
 
                           return (
@@ -452,8 +450,8 @@ class CheckOrder extends React.Component<Props, State> {
                               {company ? (
                                 <div className="orderCompanyName">{company.name}</div>
                               ) : (
-                                "Myself"
-                              )}
+                                  "Myself"
+                                )}
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   <div className="orderAddressLine">
@@ -470,8 +468,8 @@ class CheckOrder extends React.Component<Props, State> {
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
                                     <CreditCard {...data.fetchPaymentData[0]} />
                                   ) : (
-                                    "Please add a Credit Card to your Account"
-                                  )}
+                                      "Please add a Credit Card to your Account"
+                                    )}
                                 </div>
                               </div>
                               {this.showOrder(this.props.plan)}
@@ -487,8 +485,8 @@ class CheckOrder extends React.Component<Props, State> {
                               {company ? (
                                 <div className="orderCompanyName">{company.name}</div>
                               ) : (
-                                "Myself"
-                              )}
+                                  "Myself"
+                                )}
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   Please add a billing address.
@@ -497,8 +495,8 @@ class CheckOrder extends React.Component<Props, State> {
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
                                     <CreditCard {...data.fetchPaymentData[0]} />
                                   ) : (
-                                    "Please add a Credit Card to your Account"
-                                  )}
+                                      "Please add a Credit Card to your Account"
+                                    )}
                                 </div>
                               </div>
                               {this.showOrder(this.props.plan)}
@@ -534,13 +532,13 @@ class CheckOrder extends React.Component<Props, State> {
                           {this.state.agreementError ? (
                             <div className="agreementError">Please agree to the agreements.</div>
                           ) : (
-                            ""
-                          )}
+                              ""
+                            )}
                         </div>
                       </div>
                     ) : (
-                      ""
-                    )}
+                        ""
+                      )}
                   </div>
                   <div className="checkOrderHolderButton">
                     <button className="cancelButton" onClick={() => this.props.onClose()}>
@@ -567,42 +565,42 @@ class CheckOrder extends React.Component<Props, State> {
                           }
                         }
                       `}>
-                      {({ loading, error, data }) => {
+                      {({ loading, error = null, data }) => {
                         if (loading) {
-                          return "Fetching invoice data...";
+                          return <span>Fetching invoice data...</span>;
                         }
                         if (error) {
-                          return "Error loading Billing Data";
+                          return <span>Error loading Billing Data</span>;
                         }
 
                         return (
                           <div>
                             {!data.fetchPaymentData ||
-                            data.fetchPaymentData.length === 0 ||
-                            !data.fetchAddresses ||
-                            data.fetchAddresses.length === 0 ? (
-                              <button
-                                disabled={!this.state.agreement || !this.state.totalprice}
-                                className="checkoutButton">
-                                Checkout for ${this.state.totalprice || this.props.plan.price}
+                              data.fetchPaymentData.length === 0 ||
+                              !data.fetchAddresses ||
+                              data.fetchAddresses.length === 0 ? (
+                                <button
+                                  disabled={!this.state.agreement || !this.state.totalprice}
+                                  className="checkoutButton">
+                                  Checkout for ${this.state.totalprice || this.props.plan.price}
                                 /mo
-                              </button>
-                            ) : (
-                              <button
-                                className="checkoutButton"
-                                disabled={!this.state.agreement || !this.state.totalprice}
-                                onClick={() =>
-                                  this.accept(
-                                    this.props.plan,
-                                    planInputs,
-                                    company,
-                                    billingAddresses
-                                  )
-                                }>
-                                Checkout for ${this.state.totalprice || this.props.plan.price}
+                                </button>
+                              ) : (
+                                <button
+                                  className="checkoutButton"
+                                  disabled={!this.state.agreement || !this.state.totalprice}
+                                  onClick={() =>
+                                    this.accept(
+                                      this.props.plan,
+                                      planInputs,
+                                      company,
+                                      billingAddresses
+                                    )
+                                  }>
+                                  Checkout for ${this.state.totalprice || this.props.plan.price}
                                 /mo
-                              </button>
-                            )}
+                                </button>
+                              )}
                           </div>
                         );
                       }}
