@@ -27,7 +27,7 @@ interface State {
   willdeleting: number | null;
 }
 
-const tableHeaders = [
+const headers = [
   {
     headline: "Name",
     sortable: true
@@ -311,7 +311,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                 <>
                   <Table
                     title="Employer"
-                    tableHeaders={tableHeaders}
+                    headers={headers}
                     additionalHeader={true}
                     tableData={tabledata}
                     dropDown={

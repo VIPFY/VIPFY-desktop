@@ -1,29 +1,28 @@
 import * as React from "react";
-import UniversalCheckbox from "./universalForms/universalCheckbox";
-import DropdownWithIcon from "./DropDownWithIcon";
 import DropDown from "../common/DropDown";
 import Pagination from "./Pagination";
+import DropDownWithIcon from "./DropDownWithIcon";
+import UniversalCheckbox from "./universalForms/universalCheckbox";
 import UniversalTextInput from "./universalForms/universalTextInput";
 
 interface Props {
   title: string;
-  tableHeaders: { headline: string; sortable?: boolean }[];
+  headers: { headline: string; sortable?: boolean }[];
   tableData: object[];
   dropDown: JSX.Element;
   additionalHeader: boolean;
 }
 
 interface State {
-  data: object;
+  data: object[];
   search: string;
   sort: string;
   sortForward: boolean;
   checkBoxStatusArray: object;
-  globalCheckbox: boolean;
+  isAllRowsCheckboxChecked: boolean;
   currentPage: number;
   rowsPerPage: number;
-  currentRows: object;
-  rowCount: number;
+  currentRows: object[];
 }
 
 class Table extends React.Component<Props, State> {
@@ -33,25 +32,24 @@ class Table extends React.Component<Props, State> {
     sort: "",
     sortForward: false,
     checkBoxStatusArray: this.initializeArray(),
-    globalCheckbox: false,
-    rowCount: 2,
+    isAllRowsCheckboxChecked: false,
     currentPage: 1,
     rowsPerPage: 2,
     currentRows: []
   };
 
   getWidth() {
-    if (!this.props.tableHeaders) {
+    if (!this.props.headers) {
       return "100%";
     }
 
-    return Math.round(100 / this.props.tableHeaders.length);
+    return Math.round(100 / this.props.headers.length);
   }
 
   initializeArray() {
     let array = [];
-    if (this.props.tableData.length > 0) {
-      this.props.tableData.forEach((element, index) => {
+    if (this.props.tableData.length) {
+      this.props.tableData.forEach((_, index) => {
         array[index] = false;
       });
     }
@@ -61,6 +59,7 @@ class Table extends React.Component<Props, State> {
   getData() {
     const indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
+
     return this.state.data.slice(indexOfFirstRow, indexOfLastRow);
   }
 
@@ -83,65 +82,72 @@ class Table extends React.Component<Props, State> {
       if (stringA < stringB) {
         return sortForward ? -1 : 1;
       }
+
       if (stringA > stringB) {
         return sortForward ? 1 : -1;
       }
+
       return 0;
     });
   }
 
-  searchTerm(search: String) {
-    const data = [];
-    if (!search) {
+  searchTerm(searchTerm: String) {
+    if (!searchTerm) {
       this.setState({ data: this.props.tableData });
-    } else {
-      this.props.tableData.map(element => {
-        element.map(e => {
-          if (`${e.index}`.toUpperCase().includes(search.toUpperCase())) {
-            if (data.indexOf(element) === -1) {
-              data.push(element);
-            }
-          }
-        });
-      });
-      this.setState({ data: data });
+      return;
     }
+
+    const data = [];
+
+    this.props.tableData.map(element => {
+      element.map(e => {
+        if (
+          `${e.index}`.toUpperCase().includes(searchTerm.toUpperCase()) &&
+          !data.includes(element)
+        ) {
+          data.push(element);
+        }
+      });
+    });
+
+    this.setState({ data });
   }
 
   handleSortClick(sorted: any) {
-    if (sorted != this.state.sort) {
+    if (sorted !== this.state.sort) {
       this.setState({ sortForward: true, sort: sorted });
     } else {
       this.setState(oldstate => {
         return { sortForward: !oldstate.sortForward };
       });
     }
+
     this.sortTable(sorted);
   }
 
-  checkboxStatus(b) {
+  checkOrUncheckAllRows(check: boolean) {
     let checkBoxStatusArray = [];
-    let checkbox = false;
-    this.state.data.forEach((_el, index) => {
-      checkBoxStatusArray[index] = b ? true : false;
-      checkbox = b ? true : false;
+
+    this.state.data.forEach((_, i) => {
+      checkBoxStatusArray[i] = check;
     });
-    this.setState({ globalCheckbox: checkbox, checkBoxStatusArray: checkBoxStatusArray });
+
+    this.setState({ isAllRowsCheckboxChecked: check, checkBoxStatusArray: checkBoxStatusArray });
   }
 
-  changeCheckboxState(e, index) {
-    this.setState({ globalCheckbox: false });
+  setRowsCheckboxStati(e, i) {
+    this.setState({ isAllRowsCheckboxChecked: false });
     this.setState(
       oldstate =>
-        (oldstate.checkBoxStatusArray[index] = e && !this.state.checkBoxStatusArray.includes(index))
+        (oldstate.checkBoxStatusArray[i] = e && !this.state.checkBoxStatusArray.includes(i))
     );
   }
 
   goToPage(pageNumber) {
     this.setState({ currentPage: pageNumber });
-    let indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
-    let indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
-    let currentRows = this.state.data.slice(indexOfFirstRow, indexOfLastRow);
+    const indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
+    const currentRows = this.state.data.slice(indexOfFirstRow, indexOfLastRow);
     this.setState({ currentRows });
   }
 
@@ -178,20 +184,19 @@ class Table extends React.Component<Props, State> {
             </div>
           </div>
         )}
+
         <div className="table">
           <div className="table-rows table-header">
             <div className="table-checkbox-column">
               <UniversalCheckbox
-                name={"Show Borders"}
-                liveValue={b => {
-                  this.checkboxStatus(b);
-                }}
-                startingvalue={this.state.globalCheckbox}
+                name={"checkOrUncheckAllRows"}
+                liveValue={check => this.checkOrUncheckAllRows(check)}
+                startingvalue={this.state.isAllRowsCheckboxChecked}
               />
             </div>
             <div className="table-body-cols">
-              {this.props.tableHeaders &&
-                this.props.tableHeaders.map(header => (
+              {this.props.headers &&
+                this.props.headers.map(header => (
                   <div
                     className="table-col"
                     style={{ width: this.getWidth() + "%" }}
@@ -223,7 +228,7 @@ class Table extends React.Component<Props, State> {
                   <UniversalCheckbox
                     name={`table-${index}`}
                     liveValue={e => {
-                      this.changeCheckboxState(e, index);
+                      this.setRowsCheckboxStati(e, index);
                     }}
                     startingvalue={this.state.checkBoxStatusArray[index]}
                   />
@@ -240,7 +245,7 @@ class Table extends React.Component<Props, State> {
                 </div>
                 {this.props.dropDown && (
                   <div className="table-dropdown-col">
-                    <DropdownWithIcon dropDownComponent={this.props.dropDown} />
+                    <DropDownWithIcon dropDownComponent={this.props.dropDown} />
                   </div>
                 )}
               </div>
