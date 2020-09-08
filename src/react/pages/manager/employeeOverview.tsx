@@ -312,7 +312,6 @@ class EmployeeOverview extends React.Component<Props, State> {
                   <Table
                     title="Employer"
                     headers={headers}
-                    additionalHeader={true}
                     tableData={tabledata}
                     dropDown={
                       <div style={{ display: "flex", flexDirection: "column" }}>

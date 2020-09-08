@@ -10,7 +10,6 @@ interface Props {
   headers: { headline: string; sortable?: boolean }[];
   tableData: object[];
   dropDown: JSX.Element;
-  additionalHeader: boolean;
 }
 
 interface State {
@@ -34,8 +33,8 @@ class Table extends React.Component<Props, State> {
     checkBoxStatusArray: this.initializeArray(),
     isAllRowsCheckboxChecked: false,
     currentPage: 1,
-    rowsPerPage: 2,
-    currentRows: []
+    rowsPerPage: 20,
+    currentRows: this.getCurrentRows(this.props.tableData, 1, 20)
   };
 
   getWidth() {
@@ -54,13 +53,6 @@ class Table extends React.Component<Props, State> {
       });
     }
     return array;
-  }
-
-  getData() {
-    const indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
-
-    return this.state.data.slice(indexOfFirstRow, indexOfLastRow);
   }
 
   sortTable(sorted: any) {
@@ -144,46 +136,58 @@ class Table extends React.Component<Props, State> {
   }
 
   goToPage(pageNumber) {
-    this.setState({ currentPage: pageNumber });
-    const indexOfLastRow = this.state.currentPage * this.state.rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - this.state.rowsPerPage;
-    const currentRows = this.state.data.slice(indexOfFirstRow, indexOfLastRow);
-    this.setState({ currentRows });
+    const currentRows = this.getCurrentRows(
+      this.state.data,
+      this.state.currentPage,
+      this.state.rowsPerPage
+    );
+    this.setState({ currentRows, currentPage: pageNumber });
+  }
+
+  getCurrentRows(data, currentPage, rowsPerPage) {
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+
+    return data.slice(indexOfFirstRow, indexOfLastRow);
   }
 
   render() {
     return (
       <section className="table-section">
-        {this.props.additionalHeader && (
-          <div className="extended-header">
-            <div className="row extended-header-row">
-              <div className="colSm">
-                <UniversalTextInput
-                  id="tablesearchbox"
-                  placeHolder="Search"
-                  livevalue={v => this.searchTerm(v)}
-                  icon="far fa-search"
-                />
-              </div>
-              <div className="colSm extended-header-right-col">
-                <p className="row-count-text">Rows per page:</p>
-                <DropDown
-                  header="Rows per page"
-                  option={this.state.rowsPerPage}
-                  defaultValue={this.state.rowsPerPage}
-                  handleChange={value => this.setState({ rowsPerPage: value, currentPage: 1 })}
-                  options={[2, 4]}
-                />
-                <Pagination
-                  rowsPerPage={this.state.rowsPerPage}
-                  totalRows={this.state.data.length}
-                  goToPage={pageNumber => this.goToPage(pageNumber)}
-                  currentPage={this.state.currentPage}
-                />
-              </div>
+        <div className="extended-header">
+          <div className="row extended-header-row">
+            <div className="colSm">
+              <UniversalTextInput
+                id="tablesearchbox"
+                placeHolder="Search"
+                livevalue={v => this.searchTerm(v)}
+                icon="far fa-search"
+              />
+            </div>
+            <div className="colSm extended-header-right-col">
+              <p className="row-count-text">Rows per Page:</p>
+              <DropDown
+                header="rowsPerPage"
+                option={this.state.rowsPerPage}
+                defaultValue={20}
+                handleChange={(value: number) =>
+                  this.setState({
+                    rowsPerPage: value,
+                    currentPage: 1,
+                    currentRows: this.props.tableData.slice(0, value)
+                  })
+                }
+                options={[10, 20, 50]}
+              />
+              <Pagination
+                rowsPerPage={this.state.rowsPerPage}
+                totalRows={this.state.data.length}
+                goToPage={pageNumber => this.goToPage(pageNumber)}
+                currentPage={this.state.currentPage}
+              />
             </div>
           </div>
-        )}
+        </div>
 
         <div className="table">
           <div className="table-rows table-header">
@@ -221,7 +225,7 @@ class Table extends React.Component<Props, State> {
             {this.props.dropDown && <div className="table-dropdown-col" />}
           </div>
           <div className="table-body" style={{ flexDirection: "column" }}>
-            {this.getData().map((element, index) => (
+            {this.state.currentRows.map((element, index) => (
               /* I am using index as key as element is an array of objects */
               <div className="table-rows" key={index}>
                 <div className="table-checkbox-column">
