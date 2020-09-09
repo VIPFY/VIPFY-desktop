@@ -22,28 +22,28 @@ interface Props {
 }
 
 interface State {
-  data: TableRow[];
-  currentRows: TableRow[];
+  allRows: TableRow[];
+  pageRows: TableRow[];
   selectedRows: TableRow[];
-  rowsPerPage: number;
+  maxRowsPerPage: number;
   currentPage: number;
   search: string;
   sortBy: string;
   sortAscending: boolean;
-  isAllRowsCheckboxChecked: boolean;
 }
+
+const DEFAULT_MAX_ROWS_PER_PAGE = 20;
 
 class Table extends React.Component<Props, State> {
   state = {
-    data: this.props.data,
+    allRows: this.props.data,
+    pageRows: this.getCurrentRows(this.props.data, 1, DEFAULT_MAX_ROWS_PER_PAGE),
+    selectedRows: [],
     currentPage: 1,
-    rowsPerPage: 20,
-    currentRows: this.getCurrentRows(this.props.data, 1, 20),
+    maxRowsPerPage: DEFAULT_MAX_ROWS_PER_PAGE,
     search: "",
     sortBy: "",
-    sortAscending: false,
-    selectedRows: [],
-    isAllRowsCheckboxChecked: false
+    sortAscending: false
   };
 
   getWidth() {
@@ -54,43 +54,33 @@ class Table extends React.Component<Props, State> {
     return Math.round(100 / this.props.headers.length);
   }
 
-  initializeArray() {
-    let array = [];
-    if (this.props.data.length) {
-      this.props.data.forEach((_, index) => {
-        array[index] = false;
-      });
-    }
-    return array;
-  }
-
-  searchTerm(searchTerm: String) {
+  search(searchTerm: String) {
     if (!searchTerm) {
-      this.setState({ data: this.props.data });
+      this.setState({ allRows: this.props.data });
       return;
     }
 
-    const data = [];
+    const allRows = [];
 
     this.props.data.map(row => {
       row.cells.map(cell => {
         if (
           `${cell.searchableText}`.toUpperCase().includes(searchTerm.toUpperCase()) &&
-          !data.includes(row)
+          !allRows.includes(row)
         ) {
-          data.push(row);
+          allRows.push(row);
         }
       });
     });
 
-    this.setState({ data });
+    this.setState({ allRows });
   }
 
   handleSortClick(sortBy: string) {
     const sortAscending = sortBy === this.state.sortBy ? !this.state.sortAscending : true;
     const columnIndex = this.props.headers.findIndex(header => header.headline === sortBy);
 
-    const sortedData = this.state.data.sort(function (rowA: TableRow, rowB: TableRow) {
+    const sortedData = this.state.allRows.sort(function (rowA: TableRow, rowB: TableRow) {
       const stringA = rowA.cells[columnIndex].searchableText;
       const stringB = rowB.cells[columnIndex].searchableText;
       const comparison = stringA.localeCompare(stringB, undefined, { sensitivity: "base" });
@@ -98,16 +88,15 @@ class Table extends React.Component<Props, State> {
       return sortAscending ? comparison : -comparison;
     });
 
-    this.setState({ data: sortedData, sortBy, sortAscending });
+    this.setState({ allRows: sortedData, sortBy, sortAscending });
     this.goToPage(1);
   }
 
   checkOrUncheckAllRows(check: boolean) {
     this.setState(oldState => {
       return {
-        isAllRowsCheckboxChecked: check,
         selectedRows: check
-          ? this.getCurrentRows(oldState.data, oldState.currentPage, oldState.rowsPerPage)
+          ? this.getCurrentRows(oldState.allRows, oldState.currentPage, oldState.maxRowsPerPage)
           : []
       };
     });
@@ -126,31 +115,30 @@ class Table extends React.Component<Props, State> {
         );
       }
 
-      return {
-        isAllRowsCheckboxChecked: false,
-        selectedRows
-      };
+      return { selectedRows };
     });
   }
 
   goToPage(pageNumber: number) {
-    const currentRows = this.getCurrentRows(
-      this.state.data,
+    const pageRows = this.getCurrentRows(
+      this.state.allRows,
       this.state.currentPage,
-      this.state.rowsPerPage
+      this.state.maxRowsPerPage
     );
 
-    this.setState({ currentRows, currentPage: pageNumber });
+    this.setState({ pageRows, currentPage: pageNumber });
   }
 
-  getCurrentRows(data: TableRow[], currentPage: number, rowsPerPage: number) {
-    const indexOfLastRow = currentPage * rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  getCurrentRows(allRows: TableRow[], currentPage: number, maxRowsPerPage: number) {
+    const indexOfLastRow = currentPage * maxRowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - maxRowsPerPage;
 
-    return data.slice(indexOfFirstRow, indexOfLastRow);
+    return allRows.slice(indexOfFirstRow, indexOfLastRow);
   }
 
   render() {
+    const allRowsSelected = this.state.selectedRows.length === this.state.pageRows.length;
+
     return (
       <section className="table-section">
         <div className="extended-header">
@@ -159,28 +147,28 @@ class Table extends React.Component<Props, State> {
               <UniversalTextInput
                 id="tablesearchbox"
                 placeHolder="Search"
-                livevalue={v => this.searchTerm(v)}
+                livevalue={searchTerm => this.search(searchTerm)}
                 icon="far fa-search"
               />
             </div>
             <div className="colSm extended-header-right-col">
               <p className="row-count-text">Rows per Page:</p>
               <DropDown
-                header="rowsPerPage"
-                option={this.state.rowsPerPage}
+                header="maxRowsPerPage"
+                option={this.state.maxRowsPerPage}
                 defaultValue={20}
                 handleChange={(value: number) =>
                   this.setState({
-                    rowsPerPage: value,
+                    maxRowsPerPage: value,
                     currentPage: 1,
-                    currentRows: this.props.data.slice(0, value)
+                    pageRows: this.props.data.slice(0, value)
                   })
                 }
                 options={[10, 20, 50]}
               />
               <Pagination
-                rowsPerPage={this.state.rowsPerPage}
-                totalRows={this.state.data.length}
+                maxRowsPerPage={this.state.maxRowsPerPage}
+                totalRows={this.state.allRows.length}
                 goToPage={pageNumber => this.goToPage(pageNumber)}
                 currentPage={this.state.currentPage}
               />
@@ -194,7 +182,7 @@ class Table extends React.Component<Props, State> {
               <UniversalCheckbox
                 name={"checkOrUncheckAllRows"}
                 liveValue={check => this.checkOrUncheckAllRows(check)}
-                startingvalue={this.state.isAllRowsCheckboxChecked}
+                startingvalue={allRowsSelected}
               />
             </div>
             <div className="table-body-cols">
@@ -224,7 +212,7 @@ class Table extends React.Component<Props, State> {
             {this.props.actionButtonComponent && <div className="table-dropdown-col" />}
           </div>
           <div className="table-body" style={{ flexDirection: "column" }}>
-            {this.state.currentRows.map((row: TableRow, i: number) => (
+            {this.state.pageRows.map((row: TableRow, i: number) => (
               /* I am using index as key as element is an array of objects */
               <div className="table-rows" key={i}>
                 <div className="table-checkbox-column">

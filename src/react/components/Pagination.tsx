@@ -1,7 +1,7 @@
 import * as React from "react";
 
 interface Props {
-  rowsPerPage: number;
+  maxRowsPerPage: number;
   totalRows: number;
   goToPage: Function;
   currentPage: number;
@@ -9,10 +9,10 @@ interface Props {
 
 export default (props: Props) => {
   const calculateUpperBound = () => {
-    if (props.currentPage * props.rowsPerPage > props.totalRows) {
+    if (props.currentPage * props.maxRowsPerPage > props.totalRows) {
       return props.totalRows;
     } else {
-      return props.currentPage * props.rowsPerPage;
+      return props.currentPage * props.maxRowsPerPage;
     }
   };
 
@@ -20,11 +20,11 @@ export default (props: Props) => {
     if (props.totalRows == 0) {
       return 0;
     } else {
-      return props.currentPage * props.rowsPerPage - props.rowsPerPage + 1;
+      return props.currentPage * props.maxRowsPerPage - props.maxRowsPerPage + 1;
     }
   };
 
-  const isLastPage = props.currentPage * props.rowsPerPage <= props.totalRows;
+  const isLastPage = props.currentPage * props.maxRowsPerPage <= props.totalRows;
 
   return (
     <div className="pagination">
