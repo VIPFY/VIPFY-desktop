@@ -1,0 +1,17 @@
+.pagination {
+  display: flex;
+  line-height: 32px;
+
+  .turnPage {
+    margin: 0 8px;
+
+    .fas {
+      cursor: pointer;
+      color: $midgrey-dark;
+    }
+
+    .far {
+      color: $midgrey-light;
+    }
+  }
+}
