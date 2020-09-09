@@ -201,7 +201,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
       switch (category) {
         case "ownLicences":
-          refetchQueries(client, ["fetchUserLicenceAssignments", "onFetchUserLicences"]);
+          await refetchQueries(client, ["fetchUserLicenceAssignments", "onFetchUserLicences"]);
           break;
 
         case "employees":
