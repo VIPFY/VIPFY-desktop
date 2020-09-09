@@ -37,7 +37,7 @@ const DEFAULT_MAX_ROWS_PER_PAGE = 20;
 class Table extends React.Component<Props, State> {
   state = {
     allRows: this.props.data,
-    pageRows: this.getCurrentRows(this.props.data, 1, DEFAULT_MAX_ROWS_PER_PAGE),
+    pageRows: this.getPageRows(this.props.data, 1, DEFAULT_MAX_ROWS_PER_PAGE),
     selectedRows: [],
     currentPage: 1,
     maxRowsPerPage: DEFAULT_MAX_ROWS_PER_PAGE,
@@ -46,29 +46,28 @@ class Table extends React.Component<Props, State> {
     sortAscending: false
   };
 
-  search(searchTerm: String) {
+  search(searchTerm: string) {
+    let matchingRows = [];
+
     if (!searchTerm) {
-      this.setState({ allRows: this.props.data });
-      return;
+      matchingRows = this.props.data;
+    } else {
+      this.props.data.map(row => {
+        row.cells.map(cell => {
+          if (
+            cell.searchableText?.toUpperCase().includes(searchTerm.toUpperCase()) &&
+            !matchingRows.includes(row)
+          ) {
+            matchingRows.push(row);
+          }
+        });
+      });
     }
 
-    const allRows = [];
-
-    this.props.data.map(row => {
-      row.cells.map(cell => {
-        if (
-          `${cell.searchableText}`.toUpperCase().includes(searchTerm.toUpperCase()) &&
-          !allRows.includes(row)
-        ) {
-          allRows.push(row);
-        }
-      });
-    });
-
-    this.setState({ allRows });
+    this.setState({ allRows: matchingRows }, () => this.goToPage(1));
   }
 
-  handleSortClick(sortBy: string) {
+  sort(sortBy: string) {
     const sortAscending = sortBy === this.state.sortBy ? !this.state.sortAscending : true;
     const columnIndex = this.props.headers.findIndex(header => header.headline === sortBy);
 
@@ -80,21 +79,20 @@ class Table extends React.Component<Props, State> {
       return sortAscending ? comparison : -comparison;
     });
 
-    this.setState({ allRows: sortedData, sortBy, sortAscending });
-    this.goToPage(1);
+    this.setState({ allRows: sortedData, sortBy, sortAscending }, () => this.goToPage(1));
   }
 
   checkOrUncheckAllRows(check: boolean) {
     this.setState(oldState => {
       return {
         selectedRows: check
-          ? this.getCurrentRows(oldState.allRows, oldState.currentPage, oldState.maxRowsPerPage)
+          ? this.getPageRows(oldState.allRows, oldState.currentPage, oldState.maxRowsPerPage)
           : []
       };
     });
   }
 
-  updateRowSelection(row: TableRow, checked: boolean) {
+  checkOrUncheckRow(row: TableRow, checked: boolean) {
     this.setState(oldState => {
       let selectedRows = oldState.selectedRows;
 
@@ -112,16 +110,11 @@ class Table extends React.Component<Props, State> {
   }
 
   goToPage(pageNumber: number) {
-    const pageRows = this.getCurrentRows(
-      this.state.allRows,
-      this.state.currentPage,
-      this.state.maxRowsPerPage
-    );
-
+    const pageRows = this.getPageRows(this.state.allRows, pageNumber, this.state.maxRowsPerPage);
     this.setState({ pageRows, currentPage: pageNumber });
   }
 
-  getCurrentRows(allRows: TableRow[], currentPage: number, maxRowsPerPage: number) {
+  getPageRows(allRows: TableRow[], currentPage: number, maxRowsPerPage: number) {
     const indexOfLastRow = currentPage * maxRowsPerPage;
     const indexOfFirstRow = indexOfLastRow - maxRowsPerPage;
 
@@ -141,7 +134,7 @@ class Table extends React.Component<Props, State> {
 
     const { actionButtonComponent, data, headers } = this.props;
 
-    const allRowsSelected = selectedRows.length === pageRows.length;
+    const allRowsSelected = selectedRows.length && selectedRows.length === pageRows.length;
 
     return (
       <section className="table-section">
@@ -199,7 +192,7 @@ class Table extends React.Component<Props, State> {
                     className="table-col"
                     style={{ width: Math.round(100 / headers.length) + "%" }}
                     onClick={() => {
-                      this.handleSortClick(header.headline);
+                      this.sort(header.headline);
                     }}
                     key={header.headline}>
                     {header.headline}
@@ -227,7 +220,7 @@ class Table extends React.Component<Props, State> {
                   <UniversalCheckbox
                     name={`table-${i}`}
                     liveValue={newValue => {
-                      this.updateRowSelection(row, newValue);
+                      this.checkOrUncheckRow(row, newValue);
                     }}
                     startingvalue={selectedRows.includes(row)}
                   />

@@ -1,14 +1,22 @@
 import * as React from "react";
 
 interface Props {
-  maxRowsPerPage: number;
   totalRows: number;
-  goToPage: Function;
+  maxRowsPerPage: number;
   currentPage: number;
+  goToPage: Function;
 }
 
 export default (props: Props) => {
-  const calculateUpperBound = () => {
+  const getIndexOfFirstRowOnCurrentPage = () => {
+    if (!props.totalRows) {
+      return 0;
+    }
+
+    return props.currentPage * props.maxRowsPerPage - props.maxRowsPerPage + 1;
+  };
+
+  const getIndexOfLastRowOnCurrentPage = () => {
     if (props.currentPage * props.maxRowsPerPage > props.totalRows) {
       return props.totalRows;
     } else {
@@ -16,19 +24,11 @@ export default (props: Props) => {
     }
   };
 
-  const lowerBound = () => {
-    if (props.totalRows == 0) {
-      return 0;
-    } else {
-      return props.currentPage * props.maxRowsPerPage - props.maxRowsPerPage + 1;
-    }
-  };
-
   const isLastPage = props.currentPage * props.maxRowsPerPage <= props.totalRows;
 
   return (
     <div className="pagination">
-      {props.currentPage == 1 ? (
+      {props.currentPage === 1 ? (
         <div className="turnPage">
           <i className="far fa-chevron-left"></i>
         </div>
@@ -38,7 +38,7 @@ export default (props: Props) => {
         </div>
       )}
       <span>
-        {lowerBound()} - {calculateUpperBound()}
+        {getIndexOfFirstRowOnCurrentPage()} - {getIndexOfLastRowOnCurrentPage()}
       </span>
       <span className="turnPage"> of </span> {props.totalRows}
       {isLastPage ? (
