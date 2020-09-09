@@ -27,7 +27,7 @@ interface State {
   selectedRows: TableRow[];
   maxRowsPerPage: number;
   currentPage: number;
-  search: string;
+  searchTerm: string;
   sortBy: string;
   sortAscending: boolean;
 }
@@ -41,18 +41,10 @@ class Table extends React.Component<Props, State> {
     selectedRows: [],
     currentPage: 1,
     maxRowsPerPage: DEFAULT_MAX_ROWS_PER_PAGE,
-    search: "",
+    searchTerm: "",
     sortBy: "",
     sortAscending: false
   };
-
-  getWidth() {
-    if (!this.props.headers) {
-      return "100%";
-    }
-
-    return Math.round(100 / this.props.headers.length);
-  }
 
   search(searchTerm: String) {
     if (!searchTerm) {
@@ -137,7 +129,19 @@ class Table extends React.Component<Props, State> {
   }
 
   render() {
-    const allRowsSelected = this.state.selectedRows.length === this.state.pageRows.length;
+    const {
+      allRows,
+      currentPage,
+      maxRowsPerPage,
+      pageRows,
+      selectedRows,
+      sortAscending,
+      sortBy
+    } = this.state;
+
+    const { actionButtonComponent, data, headers } = this.props;
+
+    const allRowsSelected = selectedRows.length === pageRows.length;
 
     return (
       <section className="table-section">
@@ -151,26 +155,28 @@ class Table extends React.Component<Props, State> {
                 icon="far fa-search"
               />
             </div>
+
             <div className="colSm extended-header-right-col">
               <p className="row-count-text">Rows per Page:</p>
               <DropDown
                 header="maxRowsPerPage"
-                option={this.state.maxRowsPerPage}
+                option={maxRowsPerPage}
                 defaultValue={20}
                 handleChange={(value: number) =>
                   this.setState({
                     maxRowsPerPage: value,
                     currentPage: 1,
-                    pageRows: this.props.data.slice(0, value)
+                    pageRows: data.slice(0, value)
                   })
                 }
                 options={[10, 20, 50]}
               />
+
               <Pagination
-                maxRowsPerPage={this.state.maxRowsPerPage}
-                totalRows={this.state.allRows.length}
+                maxRowsPerPage={maxRowsPerPage}
+                totalRows={allRows.length}
                 goToPage={pageNumber => this.goToPage(pageNumber)}
-                currentPage={this.state.currentPage}
+                currentPage={currentPage}
               />
             </div>
           </div>
@@ -185,20 +191,21 @@ class Table extends React.Component<Props, State> {
                 startingvalue={allRowsSelected}
               />
             </div>
+
             <div className="table-body-cols">
-              {this.props.headers &&
-                this.props.headers.map(header => (
+              {headers &&
+                headers.map(header => (
                   <div
                     className="table-col"
-                    style={{ width: this.getWidth() + "%" }}
+                    style={{ width: Math.round(100 / headers.length) + "%" }}
                     onClick={() => {
                       this.handleSortClick(header.headline);
                     }}
                     key={header.headline}>
                     {header.headline}
                     {header.sortable &&
-                      (header.headline === this.state.sortBy ? (
-                        this.state.sortAscending ? (
+                      (header.headline === sortBy ? (
+                        sortAscending ? (
                           <i className="fad fa-sort-up sortIcon"></i>
                         ) : (
                           <i className="fad fa-sort-down sortIcon"></i>
@@ -209,10 +216,11 @@ class Table extends React.Component<Props, State> {
                   </div>
                 ))}
             </div>
-            {this.props.actionButtonComponent && <div className="table-dropdown-col" />}
+            {actionButtonComponent && <div className="table-dropdown-col" />}
           </div>
+
           <div className="table-body" style={{ flexDirection: "column" }}>
-            {this.state.pageRows.map((row: TableRow, i: number) => (
+            {pageRows.map((row: TableRow, i: number) => (
               /* I am using index as key as element is an array of objects */
               <div className="table-rows" key={i}>
                 <div className="table-checkbox-column">
@@ -221,22 +229,24 @@ class Table extends React.Component<Props, State> {
                     liveValue={newValue => {
                       this.updateRowSelection(row, newValue);
                     }}
-                    startingvalue={this.state.selectedRows.includes(row)}
+                    startingvalue={selectedRows.includes(row)}
                   />
                 </div>
+
                 <div className="table-body-cols">
                   {row.cells.map((cell, j) => (
                     <div
                       className="table-col"
-                      style={{ width: this.getWidth() + "%" }}
-                      key={this.props.headers[j].headline}>
+                      style={{ width: Math.round(100 / headers.length) + "%" }}
+                      key={headers[j].headline}>
                       {cell.component}
                     </div>
                   ))}
                 </div>
-                {this.props.actionButtonComponent && (
+
+                {actionButtonComponent && (
                   <div className="table-dropdown-col">
-                    <DropDownWithIcon dropDownComponent={this.props.actionButtonComponent} />
+                    <DropDownWithIcon dropDownComponent={actionButtonComponent} />
                   </div>
                 )}
               </div>
