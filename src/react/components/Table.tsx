@@ -11,6 +11,7 @@ interface TableCell {
 }
 
 interface TableRow {
+  id: string;
   cells: TableCell[];
 }
 
@@ -18,7 +19,7 @@ interface Props {
   title: string;
   headers: { headline: string; sortable?: boolean }[];
   data: TableRow[];
-  actionButtonComponent: JSX.Element;
+  actionButtonComponent: Function;
 }
 
 interface State {
@@ -82,19 +83,30 @@ class Table extends React.Component<Props, State> {
     this.setState({ allRows: sortedRows, sortBy, sortAscending }, () => this.goToPage(1));
   }
 
-  checkOrUncheckAllRows(check: boolean) {
-    this.setState(oldState => {
-      return {
-        selectedRows: check
-          ? this.getPageRows(oldState.currentPage, oldState.allRows, oldState.maxRowsPerPage)
-          : []
-      };
-    });
+  checkOrUncheckAllRows(check: boolean, allRowsSelected: string) {
+    this.state.selectedRows.length > 0
+      ? allRowsSelected === "minusActive"
+        ? this.setState({
+            selectedRows: this.state.allRows
+          })
+        : this.setState({
+            selectedRows: []
+          })
+      : this.setState(oldState => {
+          return {
+            selectedRows: check
+              ? this.getPageRows(oldState.currentPage, oldState.allRows, oldState.maxRowsPerPage)
+              : []
+          };
+        });
   }
 
   checkOrUncheckRow(row: TableRow, checked: boolean) {
     this.setState(oldState => {
-      let selectedRows = oldState.selectedRows;
+      let selectedRows =
+        oldState.selectedRows.length === oldState.allRows.length
+          ? this.getPageRows(oldState.currentPage, oldState.allRows, oldState.maxRowsPerPage)
+          : oldState.selectedRows;
 
       if (checked) {
         selectedRows.push(row);
@@ -111,7 +123,7 @@ class Table extends React.Component<Props, State> {
 
   goToPage(pageNumber: number) {
     const pageRows = this.getPageRows(pageNumber, this.state.allRows, this.state.maxRowsPerPage);
-    this.setState({ pageRows, currentPage: pageNumber });
+    this.setState({ pageRows, currentPage: pageNumber, selectedRows: [] });
   }
 
   getPageRows(page: number, allRows: TableRow[], maxRowsPerPage: number) {
@@ -134,7 +146,7 @@ class Table extends React.Component<Props, State> {
 
     const { actionButtonComponent, data, headers } = this.props;
 
-    const allRowsSelected = selectedRows.length && selectedRows.length === pageRows.length;
+    const allRowsSelected = selectedRows.length && "Active";
 
     return (
       <section className="table-section">
@@ -180,13 +192,14 @@ class Table extends React.Component<Props, State> {
             <div className="table-checkbox-column">
               <UniversalCheckbox
                 name={"checkOrUncheckAllRows"}
-                liveValue={check => this.checkOrUncheckAllRows(check)}
+                liveValue={check => this.checkOrUncheckAllRows(check, "")}
                 startingvalue={allRowsSelected}
               />
             </div>
 
             <div className="table-body-cols">
               {headers &&
+                selectedRows.length < 1 &&
                 headers.map(header => (
                   <div
                     className="table-col"
@@ -208,6 +221,24 @@ class Table extends React.Component<Props, State> {
                       ))}
                   </div>
                 ))}
+              {selectedRows.length > 0 && (
+                <div className="table-col">
+                  <div className="colSm">
+                    <span>{selectedRows.length}</span>
+                    <span className={"table-header-text"}>
+                      {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
+                    </span>
+                    {selectedRows.length !== data.length && (
+                      <span
+                        className={"table-header-text select-all-items"}
+                        onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
+                        Select all {data.length} items
+                      </span>
+                    )}
+                  </div>
+                  <div className="colSm right">{/* action button will be here */}</div>
+                </div>
+              )}
             </div>
             {actionButtonComponent && <div className="table-dropdown-col" />}
           </div>
@@ -239,7 +270,7 @@ class Table extends React.Component<Props, State> {
 
                 {actionButtonComponent && (
                   <div className="table-dropdown-col">
-                    <DropDownWithIcon dropDownComponent={actionButtonComponent} />
+                    <DropDownWithIcon dropDownComponent={actionButtonComponent(row.id)} />
                   </div>
                 )}
               </div>

@@ -60,6 +60,16 @@
       position: sticky;
       z-index: 3;
       top: 112px;
+
+      .table-header-text {
+        font-weight: normal;
+      }
+
+      .select-all-items {
+        color: $vipfy-buttondarkgreen;
+        margin-left: 16px;
+        cursor: pointer;
+      }
     }
 
     .table-rows {
@@ -89,6 +99,10 @@
 
           .sortIcon {
             margin-left: 8px;
+          }
+
+          .right {
+            float: right;
           }
         }
       }

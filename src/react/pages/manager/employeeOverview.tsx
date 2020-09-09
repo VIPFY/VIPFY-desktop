@@ -259,6 +259,7 @@ class EmployeeOverview extends React.Component<Props, State> {
               const tabledata = [];
               employees.forEach(e =>
                 tabledata.push({
+                  id: e.id,
                   cells: [
                     {
                       component: (
@@ -309,12 +310,12 @@ class EmployeeOverview extends React.Component<Props, State> {
                     title="Employer"
                     headers={headers}
                     data={tabledata}
-                    actionButtonComponent={
+                    actionButtonComponent={id => (
                       <div style={{ display: "flex", flexDirection: "column" }}>
-                        <a>Click 1</a>
-                        <a>Click 2</a>
+                        <a onClick={() => console.log("CLICKED 1", id)}>Click 1</a>
+                        <a onClick={() => confirm(`Really 2 ${id}`)}>Click 2</a>
                       </div>
-                    }></Table>
+                    )}></Table>
 
                   {this.state.add && (
                     <AppContext.Consumer>
