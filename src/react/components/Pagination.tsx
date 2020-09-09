@@ -30,11 +30,11 @@ export default (props: Props) => {
     <div className="pagination">
       {props.currentPage === 1 ? (
         <div className="turnPage">
-          <i className="far fa-chevron-left"></i>
+          <i className="far fa-chevron-left" />
         </div>
       ) : (
         <div onClick={() => props.goToPage(props.currentPage - 1)} className="turnPage">
-          <i className="fas fa-chevron-left"></i>
+          <i className="fas fa-chevron-left" />
         </div>
       )}
       <span>
@@ -43,11 +43,11 @@ export default (props: Props) => {
       <span className="turnPage"> of </span> {props.totalRows}
       {isLastPage ? (
         <div onClick={() => props.goToPage(props.currentPage + 1)} className="turnPage">
-          <i className="fas fa-chevron-right"></i>
+          <i className="fas fa-chevron-right" />
         </div>
       ) : (
         <div className="turnPage">
-          <i className="far fa-chevron-right"></i>
+          <i className="far fa-chevron-right" />
         </div>
       )}
     </div>

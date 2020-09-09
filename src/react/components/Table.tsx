@@ -37,7 +37,7 @@ const DEFAULT_MAX_ROWS_PER_PAGE = 20;
 class Table extends React.Component<Props, State> {
   state = {
     allRows: this.props.data,
-    pageRows: this.getPageRows(this.props.data, 1, DEFAULT_MAX_ROWS_PER_PAGE),
+    pageRows: this.getPageRows(1, this.props.data, DEFAULT_MAX_ROWS_PER_PAGE),
     selectedRows: [],
     currentPage: 1,
     maxRowsPerPage: DEFAULT_MAX_ROWS_PER_PAGE,
@@ -71,7 +71,7 @@ class Table extends React.Component<Props, State> {
     const sortAscending = sortBy === this.state.sortBy ? !this.state.sortAscending : true;
     const columnIndex = this.props.headers.findIndex(header => header.headline === sortBy);
 
-    const sortedData = this.state.allRows.sort(function (rowA: TableRow, rowB: TableRow) {
+    const sortedRows = this.state.allRows.sort(function (rowA: TableRow, rowB: TableRow) {
       const stringA = rowA.cells[columnIndex].searchableText;
       const stringB = rowB.cells[columnIndex].searchableText;
       const comparison = stringA.localeCompare(stringB, undefined, { sensitivity: "base" });
@@ -79,14 +79,14 @@ class Table extends React.Component<Props, State> {
       return sortAscending ? comparison : -comparison;
     });
 
-    this.setState({ allRows: sortedData, sortBy, sortAscending }, () => this.goToPage(1));
+    this.setState({ allRows: sortedRows, sortBy, sortAscending }, () => this.goToPage(1));
   }
 
   checkOrUncheckAllRows(check: boolean) {
     this.setState(oldState => {
       return {
         selectedRows: check
-          ? this.getPageRows(oldState.allRows, oldState.currentPage, oldState.maxRowsPerPage)
+          ? this.getPageRows(oldState.currentPage, oldState.allRows, oldState.maxRowsPerPage)
           : []
       };
     });
@@ -110,12 +110,12 @@ class Table extends React.Component<Props, State> {
   }
 
   goToPage(pageNumber: number) {
-    const pageRows = this.getPageRows(this.state.allRows, pageNumber, this.state.maxRowsPerPage);
+    const pageRows = this.getPageRows(pageNumber, this.state.allRows, this.state.maxRowsPerPage);
     this.setState({ pageRows, currentPage: pageNumber });
   }
 
-  getPageRows(allRows: TableRow[], currentPage: number, maxRowsPerPage: number) {
-    const indexOfLastRow = currentPage * maxRowsPerPage;
+  getPageRows(page: number, allRows: TableRow[], maxRowsPerPage: number) {
+    const indexOfLastRow = page * maxRowsPerPage;
     const indexOfFirstRow = indexOfLastRow - maxRowsPerPage;
 
     return allRows.slice(indexOfFirstRow, indexOfLastRow);
