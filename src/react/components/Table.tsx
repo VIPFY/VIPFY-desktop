@@ -23,13 +23,13 @@ interface Props {
 
 interface State {
   data: TableRow[];
-  rowsPerPage: number;
   currentRows: TableRow[];
+  selectedRows: TableRow[];
+  rowsPerPage: number;
   currentPage: number;
   search: string;
   sortBy: string;
   sortAscending: boolean;
-  checkBoxStatusArray: object;
   isAllRowsCheckboxChecked: boolean;
 }
 
@@ -42,7 +42,7 @@ class Table extends React.Component<Props, State> {
     search: "",
     sortBy: "",
     sortAscending: false,
-    checkBoxStatusArray: this.initializeArray(),
+    selectedRows: [],
     isAllRowsCheckboxChecked: false
   };
 
@@ -103,33 +103,47 @@ class Table extends React.Component<Props, State> {
   }
 
   checkOrUncheckAllRows(check: boolean) {
-    let checkBoxStatusArray = [];
-
-    this.state.data.forEach((_, i) => {
-      checkBoxStatusArray[i] = check;
+    this.setState(oldState => {
+      return {
+        isAllRowsCheckboxChecked: check,
+        selectedRows: check
+          ? this.getCurrentRows(oldState.data, oldState.currentPage, oldState.rowsPerPage)
+          : []
+      };
     });
-
-    this.setState({ isAllRowsCheckboxChecked: check, checkBoxStatusArray: checkBoxStatusArray });
   }
 
-  setRowsCheckboxStati(e, i) {
-    this.setState({ isAllRowsCheckboxChecked: false });
-    this.setState(
-      oldstate =>
-        (oldstate.checkBoxStatusArray[i] = e && !this.state.checkBoxStatusArray.includes(i))
-    );
+  updateRowSelection(row: TableRow, checked: boolean) {
+    this.setState(oldState => {
+      let selectedRows = oldState.selectedRows;
+
+      if (checked) {
+        selectedRows.push(row);
+      } else {
+        selectedRows.splice(
+          selectedRows.findIndex(selRow => selRow === row),
+          1
+        );
+      }
+
+      return {
+        isAllRowsCheckboxChecked: false,
+        selectedRows
+      };
+    });
   }
 
-  goToPage(pageNumber) {
+  goToPage(pageNumber: number) {
     const currentRows = this.getCurrentRows(
       this.state.data,
       this.state.currentPage,
       this.state.rowsPerPage
     );
+
     this.setState({ currentRows, currentPage: pageNumber });
   }
 
-  getCurrentRows(data, currentPage, rowsPerPage) {
+  getCurrentRows(data: TableRow[], currentPage: number, rowsPerPage: number) {
     const indexOfLastRow = currentPage * rowsPerPage;
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
 
@@ -216,10 +230,10 @@ class Table extends React.Component<Props, State> {
                 <div className="table-checkbox-column">
                   <UniversalCheckbox
                     name={`table-${i}`}
-                    liveValue={e => {
-                      this.setRowsCheckboxStati(e, i);
+                    liveValue={newValue => {
+                      this.updateRowSelection(row, newValue);
                     }}
-                    startingvalue={this.state.checkBoxStatusArray[i]}
+                    startingvalue={this.state.selectedRows.includes(row)}
                   />
                 </div>
                 <div className="table-body-cols">
