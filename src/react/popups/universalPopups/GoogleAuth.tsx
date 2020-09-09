@@ -8,7 +8,6 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import { User } from "../../interfaces";
 import TwoFactorForm from "../../common/TwoFactorForm";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
-import { WorkAround } from "../../interfaces";
 
 export const GENERATE_SECRET = gql`
   query onGenerateSecret($type: TWOFA_TYPE!, $userid: ID) {
@@ -133,10 +132,11 @@ const GoogleAuth = (props: InnerProps) => {
 };
 
 export default (props: Props) => (
-  <Query<WorkAround, WorkAround>
+  <Query
     query={GENERATE_SECRET}
-    variables={{ type: "totp", userid: props.user.id }}>
-    {({ data, loading, error }) => {
+    variables={{ type: "totp", userid: props.user.id }}
+    fetchPolicy="no-cache">
+    {({ data, loading, error = null }) => {
       if (loading) {
         return <LoadingDiv />;
       }
