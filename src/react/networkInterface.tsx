@@ -1,17 +1,15 @@
-import { ApolloClient } from "apollo-client";
-import { ApolloLink, split } from "apollo-link";
-import { setContext } from "apollo-link-context";
-import { WebSocketLink } from "apollo-link-ws";
-import { createUploadLink } from "apollo-upload-client";
-import { BatchHttpLink } from "apollo-link-batch-http";
-import { RetryLink } from "apollo-link-retry";
-import { onError } from "apollo-link-error";
+import { ApolloClient, ApolloLink, split, defaultDataIdFromObject, InMemoryCache } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
+import { RetryLink } from "@apollo/client/link/retry";
+import { onError } from "@apollo/client/link/error";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createUploadLink } from "apollo-upload-client"; // not from the apollo project
 import { inspect } from "util";
 import Store from "electron-store";
 import os from "os";
 import { v4 as uuid } from "uuid";
-import { getMainDefinition } from "apollo-utilities";
-import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
 import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
@@ -140,24 +138,44 @@ const cache = new InMemoryCache({
         return defaultDataIdFromObject(object);
     }
   },
-  cacheRedirects: {
+  typePolicies: {
+    AppUsage: {
+      keyFields: (object, context) =>
+        (object.app && object.app.id !== undefined) ? `${object.__typename}:${object.app.id}` : null
+    },
+    User: {
+      keyFields: (object, context) => {
+        console.log(object, context)
+        return (object.id !== undefined) ? `${object.__typename}:${object.id}` : null
+      }
+    },
     Query: {
-      fetchPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid }),
-      fetchSemiPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid }),
-      fetchTeam: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Team", id: args.teamid }),
-      fetchPublicTeam: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Team", id: args.teamid }),
-      fetchAppById: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "AppDetails", id: args.id }),
-      fetchLicence: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Licence", id: args.licenceid }),
-      fetchOrbit: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Orbit", id: args.orbitid }),
-      fetchKey: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Key", id: args.id }),
+      fields: {
+        fetchPublicUser(_, { args, toReference }) {
+          return toReference({ __typename: "PublicUser", id: args.userid })
+        },
+        fetchSemiPublicUser(_, { args, toReference }) {
+          return toReference({ __typename: "SemiPublicUser", id: args.userid })
+        },
+        fetchTeam(_, { args, toReference }) {
+          return toReference({ __typename: "Team", unitid: { id: args.teamid } })
+        },
+        fetchPublicTeam(_, { args, toReference }) {
+          return toReference({ __typename: "PublicTeam", unitid: { id: args.teamid } })
+        },
+        fetchAppById(_, { args, toReference }) {
+          return toReference({ __typename: "App", id: args.id })
+        },
+        fetchLicence(_, { args, toReference }) {
+          return toReference({ __typename: "Licence", unitid: { id: args.licenceid } })
+        },
+        fetchOrbit(_, { args, toReference }) {
+          return toReference({ __typename: "Orbit", unitid: { id: args.orbitid } })
+        },
+        fetchKey(_, { args, toReference }) {
+          return toReference({ __typename: "Key", unitid: { id: args.id } })
+        },
+      }
     }
   }
 });
@@ -290,8 +308,8 @@ const httpLinkWithMiddleware = retryLink.concat(
 // Split the links, so that each can be used for the defined operation
 const link = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
+    const def = getMainDefinition(query);
+    return def.kind === "OperationDefinition" && def.operation === "subscription";
   },
   wsLink,
   httpLinkWithMiddleware

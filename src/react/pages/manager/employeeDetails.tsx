@@ -82,7 +82,7 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
-            const querydata = data.fetchSemiPublicUser || data.me;
+            const querydata = { ...data.fetchSemiPublicUser } || { ...data.me };
             const privatePhones = [];
             const workPhones = [];
 
