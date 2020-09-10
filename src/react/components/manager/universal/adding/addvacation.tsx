@@ -130,7 +130,7 @@ class AddVacation extends React.Component<Props, State> {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
-                (e.endtime > now() || e.endtime == null) &&
+                (moment(e.endtime).isAfter() || e.endtime == null) &&
                 !(e.tags && e.tags.includes("vacation"))
               ) {
                 assignments.push(e);

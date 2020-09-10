@@ -1,9 +1,9 @@
 import * as React from "react";
+import { Query } from "react-apollo";
+import moment from "moment";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import ServiceDetails from "../../components/manager/serviceDetails";
-import { Query } from "react-apollo";
 import { fetchUserLicences } from "../../queries/departments";
-import moment from "moment";
 import AssignNewAccount from "./universal/adding/assignNewAccount";
 
 interface Props {
@@ -61,8 +61,8 @@ class LicencesSection extends React.Component<Props, State> {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&
-                (moment(e.endtime) > moment() || e.endtime == null) &&
-                (moment(e.boughtplanid.endtime) > moment() || e.boughtplanid.endtime == null)
+                (moment(e.endtime).isAfter() || e.endtime == null) &&
+                (moment(e.boughtplanid.endtime).isAfter() || e.boughtplanid.endtime == null)
               ) {
                 appArray.push(
                   <ServiceDetails

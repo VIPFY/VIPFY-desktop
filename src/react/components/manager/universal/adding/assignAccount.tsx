@@ -108,7 +108,7 @@ class AssignAccount extends React.Component<Props, State> {
             buttonStyles={{ justifyContent: "space-between" }}>
             <h1>All Accounts</h1>
             {accounts
-              .filter(e => e.endtime >= moment.now() || e.endtime == null)
+              .filter(e => moment(e.endtime).isAfter() || e.endtime == null)
               .map(account => (
                 <div className="listingDiv" key={account.id}>
                   <UniversalButton
