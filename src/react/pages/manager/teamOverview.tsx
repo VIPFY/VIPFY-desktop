@@ -183,7 +183,7 @@ class TeamOverview extends React.Component<Props, State> {
               let teams: any[] = [];
               let interteams: any[] = [];
               if (data && data.fetchCompanyTeams) {
-                interteams = data.fetchCompanyTeams;
+                interteams = [...data.fetchCompanyTeams];
                 let sortforward = this.state.sortforward;
 
                 //sortselection

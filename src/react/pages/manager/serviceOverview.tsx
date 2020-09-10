@@ -381,7 +381,7 @@ class ServiceOverview extends React.Component<Props, State> {
               let services: any[] = [];
               let interservices: any[] = [];
               if (data && data.fetchCompanyServices) {
-                interservices = data.fetchCompanyServices;
+                interservices = [...data.fetchCompanyServices];
                 let sortforward = this.state.sortforward;
 
                 //sortselection

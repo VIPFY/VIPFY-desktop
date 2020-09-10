@@ -41,7 +41,7 @@ export default (props: Props) => {
             return null;
           }
 
-          const mostUsed = usage.sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
+          const mostUsed = [...usage].sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
 
           const total = usage.reduce((sum, cur) => sum + cur.totalminutes, 0);
 
