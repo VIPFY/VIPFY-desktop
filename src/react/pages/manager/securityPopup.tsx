@@ -298,9 +298,8 @@ export default (props: Props) => {
                           close={() => setShow("")}>
                           <h1>Current Sessions</h1>
                           <div className="sub-header">
-                            See on which sessions{" "}
-                            <UserName unitid={user.id} userid={getMyUnitId(props.client)} /> are
-                            logged in
+                            See all open sessions of{" "}
+                            <UserName unitid={user.id} userid={getMyUnitId(props.client)} />
                           </div>
 
                           <Query<WorkAround, WorkAround>
