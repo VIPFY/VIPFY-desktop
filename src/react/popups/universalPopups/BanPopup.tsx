@@ -6,7 +6,7 @@ import UserName from "../../components/UserName";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { SecurityUser } from "../../interfaces";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { ErrorComp } from "../../common/functions";
+import { ErrorComp, getMyUnitId } from "../../common/functions";
 
 const BAN_EMPLOYEE = gql`
   mutation unBanEmployee($userid: ID!) {
@@ -55,11 +55,11 @@ export default (props: Props) => {
             data: { fetchUserSecurityOverview }
           });
         }}>
-        {(mutate, { loading, error }) => (
+        {(mutate, { loading, error = null }) => (
           <React.Fragment>
             <label className="switch">
               <input
-                disabled={loading}
+                disabled={loading || user.id == getMyUnitId(props.client)}
                 onChange={() => setShow(true)}
                 checked={user.unitid.companyban ? user.unitid.companyban : false}
                 type="checkbox"

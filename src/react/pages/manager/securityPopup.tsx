@@ -12,7 +12,7 @@ import UserName from "../../components/UserName";
 import { Query, Mutation } from "react-apollo";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
 import LoadingDiv from "../../components/LoadingDiv";
-import { ErrorComp, AppContext } from "../../common/functions";
+import { ErrorComp, AppContext, getMyUnitId } from "../../common/functions";
 import { FETCH_SESSIONS } from "../../components/security/graphqlOperations";
 import Device from "../../popups/universalPopups/Device";
 import TwoFADeactivate from "../../popups/universalPopups/TwoFADeactivate";
@@ -36,6 +36,7 @@ interface Props {
   userid: string;
   securityPage?: boolean;
   id: string;
+  client: any;
 }
 
 export default (props: Props) => {
@@ -79,8 +80,8 @@ export default (props: Props) => {
             state: "show2FA"
           },
           {
-            header: "Current Devices",
-            text: `See with which devices ${
+            header: "Current Sessions",
+            text: `See with which sessions ${
               securityPage ? "the user is" : "you are"
             } currently logged into the account`,
             state: "showSessions"
@@ -279,15 +280,27 @@ export default (props: Props) => {
               {show == "showSessions" && (
                 <AppContext.Consumer>
                   {({ logOut }) => (
-                    <Mutation<WorkAround, WorkAround> mutation={SIGN_OUT_EVERYWHERE}>
+                    <Mutation<WorkAround, WorkAround>
+                      mutation={SIGN_OUT_EVERYWHERE}
+                      refetchQueries={() => {
+                        return [
+                          {
+                            query: FETCH_SESSIONS,
+                            variables: { userid: user.id }
+                          }
+                        ];
+                      }}>
                       {(mutate, { loading, error }) => (
                         <PopupBase
                           buttonStyles={{ justifyContent: "space-between" }}
                           styles={{ maxWidth: "656px" }}
                           small={true}
                           close={() => setShow("")}>
-                          <h1>Current Devices</h1>
-                          <div className="sub-header">See on which devices you are logged in</div>
+                          <h1>Current Sessions</h1>
+                          <div className="sub-header">
+                            See all open sessions of{" "}
+                            <UserName unitid={user.id} userid={getMyUnitId(props.client)} />
+                          </div>
 
                           <Query<WorkAround, WorkAround>
                             query={FETCH_SESSIONS}

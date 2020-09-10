@@ -72,7 +72,7 @@ class EmployeeDetails extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 300}
         query={this.props.profile ? QUERY_ME : QUERY_SEMIPUBLICUSER}
         variables={this.props.profile ? {} : { unitid: employeeid }}>
-        {({ loading, error, data, refetch }) => {
+        {({ loading, error = null, data, refetch }) => {
           if (loading) {
             return <div>Loading...</div>;
           }
@@ -292,6 +292,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                     userid={querydata.id}
                     id={this.props.id}
                     closeFunction={() => this.setState({ showSecurityPopup: false })}
+                    client={this.props.client}
                   />
                 )}
               </div>
