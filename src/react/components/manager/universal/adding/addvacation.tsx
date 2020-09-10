@@ -108,7 +108,7 @@ class AddVacation extends React.Component<Props, State> {
           let appArray: JSX.Element[] = [];
           const assignments = [];
           if (data.fetchUserLicenceAssignments) {
-            data.fetchUserLicenceAssignments.sort(function (a, b) {
+            [...data.fetchUserLicenceAssignments].sort(function (a, b) {
               let nameA = a.boughtplanid.alias
                 ? a.boughtplanid.alias.toUpperCase()
                 : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
@@ -124,9 +124,7 @@ class AddVacation extends React.Component<Props, State> {
 
               // namen müssen gleich sein
               return 0;
-            });
-
-            data.fetchUserLicenceAssignments.forEach(e => {
+            }).forEach(e => {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&

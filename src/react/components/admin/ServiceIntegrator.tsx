@@ -1346,7 +1346,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     if (!this.state.editexecute) {
       return (
         <Query query={FETCH_EXECUTIONAPPS}>
-          {({ data, loading, error, refetch }) => {
+          {({ data, loading, error = null, refetch }) => {
             if (loading) {
               return <div>LOADING</div>;
             }
@@ -1355,8 +1355,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return <div>ERROR</div>;
             }
             const executionApps: JSX.Element[] = [];
-            data.fetchExecutionApps.sort((a, b) => (a.name > b.name ? 1 : -1));
-            data.fetchExecutionApps.forEach(e =>
+            [...data.fetchExecutionApps].sort((a, b) => (a.name > b.name ? 1 : -1)).forEach(e =>
               executionApps.push(
                 <div>
                   <span>{e.name}</span>
