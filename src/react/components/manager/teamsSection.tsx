@@ -28,7 +28,7 @@ class TeamsSection extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 800}
         query={fetchTeams}
         variables={{ userid: this.props.employeeid }}>
-        {({ loading, error, data }) => {
+        {({ loading, error = null, data }) => {
           if (loading) {
             return <div>Loading...</div>;
           }
@@ -39,7 +39,7 @@ class TeamsSection extends React.Component<Props, State> {
 
           let teamArray: JSX.Element[] = [];
           if (data.fetchTeams) {
-            data.fetchTeams.sort(function (a, b) {
+            [...data.fetchTeams].sort(function (a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
               let nameB = b.name.toUpperCase(); // ignore upper and lowercase
               if (nameA < nameB) {
@@ -51,8 +51,7 @@ class TeamsSection extends React.Component<Props, State> {
 
               // namen müssen gleich sein
               return 0;
-            });
-            data.fetchTeams.forEach(team => {
+            }).forEach(team => {
               teamArray.push(
                 <Team
                   key={team.name}
