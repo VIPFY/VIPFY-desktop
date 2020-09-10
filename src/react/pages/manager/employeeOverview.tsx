@@ -1,6 +1,8 @@
 import * as React from "react";
+import UniversalSearchBox from "../../components/universalSearchBox";
+import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query } from "react-apollo";
-import { fetchDepartmentsData } from "../../queries/departments";
+import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -10,9 +12,6 @@ import EmployeePicture from "../../components/EmployeePicture";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
-import Table from "../../components/Table";
-import { WorkAround } from "../../interfaces";
-import PageHeader from "../../components/PageHeader";
 
 interface Props {
   moveTo: Function;
@@ -26,23 +25,6 @@ interface State {
   add: Boolean;
   willdeleting: number | null;
 }
-
-const headers = [
-  {
-    headline: "Name",
-    sortable: true
-  },
-  {
-    headline: "Status",
-    sortable: true
-  },
-  {
-    headline: "Teams"
-  },
-  {
-    headline: "Services"
-  }
-];
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
@@ -117,21 +99,33 @@ class EmployeeOverview extends React.Component<Props, State> {
   render() {
     return (
       <div className="managerPage">
-        <PageHeader
-          title="Employee Manager"
-          buttonConfig={{
-            label: "Create Employee",
-            onClick: () => console.log("TEST"),
-            icon: "plus"
-          }}
-          searchConfig={{
-            text: "Search Employees",
-            searchValue: v => this.setState({ search: v })
-          }}
-        />
-        <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
-          <Query<WorkAround, WorkAround> query={fetchDepartmentsData} fetchPolicy="network-only">
-            {({ loading, error = null, data, refetch }) => {
+        <div className="heading">
+          <h1>Employee Manager</h1>
+          <UniversalSearchBox getValue={v => this.setState({ search: v })} />
+        </div>
+        <div className="section">
+          <AppContext.Consumer>
+            {({ addRenderElement }) => (
+              <div className="heading">
+                <h1>Employees</h1>
+                <UniversalButton
+                  innerRef={el => addRenderElement({ key: "addEmp", element: el })}
+                  type="high"
+                  label="Add Employee"
+                  customStyles={{
+                    fontSize: "12px",
+                    lineHeight: "24px",
+                    fontWeight: "700",
+                    marginRight: "16px",
+                    width: "92px"
+                  }}
+                  onClick={() => this.setState({ add: true })}
+                />
+              </div>
+            )}
+          </AppContext.Consumer>
+          <Query query={fetchDepartmentsData} fetchPolicy="network-only">
+            {({ loading, error, data, refetch }) => {
               if (loading) {
                 return (
                   <div className="table">
@@ -149,10 +143,18 @@ class EmployeeOverview extends React.Component<Props, State> {
                           onClick={() => this.handleSortClick("Status")}>
                           <h1>Status</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                        <div
+                          className="tableColumnBig"
+                          style={{ width: "20%" }}
+                          //onClick={() => this.handleSortClick("Teams")}
+                        >
                           <h1>Teams</h1>
                         </div>
-                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                        <div
+                          className="tableColumnBig"
+                          style={{ width: "30%" }}
+                          //onClick={() => this.handleSortClick("Services")}
+                        >
                           <h1>Services</h1>
                         </div>
                       </div>
@@ -162,9 +164,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                   </div>
                 );
               }
-
               if (error) {
-                return <div>Error: {error.message}</div>;
+                return `Error! ${error.message}`;
               }
 
               // Sort employees
@@ -255,67 +256,202 @@ class EmployeeOverview extends React.Component<Props, State> {
                   employees = interemployees;
                 }
               }
-
-              const tabledata = [];
-              employees.forEach(e =>
-                tabledata.push({
-                  cells: [
-                    {
-                      component: (
-                        <div>
-                          <span className="name" title={concatName(e)}>
-                            {e.firstname} {e.lastname}
-                          </span>
-                        </div>
-                      ),
-                      searchableText: concatName(e)
-                    },
-                    {
-                      component: (
-                        <div
-                          className="status"
-                          style={
-                            e.isonline
-                              ? {
-                                  backgroundColor: "#29CC94",
-                                  marginTop: "18px",
-                                  marginLeft: "0px",
-                                  width: "100%"
-                                }
-                              : {
-                                  backgroundColor: "#DB4D3F",
-                                  marginTop: "18px",
-                                  marginLeft: "0px",
-                                  width: "100%"
-                                }
-                          }>
-                          {e.isonline ? "Online" : "Offline"}
-                        </div>
-                      ),
-                      searchableText: e.isonline ? "Online" : "Offline"
-                    },
-                    {
-                      component: <div>teams</div>
-                    },
-                    {
-                      component: <div>Services</div>
-                    }
-                  ]
-                })
-              );
               return (
                 <>
-                  <Table
-                    title="Employer"
-                    headers={headers}
-                    data={tabledata}
-                    actionButtonComponent={
-                      <div style={{ display: "flex", flexDirection: "column" }}>
-                        <a>Click 1</a>
-                        <a>Click 2</a>
+                  <div className="table">
+                    <div className="tableHeading">
+                      <div className="tableMain">
+                        <div
+                          className="tableColumnBig"
+                          style={{ width: "20%" }}
+                          onClick={() => this.handleSortClick("Name")}>
+                          <h1>
+                            Name
+                            {this.state.sort == "Name" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
+                        </div>
+                        <div
+                          className="tableColumnSmall"
+                          style={{ width: "10%" }}
+                          onClick={() => this.handleSortClick("Status")}>
+                          <h1>
+                            Status
+                            {this.state.sort == "Status" ? (
+                              this.state.sortforward ? (
+                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
+                              ) : (
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
+                            ) : (
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
+                          </h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "20%" }}>
+                          <h1>Teams</h1>
+                        </div>
+                        <div className="tableColumnBig" style={{ width: "30%" }}>
+                          <h1>Services</h1>
+                        </div>
                       </div>
-                    }></Table>
-
+                      <div className="tableEnd"></div>
+                    </div>
+                    {employees.length > 0 &&
+                      employees.map(employee => (
+                        <div
+                          key={employee.id}
+                          className="tableRow"
+                          onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
+                          <div className="tableMain">
+                            <div className="tableColumnBig" style={{ width: "20%" }}>
+                              <EmployeePicture employee={employee} className="managerSquare" />
+                              <span className="name" title={concatName(employee)}>
+                                {employee.firstname} {employee.lastname}
+                              </span>
+                            </div>
+                            <div className="tableColumnSmall" style={{ width: "10%" }}>
+                              <div
+                                className="status"
+                                style={
+                                  employee.isonline
+                                    ? {
+                                        backgroundColor: "#29CC94",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "100%"
+                                      }
+                                    : {
+                                        backgroundColor: "#DB4D3F",
+                                        marginTop: "18px",
+                                        marginLeft: "0px",
+                                        width: "100%"
+                                      }
+                                }>
+                                {employee.isonline ? "Online" : "Offline"}
+                              </div>
+                            </div>
+                            <Query
+                              pollInterval={60 * 10 * 1000 + 600}
+                              query={fetchTeams}
+                              fetchPolicy="network-only" //TODO make better
+                              variables={{ userid: employee.id }}>
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return (
+                                    <ColumnTeams
+                                      {...this.props}
+                                      style={{ width: "20%" }}
+                                      teams={[]}
+                                      teamidFunction={team => team}
+                                      fake={true}
+                                    />
+                                  );
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                return (
+                                  <ColumnTeams
+                                    {...this.props}
+                                    style={{ width: "20%" }}
+                                    teams={data.fetchTeams}
+                                    teamidFunction={team => team}
+                                    fake={false}
+                                  />
+                                );
+                              }}
+                            </Query>
+                            <Query
+                              pollInterval={60 * 10 * 1000 + 300}
+                              query={fetchUserLicences}
+                              variables={{ unitid: employee.id }}
+                              fetchPolicy="network-only" //TODO make better
+                            >
+                              {({ loading, error, data }) => {
+                                if (loading) {
+                                  return (
+                                    <ColumnServices
+                                      {...this.props}
+                                      style={{ width: "30%" }}
+                                      services={[]}
+                                      checkFunction={element =>
+                                        !element.disabled &&
+                                        !element.boughtplanid.planid.appid.disabled &&
+                                        element.vacationstart <= now() &&
+                                        element.vacationend > now()
+                                      }
+                                      appidFunction={element => element.boughtplanid.planid.appid}
+                                      overlayFunction={service =>
+                                        service.options &&
+                                        service.options.nosetup && (
+                                          <div className="licenceError">
+                                            <i className="fal fa-exclamation-circle" />
+                                          </div>
+                                        )
+                                      }
+                                      fake={true}
+                                    />
+                                  );
+                                }
+                                if (error) {
+                                  return `Error! ${error.message}`;
+                                }
+                                return (
+                                  <ColumnServices
+                                    {...this.props}
+                                    style={{ width: "30%" }}
+                                    services={data.fetchUserLicenceAssignments}
+                                    checkFunction={element =>
+                                      !element.disabled &&
+                                      !element.boughtplanid.planid.appid.disabled &&
+                                      element.vacationstart <= now() &&
+                                      element.vacationend > now()
+                                    }
+                                    appidFunction={element => element.boughtplanid.planid.appid}
+                                    overlayFunction={service =>
+                                      service.options &&
+                                      service.options.nosetup && (
+                                        <div className="licenceError">
+                                          <i className="fal fa-exclamation-circle" />
+                                        </div>
+                                      )
+                                    }
+                                    fake={false}
+                                    unitid={employee.id}
+                                  />
+                                );
+                              }}
+                            </Query>
+                          </div>
+                          <div className="tableEnd">
+                            <div className="editOptions">
+                              <i className="fal fa-external-link-alt editbuttons" />
+                              {this.props.id != employee.id && (
+                                <i
+                                  className="fal fa-trash-alt editbuttons"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    this.setState({ willdeleting: employee });
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
                   {this.state.add && (
                     <AppContext.Consumer>
                       {({ addRenderElement }) => (
