@@ -125,7 +125,7 @@ class EmployeeOverview extends React.Component<Props, State> {
             )}
           </AppContext.Consumer>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
-            {({ loading, error, data, refetch }) => {
+            {({ loading, error = null, data, refetch }) => {
               if (loading) {
                 return (
                   <div className="table">
@@ -146,14 +146,14 @@ class EmployeeOverview extends React.Component<Props, State> {
                         <div
                           className="tableColumnBig"
                           style={{ width: "20%" }}
-                          //onClick={() => this.handleSortClick("Teams")}
+                        //onClick={() => this.handleSortClick("Teams")}
                         >
                           <h1>Teams</h1>
                         </div>
                         <div
                           className="tableColumnBig"
                           style={{ width: "30%" }}
-                          //onClick={() => this.handleSortClick("Services")}
+                        //onClick={() => this.handleSortClick("Services")}
                         >
                           <h1>Services</h1>
                         </div>
@@ -165,7 +165,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                 );
               }
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>Error! {error.message}</div>;
               }
 
               // Sort employees
@@ -271,13 +271,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div
@@ -290,13 +290,13 @@ class EmployeeOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div className="tableColumnBig" style={{ width: "20%" }}>
@@ -327,17 +327,17 @@ class EmployeeOverview extends React.Component<Props, State> {
                                 style={
                                   employee.isonline
                                     ? {
-                                        backgroundColor: "#29CC94",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
+                                      backgroundColor: "#29CC94",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "100%"
+                                    }
                                     : {
-                                        backgroundColor: "#DB4D3F",
-                                        marginTop: "18px",
-                                        marginLeft: "0px",
-                                        width: "100%"
-                                      }
+                                      backgroundColor: "#DB4D3F",
+                                      marginTop: "18px",
+                                      marginLeft: "0px",
+                                      width: "100%"
+                                    }
                                 }>
                                 {employee.isonline ? "Online" : "Offline"}
                               </div>
@@ -347,7 +347,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               query={fetchTeams}
                               fetchPolicy="network-only" //TODO make better
                               variables={{ userid: employee.id }}>
-                              {({ loading, error, data }) => {
+                              {({ loading, error = null, data }) => {
                                 if (loading) {
                                   return (
                                     <ColumnTeams
@@ -360,7 +360,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                   );
                                 }
                                 if (error) {
-                                  return `Error! ${error.message}`;
+                                  return <div>Error! ${error.message}</div>;
                                 }
                                 return (
                                   <ColumnTeams
@@ -379,7 +379,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                               variables={{ unitid: employee.id }}
                               fetchPolicy="network-only" //TODO make better
                             >
-                              {({ loading, error, data }) => {
+                              {({ loading, error = null, data }) => {
                                 if (loading) {
                                   return (
                                     <ColumnServices
@@ -406,7 +406,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                                   );
                                 }
                                 if (error) {
-                                  return `Error! ${error.message}`;
+                                  return <div>Error! ${error.message}</div>;
                                 }
                                 return (
                                   <ColumnServices
