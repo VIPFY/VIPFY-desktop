@@ -91,8 +91,7 @@ Object.defineProperty(String.prototype, "includesAnyRegExp", {
   }
 });
 
-const skipArgs = ["placeholder", "alt", "title", "aria-label"]; // don't use attributes likely to get translated
-const hash = require("object-hash");
+const skipArgs = ["placeholder", "alt", "title", "aria-label", "class"]; // don't use attributes likely to get translated
 function createObjFromDom(elem) {
   if (elem == null) return null;
   //console.log(elem);
@@ -119,7 +118,6 @@ function createObjFromDom(elem) {
     }
   }
   o.empty = !elem.hasChildNodes();
-  o.hash = hash(o);
   return o;
 }
 

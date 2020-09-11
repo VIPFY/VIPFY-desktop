@@ -914,6 +914,7 @@ class Browser extends React.Component<Props, State> {
               this.setState({ interaction: new Date() });
             }}
             execute={this.state.options && this.state.options.execute}
+            continueExecute={this.state.options && this.state.options.continueExecute}
             noError={this.state.options && this.state.options.noError}
             individualShow={this.state.options && this.state.options.individualShow}
             noUrlCheck={this.state.options && this.state.options.noUrlCheck}
