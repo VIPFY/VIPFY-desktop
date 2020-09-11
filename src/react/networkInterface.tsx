@@ -15,11 +15,6 @@ import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
 import { KeyFieldsFunction } from "@apollo/client/cache/inmemory/policies";
 
-interface MemoryObject {
-  __typename: string;
-  [someProp: string]: any;
-}
-
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
 // eslint-disable-next-line
