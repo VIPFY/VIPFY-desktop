@@ -139,7 +139,7 @@ class DataNameForm extends React.Component<Props, State> {
                     this.setState({ register: true });
                     if (showPromoInput && !data) {
                       try {
-                        if (promocode || promocode != "" || promocode.trim().length > 0) {
+                        if (promocode && promocode.trim().length > 0) {
                           await mutate({ variables: { promocode } });
                         }
                         await this.continue();
