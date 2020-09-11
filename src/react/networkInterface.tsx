@@ -1,17 +1,16 @@
-import { ApolloClient, ApolloLink, split, defaultDataIdFromObject, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, split, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { RetryLink } from "@apollo/client/link/retry";
 import { onError } from "@apollo/client/link/error";
-import { getMainDefinition, StoreObject } from "@apollo/client/utilities";
+import { getMainDefinition } from "@apollo/client/utilities";
 import { createUploadLink } from "apollo-upload-client"; // not from the apollo project
 import { inspect } from "util";
 import Store from "electron-store";
 import os from "os";
 import { v4 as uuid } from "uuid";
 import config from "../configurationManager";
-import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
 import { KeyFieldsFunction } from "@apollo/client/cache/inmemory/policies";
 
@@ -240,7 +239,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (data && data.code == 401) {
         logout();
       } else if (data && data.code == 403) {
-        return logger.error(
+        return console.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
       } else if (data && data.code == 402) {
@@ -249,7 +248,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         handleUpgradeError();
       }
 
-      return logger.error(
+      return console.error(
         `[GraphQLError]: Message: ${message}, Type: ${name}, Location: ${locations}, Path: ${path}`
       );
     });
@@ -260,7 +259,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       type: "error",
       key: "network"
     });
-    logger.warn(`[Network error]: ${networkError}`);
+    console.warn(`[Network error]: ${networkError}`);
   }
 });
 
