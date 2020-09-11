@@ -70,7 +70,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
         .filter(
           asa =>
             asa &&
-            (asa.endtime == null || asa.endtime > now()) &&
+            (asa.endtime == null || moment(asa.endtime).isAfter()) &&
             asa.assignoptions &&
             asa.assignoptions.teamlicence == this.props.team.unitid.id
         )

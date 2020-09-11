@@ -361,7 +361,7 @@ class PersonalDetails extends React.Component<Props, State> {
             if (!phone.phonedeleted) {
               phoneforms.push(
                 <UniversalTextInput
-                  id={`${this.state.edit.id}-${phone.id}`}
+                  id={`workPhone-${phone.id}`}
                   label={this.state.edit.label}
                   livevalue={v =>
                     this.setState(({ editvalueArray }) => {
@@ -373,6 +373,7 @@ class PersonalDetails extends React.Component<Props, State> {
                     })
                   }
                   startvalue={phone.number}
+                  update={true}
                   deleteFunction={() => {
                     this.setState(({ editvalueArray }) => {
                       editvalueArray[index] = { ...phone, phonedeleted: true };
@@ -439,7 +440,7 @@ class PersonalDetails extends React.Component<Props, State> {
             if (!phone.phonedeleted) {
               privatephoneforms.push(
                 <UniversalTextInput
-                  id={`${this.state.edit.id}-${phone.id}`}
+                  id={`privatePhone-${phone.id}`}
                   label={this.state.edit.label}
                   livevalue={v =>
                     this.setState(({ editvalueArray }) => {
@@ -451,6 +452,7 @@ class PersonalDetails extends React.Component<Props, State> {
                     })
                   }
                   startvalue={phone.number}
+                  update={true}
                   deleteFunction={() => {
                     this.setState(({ editvalueArray }) => {
                       editvalueArray[index] = { ...phone, phonedeleted: true };

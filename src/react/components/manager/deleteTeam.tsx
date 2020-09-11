@@ -11,6 +11,7 @@ import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
 import EmployeePicture from "../EmployeePicture";
 import { concatName } from "../../common/functions";
+import { fetchCompanyServices } from "../../queries/products";
 
 interface Props {
   team: any;
@@ -361,7 +362,8 @@ class DeleteTeam extends React.Component<Props, State> {
                 },
                 refetchQueries: [
                   { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } },
-                  { query: fetchCompanyTeams }
+                  { query: fetchCompanyTeams },
+                  { query: fetchCompanyServices }
                 ]
               });
               this.setState({ saved: true });
