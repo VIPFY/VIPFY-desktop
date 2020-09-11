@@ -224,6 +224,12 @@ export interface App {
     easeOfAdminRating: number;
   };
   tags?: { name: string; weight: number };
+  alternatives: {
+    externalid: string;
+    name: string;
+    rating: number;
+    reviews: number;
+  };
 }
 
 export interface Option {
