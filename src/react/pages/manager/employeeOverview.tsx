@@ -124,10 +124,6 @@ class EmployeeOverview extends React.Component<Props, State> {
             onClick: () => console.log("TEST"),
             icon: "plus"
           }}
-          searchConfig={{
-            text: "Search Employees",
-            searchValue: v => this.setState({ search: v })
-          }}
         />
         <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
           <Query<WorkAround, WorkAround> query={fetchDepartmentsData} fetchPolicy="network-only">
@@ -315,8 +311,22 @@ class EmployeeOverview extends React.Component<Props, State> {
                         <a onClick={() => console.log("CLICKED 1", id)}>Click 1</a>
                         <a onClick={() => confirm(`Really 2 ${id}`)}>Click 2</a>
                       </div>
-                    )}></Table>
-
+                    )}
+                    actionTagButtonComponent={id => (
+                      <div className="table-header-action-buttons">
+                        <p
+                          className="tag tag-table-header-buttons"
+                          onClick={() => console.log("choosen ids", id)}>
+                          Delete
+                        </p>
+                        <p
+                          className="tag tag-table-header-buttons"
+                          onClick={() => console.log("choosen ids", id)}>
+                          Insert
+                        </p>
+                      </div>
+                    )}
+                  />
                   {this.state.add && (
                     <AppContext.Consumer>
                       {({ addRenderElement }) => (

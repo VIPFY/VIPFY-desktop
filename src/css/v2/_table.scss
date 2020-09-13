@@ -3,29 +3,18 @@
 
   .extended-header {
     position: sticky;
-    top: 64px;
+    top: 96px;
     z-index: 5;
     background-color: $lightgrey-lightest;
     margin: 8px 0;
 
-    .colSm {
-      flex: 0 0 50%;
-      max-width: 50%;
-      display: flex;
-      flex-direction: row;
-    }
-
-    @include sm {
-      .colSm {
-        flex-basis: 100%;
-        max-width: 100%;
-      }
-    }
-
     .extended-header-row {
-      .extended-header-right-col {
-        padding-bottom: 16px;
-        float: right;
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 16px;
+
+      .extended-header-col {
+        display: flex;
 
         .row-count-text {
           line-height: 32px;
@@ -56,12 +45,12 @@
 
   .table {
     .table-header {
-      font-weight: bold;
       position: sticky;
       z-index: 3;
-      top: 112px;
+      top: 144px;
 
       .table-header-text {
+        font: normal normal normal 14px/19px Roboto;
         font-weight: normal;
       }
 
@@ -104,6 +93,20 @@
           .right {
             float: right;
           }
+
+          .tag-table-header-buttons {
+            cursor: pointer;
+            margin-left: 8px;
+            background: $lightgrey-light 0% 0% no-repeat padding-box;
+            ;
+          }
+        }
+
+        .table-section-header-body {
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          padding-right: 8px;
         }
       }
 

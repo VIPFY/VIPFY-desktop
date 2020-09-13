@@ -20,6 +20,7 @@ interface Props {
   headers: { headline: string; sortable?: boolean }[];
   data: TableRow[];
   actionButtonComponent: Function;
+  actionTagButtonComponent: Function;
 }
 
 interface State {
@@ -85,7 +86,7 @@ class Table extends React.Component<Props, State> {
 
   checkOrUncheckAllRows(check: boolean, allRowsSelected: string) {
     this.state.selectedRows.length > 0
-      ? allRowsSelected === "minusActive"
+      ? allRowsSelected === "Active"
         ? this.setState({
             selectedRows: this.state.allRows
           })
@@ -133,6 +134,16 @@ class Table extends React.Component<Props, State> {
     return allRows.slice(indexOfFirstRow, indexOfLastRow);
   }
 
+  getRowIds(selectedRows: any) {
+    let ids = [];
+
+    selectedRows.map(row => {
+      ids.push(row.id);
+    });
+
+    return ids;
+  }
+
   render() {
     const {
       allRows,
@@ -144,7 +155,7 @@ class Table extends React.Component<Props, State> {
       sortBy
     } = this.state;
 
-    const { actionButtonComponent, data, headers } = this.props;
+    const { actionButtonComponent, data, headers, actionTagButtonComponent } = this.props;
 
     const allRowsSelected = selectedRows.length && "Active";
 
@@ -152,7 +163,7 @@ class Table extends React.Component<Props, State> {
       <section className="table-section">
         <div className="extended-header">
           <div className="row extended-header-row">
-            <div className="colSm">
+            <div className="extended-header-col">
               <UniversalTextInput
                 id="tablesearchbox"
                 placeHolder="Search"
@@ -161,7 +172,7 @@ class Table extends React.Component<Props, State> {
               />
             </div>
 
-            <div className="colSm extended-header-right-col">
+            <div className="extended-header-col">
               <p className="row-count-text">Rows per Page:</p>
               <DropDown
                 header="maxRowsPerPage"
@@ -199,9 +210,9 @@ class Table extends React.Component<Props, State> {
 
             <div className="table-body-cols">
               {headers &&
-                selectedRows.length < 1 &&
+                selectedRows.length === 0 &&
                 headers.map(header => (
-                  <div
+                  <h3
                     className="table-col"
                     style={{ width: Math.round(100 / headers.length) + "%" }}
                     onClick={() => {
@@ -219,11 +230,11 @@ class Table extends React.Component<Props, State> {
                       ) : (
                         <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
                       ))}
-                  </div>
+                  </h3>
                 ))}
               {selectedRows.length > 0 && (
-                <div className="table-col">
-                  <div className="colSm">
+                <div className="table-section-header-body">
+                  <div className="table-col">
                     <span>{selectedRows.length}</span>
                     <span className={"table-header-text"}>
                       {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
@@ -236,11 +247,17 @@ class Table extends React.Component<Props, State> {
                       </span>
                     )}
                   </div>
-                  <div className="colSm right">{/* action button will be here */}</div>
+                  {actionTagButtonComponent && (
+                    <div className="table-col">
+                      {actionTagButtonComponent(this.getRowIds(selectedRows))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-            {actionButtonComponent && <div className="table-dropdown-col" />}
+            {actionButtonComponent && selectedRows.length === 0 && (
+              <div className="table-dropdown-col" />
+            )}
           </div>
 
           <div className="table-body" style={{ flexDirection: "column" }}>
