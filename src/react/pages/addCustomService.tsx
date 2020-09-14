@@ -287,7 +287,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
                     if (this.state.serviceName) {
                       if (!this.state.loginUrl) {
                         this.setState(oldstate => {
-                          return { ...oldstate, loginUrl: oldstate.serviceName };
+                          return { loginUrl: oldstate.serviceName };
                         });
                       }
                       this.setState({ step: "integrate" });
