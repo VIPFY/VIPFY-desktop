@@ -181,6 +181,7 @@ class RegisterCompany extends React.Component<Props, State> {
         <UniversalCheckbox
           name="tos"
           liveValue={v => this.setState({ tos: v })}
+          checkboxSmall={true}
           style={{ marginTop: "16px" }}>
           <div className="agreementText">
             By registering I agree to the
@@ -193,6 +194,7 @@ class RegisterCompany extends React.Component<Props, State> {
         <UniversalCheckbox
           name="privacy"
           liveValue={v => this.setState({ privacy: v })}
+          checkboxSmall={true}
           style={{ marginTop: "16px" }}>
           <div className="agreementText">
             By registering I agree to the
