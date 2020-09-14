@@ -59,6 +59,7 @@ class SignIn extends React.Component<Props, State> {
           moveTo={this.props.moveTo}
           twoFactor={this.props.twoFactor}
           unitid={this.props.unitid!}
+          logout={this.props.logout}
         />
       );
     } else {
@@ -67,7 +68,7 @@ class SignIn extends React.Component<Props, State> {
           return (
             <RegisterCompany
               backFunction={() => this.changeProgress("login")}
-              continueFunction={() => this.props.moveTo("/area/dashboard")}
+              continueFunction={() => this.props.moveTo("dashboard")}
             />
           );
 

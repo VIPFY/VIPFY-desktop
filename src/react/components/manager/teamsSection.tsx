@@ -28,7 +28,7 @@ class TeamsSection extends React.Component<Props, State> {
         pollInterval={60 * 10 * 1000 + 800}
         query={fetchTeams}
         variables={{ userid: this.props.employeeid }}>
-        {({ loading, error, data }) => {
+        {({ loading, error = null, data }) => {
           if (loading) {
             return <div>Loading...</div>;
           }

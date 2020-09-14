@@ -166,24 +166,6 @@ class PaymentAddress extends Component<Props, State> {
       }
     }
 
-    if (this.state.vat && (this.state.vat.vatNumber || this.state.vat.selfCheck)) {
-      //Update Vat
-      promises.push(
-        this.props.client.mutate({
-          mutation: gql`
-            mutation saveVatStatus($vat: VatInput!, $country: String!) {
-              saveVatStatus(vat: $vat, country: $country)
-            }
-          `,
-          variables: {
-            vat: this.state.vat,
-            country: this.state.country
-          },
-          errorPolicy: "all"
-        })
-      );
-    }
-
     if (this.state.promoCode) {
       //Update PromoCode
       promises.push(
@@ -218,24 +200,38 @@ class PaymentAddress extends Component<Props, State> {
       );
     }
 
-    if (!stripeid) {
-      promises.push(
-        this.props.client.mutate({
-          mutation: gql`
-            mutation createStripeUser {
-              createStripeUser
-            }
-          `,
-          errorPolicy: "all"
-        })
-      );
+    const responses = await Promise.all(promises);
+
+    if (this.state.vat && (this.state.vat.vatNumber || this.state.vat.selfCheck)) {
+      //Update Vat
+      await this.props.client.mutate({
+        mutation: gql`
+          mutation saveVatStatus($vat: VatInput!, $country: String!) {
+            saveVatStatus(vat: $vat, country: $country)
+          }
+        `,
+        variables: {
+          vat: this.state.vat,
+          country: this.state.country
+        },
+        errorPolicy: "all"
+      });
     }
 
-    const responses = await Promise.all(promises);
+    if (!stripeid) {
+      await this.props.client.mutate({
+        mutation: gql`
+          mutation createStripeUser {
+            createStripeUser
+          }
+        `,
+        errorPolicy: "all"
+      });
+    }
 
     if (responses && responses[0] && responses[0].errors && responses[0].errors.length > 0) {
       responses[0].errors.forEach(error => {
-        const functionName = error.path[0];
+        const functionName = error && error.path && error.path[0];
         switch (functionName) {
           case "editDepartmentName":
             this.setState(oldstate => {
@@ -282,7 +278,7 @@ class PaymentAddress extends Component<Props, State> {
       this.state.emaildelete.length > 0 ||
       this.state.emailadd.length > 0 ||
       this.state.countryChanged ||
-      this.state.vat.valid ||
+      (this.state.vat && this.state.vat.valid) ||
       this.state.companyName ||
       this.state.promoCode ||
       this.state.phone ||
@@ -290,14 +286,12 @@ class PaymentAddress extends Component<Props, State> {
       this.state.street ||
       this.state.postalCode ||
       this.state.city;
-    console.log("UNSAVED", unsaved, this.state);
     return unsaved;
   };
 
   unblock = null;
   componentDidMount() {
     this.unblock = this.props.history.block((x, y) => {
-      console.log("BLOCKED TRANSITION! 2", x, y, this.state);
       if (this.unsaved()) {
         this.setState({ unsavedChanges: x });
         return false;
@@ -309,7 +303,6 @@ class PaymentAddress extends Component<Props, State> {
   }
 
   render() {
-    console.log("PROPS", this.state);
     return (
       <div className="page">
         <Query query={FETCH_PAYMENT_DATA}>
@@ -573,7 +566,6 @@ class PaymentAddress extends Component<Props, State> {
                                   startingvalue={vatstatus?.selfCheck}
                                   style={{ height: "48px", alignItems: "center", display: "flex" }}
                                   liveValue={valid => {
-                                    console.log("CHANGE", valid);
                                     this.setState({ vat: { valid, selfCheck: true } });
                                   }}
                                   errorhint="Unable to save vat"

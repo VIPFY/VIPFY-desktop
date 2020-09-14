@@ -13,7 +13,7 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import { ADD_PROMOCODE } from "../../mutations/auth";
-import { now } from "moment";
+import moment from "moment";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
@@ -260,7 +260,8 @@ class CompanyDetails extends React.Component<Props, State> {
                                                 ? o.accounts.filter(
                                                     (ac: { endtime: number }) =>
                                                       ac &&
-                                                      (ac.endtime == null || ac.endtime > now())
+                                                      (ac.endtime == null ||
+                                                        moment(ac.endtime).isAfter())
                                                   ).length
                                                 : 0)
                                         )

@@ -274,14 +274,7 @@ class PersonalDetails extends React.Component<Props, State> {
           this.state.editvalueArray.forEach(
             (email, index) => index >= this.props.querydata.emails.length && emails.push(email)
           );
-          let first = true;
           emails.forEach((email, index) => {
-            if (!first && !email.emaildeleted) {
-              emailforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
-            }
-            if (!email.emaildeleted) {
-              first = false;
-            }
             newemail =
               newemail || (!email.emaildeleted && (email.email == null || email.email == ""));
             emailforms.push(
@@ -362,40 +355,35 @@ class PersonalDetails extends React.Component<Props, State> {
           this.state.editvalueArray.forEach(
             (phone, index) => index >= this.props.querydata.workPhones.length && phones.push(phone)
           );
-          let first = true;
           phones.forEach((phone, index) => {
-            if (!first && !phone.phonedeleted) {
-              phoneforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
-            }
-            if (!phone.phonedeleted) {
-              first = false;
-            }
             newphone =
               newphone || (!phone.phonedeleted && (phone.number == null || phone.number == ""));
-            phoneforms.push(
-              <UniversalTextInput
-                id={`${this.state.edit.id}-${phone.id}`}
-                label={this.state.edit.label}
-                livevalue={v =>
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = {
-                      ...phone,
-                      number: v
-                    };
-                    return { editvalueArray };
-                  })
-                }
-                startvalue={phone.number}
-                deleteFunction={() => {
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = { ...phone, phonedeleted: true };
-                    return { editvalueArray };
-                  });
-                }}
-                style={phone.phonedeleted && { display: "none" }}
-                disabled={phone.disabled}
-              />
-            );
+            if (!phone.phonedeleted) {
+              phoneforms.push(
+                <UniversalTextInput
+                  id={`workPhone-${phone.id}`}
+                  label={this.state.edit.label}
+                  livevalue={v =>
+                    this.setState(({ editvalueArray }) => {
+                      editvalueArray[index] = {
+                        ...phone,
+                        number: v
+                      };
+                      return { editvalueArray };
+                    })
+                  }
+                  startvalue={phone.number}
+                  update={true}
+                  deleteFunction={() => {
+                    this.setState(({ editvalueArray }) => {
+                      editvalueArray[index] = { ...phone, phonedeleted: true };
+                      return { editvalueArray };
+                    });
+                  }}
+                  disabled={phone.disabled}
+                />
+              );
+            }
           });
         }
         if (!newphone) {
@@ -445,41 +433,36 @@ class PersonalDetails extends React.Component<Props, State> {
             (phone, index) =>
               index >= this.props.querydata.privatePhones.length && phones.push(phone)
           );
-          let first = true;
           phones.forEach((phone, index) => {
-            if (!first && !phone.phonedeleted) {
-              privatephoneforms.push(<div key={`sep-${index}`} className="fieldsSeperator" />);
-            }
-            if (!phone.phonedeleted) {
-              first = false;
-            }
             privatenewphone =
               privatenewphone ||
               (!phone.phonedeleted && (phone.number == null || phone.number == ""));
-            privatephoneforms.push(
-              <UniversalTextInput
-                id={`${this.state.edit.id}-${phone.id}`}
-                label={this.state.edit.label}
-                livevalue={v =>
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = {
-                      ...phone,
-                      number: v
-                    };
-                    return { editvalueArray };
-                  })
-                }
-                startvalue={phone.number}
-                deleteFunction={() => {
-                  this.setState(({ editvalueArray }) => {
-                    editvalueArray[index] = { ...phone, phonedeleted: true };
-                    return { editvalueArray };
-                  });
-                }}
-                style={phone.phonedeleted && { display: "none" }}
-                disabled={phone.disabled}
-              />
-            );
+            if (!phone.phonedeleted) {
+              privatephoneforms.push(
+                <UniversalTextInput
+                  id={`privatePhone-${phone.id}`}
+                  label={this.state.edit.label}
+                  livevalue={v =>
+                    this.setState(({ editvalueArray }) => {
+                      editvalueArray[index] = {
+                        ...phone,
+                        number: v
+                      };
+                      return { editvalueArray };
+                    })
+                  }
+                  startvalue={phone.number}
+                  update={true}
+                  deleteFunction={() => {
+                    this.setState(({ editvalueArray }) => {
+                      editvalueArray[index] = { ...phone, phonedeleted: true };
+                      return { editvalueArray };
+                    });
+                  }}
+                  disabled={phone.disabled}
+                />
+              );
+            }
           });
         }
         if (!privatenewphone) {

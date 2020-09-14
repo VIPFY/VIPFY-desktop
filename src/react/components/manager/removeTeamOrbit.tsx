@@ -6,7 +6,7 @@ import { fetchTeam } from "../../queries/departments";
 import { graphql } from "react-apollo";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import moment, { now } from "moment";
+import moment from "moment";
 import { concatName } from "../../common/functions";
 import Calendar from "react-calendar";
 import EmployeePicture from "../EmployeePicture";
@@ -85,7 +85,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
             id: a.id,
             bool: false,
             assignments: a.assignments
-              .filter(asa => asa != null && (asa.endtime == null || asa.endtime > now()))
+              .filter(asa => asa != null && (asa.endtime == null || moment(asa.endtime).isAfter()))
               .map(as => {
                 if (as) {
                   return { id: as.assignmentid, bool: false };
@@ -110,13 +110,13 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
         return { id: t.unitid.id, bool: false };
       }),
       accounts: this.props.orbit.accounts
-        .filter(a => a != null && (a.endtime == null || a.endtime > now()))
+        .filter(a => a != null && (a.endtime == null || moment(a.endtime).isAfter()))
         .map(a => {
           return {
             id: a.id,
             bool: false,
             assignments: a.assignments
-              .filter(asa => asa != null && (asa.endtime == null || asa.endtime > now()))
+              .filter(asa => asa != null && (asa.endtime == null || moment(asa.endtime).isAfter()))
               .map(as => {
                 if (as) {
                   return { id: as.assignmentid, bool: false };
@@ -250,9 +250,9 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
     this.props.orbit.accounts.forEach((account, indexa) => {
       const assignments: JSX.Element[] = [];
       let outsideAssignment = false;
-      if (account && (account.endtime == null || account.endtime > now())) {
+      if (account && (account.endtime == null || moment(account.endtime).isAfter())) {
         account.assignments.forEach((assignment, index) => {
-          if (assignment && (assignment.endtime == null || assignment.endtime > now())) {
+          if (assignment && (assignment.endtime == null || moment(assignment.endtime).isAfter())) {
             assignments.push(
               <>
                 <div
