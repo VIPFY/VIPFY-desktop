@@ -2,6 +2,10 @@
   display: flex;
   line-height: 32px;
 
+  &>p {
+    line-height: 32px;
+  }
+
   .turnPage {
     margin: 0 8px;
 
