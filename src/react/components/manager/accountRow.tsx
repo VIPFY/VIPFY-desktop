@@ -89,7 +89,7 @@ class AccountRow extends React.Component<Props, State> {
               .filter(
                 asa =>
                   asa &&
-                  (asa.endtime == null || asa.endtime > now()) &&
+                  (asa.endtime == null || moment(asa.endtime).isAfter()) &&
                   asa.tags.includes("teamlicence") &&
                   asa.assignoptions &&
                   asa.assignoptions.teamlicence
@@ -103,12 +103,12 @@ class AccountRow extends React.Component<Props, State> {
               asa =>
                 asa &&
                 !asa.tags.includes("teamlicence") &&
-                (asa.endtime == null || asa.endtime > now())
+                (asa.endtime == null || moment(asa.endtime).isAfter())
             )}
             employeeidFunction={e => {
               return { ...e.unitid, endtime: e.endtime };
             }}
-            checkFunction={e => e && e.endtime > moment.now()}
+            checkFunction={e => e && moment(e.endtime).isAfter()}
             overlayFunction={e => {
               if (e.tags && e.tags.includes("vacation")) {
                 return (

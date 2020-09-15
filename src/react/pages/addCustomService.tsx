@@ -148,7 +148,9 @@ class AddCustomServicePage extends React.Component<Props, State> {
     }
 
     remainingFields.forEach(rF => {
-      if (field.arg.id === hasEmail) { return; }
+      if (field.arg.id === hasEmail) {
+        return;
+      }
       fields.push(
         <div key={rF.args.id} className="tooManyFieldDropdown">
           <span>{rF.args.value}</span>
@@ -181,7 +183,6 @@ class AddCustomServicePage extends React.Component<Props, State> {
           />
         </div>
       );
-
     });
 
     return fields;
@@ -272,12 +273,28 @@ class AddCustomServicePage extends React.Component<Props, State> {
                   endvalue={v => this.setState({ serviceName: v, serviceNameTouched: true })}
                   errorEvaluation={this.state.serviceNameTouched && !this.state.serviceName}
                   errorhint="You need to give it a name"
+                  onEnter={() =>
+                    document.querySelector("#loginUrl") &&
+                    document.querySelector("#loginUrl").focus()
+                  }
                 />
                 <div style={{ height: "8px", width: "100%" }}></div>
                 <UniversalTextInput
                   id="loginUrl"
                   label="Login Url"
-                  endvalue={v => this.setState({ loginUrl: v })}
+                  livevalue={v => this.setState({ loginUrl: v })}
+                  onEnter={() => {
+                    if (this.state.serviceName) {
+                      if (!this.state.loginUrl) {
+                        this.setState(oldstate => {
+                          return { loginUrl: oldstate.serviceName };
+                        });
+                      }
+                      this.setState({ step: "integrate" });
+                    } else {
+                      this.setState({ serviceNameTouched: true });
+                    }
+                  }}
                 />
                 <UniversalButton
                   type="high"

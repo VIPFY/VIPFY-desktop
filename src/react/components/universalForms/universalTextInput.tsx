@@ -2,6 +2,7 @@ import * as React from "react";
 import { clipboard } from "electron";
 import zxcvbn from "zxcvbn";
 import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
+import classNames from "classnames";
 
 interface Props {
   id: string;
@@ -35,6 +36,8 @@ interface Props {
   labelClick?: Function;
   labelStyles?: Object;
   holderStyles?: Object;
+  placeHolder?: string;
+  icon?: string;
   form?: String;
   checkPassword?: Function;
   additionalPasswordChecks?: String[];
@@ -186,23 +189,28 @@ class UniversalTextInput extends React.Component<Props, State> {
         {this.props.label && (
           <label
             htmlFor={this.props.id}
-            className="universalLabel"
-            style={Object.assign(
+            className={classNames(
+              "universalLabel",
               this.state.firstFocus &&
                 this.state.notypeing &&
-                (this.props.errorEvaluation || this.state.error)
-                ? { color: "#e32022" }
-                : {},
-              this.props.labelStyles || {}
+                (this.props.errorEvaluation || this.state.error) &&
+                "errorColor"
             )}
+            style={this.props.labelStyles || {}}
             onClick={() => this.props.labelClick && this.props.labelClick()}>
             {this.props.label}
           </label>
         )}
         <div
-          className={`universalLabelInput ${this.props.disabled ? "disabled" : ""} ${
-            this.props.className
-          }`}
+          className={classNames(
+            "universalLabelInput",
+            this.props.disabled && "disabled",
+            this.props.className,
+            this.state.firstFocus &&
+              this.state.notypeing &&
+              (this.props.errorEvaluation || this.state.error) &&
+              "errorColor"
+          )}
           style={Object.assign(
             this.props.width ? { width: this.props.width } : {},
             this.props.prefix || this.props.suffix
@@ -210,12 +218,7 @@ class UniversalTextInput extends React.Component<Props, State> {
               : {},
             this.props.smallTextField ? { height: "30px" } : { height: "38px" },
             { ...this.props.style },
-            { ...(!this.state.firstFocus && this.props.focus ? { borderColor: "#20baa9" } : {}) },
-            this.state.firstFocus &&
-              this.state.notypeing &&
-              (this.props.errorEvaluation || this.state.error)
-              ? { borderColor: "#e32022" }
-              : {}
+            { ...(!this.state.firstFocus && this.props.focus ? { borderColor: "#20baa9" } : {}) }
           )}
           onContextMenu={e => {
             e.preventDefault();
@@ -232,6 +235,15 @@ class UniversalTextInput extends React.Component<Props, State> {
           {this.props.prefix && (
             <div style={{ marginLeft: "8px", marginRight: "-4px" }}>{this.props.prefix}</div>
           )}
+
+          {this.props.icon && (
+            <i
+              className={`${this.props.icon} ${
+                this.props.smallTextField ? "smallTextField" : "largeTextField"
+              }`}
+            />
+          )}
+
           {this.props.inputElement ? (
             this.props.inputElement
           ) : (
@@ -246,6 +258,7 @@ class UniversalTextInput extends React.Component<Props, State> {
                     : "password"
                   : this.props.type || ""
               }
+              placeholder={this.props.placeHolder}
               disabled={this.props.disabled ? true : false}
               onFocus={() => this.toggleInput(true)}
               onBlur={() => {
@@ -256,9 +269,14 @@ class UniversalTextInput extends React.Component<Props, State> {
                 this.toggleInput(false);
               }}
               onKeyUp={e => this.handleKeyUp(e)}
-              className={
-                this.props.type != "date" ? "cleanup universalTextInput" : "universalTextInput"
-              }
+              className={classNames(
+                "universalTextInput",
+                this.props.type != "date" && "cleanup",
+                this.state.firstFocus &&
+                  this.state.notypeing &&
+                  (this.props.errorEvaluation || this.state.error) &&
+                  "errorColor"
+              )}
               style={{
                 width: "calc(100% - 18px)",
                 ...(this.props.type == "date"
@@ -266,13 +284,6 @@ class UniversalTextInput extends React.Component<Props, State> {
                       border: "none",
                       borderBottom: "1px solid #20baa9",
                       fontFamily: "'Roboto', sans-serif"
-                    }
-                  : {}),
-                ...(this.state.firstFocus &&
-                this.state.notypeing &&
-                (this.props.errorEvaluation || this.state.error)
-                  ? {
-                      borderBottomColor: "#e32022"
                     }
                   : {}),
                 ...(this.props.inputStyles || {})

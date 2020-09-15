@@ -13,7 +13,7 @@ const PROCESS_APPS = gql`
   }
 `;
 
-type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings">>;
+type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags">>;
 
 interface ScrapedApp extends Excluded {
   alternatives: { [id: number]: { name: string; rating: number; reviews } };
@@ -41,7 +41,7 @@ interface ScrapedApp extends Excluded {
   };
   teaserdescription: string;
   pricing?: string;
-  tags: string[];
+  tags: { 0: string; 1: number }[];
   categories?: string[];
   capid?: string;
 }
@@ -51,7 +51,8 @@ const ServiceUpload: React.FunctionComponent = () => {
   const [service, setService] = React.useState<ScrapedApp | null>(null);
   const [jsonError, setError] = React.useState<string | null>(null);
   const [jsonLoading, setLoading] = React.useState<boolean>(false);
-  const [processApps, { loading, data, error }] = useMutation(PROCESS_APPS);
+  const [success, setSuccess] = React.useState<boolean>(false);
+  const [processApps, { loading, error }] = useMutation(PROCESS_APPS);
 
   const handleSubmit = async () => {
     try {
@@ -87,7 +88,8 @@ const ServiceUpload: React.FunctionComponent = () => {
               recommendationRating: app.ratings.CT_recommendationRating,
               easeOfSetupRating: app.ratings.G2_EaseOfSetupRating,
               easeOfAdminRating: app.ratings.G2_EaseOfAdminRating
-            }
+            },
+            tags: Object.values(app.tags).map(tag => ({ name: tag[0], weight: tag[1] }))
           };
 
           delete returnApp.pricing;
@@ -115,9 +117,6 @@ const ServiceUpload: React.FunctionComponent = () => {
           //   app.alternatives = normalizedAlternatives;
           // }
 
-          // TODO: [VIP-1337] Change as soon as the proper data is given by Conrad
-          returnApp.tags = [];
-
           // TODO: [VIP-1336] Add pros and cons when Conrad has the data
 
           return returnApp;
@@ -135,10 +134,15 @@ const ServiceUpload: React.FunctionComponent = () => {
     } catch (error) {
       throw new Error(error);
     }
+
+    setSuccess(true);
   };
 
   const handleFileLoad = e => {
     setLoading(true);
+    setSuccess(false);
+    setError(null);
+
     const fileReader = new FileReader();
     fileReader.onerror = () => {
       setError(fileReader.error);
@@ -162,7 +166,7 @@ const ServiceUpload: React.FunctionComponent = () => {
         <li className="listHeadline">{headline}</li>
         {Object.keys(objectList).map((dataKey, key) => (
           <li key={key}>
-            <span className="list-key">{dataKey}</span>
+            <span className="list-key">{dataKey}:</span>
             <span>{objectList[dataKey]}</span>
           </li>
         ))}
@@ -175,7 +179,7 @@ const ServiceUpload: React.FunctionComponent = () => {
       <h1>Integrate or update a Service in the Marketplace</h1>
 
       <label className="inputLabel">Load a json file</label>
-      <input type="file" accept=".json" onChange={handleFileLoad} />
+      <input type="file" disabled={loading} accept=".json" onChange={handleFileLoad} />
 
       {jsonLoading ? (
         <LoadingDiv />
@@ -227,13 +231,23 @@ const ServiceUpload: React.FunctionComponent = () => {
                       ))}
                   </ul>
 
+                  <ul className="list">
+                    <li className="listHeadline">Tags</li>
+                    {Object.values(service.tags).map((tag, key) => (
+                      <li key={key}>
+                        <span className="list-key">{tag[0]}:</span>
+                        <span>{tag[1]}</span>
+                      </li>
+                    ))}
+                  </ul>
+
                   {renderList("Job Distribution", service.JobDistribution)}
                   {renderList("Company Sizes", service.companySizes)}
                   {renderList("Industry Distribution", service.industryDistribution)}
                 </React.Fragment>
               )}
               <ErrorComp error={error} />
-              {data && (
+              {success && (
                 <div className="success">{`Upload of ${
                   Object.keys(services).length
                   } Services was successful.`}</div>

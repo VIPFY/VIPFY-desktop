@@ -1,6 +1,5 @@
 import * as React from "react";
 import PrintServiceSquare from "../squares/printServiceSquare";
-import { now } from "moment";
 
 interface Props {
   checkFunction: Function;

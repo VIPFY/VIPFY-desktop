@@ -2,7 +2,7 @@ import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import { fetchApps } from "../../../../queries/products";
 import PrintServiceSquare from "../squares/printServiceSquare";
-import { now } from "moment";
+import moment from "moment";
 
 interface Props {
   search: string;
@@ -37,7 +37,7 @@ class ServiceGrid extends React.Component<Props, State> {
         .includes(this.props.search.toUpperCase());
     });
     filteredApps.forEach(app => {
-      if (!app.disabled && (app.endtime == null || app.endtime > now())) {
+      if (!app.disabled && (app.endtime == null || moment(app.endtime).isAfter())) {
         ownAppsArray.push(
           <div
             key={app.name}

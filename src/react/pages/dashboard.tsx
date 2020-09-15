@@ -67,8 +67,9 @@ class Dashboard extends React.Component<Props, State> {
             !licence.disabled &&
             !licence.pending &&
             !licence.boughtplanid.planid.appid.disabled &&
-            (licence.boughtplanid.endtime > moment.now() || licence.boughtplanid.endtime == null) &&
-            (licence.endtime > moment.now() || licence.endtime == null)
+            (moment(licence.boughtplanid.endtime).isAfter() ||
+              licence.boughtplanid.endtime == null) &&
+            (moment(licence.endtime).isAfter() || licence.endtime == null)
           ) {
             if (licence.dashboard !== null && licence.dashboard <= 8) {
               favourites[licence.dashboard] = licence;

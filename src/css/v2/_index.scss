@@ -1,5 +1,6 @@
 // these must be imported first
-@import "~@vipfy-private/vipfy-ui-lib/src/css/importFirst/index";
+@import "login";
+@import "../../../node_modules/@vipfy-private/vipfy-ui-lib/src/css/importFirst/index";
 
 // Please add in alphabetical order
 @import "appDetails";
@@ -13,12 +14,13 @@
 @import "employeeCard";
 @import "formElements/index";
 @import "loading";
-@import "login";
 @import "marketplace";
 @import "marketplaceCategories";
 @import "page";
 @import "pageHeader";
+@import "pagination";
 @import "prosConsList";
+@import "table";
 @import "serviceCreation";
 @import "tags";
 @import "vipfy";

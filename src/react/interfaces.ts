@@ -225,6 +225,7 @@ export interface App {
     easeOfSetupRating: number;
     easeOfAdminRating: number;
   };
+  tags?: { name: string; weight: number };
 }
 
 export interface Option {

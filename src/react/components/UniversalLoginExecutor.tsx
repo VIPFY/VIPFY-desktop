@@ -1037,7 +1037,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         }, this.screenshotDelay);
       }
     } else {
-      this.props.setResult(resultValues, "");
+      this.props.setResult(resultValues, "", !this.props.execute);
     }
   }
 
@@ -1075,7 +1075,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       }
     }
 
-    if (this.webview && (await this.isLoggedIn(this.webview))) {
+    if (this.webview && !this.props.continueExecute && (await this.isLoggedIn(this.webview))) {
       await this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
       this.progressCallbackRunning = false;
       return;
@@ -1162,8 +1162,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       case "loaded":
         {
           this.loginState.unloaded = false;
-
           if (
+            !this.props.continueExecute &&
             !this.loginState.passwordEntered &&
             this.webview &&
             (await this.isLoggedIn(this.webview))
@@ -1251,7 +1251,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         break;
       case "getLoginData":
         {
-          if (!this.loginState.passwordEntered && (await this.isLoggedIn(e.target))) {
+          if (
+            !this.loginState.passwordEntered &&
+            !this.props.continueExecute &&
+            (await this.isLoggedIn(e.target))
+          ) {
             this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
 
             return; //we are done with login

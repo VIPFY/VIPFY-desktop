@@ -51,7 +51,7 @@ export default (props: Props) => (
         buttonStyles={{ justifyContent: "space-around" }}
         small={true}
         close={props.closeFunction}>
-        <h1>Force Two-Factor Authentication</h1>
+        <h1>{props.status ? "Force" : "Unforce"} Two-Factor Authentication</h1>
         {data ? (
           <React.Fragment>
             <div className="sub-header">

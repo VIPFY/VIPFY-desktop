@@ -116,7 +116,9 @@ class DataNameForm extends React.Component<Props, State> {
                           id="promocode"
                           label="Promo Code"
                           disabled={loading}
-                          livevalue={v => this.setState({ promocode: v, newError: false })}
+                          livevalue={v =>
+                            this.setState({ promocode: v != "" ? v : undefined, newError: false })
+                          }
                           errorEvaluation={error}
                           errorhint={error && this.state.newError && filterError(error)}
                         />
@@ -134,7 +136,9 @@ class DataNameForm extends React.Component<Props, State> {
                     this.setState({ register: true });
                     if (showPromoInput && !data) {
                       try {
-                        await mutate({ variables: { promocode } });
+                        if (promocode && promocode.trim().length > 0) {
+                          await mutate({ variables: { promocode } });
+                        }
                         await this.continue();
                       } catch (err) {
                         this.setState({ register: false });

@@ -354,7 +354,7 @@ export default (props: Props) => {
                   }
                 })
                 .map((user) => (
-                  <UserSecurityRow {...props} key={user.unitid} user={user} />
+                  <UserSecurityRow {...props} key={user.unitid.id} user={user} />
                 ))}
             </tbody>
           </table>

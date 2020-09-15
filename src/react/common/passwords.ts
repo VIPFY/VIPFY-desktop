@@ -284,7 +284,7 @@ export async function updateEmployeePassword(client, unitid: string, newPassword
         privateKey,
         Buffer.from(data.fetchSemiPublicUser.recoverypublickey, "hex")
       );
-      recoveryPrivateKey.toString("hex");
+      recoveryPrivateKey = recoveryPrivateKey.toString("hex");
     }
 
     privateKey.fill(0); // overwrite it for security

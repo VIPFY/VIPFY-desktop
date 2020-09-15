@@ -204,7 +204,7 @@ class UserSecurityRow extends React.Component<Props, State> {
         </td>
 
         <td>
-          <BanPopup user={this.props.user} />
+          <BanPopup user={this.props.user} client={this.props.client} />
         </td>
 
         <td>
@@ -229,6 +229,7 @@ class UserSecurityRow extends React.Component<Props, State> {
               id={this.props.id}
               closeFunction={() => this.setState({ showEdit: false })}
               userid={user.id}
+              client={this.props.client}
             />
           )}
         </td>

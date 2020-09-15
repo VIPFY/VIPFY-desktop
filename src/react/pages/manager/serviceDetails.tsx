@@ -95,7 +95,7 @@ class ServiceDetails extends React.Component<Props, State> {
               element.accounts.forEach(account => {
                 if (
                   account != null &&
-                  (moment(account.endtime) > moment() || account.endtime == null)
+                  (moment(account.endtime).isAfter() || account.endtime == null)
                 ) {
                   accounts.push(account);
                   account.assignments.forEach(checkunit => {
@@ -159,7 +159,7 @@ class ServiceDetails extends React.Component<Props, State> {
               </div>
               {!service.app.options.pending &&
                 service.orbitids
-                  .filter(o => o.endtime == null || moment(o.endtime) > moment())
+                  .filter(o => o.endtime == null || moment(o.endtime).isAfter())
                   .map(orbit => (
                     <OrbitSection
                       key={orbit.id}

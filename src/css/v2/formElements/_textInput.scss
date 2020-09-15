@@ -3,6 +3,10 @@
   padding-bottom: 4px;
   color: $midgrey-dark;
   display: block;
+
+  &.errorColor {
+    color: $red-darker !important;
+  }
 }
 .passwordIcon {
   width: 20px;
@@ -33,6 +37,13 @@
 
     &::-webkit-scrollbar {
       height: 8px;
+    }
+  }
+  &.errorColor {
+    border-color: $red-darker !important;
+
+    input {
+      border-bottom-color: $red-darker !important;
     }
   }
 }
@@ -84,4 +95,8 @@
   position: absolute;
   top: 56px;
   color: $midgrey-dark;
+
+  &.errorColor {
+    border-bottom-color: $midgrey-light !important;
+  }
 }

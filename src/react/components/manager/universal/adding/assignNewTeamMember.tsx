@@ -9,7 +9,7 @@ import { graphql } from "@apollo/client/react/hoc";
 import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import { fetchTeam, fetchDepartmentsData } from "../../../../queries/departments";
+import { fetchTeam, fetchDepartmentsData, fetchTeams } from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddEmployeePersonalData from "../../addEmployeePersonalData";
@@ -427,7 +427,8 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                     })
                   },
                   refetchQueries: [
-                    { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } }
+                    { query: fetchTeam, variables: { teamid: this.props.team.unitid.id } },
+                    { query: fetchTeams, variables: { userid: this.state.employee!.id } }
                   ]
                 });
                 this.setState({ saved: true });
