@@ -1,10 +1,10 @@
 import React from "react";
 import type { ReactChildren, ReactChild, FunctionComponent } from "react";
 import classNames from "classnames";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 import { App, User } from "../interfaces";
 import { concatName } from "../common/functions";
 import EmployeePicture from "../components/EmployeePicture";
-import ServiceLogo from "../components/services/ServiceLogo";
 import PrintTeamSquare from "../components/manager/universal/squares/printTeamSquare";
 
 interface TagProps {

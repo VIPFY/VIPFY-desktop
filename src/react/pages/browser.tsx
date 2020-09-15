@@ -7,18 +7,16 @@ import { parse } from "url";
 import psl from "psl";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 import BrowserNavigationButton from "../components/universalButtons/browserNavigationButton";
 import BrowserTab from "../components/browserTab";
 import BrowserOverflowTab from "../components/browserOverflowTab";
 import UniversalLoginExecutor from "../components/UniversalLoginExecutor";
-import { me } from "../queries/auth";
 import { decryptLicenceKey } from "../common/passwords";
-import LoadingDiv from "../components/LoadingDiv";
 import PopupBase from "../popups/universalPopups/popupBase";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
 import secNeeded from "../../images/undraw_Security_on_ff2u.svg";
-import ServiceLogo from "../components/services/ServiceLogo";
 
 interface Props {
   updateMyConfig: Function;
@@ -770,7 +768,8 @@ class Browser extends React.Component<Props, State> {
                       marginBottom: "24px",
                       lineHeight: "19px"
                     }}>
-                    Before you can use this service, we need to validate your account. The security key will be sent to you via email or text message.
+                    Before you can use this service, we need to validate your account. The security
+                    key will be sent to you via email or text message.
                   </div>
                   <UniversalTextInput
                     id="security"
@@ -915,6 +914,7 @@ class Browser extends React.Component<Props, State> {
               this.setState({ interaction: new Date() });
             }}
             execute={this.state.options && this.state.options.execute}
+            continueExecute={this.state.options && this.state.options.continueExecute}
             noError={this.state.options && this.state.options.noError}
             individualShow={this.state.options && this.state.options.individualShow}
             noUrlCheck={this.state.options && this.state.options.noUrlCheck}

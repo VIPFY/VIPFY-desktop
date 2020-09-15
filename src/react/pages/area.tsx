@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Route } from "react-router-dom";
-import { withRouter, Switch } from "react-router";
+import { withRouter, Switch, Redirect } from "react-router";
 import { ipcRenderer } from "electron";
 import { Query, withApollo } from "react-apollo";
 import compose from "lodash.flowright";
+import moment from "moment";
 import Domains from "./domains";
 import Sidebar from "../components/Sidebar";
 import Webview from "./webview";
@@ -161,13 +162,13 @@ class Area extends React.Component<AreaProps, AreaState> {
           [licenceID]:
             prevState.openInstances && prevState.openInstances[licenceID]
               ? {
-                ...prevState.openInstances[licenceID],
+                  ...prevState.openInstances[licenceID],
 
-                [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-              }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+                }
               : {
-                [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
-              }
+                  [viewID]: { instanceTitle: "Opening new service", instanceId: viewID }
+                }
         },
         app: opendirect ? licenceID : prevState.app,
         licenceID: opendirect ? licenceID : prevState.licenceID,
@@ -183,15 +184,15 @@ class Area extends React.Component<AreaProps, AreaState> {
         ...prevState.openInstances,
         [licenceID]:
           prevState.openInstances &&
-            prevState.openInstances[licenceID] &&
-            prevState.openInstances[licenceID][viewID]
+          prevState.openInstances[licenceID] &&
+          prevState.openInstances[licenceID][viewID]
             ? {
-              ...prevState.openInstances[licenceID],
-              [viewID]: {
-                instanceTitle: title,
-                instanceId: viewID
+                ...prevState.openInstances[licenceID],
+                [viewID]: {
+                  instanceTitle: title,
+                  instanceId: viewID
+                }
               }
-            }
             : { ...prevState.openInstances[licenceID] }
       },
       webviews: prevState.webviews.map(view => {
@@ -288,7 +289,9 @@ class Area extends React.Component<AreaProps, AreaState> {
       const openServices = oldstate.openServices.filter(os => os != assignmentId) || [];
       return { openServices };
     });
-    this.moveTo(moveTo);
+    if (moveTo) {
+      this.moveTo(moveTo);
+    }
   }
 
   isAdminOpen = () => {
@@ -380,6 +383,13 @@ class Area extends React.Component<AreaProps, AreaState> {
 
               const licences = data.fetchUserLicenceAssignments;
 
+              this.state.openServices.forEach(oS => {
+                const curL = licences.find(l => l.id == oS);
+                if (curL && moment(curL.endtime).isBefore()) {
+                  this.closeBrowser(oS, showService == oS ? "dashboard" : null);
+                }
+              });
+
               return (
                 <div className="area" style={style}>
                   <ClickTracker />
@@ -456,7 +466,11 @@ class Area extends React.Component<AreaProps, AreaState> {
                           }
 
                           if (admin && !isadmin) {
-                            return null;
+                            return (
+                              <Route key={path} exact path={path}>
+                                <Redirect to="/area" />
+                              </Route>
+                            );
                           }
 
                           return (
@@ -470,7 +484,10 @@ class Area extends React.Component<AreaProps, AreaState> {
                                   style={{ marginLeft: `${marginLeft}px` }}>
                                   <ResizeAware>
                                     {admin && (
-                                      <AdminSidebar sidebarOpen={sidebarOpen} moveTo={this.moveTo} />
+                                      <AdminSidebar
+                                        sidebarOpen={sidebarOpen}
+                                        moveTo={this.moveTo}
+                                      />
                                     )}
 
                                     <RouteComponent
@@ -498,7 +515,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             <div
                               className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                 sidebarOpen ? "sidebar-open" : ""
-                                }`}>
+                              }`}>
                               <Domains setDomain={this.setDomain} {...this.props} {...props} />
                             </div>
                           )}
@@ -511,7 +528,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                             <div
                               className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                 sidebarOpen ? "sidebar-open" : ""
-                                }`}>
+                              }`}>
                               <Domains setDomain={this.setDomain} {...this.props} {...props} />
                             </div>
                           )}
@@ -556,7 +573,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                               <div
                                 className={`full-working ${chatOpen ? "chat-open" : ""} ${
                                   sidebarOpen ? "sidebar-open" : ""
-                                  }`}>
+                                }`}>
                                 <ErrorPage />
                               </div>
                             );

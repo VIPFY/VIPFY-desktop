@@ -24,7 +24,6 @@ const NOTIFICATION_SUBSCRIPTION = gql`
       changed
       link
       options
-      type
     }
   }
 `;

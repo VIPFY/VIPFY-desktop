@@ -152,6 +152,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         }
         if (
           subscriptionData.data.newNotification &&
+          subscriptionData.data.newNotification.message &&
+          subscriptionData.data.newNotification.message != "" &&
           (!subscriptionData.data.newNotification.options ||
             (subscriptionData.data.newNotification.options &&
               subscriptionData.data.newNotification.options.level > 1))
@@ -162,6 +164,8 @@ class Sidebar extends React.Component<SidebarProps, State> {
         this.refetchCategories([subscriptionData.data.newNotification], this.props.client);
         if (
           subscriptionData.data.newNotification &&
+          subscriptionData.data.newNotification.message &&
+          subscriptionData.data.newNotification.message != "" &&
           (!subscriptionData.data.newNotification.options ||
             (subscriptionData.data.newNotification.options &&
               subscriptionData.data.newNotification.options.type != "update" &&
@@ -197,7 +201,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
 
       switch (category) {
         case "ownLicences":
-          refetchQueries(client, ["fetchUserLicenceAssignments", "onFetchUserLicences"]);
+          await refetchQueries(client, ["fetchUserLicenceAssignments", "onFetchUserLicences"]);
           break;
 
         case "employees":
@@ -212,7 +216,7 @@ class Sidebar extends React.Component<SidebarProps, State> {
           break;
 
         case "companyServices":
-          await refetchQueries(client, ["fetchCompanyService", "allApps"]);
+          await refetchQueries(client, ["fetchCompanyServices", "fetchCompanyService", "allApps"]);
           break;
 
         case "domains":

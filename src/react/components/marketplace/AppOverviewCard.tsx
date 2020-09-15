@@ -1,10 +1,10 @@
 import * as React from "react";
 import classNames from "classnames";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 import Tag from "../../common/Tag";
 import { showStars } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
-import ServiceLogo from "../services/ServiceLogo";
 import CardSection from "../CardSection";
 import ProsConsList from "./ProsConsList";
 

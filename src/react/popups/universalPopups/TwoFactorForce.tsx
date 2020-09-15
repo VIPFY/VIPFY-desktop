@@ -46,16 +46,16 @@ export default (props: Props) => (
         data: { fetchUserSecurityOverview: updated }
       });
     }}>
-    {(toggle2FA, { loading, error, data }) => (
+    {(toggle2FA, { loading, error = null, data }) => (
       <PopupBase
         buttonStyles={{ justifyContent: "space-around" }}
         small={true}
         close={props.closeFunction}>
-        <h1>Force Two-Factor Authentication</h1>
+        <h1>{props.status ? "Force" : "Unforce"} Two-Factor Authentication</h1>
         {data ? (
           <React.Fragment>
             <div className="sub-header">
-              {props.status ? "Unf" : "F"}orcing Two-Factor Authentication was successful
+              {props.status ? "Forcing" : "Unforcing"} Two-Factor Authentication was successful
             </div>
             <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />
           </React.Fragment>

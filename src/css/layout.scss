@@ -2976,4 +2976,15 @@ progress[value] {
   }
 }
 
+.smallTextField {
+  line-height: 30px;
+  margin-left: 8px;
+}
+
+.largeTextField {
+  line-height: 38px;
+  margin-left: 8px;
+}
+
+
 @import "./v2/index";

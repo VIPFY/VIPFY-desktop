@@ -17,6 +17,7 @@ interface Props {
   unitid: string;
   twoFactor: string;
   moveTo: Function;
+  logout: Function;
 }
 
 export default (props: Props) => {
@@ -37,7 +38,12 @@ export default (props: Props) => {
     <Mutation<WorkAround, WorkAround> mutation={VALIDATE_2FA} onCompleted={handleToken}>
       {(validateToken, { error, loading }) => (
         <div className="twoFactor">
-          <h1>Two Factor Authentication</h1>
+          <h1>
+            <a onClick={() => props.logout()}>
+              <i className="fal fa-arrow-left"></i>
+            </a>
+            Two Factor Authentication
+          </h1>
           {props.twoFactor.startsWith("otpauth://") ? (
             <React.Fragment>
               <p>Please enter the six digit code that is displayed on your Google Authenticator.</p>

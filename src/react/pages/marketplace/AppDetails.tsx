@@ -2,6 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -12,7 +13,6 @@ import onboarding from "../../../images/onboarding.png";
 
 import { showStars } from "../../common/functions";
 import Tag from "../../common/Tag";
-import ServiceLogo from "../../components/services/ServiceLogo";
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
 import ProsConsList from "../../components/marketplace/ProsConsList";

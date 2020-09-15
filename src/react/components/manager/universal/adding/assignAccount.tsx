@@ -26,7 +26,8 @@ class AssignAccount extends React.Component<Props, State> {
       ? this.props.accountFunction(this.props.orbit)
       : this.props.orbit.licences;
 
-    const accounts = allAccounts && allAccounts.filter(a => !a.options || !a.options.private);
+    const accounts =
+      allAccounts && allAccounts.filter(a => a && (!a.options || !a.options.private));
 
     return (
       <>
@@ -107,7 +108,7 @@ class AssignAccount extends React.Component<Props, State> {
             buttonStyles={{ justifyContent: "space-between" }}>
             <h1>All Accounts</h1>
             {accounts
-              .filter(e => e.endtime >= moment.now() || e.endtime == null)
+              .filter(e => moment(e.endtime).isAfter() || e.endtime == null)
               .map(account => (
                 <div className="listingDiv" key={account.id}>
                   <UniversalButton
