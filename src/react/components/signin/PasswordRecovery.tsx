@@ -216,7 +216,9 @@ export default (props: Props) => {
       )}
 
       <span>Can’t find your recovery code? </span>
-      <a href="mailto: support@vipfy.store">Contact Support</a>
+      <a href="mailto:support@vipfy.store" style={{ marginLeft: "12px" }}>
+        Contact Support
+      </a>
       <UniversalButton
         label={email && email.match(emailRegex) ? "Reset Password" : "Next"}
         form="recovery-form"
