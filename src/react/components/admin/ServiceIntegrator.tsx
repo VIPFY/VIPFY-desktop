@@ -477,7 +477,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
   }
 
-  zeigeElement(onOff, id) {
+  displayElement(onOff, id) {
     if (this.state.test || this.state.end || !this.state.showDivList) {
       return;
     } else if (onOff) {
@@ -910,7 +910,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   stopScroll() {
     // show the divs
     this.state.executionPlan.map((o, k) => {
-      this.zeigeElement(false, o.args.id, false);
+      this.displayElement(false, o.args.id, false);
     });
 
     scrolling = false;
@@ -1468,8 +1468,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
               {this.state.executionPlan.map((o, k) => (
                 <div
                   id={o.args.id + "side"}
-                  onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-                  onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                  onMouseEnter={() => this.displayElement(true, o.args.id)}
+                  onMouseLeave={() => this.displayElement(false, o.args.id)}
                   style={{ border: "1px solid red", marginTop: "10px" }}>
                   <ClickElement
                     id={`ce-${k}`}

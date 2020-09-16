@@ -516,7 +516,7 @@ class LoginIntegrator extends React.Component<Props, State> {
   //queues the calls if too many com to quickly to prevent the funktion from breaking
   zeigeElementQueue = [];
   zeigeElementOnAir = false; //aka is "zeigeElementworking" already running
-  zeigeElement(onOff, id, invisible) {
+  displayElement(onOff, id, invisible) {
     if (this.zeigeElementOnAir) {
       this.zeigeElementQueue.push([onOff, id]);
     }
@@ -529,7 +529,7 @@ class LoginIntegrator extends React.Component<Props, State> {
       (this.state.test || this.state.end || !this.state.tracking) &&
       this.aktDivListState.divListHold.length > 0
     ) {
-      //console.log("zeigeElement NOT");
+      //console.log("displayElement NOT");
       return;
     } else if (onOff) {
       //Remove Cover Div
@@ -801,7 +801,7 @@ class LoginIntegrator extends React.Component<Props, State> {
           onClick={e => {
             this.setState({ divList: [], test: false, end: false, tracking: true });
             this.state.executionPlan.forEach(element => {
-              this.zeigeElement(true, element.args.id, element.args.isInvisible);
+              this.displayElement(true, element.args.id, element.args.isInvisible);
               this.webview!.send("startTracking", {});
             });
           }}
@@ -1398,7 +1398,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                   id="isActivetrue"
                   onLoadStart={() => {
                     this.state.executionPlan.forEach(element => {
-                      this.zeigeElement(true, element.args.id, element.args.isInvisible);
+                      this.displayElement(true, element.args.id, element.args.isInvisible);
                     });
                   }}
                 />
@@ -1407,7 +1407,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                   id="isActivefalse"
                   onLoadStart={() => {
                     this.state.executionPlan.forEach(element => {
-                      this.zeigeElement(true, element.args.id, element.args.isInvisible);
+                      this.displayElement(true, element.args.id, element.args.isInvisible);
                     });
                   }}
                 />
@@ -1577,8 +1577,8 @@ class LoginIntegrator extends React.Component<Props, State> {
                     {this.state.executionPlan.map((o, k) => (
                       <div
                         id={o.args.id + "side"}
-                        onMouseEnter={() => this.zeigeElement(true, o.args.id, o.args.isInvisible)}
-                        onMouseLeave={() => this.zeigeElement(false, o.args.id, o.args.isInvisible)}
+                        onMouseEnter={() => this.displayElement(true, o.args.id, o.args.isInvisible)}
+                        onMouseLeave={() => this.displayElement(false, o.args.id, o.args.isInvisible)}
                         style={Object.assign(
                           { marginTop: "16px", paddingLeft: "16px", paddingRight: "16px" },
                           k > 0
@@ -1650,7 +1650,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                       return oldstate;
                                     });
                                   }
-                                  this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                                  this.displayElement(false, o.args.id, o.args.isInvisible);
                                 } else {
                                   const index = this.state.stealthList.indexOf(o);
                                   if (index != -1) {
@@ -1662,7 +1662,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                     });
                                   }
                                 }
-                                this.zeigeElement(true, o.args.id, o.args.isInvisible);
+                                this.displayElement(true, o.args.id, o.args.isInvisible);
                                 this.webview.send(
                                   "hide element",
                                   o.args.selector,
@@ -1737,7 +1737,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                             this.setState(oldstate => {
                                               oldstate.divList = [];
                                               this.state.executionPlan.forEach(element =>
-                                                this.zeigeElement(
+                                                this.displayElement(
                                                   false,
                                                   element.args.id,
                                                   element.isInvisible
@@ -1757,7 +1757,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                             this.setState(oldstate => {
                                               oldstate.divList = [];
                                               this.state.executionPlan.forEach(element =>
-                                                this.zeigeElement(
+                                                this.displayElement(
                                                   false,
                                                   element.args.id,
                                                   element.isInvisible
@@ -1813,13 +1813,13 @@ class LoginIntegrator extends React.Component<Props, State> {
                                 <UniversalButton
                                   type="high"
                                   onClick={async () => {
-                                    await this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                                    await this.displayElement(false, o.args.id, o.args.isInvisible);
                                     await this.setState(oldstate => {
                                       const index = oldstate.executionPlan.findIndex(element => {
                                         return element.args.id == o.args.id;
                                       });
                                       const element = oldstate.executionPlan[index];
-                                      this.zeigeElement(
+                                      this.displayElement(
                                         true,
                                         oldstate.executionPlan[index - 1].args.id,
                                         oldstate.executionPlan[index - 1].args.isInvisible
@@ -1845,13 +1845,13 @@ class LoginIntegrator extends React.Component<Props, State> {
                                 <UniversalButton
                                   type="high"
                                   onClick={async () => {
-                                    await this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                                    await this.displayElement(false, o.args.id, o.args.isInvisible);
                                     await this.setState(oldstate => {
                                       const index = oldstate.executionPlan.findIndex(element => {
                                         return element.args.id == o.args.id;
                                       });
                                       const element = oldstate.executionPlan[index];
-                                      this.zeigeElement(
+                                      this.displayElement(
                                         true,
                                         oldstate.executionPlan[index + 1].args.id,
                                         oldstate.executionPlan[index + 1].args.isInvisible
