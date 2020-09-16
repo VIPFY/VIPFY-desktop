@@ -93,6 +93,8 @@ const ServiceUpload: React.FunctionComponent = () => {
             tags: Object.values(app.tags).map(tag => ({ name: tag[0], weight: tag[1] }))
           };
 
+          // We don't want the scraped logo as their url links to unfavorable places
+          delete returnApp.logo;
           delete returnApp.pricing;
           delete returnApp.categories;
           delete returnApp.id;
@@ -252,7 +254,7 @@ const ServiceUpload: React.FunctionComponent = () => {
           {loading && (
             <div className="progress">
               <label htmlFor="scrapedApps">{`Uploading part ${progress} of ${PARTS}`}</label>
-              <progress id="scrapedApps" max="100" value={progress} />
+              <progress id="scrapedApps" max="10" value={progress} />
             </div>
           )}
 
