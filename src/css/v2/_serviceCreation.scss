@@ -42,6 +42,14 @@
     margin-top: 16px;
   }
 
+  .progress {
+    display: flex;
+    flex-flow: column;
+    margin: 16px 0;
+    height: 40px;
+    justify-content: space-between;
+  }
+
   .success {
     margin: 16px 0;
     font-size: 1.3rem;

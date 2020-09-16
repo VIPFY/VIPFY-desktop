@@ -13,10 +13,10 @@ const PROCESS_APPS = gql`
   }
 `;
 
-type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags">>;
+type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags" | "alternatives">>;
 
 interface ScrapedApp extends Excluded {
-  alternatives: { [id: number]: { name: string; rating: number; reviews } };
+  alternatives: { [id: number]: { name: string; rating: number; reviews: number } };
   ratings: {
     overallRating: number;
     combinedCustomerSupportRating?: number;
@@ -32,13 +32,13 @@ interface ScrapedApp extends Excluded {
   companySizes: CompanySizes | {};
   industryDistribution: IndustryDistribution | {};
   description:
-  | string
-  | {
-    g2Long: string | null;
-    g2Short: string | null;
-    capterraLong: string | null;
-    capterraShort: string | null;
-  };
+    | string
+    | {
+        g2Long: string | null;
+        g2Short: string | null;
+        capterraLong: string | null;
+        capterraShort: string | null;
+      };
   teaserdescription: string;
   pricing?: string;
   tags: { 0: string; 1: number }[];
@@ -52,12 +52,13 @@ const ServiceUpload: React.FunctionComponent = () => {
   const [jsonError, setError] = React.useState<string | null>(null);
   const [jsonLoading, setLoading] = React.useState<boolean>(false);
   const [success, setSuccess] = React.useState<boolean>(false);
+  const [progress, setProgress] = React.useState<number | null>(null);
   const [processApps, { loading, error }] = useMutation(PROCESS_APPS);
+  const PARTS = 10;
 
   const handleSubmit = async () => {
     try {
       const fullList = Object.values(services);
-      const PARTS = 10;
       const divideBY = Math.floor(fullList.length / PARTS);
 
       if (fullList.length < 4) {
@@ -92,6 +93,8 @@ const ServiceUpload: React.FunctionComponent = () => {
             tags: Object.values(app.tags).map(tag => ({ name: tag[0], weight: tag[1] }))
           };
 
+          // We don't want the scraped logo as their url links to unfavorable places
+          delete returnApp.logo;
           delete returnApp.pricing;
           delete returnApp.categories;
           delete returnApp.id;
@@ -107,15 +110,13 @@ const ServiceUpload: React.FunctionComponent = () => {
             returnApp.teaserdescription = app.description.capterraShort;
           }
 
-          delete returnApp.alternatives;
-          // Maybe needed when Conrad finishes the alternative logic
-          // if (Object.keys(app.alternatives).length > 0) {
-          //   const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
-          //     return { externalid: appID, ...app.alternatives[appID] };
-          //   });
+          if (Object.keys(app.alternatives).length > 0) {
+            const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
+              return { externalid: appID, ...app.alternatives[appID] };
+            });
 
-          //   app.alternatives = normalizedAlternatives;
-          // }
+            returnApp.alternatives = normalizedAlternatives;
+          }
 
           // TODO: [VIP-1336] Add pros and cons when Conrad has the data
 
@@ -129,6 +130,7 @@ const ServiceUpload: React.FunctionComponent = () => {
         const bytes = new TextEncoder().encode(str);
         const blob = new Blob([bytes], { type: "application/json;charset=utf-8" });
 
+        await setProgress(i + 1);
         await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
       }
     } catch (error) {
@@ -186,81 +188,90 @@ const ServiceUpload: React.FunctionComponent = () => {
       ) : jsonError ? (
         <ErrorComp error={jsonError} />
       ) : (
+        <React.Fragment>
+          {Object.values(services).length > 0 && (
+            <select
+              onChange={e => {
+                e.preventDefault();
+                setService(services[e.target.value]);
+              }}>
+              <option value="">Select a Service</option>
+              {Object.values(services).map(service => (
+                <option value={service.id} key={service.id}>
+                  {service.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {service && (
             <React.Fragment>
-              {Object.values(services).length > 0 && (
-                <select
-                  onChange={e => {
-                    e.preventDefault();
-                    setService(services[e.target.value]);
-                  }}>
-                  <option value="">Select a Service</option>
-                  {Object.values(services).map(service => (
-                    <option value={service.id} key={service.id}>
-                      {service.name}
-                    </option>
+              <img src={service.logo} />
+              <ul className="list">
+                <li className="listHeadline">Service Name</li>
+                <li>{service.name}</li>
+              </ul>
+
+              <ul className="list">
+                <li className="listHeadline">Service Website</li>
+                <li>{service.website}</li>
+              </ul>
+
+              {renderList("Descriptions", service.description)}
+              {renderList("Ratings", service.ratings)}
+
+              <ul className="list">
+                <li className="listHeadline">Alternatives</li>
+                {service &&
+                  service.alternatives &&
+                  Object.keys(service.alternatives).map(id => (
+                    <li className="alternatives" key={id}>
+                      <span>Name: {service.alternatives[id].name}</span>
+                      <span>Rating: {service.alternatives[id].rating}</span>
+                      <span>Reviews: {service.alternatives[id].reviews}</span>
+                    </li>
                   ))}
-                </select>
-              )}
+              </ul>
 
-              {service && (
-                <React.Fragment>
-                  <img src={service.logo} />
-                  <ul className="list">
-                    <li className="listHeadline">Service Name</li>
-                    <li>{service.name}</li>
-                  </ul>
+              <ul className="list">
+                <li className="listHeadline">Tags</li>
+                {Object.values(service.tags).map((tag, key) => (
+                  <li key={key}>
+                    <span className="list-key">{tag[0]}:</span>
+                    <span>{tag[1]}</span>
+                  </li>
+                ))}
+              </ul>
 
-                  <ul className="list">
-                    <li className="listHeadline">Service Website</li>
-                    <li>{service.website}</li>
-                  </ul>
-
-                  {renderList("Descriptions", service.description)}
-                  {renderList("Ratings", service.ratings)}
-
-                  <ul className="list">
-                    <li className="listHeadline">Alternatives</li>
-                    {service &&
-                      service.alternatives &&
-                      Object.keys(service.alternatives).map(id => (
-                        <li className="alternatives" key={id}>
-                          <span>Name: {service.alternatives[id].name}</span>
-                          <span>Rating: {service.alternatives[id].rating}</span>
-                          <span>Reviews: {service.alternatives[id].reviews}</span>
-                        </li>
-                      ))}
-                  </ul>
-
-                  <ul className="list">
-                    <li className="listHeadline">Tags</li>
-                    {Object.values(service.tags).map((tag, key) => (
-                      <li key={key}>
-                        <span className="list-key">{tag[0]}:</span>
-                        <span>{tag[1]}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {renderList("Job Distribution", service.JobDistribution)}
-                  {renderList("Company Sizes", service.companySizes)}
-                  {renderList("Industry Distribution", service.industryDistribution)}
-                </React.Fragment>
-              )}
-              <ErrorComp error={error} />
-              {success && (
-                <div className="success">{`Upload of ${
-                  Object.keys(services).length
-                  } Services was successful.`}</div>
-              )}
-
-              <UniversalButton
-                disabled={loading || Object.keys(services).length < 1}
-                type="high"
-                label="Create / Update Apps"
-                onClick={handleSubmit}
-              />
+              {renderList("Job Distribution", service.JobDistribution)}
+              {renderList("Company Sizes", service.companySizes)}
+              {renderList("Industry Distribution", service.industryDistribution)}
             </React.Fragment>
           )}
+
+          <ErrorComp error={error} />
+
+          {loading && (
+            <div className="progress">
+              <label htmlFor="scrapedApps">{`Uploading part ${progress} of ${PARTS}`}</label>
+              <progress id="scrapedApps" max="10" value={progress} />
+            </div>
+          )}
+
+          {success && (
+            <div className="success">{`Upload of ${
+              Object.keys(services).length
+            } Services was successful.`}</div>
+          )}
+
+          <UniversalButton
+            disabled={loading || Object.keys(services).length < 1}
+            type="high"
+            label="Create / Update Apps"
+            onClick={handleSubmit}
+          />
+        </React.Fragment>
+      )}
 
       <button className="button-nav">
         <i className="fal fa-arrow-alt-from-right" />
