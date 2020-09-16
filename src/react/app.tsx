@@ -1,6 +1,7 @@
 import * as React from "react";
 import { withRouter } from "react-router";
-import { graphql, Query, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
@@ -13,12 +14,9 @@ import { filterError } from "./common/functions";
 
 import Popup from "./components/Popup";
 import LoadingDiv from "./components/LoadingDiv";
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import PostLogin from "./pages/postlogin";
 import SignIn from "./pages/signin";
 import { setClient } from "../logger";
-import TwoFactor from "./pages/TwoFactor";
 import HeaderNotificationProvider from "./components/notifications/headerNotificationProvider";
 import HeaderNotificationContext from "./components/notifications/headerNotificationContext";
 import { hashPassword } from "./common/crypto";
@@ -27,7 +25,7 @@ const { session } = remote;
 import "../css/layout.scss";
 import { encryptForUser } from "./common/licences";
 import { decryptLicenceKey } from "./common/passwords";
-import { Expired_Plan, PopUp } from "./interfaces";
+import { Expired_Plan, PopUp, ApolloClientType } from "./interfaces";
 import DevToolsToolBar from "./components/DevToolsToolBar";
 
 const END_IMPERSONATION = gql`
@@ -37,7 +35,7 @@ const END_IMPERSONATION = gql`
 `;
 
 interface AppProps {
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   history: any;
   logoutFunction: Function;
   showPlanFunction: Function;

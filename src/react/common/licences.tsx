@@ -1,12 +1,12 @@
-import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import { getMyUnitId } from "./functions";
 import { encryptLicence } from "./crypto";
 import { decryptLicenceKey } from "./passwords";
+import { ApolloClientType } from "../interfaces";
 export async function createEncryptedLicenceKeyObject(
   key: any,
   forUser: string | null | false | undefined,
-  client: ApolloClient,
+  client: ApolloClientType,
   allowFallback = true
 ) {
   const addKeyForUser = forUser !== undefined;

@@ -2,7 +2,7 @@ import * as React from "react";
 import gql from "graphql-tag";
 import * as moment from "moment";
 import * as ReactDOM from "react-dom";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import { filterError, ErrorComp, renderNotificatonMessage } from "../common/functions";
@@ -169,7 +169,7 @@ class Notification extends React.Component<Props, State> {
         <div className="notificationPopupHeader">
           {`You have ${dataExists ? dataLength : "no"} new notification${
             dataLength == 1 ? "" : "s"
-          }`}
+            }`}
           {!dataExists && refetchButton}
         </div>
 

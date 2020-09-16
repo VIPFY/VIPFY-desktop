@@ -1,13 +1,12 @@
 import * as React from "react";
-import { graphql, Query } from "react-apollo";
-import compose from "lodash.flowright";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import Chart from "react-apexcharts";
 import ResizeAware from "react-resize-aware";
 
 import moment from "moment";
 
-interface State {}
+interface State { }
 
 interface Props {
   fetchUnitApps: { fetchUnitApps: any };
@@ -98,7 +97,7 @@ class BoughtplanUsageChartInner extends React.Component<Props, State> {
       appicon: boughtplan.boughtplan.planid.appid.icon,
       appcolor: boughtplan.boughtplan.planid.appid.color
     }));
-    plans.sort(function(a, b) {
+    plans.sort(function (a, b) {
       return (
         (a.alias ? a.alias : `${a.appname} ${a.id}`) > (b.alias ? b.alias : `${b.appname} ${b.id}`)
       );

@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import Collapsible from "../../common/Collapsible";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
@@ -11,7 +11,7 @@ export const GET_REQUESTS = gql`
   }
 `;
 
-interface Props {}
+interface Props { }
 
 export default (props: Props) => {
   return (

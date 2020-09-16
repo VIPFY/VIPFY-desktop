@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { QUERY_USER } from "../queries/user";
 import { unitPicFolder, defaultPic } from "../common/constants";
 import { getBgImageUser } from "../common/images";
@@ -50,8 +50,8 @@ export default function UserPicture(props: {
         picture = user.profilepicture
           ? user.profilepicture.indexOf("/") != -1
             ? `https://s3.eu-central-1.amazonaws.com/userimages.vipfy.store/${encodeURI(
-                user.profilepicture
-              )}`
+              user.profilepicture
+            )}`
             : encodeURI(unitPicFolder + user.profilepicture)
           : defaultPic;
         const style = {

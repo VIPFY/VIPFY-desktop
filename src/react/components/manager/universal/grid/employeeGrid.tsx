@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import EmployeePicture from "../../../EmployeePicture";
 import { FETCH_EMPLOYEES } from "../../../../queries/departments";
 
@@ -65,11 +65,11 @@ class EmployeeGrid extends React.Component<Props, State> {
                 </div>
               </React.Fragment>
             ) : (
-              <div className="imageHover">
-                <i className="fal fa-trash-alt" />
-                <span>Click to remove</span>
-              </div>
-            )}
+                <div className="imageHover">
+                  <i className="fal fa-trash-alt" />
+                  <span>Click to remove</span>
+                </div>
+              )}
             {employee.services && employee.services.some(s => !s.setupfinished) && (
               <div className="imageError" style={{ cursor: "pointer" }}>
                 <i className="fal fa-exclamation-circle" />
@@ -131,10 +131,10 @@ class EmployeeGrid extends React.Component<Props, State> {
 
             let employees = this.props.search
               ? data.fetchEmployees.filter(e =>
-                  `${e.employee.firstname} ${e.employee.lastname}`
-                    .toUpperCase()
-                    .includes(this.props.search.toUpperCase())
-                )
+                `${e.employee.firstname} ${e.employee.lastname}`
+                  .toUpperCase()
+                  .includes(this.props.search.toUpperCase())
+              )
               : data.fetchEmployees.filter(e => true);
 
             employees.sort(function (a, b) {
@@ -174,13 +174,13 @@ class EmployeeGrid extends React.Component<Props, State> {
                       <span>Click or drag to add</span>
                     </div>
                   ) : (
-                    <React.Fragment>
-                      <div className="greyed" />
-                      <div className="ribbon ribbon-top-right">
-                        <span>Member</span>
-                      </div>
-                    </React.Fragment>
-                  )}
+                      <React.Fragment>
+                        <div className="greyed" />
+                        <div className="ribbon ribbon-top-right">
+                          <span>Member</span>
+                        </div>
+                      </React.Fragment>
+                    )}
                 </div>
               );
             });

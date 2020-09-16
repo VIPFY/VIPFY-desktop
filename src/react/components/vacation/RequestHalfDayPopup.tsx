@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp } from "../../common/functions";

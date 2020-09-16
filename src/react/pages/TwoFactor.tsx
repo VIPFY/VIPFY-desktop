@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import TwoFactorForm from "../common/TwoFactorForm";
 import { ErrorComp } from "../common/functions";
@@ -58,24 +58,24 @@ export default (props: Props) => {
               <ErrorComp error={error} />
             </React.Fragment>
           ) : (
-            <React.Fragment>
-              <div>Please authenticate with your Yubikey</div>
-              <ol type="1">
-                <li>Insert your Yubikey into an available USB port on your machine.</li>
-                <li>
-                  Place the cursor in the empty field. Touch or tap your Yubikey. The empty field
-                  will be filled by the Yubikey.
+              <React.Fragment>
+                <div>Please authenticate with your Yubikey</div>
+                <ol type="1">
+                  <li>Insert your Yubikey into an available USB port on your machine.</li>
+                  <li>
+                    Place the cursor in the empty field. Touch or tap your Yubikey. The empty field
+                    will be filled by the Yubikey.
                 </li>
-              </ol>
+                </ol>
 
-              <UniversalTextInput
-                livevalue={value => console.log(value)}
-                id="yubikey"
-                type="password"
-                label="Password"
-              />
-            </React.Fragment>
-          )}
+                <UniversalTextInput
+                  livevalue={value => console.log(value)}
+                  id="yubikey"
+                  type="password"
+                  label="Password"
+                />
+              </React.Fragment>
+            )}
         </div>
       )}
     </Mutation>

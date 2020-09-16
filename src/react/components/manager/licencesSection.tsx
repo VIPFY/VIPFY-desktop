@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import moment from "moment";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import ServiceDetails from "../../components/manager/serviceDetails";
@@ -40,7 +40,7 @@ class LicencesSection extends React.Component<Props, State> {
           let appArray: JSX.Element[] = [];
 
           if (data.fetchUserLicenceAssignments) {
-            data.fetchUserLicenceAssignments.sort(function (a, b) {
+            [...data.fetchUserLicenceAssignments].sort(function (a, b) {
               let nameA = a.boughtplanid.alias
                 ? a.boughtplanid.alias.toUpperCase()
                 : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
@@ -56,8 +56,7 @@ class LicencesSection extends React.Component<Props, State> {
 
               // namen müssen gleich sein
               return 0;
-            });
-            data.fetchUserLicenceAssignments.forEach((e, k) => {
+            }).forEach((e, k) => {
               if (
                 !e.disabled &&
                 !e.boughtplanid.planid.appid.disabled &&

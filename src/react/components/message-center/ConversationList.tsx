@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { Link } from "react-router-dom";
 
 import LoadingDiv from "../LoadingDiv";
@@ -42,13 +42,13 @@ export default (props: { userid: number }): JSX.Element => {
               const groupname = group.name ? (
                 <span key={group.name}>{group.name}</span>
               ) : (
-                JsxJoin(
-                  grouppartners.map(p => (
-                    <UserName key={p.id} {...props} unitid={p.id} className="user-name" />
-                  )),
-                  <span>, </span>
-                )
-              );
+                  JsxJoin(
+                    grouppartners.map(p => (
+                      <UserName key={p.id} {...props} unitid={p.id} className="user-name" />
+                    )),
+                    <span>, </span>
+                  )
+                );
               const date = group.foundingdate ? new Date(group.foundingdate) : null;
 
               console.log("Grouppartners", grouppartners);
@@ -57,8 +57,8 @@ export default (props: { userid: number }): JSX.Element => {
               ) : grouppartners.length == 1 ? (
                 <UserPicture unitid={grouppartners[0].id} size={"conversation-list-pic"} />
               ) : (
-                <img className="conversation-list-pic" src={defaultPic} />
-              );
+                    <img className="conversation-list-pic" src={defaultPic} />
+                  );
 
               return (
                 <Link

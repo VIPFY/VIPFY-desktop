@@ -1,6 +1,6 @@
 import * as React from "react";
 import { decode } from "jsonwebtoken";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/client/react/hooks";
 import UniversalButton from "../universalButtons/universalButton";
 import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
 import { PW_MIN_LENGTH } from "../../common/constants";
@@ -13,7 +13,6 @@ import {
   decryptLicence
 } from "../../common/crypto";
 import { computePasswordScore } from "../../common/passwords";
-import welcomeImage from "../../../images/forgot-password-new.png";
 import { FETCH_RECOVERY_CHALLENGE } from "../../queries/auth";
 import gql from "graphql-tag";
 import UniversalTextInput from "../universalForms/universalTextInput";
@@ -225,12 +224,12 @@ export default (props: PasswordChangeProps) => {
       {error ? (
         <ErrorComp error={error} />
       ) : (
-        showError() && (
-          <div className="error" style={{ top: "240px" }}>
-            Passwords don't match
-          </div>
-        )
-      )}
+          showError() && (
+            <div className="error" style={{ top: "240px" }}>
+              Passwords don't match
+            </div>
+          )
+        )}
 
       <UniversalButton
         disabled={!canSubmit() || loading}

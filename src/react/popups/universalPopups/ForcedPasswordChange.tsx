@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import { PW_MIN_LENGTH, PW_MIN_STRENGTH } from "../../common/constants";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";

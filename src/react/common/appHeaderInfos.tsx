@@ -1,8 +1,7 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import ChoosePlanBox from "../common/choosePlanBox";
-import ChooseDepartmentBox from "../common/chooseDepartmentBox";
 import { showStars, calculatepartsum } from "../common/functions";
 import { fetchDepartmentsData } from "../queries/departments";
 
@@ -66,8 +65,8 @@ class AppHeaderInfos extends React.Component<Props, State> {
               </div>
             </React.Fragment>
           ) : (
-            "You can only integrate existing accounts"
-          )}
+              "You can only integrate existing accounts"
+            )}
         </div>
       </div>
     );

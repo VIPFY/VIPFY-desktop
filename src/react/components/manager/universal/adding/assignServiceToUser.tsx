@@ -3,7 +3,7 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchApps } from "../../../../queries/products";
 import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
 import SelfSavingIllustrated from "../../../../popups/universalPopups/SelfSavingIllustrated";

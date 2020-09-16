@@ -1,15 +1,14 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
+import { withApollo } from "@apollo/client/react/hoc";
 import { shell } from "electron";
 import { agreeTos } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
+import { ApolloClientType } from "../../interfaces";
 
 interface FirstLoginProps {
   logMeOut: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   setFirstLogin: Function;
 }
 

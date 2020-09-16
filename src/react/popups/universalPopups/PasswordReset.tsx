@@ -4,7 +4,7 @@ import {
   FETCH_USER_SECURITY_OVERVIEW
 } from "../../components/security/graphqlOperations";
 import PopupBase from "./popupBase";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import UserName from "../../components/UserName";
 import { ErrorComp } from "../../common/functions";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -29,38 +29,38 @@ export default (props: Props) => (
             <UniversalButton onClick={() => props.closeFunction()} type="high" label="ok" />
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            {props.bulk ? (
-              <div className="sub-header">
-                Do you really want to force all employees to change their password?
-              </div>
-            ) : (
-              <div className="sub-header">
-                Do you really want to force <UserName unitid={props.unitids[0]} /> to change his
+            <React.Fragment>
+              {props.bulk ? (
+                <div className="sub-header">
+                  Do you really want to force all employees to change their password?
+                </div>
+              ) : (
+                  <div className="sub-header">
+                    Do you really want to force <UserName unitid={props.unitids[0]} /> to change his
                 password?
+                  </div>
+                )}
+              <ErrorComp onClick={props.closeFunction} error={error} className="error-field" />
+
+              {/* Workaround as the Universal Popup does not like Fragments  */}
+              <div style={{ display: "flex", flexFlow: "row", justifyContent: "space-between" }}>
+                <UniversalButton
+                  type="low"
+                  onClick={props.closeFunction}
+                  disabled={loading}
+                  closingPopup={true}
+                  label="no"
+                />
+
+                <UniversalButton
+                  type="low"
+                  disabled={loading}
+                  onClick={() => forceReset({ variables: { userids: [...props.unitids] } })}
+                  label="Yes"
+                />
               </div>
-            )}
-            <ErrorComp onClick={props.closeFunction} error={error} className="error-field" />
-
-            {/* Workaround as the Universal Popup does not like Fragments  */}
-            <div style={{ display: "flex", flexFlow: "row", justifyContent: "space-between" }}>
-              <UniversalButton
-                type="low"
-                onClick={props.closeFunction}
-                disabled={loading}
-                closingPopup={true}
-                label="no"
-              />
-
-              <UniversalButton
-                type="low"
-                disabled={loading}
-                onClick={() => forceReset({ variables: { userids: [...props.unitids] } })}
-                label="Yes"
-              />
-            </div>
-          </React.Fragment>
-        )}
+            </React.Fragment>
+          )}
       </PopupBase>
     )}
   </Mutation>

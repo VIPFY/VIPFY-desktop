@@ -1,7 +1,7 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
@@ -156,8 +156,8 @@ class CreateAccount extends React.Component<Props, State> {
                         </option>
                       </select>
                     ) : (
-                      this.props.orbit.options.predomain
-                    )
+                        this.props.orbit.options.predomain
+                      )
                   }
                   suffix={this.state.selfhosting ? undefined : this.props.orbit.options.afterdomain}
                 />
@@ -267,11 +267,11 @@ class CreateAccount extends React.Component<Props, State> {
                       } else {
                         logindata.loginurl = `${this.props.orbit.options.predomain || ""}${
                           this.state.loginurl
-                        }${this.props.orbit.options.afterdomain || ""}`;
+                          }${this.props.orbit.options.afterdomain || ""}`;
 
                         options.loginurl = `${this.props.orbit.options.predomain || ""}${
                           this.state.loginurl
-                        }${this.props.orbit.options.afterdomain || ""}`;
+                          }${this.props.orbit.options.afterdomain || ""}`;
                       }
                     }
                     let employeeOrbitid = undefined;
@@ -319,20 +319,20 @@ class CreateAccount extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                  }`}>
+                    }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                    }`}></div>
+                      }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                  }`}>
+                    }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                    }`}>
+                      }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}

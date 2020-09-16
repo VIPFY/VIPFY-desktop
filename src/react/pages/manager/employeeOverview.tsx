@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchDepartmentsData } from "../../queries/departments";
 import { now } from "moment";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";

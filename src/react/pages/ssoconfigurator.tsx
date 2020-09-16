@@ -1,6 +1,5 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
-import WebView from "react-electron-web-view";
+import { withApollo } from "@apollo/client/react/hoc";
 import Manager from "../components/ssoconfig/manager";
 
 interface Props {
@@ -83,8 +82,8 @@ class SsoConfigurator extends React.PureComponent<Props, State> {
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
-              }`}
-              //onClick={this.toggle}
+                }`}
+            //onClick={this.toggle}
             />
             <span>SSO Configurator</span>
           </div>
