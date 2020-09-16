@@ -1,7 +1,5 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import { shell } from "electron";
 import path from "path";
 import moment from "moment";
@@ -11,7 +9,7 @@ import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
-import { App, AppContextContent } from "../interfaces";
+import { App, AppContextContent, ApolloClientType } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (
@@ -153,7 +151,7 @@ const DUMMY_QUERY = gql`
   }
 `;
 
-export const refetchQueries = async (client: ApolloClient<InMemoryCache>, queries: string[]) => {
+export const refetchQueries = async (client: ApolloClientType, queries: string[]) => {
   // refetchQueries of the mutate functions can refetch observed queries by name,
   // using the variables used by the query observer
   // that's the easiest way to get this functionality

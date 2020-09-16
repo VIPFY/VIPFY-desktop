@@ -5,7 +5,8 @@ import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, Query } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchCompanyTeams, fetchTeams, fetchUserLicences } from "../../../../queries/departments";
@@ -268,138 +269,138 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                 </Tag>
               </div>
             ) : (
-              <>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "20px",
-                    marginTop: "14px",
-                    position: "relative"
-                  }}>
-                  <span style={{ lineHeight: "12px", width: "84px" }}></span>
-                  {this.showTeamOrbits().length > 0 && (
-                    <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
-                  )}
-                </div>
-                {this.showTeamOrbits()}
-              </>
-            )}
-          </>
-        ) : (
-          <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
-            {({ loading, error = null, data }) => {
-              if (loading) {
-                return <div>Loading...</div>;
-              }
-              if (error) {
-                return <div>Error! {error.message}</div>;
-              }
-              const teams = data.fetchCompanyTeams;
-              return (
                 <>
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      marginBottom: "24px",
+                      marginBottom: "20px",
+                      marginTop: "14px",
                       position: "relative"
                     }}>
-                    <span style={{ lineHeight: "24px", width: "84px" }}>Team:</span>
-                    <UniversalDropDownInput
-                      id="employee-search-new"
-                      label="Search for teams"
-                      options={teams}
-                      noFloating={true}
-                      resetPossible={true}
-                      width="300px"
-                      codeFunction={team => team.unitid.id}
-                      nameFunction={team => team.name}
-                      renderOption={(possibleValues, i, click, value) => (
-                        <div
-                          key={`searchResult-${i}`}
-                          className="searchResult"
-                          onClick={() => click(possibleValues[i])}>
-                          <span className="resultHighlight">
-                            {possibleValues[i].name.substring(0, value.length)}
-                          </span>
-                          <span>{possibleValues[i].name.substring(value.length)}</span>
-                        </div>
-                      )}
-                      alternativeText={inputelement => (
-                        <span
-                          className="inputInsideButton"
-                          style={{
-                            width: "auto",
-                            backgroundColor: "transparent",
-                            cursor: "text"
-                          }}>
-                          <span
-                            onClick={() => inputelement.focus()}
-                            style={{ marginRight: "4px", fontSize: "12px" }}>
-                            Start typing or
-                          </span>
-                          <UniversalButton
-                            type="low"
-                            tabIndex={-1}
-                            onClick={() => {
-                              this.setState({ showall: true });
-                            }}
-                            label="show all"
-                            customStyles={{ lineHeight: "24px" }}
-                          />
-                        </span>
-                      )}
-                      startvalue=""
-                      livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
-                      fewResults={true}
-                      livevalue={v => this.setState({ value: v })}
-                    />
-                    {this.state.newTeam && (
-                      <PopupBase
-                        small={true}
-                        close={() => this.setState({ newTeam: false })}
-                        additionalclassName="formPopup">
-                        <AddTeamGeneralData
-                          close={() => this.setState({ newTeam: false })}
-                          savingFunction={so => {
-                            if (so.action == "success") {
-                              this.setState({ newTeam: false, team: so.content });
-                            }
-                          }}
-                          addteam={{ name: this.state.value }}
-                        />
-                      </PopupBase>
+                    <span style={{ lineHeight: "12px", width: "84px" }}></span>
+                    {this.showTeamOrbits().length > 0 && (
+                      <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
                     )}
                   </div>
-                  {this.state.showall && (
-                    <PopupBase
-                      nooutsideclose={true}
-                      small={true}
-                      close={() => this.setState({ showall: false })}
-                      buttonStyles={{ justifyContent: "space-between" }}>
-                      <h1>All Teams</h1>
-                      {teams.map(team => (
-                        <div className="listingDiv" key={team.id}>
-                          <UniversalButton
-                            type="low"
-                            label={team.name}
-                            onClick={() => {
-                              this.setState({ showall: false });
-                              this.setState({ team: team });
-                            }}
-                            customButtonStyles={{ maxWidth: "100%" }}
-                          />
-                        </div>
-                      ))}
-                      <UniversalButton type="low" label="Cancel" closingPopup={true} />
-                    </PopupBase>
-                  )}
+                  {this.showTeamOrbits()}
                 </>
-              );
-            }}
-          </Query>
-        )}
+              )}
+          </>
+        ) : (
+            <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchCompanyTeams}>
+              {({ loading, error = null, data }) => {
+                if (loading) {
+                  return <div>Loading...</div>;
+                }
+                if (error) {
+                  return <div>Error! {error.message}</div>;
+                }
+                const teams = data.fetchCompanyTeams;
+                return (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "24px",
+                        position: "relative"
+                      }}>
+                      <span style={{ lineHeight: "24px", width: "84px" }}>Team:</span>
+                      <UniversalDropDownInput
+                        id="employee-search-new"
+                        label="Search for teams"
+                        options={teams}
+                        noFloating={true}
+                        resetPossible={true}
+                        width="300px"
+                        codeFunction={team => team.unitid.id}
+                        nameFunction={team => team.name}
+                        renderOption={(possibleValues, i, click, value) => (
+                          <div
+                            key={`searchResult-${i}`}
+                            className="searchResult"
+                            onClick={() => click(possibleValues[i])}>
+                            <span className="resultHighlight">
+                              {possibleValues[i].name.substring(0, value.length)}
+                            </span>
+                            <span>{possibleValues[i].name.substring(value.length)}</span>
+                          </div>
+                        )}
+                        alternativeText={inputelement => (
+                          <span
+                            className="inputInsideButton"
+                            style={{
+                              width: "auto",
+                              backgroundColor: "transparent",
+                              cursor: "text"
+                            }}>
+                            <span
+                              onClick={() => inputelement.focus()}
+                              style={{ marginRight: "4px", fontSize: "12px" }}>
+                              Start typing or
+                          </span>
+                            <UniversalButton
+                              type="low"
+                              tabIndex={-1}
+                              onClick={() => {
+                                this.setState({ showall: true });
+                              }}
+                              label="show all"
+                              customStyles={{ lineHeight: "24px" }}
+                            />
+                          </span>
+                        )}
+                        startvalue=""
+                        livecode={c => this.setState({ team: teams.find(a => a.unitid.id == c) })}
+                        fewResults={true}
+                        livevalue={v => this.setState({ value: v })}
+                      />
+                      {this.state.newTeam && (
+                        <PopupBase
+                          small={true}
+                          close={() => this.setState({ newTeam: false })}
+                          additionalclassName="formPopup">
+                          <AddTeamGeneralData
+                            close={() => this.setState({ newTeam: false })}
+                            savingFunction={so => {
+                              if (so.action == "success") {
+                                this.setState({ newTeam: false, team: so.content });
+                              }
+                            }}
+                            addteam={{ name: this.state.value }}
+                          />
+                        </PopupBase>
+                      )}
+                    </div>
+                    {this.state.showall && (
+                      <PopupBase
+                        nooutsideclose={true}
+                        small={true}
+                        close={() => this.setState({ showall: false })}
+                        buttonStyles={{ justifyContent: "space-between" }}>
+                        <h1>All Teams</h1>
+                        {teams.map(team => (
+                          <div className="listingDiv" key={team.id}>
+                            <UniversalButton
+                              type="low"
+                              label={team.name}
+                              onClick={() => {
+                                this.setState({ showall: false });
+                                this.setState({ team: team });
+                              }}
+                              customButtonStyles={{ maxWidth: "100%" }}
+                            />
+                          </div>
+                        ))}
+                        <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                      </PopupBase>
+                    )}
+                  </>
+                );
+              }}
+            </Query>
+          )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
           <UniversalButton
@@ -410,7 +411,7 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
                 this.state.team &&
                 !this.state.team.employees.find(e => e.id == this.props.employee.id) &&
                 this.state.orbitassignment.filter(oa => oa.account && oa.account.id).length ==
-                  this.state.team.services.length
+                this.state.team.services.length
               )
             }
             onClick={async () => {
@@ -445,20 +446,20 @@ class AssignNewTeamMemberFromMember extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

@@ -68,7 +68,10 @@ if (!fast) {
         }
       }
     ],
-    exclude: path.resolve(__dirname, "src")
+    exclude: [
+      path.resolve(__dirname, "src"),
+      path.resolve(__dirname, "node_modules/@vipfy-private")
+    ]
   });
 }
 

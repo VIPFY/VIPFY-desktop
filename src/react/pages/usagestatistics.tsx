@@ -3,7 +3,7 @@ import AppTable from "../components/billing/AppTable";
 import AppUsageComanywideChart from "../components/usage/AppUsageCompanywideChart";
 import UniversalSearchBox from "../components/universalSearchBox";
 import SingleStatistic from "../components/usage/SingleStatistic";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { FETCH_TOTAL_APP_USAGE } from "../queries/products";
 
 interface Props {
@@ -41,7 +41,7 @@ export default (props: Props) => {
             return null;
           }
 
-          const mostUsed = usage.sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
+          const mostUsed = [...usage].sort((a, b) => b.totalminutes - a.totalminutes).slice(0, 3);
 
           const total = usage.reduce((sum, cur) => sum + cur.totalminutes, 0);
 

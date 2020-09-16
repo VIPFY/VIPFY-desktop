@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/client/react/hooks";
 import { Link } from "react-router-dom";
 import UniversalButton from "../universalButtons/universalButton";
 import { App, CompanySizes, IndustryDistribution } from "../../interfaces";

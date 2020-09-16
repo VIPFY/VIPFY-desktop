@@ -1,163 +1,155 @@
-import { ApolloClient } from "apollo-client";
-import { ApolloLink, split } from "apollo-link";
-import { setContext } from "apollo-link-context";
-import { WebSocketLink } from "apollo-link-ws";
-import { createUploadLink } from "apollo-upload-client";
-import { BatchHttpLink } from "apollo-link-batch-http";
-import { RetryLink } from "apollo-link-retry";
-import { onError } from "apollo-link-error";
+import { ApolloClient, ApolloLink, split, InMemoryCache } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { WebSocketLink } from "@apollo/client/link/ws";
+import { BatchHttpLink } from "@apollo/client/link/batch-http";
+import { RetryLink } from "@apollo/client/link/retry";
+import { onError } from "@apollo/client/link/error";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createUploadLink } from "apollo-upload-client"; // not from the apollo project
 import { inspect } from "util";
 import Store from "electron-store";
 import os from "os";
 import { v4 as uuid } from "uuid";
-import { getMainDefinition } from "apollo-utilities";
-import { InMemoryCache, defaultDataIdFromObject } from "apollo-cache-inmemory";
 import config from "../configurationManager";
-import { logger } from "../logger";
 import { typeDefs, resolvers } from "./localGraphQL";
-
-interface MemoryObject {
-  __typename: string;
-  [someProp: string]: any;
-}
+import { KeyFieldsFunction } from "@apollo/client/cache/inmemory/policies";
 
 const SERVER_NAME = config.backendHost;
 const SERVER_PORT = config.backendPort;
 // eslint-disable-next-line
 const secure = config.backendSSL ? "s" : "";
 
+const makeUnitIdTypePolicy = (typename?: string): KeyFieldsFunction => (object, _context) => {
+  if (!typename) {
+    typename = object.__typename;
+  }
+  if (object.id !== undefined) {
+    return `${typename}:${object.id}`;
+  } else if (object.unitid && typeof object.unitid == "object" && object.unitid.id !== undefined) {
+    return `${typename}:${object.unitid.id}`;
+  } else if (object.unit && typeof object.unit == "object" && object.unit.id !== undefined) {
+    return `${typename}:${object.unit.id}`;
+  } else {
+    return null;
+  }
+}
+
+const makeEmailTypePolicy = (localTypename?: string): KeyFieldsFunction => (object, _context) => {
+  if (!localTypename) {
+    localTypename = object.__typename;
+  }
+  if (object.email !== undefined) {
+    return `${localTypename}:${object.email}`;
+  } else {
+    return null;
+  }
+}
+
+const makeIdTypePolicy = (localTypename?: string): KeyFieldsFunction => (object, _context) => {
+  if (!localTypename) {
+    localTypename = object.__typename;
+  }
+  if (object.id !== undefined) {
+    return `${localTypename}:${object.id}`;
+  } else {
+    return null;
+  }
+}
+
+const makeAssignmentIdTypePolicy = (localTypename?: string): KeyFieldsFunction => (object, _context) => {
+  if (!localTypename) {
+    localTypename = object.__typename;
+  }
+  if (object.assignmentid !== undefined) {
+    return `${localTypename}:${object.assignmentid}`;
+  } else {
+    return null;
+  }
+}
+
 const cache = new InMemoryCache({
-  dataIdFromObject: (object: MemoryObject) => {
-    switch (object.__typename) {
-      case "AppUsage":
-        if (object.app && object.app.id !== undefined) {
-          return `${object.__typename}:${object.app.id}`;
-        } else {
-          return null;
-        }
-      case "Newsletter":
-        if (object.email !== undefined) {
-          return `${object.__typename}:${object.email}`;
-        } else {
-          return null;
-        }
-      case "Email":
-        if (object.email !== undefined) {
-          return `${object.__typename}:${object.email}`;
-        } else {
-          return null;
-        }
-      case "Department":
-        if (object.id !== undefined) {
-          return `${object.__typename}:${object.id}`;
-        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `${object.__typename}:${object.unitid.id}`;
-        } else if (object.unit !== undefined && object.unit.id !== undefined) {
-          return `${object.__typename}:${object.unit.id}`;
-        } else {
-          return null;
-        }
-      case "Team":
-        if (object.id !== undefined) {
-          return `${object.__typename}:${object.id}`;
-        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `${object.__typename}:${object.unitid.id}`;
-        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `${object.__typename}:${object.unitid.id}`;
-        } else {
-          return null;
-        }
-      case "PublicTeam":
-        if (object.id !== undefined) {
-          return `Team:${object.id}`;
-        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `Team:${object.unitid.id}`;
-        } else if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `Team:${object.unitid.id}`;
-        } else {
-          return null;
-        }
-      case "emp":
-        if (object.employeeid !== undefined) {
-          return `${object.__typename}:${object.employeeid}`;
-        } else {
-          return null;
-        }
-      case "ReviewHelpful":
-        if (object.reviewid && object.reviewid.id !== undefined) {
-          return `${object.__typename}:${object.reviewid.id}`;
-        } else {
-          return null;
-        }
-      case "DepartmentData":
-        if (object.unitid !== undefined && object.unitid.id !== undefined) {
-          return `${object.__typename}:${object.unitid.id}`;
-        } else {
-          return null;
-        }
-      case "DepartmentEmail":
-        if (object.email !== undefined) {
-          return `${object.__typename}:${object.email}`;
-        } else {
-          return null;
-        }
-      case "PublicUser":
-        if (object.id !== undefined) {
-          return `User:${object.id}`;
-        } else {
-          return null;
-        }
-      case "SemiPublicUser":
-        if (object.id !== undefined) {
-          return `User:${object.id}`;
-        } else {
-          return null;
-        }
-      case "Licence":
-        if (
-          object.id !== undefined &&
-          object.unitid !== undefined &&
-          object.unitid &&
-          object.unitid.id !== undefined
-        ) {
-          return `Licence:${object.id}:${object.unitid ? object.unitid.id : "null"}`;
-        } else {
-          return null;
-        }
-      case "LicenceAssignment":
-        if (object.assignmentid !== undefined) {
-          return `LicenceAssignment:${object.assignmentid}`;
-        } else {
-          return null;
-        }
-      case "TerminateAssignment":
-        if (object.assignmentid !== undefined) {
-          return `LicenceAssignment:${object.assignmentid}`;
-        } else {
-          return null;
-        }
-      default:
-        return defaultDataIdFromObject(object);
-    }
-  },
-  cacheRedirects: {
+  typePolicies: {
+    // reconfigure some typePolicies to either use a different key as id or to treat
+    // different GraphQL types as identical for cache purposes, so that e.g. a Query
+    // returning a PublicUser also updates SemiPublicUser results
+    AppUsage: {
+      keyFields: (object, _context) =>
+        (object.app && object.app.id !== undefined) ? `${object.__typename}:${object.app.id}` : null
+    },
+    Newsletter: {
+      keyFields: makeEmailTypePolicy()
+    },
+    Email: {
+      keyFields: makeEmailTypePolicy()
+    },
+    Department: {
+      keyFields: makeUnitIdTypePolicy()
+    },
+    Team: {
+      keyFields: makeUnitIdTypePolicy("Team")
+    },
+    PublicTeam: {
+      keyFields: makeUnitIdTypePolicy("Team")
+    },
+    ReviewHelpful: {
+      keyFields: (object, _context) =>
+        (object.reviewid && object.reviewid.id !== undefined) ? `${object.__typename}:${object.reviewid.id}` : null
+    },
+    DepartmentData: {
+      keyFields: makeUnitIdTypePolicy()
+    },
+    DepartmentEmail: {
+      keyFields: makeUnitIdTypePolicy()
+    },
+    User: {
+      keyFields: makeIdTypePolicy("User")
+    },
+    PublicUser: {
+      keyFields: makeIdTypePolicy("User")
+    },
+    SemiPublicUser: {
+      keyFields: makeIdTypePolicy("User")
+    },
+    Licence: {
+      // licences are only unique for each combination of id and unitid
+      keyFields: (object, _context) =>
+        (object.id !== undefined && object.unitid && object.unitid.id !== undefined) ? `Licence:${object.id}:${object.unitid ? object.unitid.id : "null"}` : null
+    },
+    LicenceAssignment: {
+      keyFields: makeAssignmentIdTypePolicy("LicenceAssignment")
+    },
+    TerminateAssignment: {
+      keyFields: makeAssignmentIdTypePolicy("LicenceAssignment")
+    },
+
+    // define how queries might be satisfied from cache
     Query: {
-      fetchPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid }),
-      fetchSemiPublicUser: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "User", id: args.userid }),
-      fetchTeam: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Team", id: args.teamid }),
-      fetchPublicTeam: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Team", id: args.teamid }),
-      fetchAppById: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "AppDetails", id: args.id }),
-      fetchLicence: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Licence", id: args.licenceid }),
-      fetchOrbit: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Orbit", id: args.orbitid }),
-      fetchKey: (_, args, { getCacheKey }) =>
-        getCacheKey({ __typename: "Key", id: args.id }),
+      fields: {
+        fetchPublicUser(_, { args, toReference }) {
+          return toReference({ __typename: "PublicUser", id: args.userid })
+        },
+        fetchSemiPublicUser(_, { args, toReference }) {
+          return toReference({ __typename: "SemiPublicUser", id: args.userid })
+        },
+        fetchTeam(_, { args, toReference }) {
+          return toReference({ __typename: "Team", unitid: { id: args.teamid } })
+        },
+        fetchPublicTeam(_, { args, toReference }) {
+          return toReference({ __typename: "PublicTeam", unitid: { id: args.teamid } })
+        },
+        fetchAppById(_, { args, toReference }) {
+          return toReference({ __typename: "App", id: args.id })
+        },
+        fetchLicence(_, { args, toReference }) {
+          return toReference({ __typename: "Licence", unitid: { id: args.licenceid } })
+        },
+        fetchOrbit(_, { args, toReference }) {
+          return toReference({ __typename: "Orbit", unitid: { id: args.orbitid } })
+        },
+        fetchKey(_, { args, toReference }) {
+          return toReference({ __typename: "Key", unitid: { id: args.id } })
+        },
+      }
     }
   }
 });
@@ -247,7 +239,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       if (data && data.code == 401) {
         logout();
       } else if (data && data.code == 403) {
-        return logger.error(
+        return console.error(
           `[RightsError]: Message: ${message}, Seems like a user doesn't have the neccessary rights`
         );
       } else if (data && data.code == 402) {
@@ -256,7 +248,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
         handleUpgradeError();
       }
 
-      return logger.error(
+      return console.error(
         `[GraphQLError]: Message: ${message}, Type: ${name}, Location: ${locations}, Path: ${path}`
       );
     });
@@ -267,7 +259,7 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
       type: "error",
       key: "network"
     });
-    logger.warn(`[Network error]: ${networkError}`);
+    console.warn(`[Network error]: ${networkError}`);
   }
 });
 
@@ -290,8 +282,8 @@ const httpLinkWithMiddleware = retryLink.concat(
 // Split the links, so that each can be used for the defined operation
 const link = split(
   ({ query }) => {
-    const { kind, operation } = getMainDefinition(query);
-    return kind === "OperationDefinition" && operation === "subscription";
+    const def = getMainDefinition(query);
+    return def.kind === "OperationDefinition" && def.operation === "subscription";
   },
   wsLink,
   httpLinkWithMiddleware

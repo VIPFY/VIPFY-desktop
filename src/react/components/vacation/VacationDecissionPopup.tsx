@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import UserName from "../UserName";
 import { FETCH_VACATION_REQUESTS } from "./graphql";
 import { ErrorComp } from "../../common/functions";

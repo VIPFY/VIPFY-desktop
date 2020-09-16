@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { Link } from "react-router-dom";
 import GenericInputForm from "../GenericInputForm";
@@ -317,7 +317,7 @@ class ServiceCreationExternal extends React.PureComponent<Props, State> {
       const iconDataArray = new Uint8Array(
         atob(iconDataEncoded)
           .split("")
-          .map(function(c) {
+          .map(function (c) {
             return c.charCodeAt(0);
           })
       );

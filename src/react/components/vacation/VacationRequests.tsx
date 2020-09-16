@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import Collapsible from "../../common/Collapsible";
 import EmployeePicture from "../EmployeePicture";
 import UserName from "../../components/UserName";
@@ -144,20 +144,20 @@ const VacationRequestRow = ({ employee }) => {
           </span>
         </React.Fragment>
       ) : (
-        <React.Fragment>
-          <div>User not set up yet for this year</div>
-          <div>
-            <UniversalButton
-              onClick={e => {
-                e.stopPropagation();
-                setShowConfig(true);
-              }}
-              label="set up"
-              type="high"
-            />
-          </div>
-        </React.Fragment>
-      )}
+          <React.Fragment>
+            <div>User not set up yet for this year</div>
+            <div>
+              <UniversalButton
+                onClick={e => {
+                  e.stopPropagation();
+                  setShowConfig(true);
+                }}
+                label="set up"
+                type="high"
+              />
+            </div>
+          </React.Fragment>
+        )}
 
       <div className={`add-info${showInfo ? "-show" : ""}`}>
         <div className="headline">Start Date</div>
@@ -188,8 +188,8 @@ const VacationRequestRow = ({ employee }) => {
                 type="high"
               />
             ) : (
-              <div></div>
-            )}
+                  <div></div>
+                )}
 
             {request.status == "REJECTED" ? (
               moment(request.decided).format("LL")
@@ -204,8 +204,8 @@ const VacationRequestRow = ({ employee }) => {
                 type="high"
               />
             ) : (
-              <div></div>
-            )}
+                  <div></div>
+                )}
 
             {showDecissionPopup == request.id && (
               <VacationDecissionPopup

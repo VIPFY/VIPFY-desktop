@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, graphql } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
@@ -108,7 +109,7 @@ const Service = (props: Props) => {
 
   return (
     <Query query={FETCH_APP} variables={{ id: props.appid }}>
-      {({ data, loading, error }) => {
+      {({ data, loading, error = null }) => {
         if (loading) {
           return <LoadingDiv />;
         }

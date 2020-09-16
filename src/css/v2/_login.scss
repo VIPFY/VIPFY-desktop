@@ -1,7 +1,7 @@
 .loginHolder {
   height: 100%;
   width: 100%;
-  background-color: $lightgrey-lighter;
+  background-color: #eaf1f8;
   background-image: url("../../images/loginBackground_large.png");
   background-repeat: no-repeat;
   background-size: contain;
@@ -16,6 +16,7 @@
     margin-right: 10%;
     border-radius: 20px;
     padding: 16px;
+    box-shadow: 0px 6px 10px #00000026;
 
     h1 {
       line-height: 32px;
@@ -36,6 +37,9 @@
       cursor: pointer;
       font-size: 14px;
       line-height: 19px;
+    }
+    span + a {
+      margin-left: 12px;
     }
 
     .footerLinks {
@@ -63,28 +67,30 @@
 
     #recovery-form {
       margin: 24px 0 30px;
-      display: grid;
-      align-items: center;
-      justify-items: center;
-      grid-row-gap: 16px;
-      grid-template-columns: repeat(auto-fill, minmax(16px, 32px));
 
       i {
+        width: 8px;
+        margin: 0px 5px;
+        font-size: 11px;
         &:last-of-type {
           display: none;
         }
       }
 
       input {
-        grid-column: span 2;
-        width: 64px;
-        height: 32px;
+        width: 38px;
+        height: 28px;
+        font-size: 11px;
+        color: $midgrey-dark;
         text-align: center;
-        border-radius: 4px;
-        background-color: $lightgrey-lightest;
-        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.14);
         outline: none;
-        border: 0;
+        border: 1px solid $lightgrey-darker;
+        border-radius: 8px;
+        opacity: 1;
+
+        &:first-of-type() {
+          margin-bottom: 16px;
+        }
       }
 
       &:invalid + div > button:last-of-type > .universalButton {
@@ -107,6 +113,9 @@
       top: 340px;
       font-size: 12px;
       color: $red-darker;
+    }
+    .universalHelperText {
+      font-size: 12px;
     }
   }
 }

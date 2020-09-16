@@ -3,7 +3,7 @@ import moment from "moment";
 import gql from "graphql-tag";
 import UniversalSearchBox from "../../components/universalSearchBox";
 import UniversalButton from "../../components/universalButtons/universalButton";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { fetchCompanyServices } from "../../queries/products";
@@ -217,19 +217,19 @@ class ServiceOverview extends React.Component<Props, State> {
                 </span>
               </div>
             ) : (
-              <div className="tableColumnSmall">
-                <div
-                  className="managerSquare"
-                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                  {service.orbitids.length}
+                <div className="tableColumnSmall">
+                  <div
+                    className="managerSquare"
+                    style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                    {service.orbitids.length}
+                  </div>
+                  <div
+                    className="managerSquare"
+                    style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
+                    {accounts.length}
+                  </div>
                 </div>
-                <div
-                  className="managerSquare"
-                  style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                  {accounts.length}
-                </div>
-              </div>
-            )}
+              )}
             <ColumnTeams teams={teams} teamidFunction={team => team} />
             <ColumnEmployees
               employees={singleAccounts}
@@ -347,13 +347,13 @@ class ServiceOverview extends React.Component<Props, State> {
                               this.state.sortforward ? (
                                 <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                               ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
+                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                                )
                             ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
+                                <i
+                                  className="fas fa-sort"
+                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                              )}
                           </h1>
                         </div>
                         <div className="tableColumnSmall">
@@ -380,7 +380,7 @@ class ServiceOverview extends React.Component<Props, State> {
               let services: any[] = [];
               let interservices: any[] = [];
               if (data && data.fetchCompanyServices) {
-                interservices = data.fetchCompanyServices;
+                interservices = [...data.fetchCompanyServices];
                 let sortforward = this.state.sortforward;
 
                 //sortselection
@@ -430,13 +430,13 @@ class ServiceOverview extends React.Component<Props, State> {
                             this.state.sortforward ? (
                               <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
                             ) : (
-                              <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                            )
+                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
+                              )
                           ) : (
-                            <i
-                              className="fas fa-sort"
-                              style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                          )}
+                              <i
+                                className="fas fa-sort"
+                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
+                            )}
                         </div>
                         <div className="tableColumnSmall">
                           <h1>Orbits/Accounts</h1>

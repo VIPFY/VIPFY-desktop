@@ -1,3 +1,5 @@
+import { ApolloClient } from "@apollo/client";
+
 export interface Licence {
   id: string;
   pending: boolean;
@@ -340,3 +342,4 @@ export interface AppContextContent {
 }
 
 export type MoveToType = (string) => void;
+export type ApolloClientType = ApolloClient<object>

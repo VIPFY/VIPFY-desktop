@@ -43,7 +43,7 @@ class DropDownWithIcon extends React.Component<Props, State> {
         {this.props.dropDownComponent.showOnHover ? (
           <div className={`dropdown-button-hover`}>
             <i className="far fa-ellipsis-v"></i>
-            <div className="dropdown-content">{this.props.dropDownComponent.component}</div>
+            <div className="dropdown-content">{this.props.dropDownComponent}</div>
           </div>
         ) : (
           <div
@@ -57,7 +57,7 @@ class DropDownWithIcon extends React.Component<Props, State> {
               style={{
                 display: this.state.showResult && "flex"
               }}>
-              {this.props.dropDownComponent.component}
+              {this.props.dropDownComponent}
             </div>
           </div>
         )}

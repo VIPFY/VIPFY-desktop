@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Mutation, useQuery } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
+import { useQuery } from "@apollo/client/react/hooks";
 import gql from "graphql-tag";
 import { decode } from "jsonwebtoken";
-import passwordForgot from "../../../images/forgot-password-new.png";
 import UniversalButton from "../universalButtons/universalButton";
-import { ErrorComp, base64ToArrayBuffer } from "../../common/functions";
+import { base64ToArrayBuffer } from "../../common/functions";
 import { emailRegex } from "../../common/constants";
 import { decryptMessage } from "../../common/crypto";
 import LoadingDiv from "../LoadingDiv";
@@ -188,27 +188,27 @@ export default (props: Props) => {
                 {loading ? (
                   <LoadingDiv />
                 ) : (
-                  !queryError && (
-                    <React.Fragment>
-                      <p style={{ textAlign: "left" }}>
-                        To reset your password, enter the recovery code you got when you created
-                        your account.
+                    !queryError && (
+                      <React.Fragment>
+                        <p style={{ textAlign: "left" }}>
+                          To reset your password, enter the recovery code you got when you created
+                          your account.
                       </p>
 
-                      <form onSubmit={handleSubmit} id="recovery-form">
-                        {renderRows(fields)}
-                      </form>
-                      {(e2 || queryError || localError) && (
-                        <span className="error">
-                          <i
-                            className="fal fa-exclamation-circle"
-                            style={{ marginRight: "4px" }}></i>
+                        <form onSubmit={handleSubmit} id="recovery-form">
+                          {renderRows(fields)}
+                        </form>
+                        {(e2 || queryError || localError) && (
+                          <span className="error">
+                            <i
+                              className="fal fa-exclamation-circle"
+                              style={{ marginRight: "4px" }}></i>
                           Email and recovery key don’t match.
-                        </span>
-                      )}
-                    </React.Fragment>
-                  )
-                )}
+                          </span>
+                        )}
+                      </React.Fragment>
+                    )
+                  )}
               </React.Fragment>
             );
           }}
@@ -216,7 +216,9 @@ export default (props: Props) => {
       )}
 
       <span>Can’t find your recovery code? </span>
-      <a href="mailto: support@vipfy.store">Contact Support</a>
+      <a href="mailto:support@vipfy.store" style={{ marginLeft: "12px" }}>
+        Contact Support
+      </a>
       <UniversalButton
         label={email && email.match(emailRegex) ? "Reset Password" : "Next"}
         form="recovery-form"

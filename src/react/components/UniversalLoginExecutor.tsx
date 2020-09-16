@@ -9,7 +9,7 @@ import { remote } from "electron";
 import { parse } from "url";
 import psl from "psl";
 import gql from "graphql-tag";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import brain from "brain.js";
 import PopupBase from "../popups/universalPopups/popupBase";
 import {
@@ -551,7 +551,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             };
 
           let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "/profile" ${
-            this.props.individualShow ? `, "${this.props.individualShow}"` : ""
+          this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           
           return loginarray;
@@ -1037,7 +1037,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         }, this.screenshotDelay);
       }
     } else {
-      this.props.setResult(resultValues, "");
+      this.props.setResult(resultValues, "", !this.props.execute);
     }
   }
 
@@ -1075,7 +1075,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       }
     }
 
-    if (this.webview && (await this.isLoggedIn(this.webview))) {
+    if (this.webview && !this.props.continueExecute && (await this.isLoggedIn(this.webview))) {
       await this.sendResult({ ...this.loginState, loggedIn: true, direct: true, error: false });
       this.progressCallbackRunning = false;
       return;
@@ -1162,8 +1162,8 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
       case "loaded":
         {
           this.loginState.unloaded = false;
-
           if (
+            !this.props.continueExecute &&
             !this.loginState.passwordEntered &&
             this.webview &&
             (await this.isLoggedIn(this.webview))
@@ -1251,7 +1251,11 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
         break;
       case "getLoginData":
         {
-          if (!this.loginState.passwordEntered && (await this.isLoggedIn(e.target))) {
+          if (
+            !this.loginState.passwordEntered &&
+            !this.props.continueExecute &&
+            (await this.isLoggedIn(e.target))
+          ) {
             this.sendResult({ ...this.loginState, loggedIn: true, error: false, direct: true });
 
             return; //we are done with login

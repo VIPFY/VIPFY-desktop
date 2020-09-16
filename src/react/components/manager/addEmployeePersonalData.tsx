@@ -5,7 +5,7 @@ import Dropzone from "react-dropzone";
 import EmployeeGerneralDataAdd from "./universal/adding/employeeGeneralDataAdd";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { parseName } from "humanparser";

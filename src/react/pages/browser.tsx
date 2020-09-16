@@ -1,6 +1,6 @@
 import * as React from "react";
 import { v4 as uuid } from "uuid";
-import { withApollo, graphql } from "react-apollo";
+import { withApollo, graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { parse } from "url";
@@ -411,7 +411,7 @@ class Browser extends React.Component<Props, State> {
       this.state.tabs.find(t => t.active) &&
       this.state.tabs.find(t => t.active).history.length > 1 &&
       this.state.tabs.find(t => t.active).history.length !=
-        this.state.tabs.find(t => t.active).historyMarker + 1;
+      this.state.tabs.find(t => t.active).historyMarker + 1;
     if (hasForwardHistoryInTab) {
       this.setState(oldstate => {
         const updatedTabs = oldstate.tabs.map(a => {
@@ -649,7 +649,7 @@ class Browser extends React.Component<Props, State> {
                 ...this.props.config.bookmarks,
                 [this.props.assignmentId || "browser"]: [
                   ...(this.props.config.bookmarks &&
-                  this.props.config.bookmarks[this.props.assignmentId || "browser"]
+                    this.props.config.bookmarks[this.props.assignmentId || "browser"]
                     ? this.props.config.bookmarks[this.props.assignmentId || "browser"]
                     : []),
                   { url, title }
@@ -790,40 +790,40 @@ class Browser extends React.Component<Props, State> {
                   />
                 </div>
               ) : (
-                <div
-                  style={{
-                    width: "500px",
-                    height: "500px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexFlow: "column"
-                  }}>
                   <div
                     style={{
-                      width: "96px",
-                      height: "96px"
+                      width: "500px",
+                      height: "500px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexFlow: "column"
                     }}>
-                    <CircularProgressbarWithChildren
-                      value={this.state.progress * 100}
-                      strokeWidth={4}
-                      styles={{
-                        path: {
-                          stroke: "#96A7BA"
-                        },
-                        trail: {
-                          stroke: "#E3E7EC"
-                        }
+                    <div
+                      style={{
+                        width: "96px",
+                        height: "96px"
                       }}>
-                      <ServiceLogo icon={t.logo} size={56} className="loadingShadow" />
-                    </CircularProgressbarWithChildren>
+                      <CircularProgressbarWithChildren
+                        value={this.state.progress * 100}
+                        strokeWidth={4}
+                        styles={{
+                          path: {
+                            stroke: "#96A7BA"
+                          },
+                          trail: {
+                            stroke: "#E3E7EC"
+                          }
+                        }}>
+                        <ServiceLogo icon={t.logo} size={56} className="loadingShadow" />
+                      </CircularProgressbarWithChildren>
+                    </div>
+                    <div style={{ color: "#3B4C5D", fontSize: "14px", marginTop: "16px" }}>
+                      <span>{Math.floor(this.state.progress * 100)} </span>
+                      <i className="fal fa-percentage"></i>
+                    </div>
                   </div>
-                  <div style={{ color: "#3B4C5D", fontSize: "14px", marginTop: "16px" }}>
-                    <span>{Math.floor(this.state.progress * 100)} </span>
-                    <i className="fal fa-percentage"></i>
-                  </div>
-                </div>
-              )}
+                )}
             </div>
           )}
           <UniversalLoginExecutor
@@ -914,6 +914,7 @@ class Browser extends React.Component<Props, State> {
               this.setState({ interaction: new Date() });
             }}
             execute={this.state.options && this.state.options.execute}
+            continueExecute={this.state.options && this.state.options.continueExecute}
             noError={this.state.options && this.state.options.noError}
             individualShow={this.state.options && this.state.options.individualShow}
             noUrlCheck={this.state.options && this.state.options.noUrlCheck}
@@ -1103,7 +1104,7 @@ class Browser extends React.Component<Props, State> {
                 this.state.tabs.find(t => t.active) &&
                 this.state.tabs.find(t => t.active).history.length > 1 &&
                 this.state.tabs.find(t => t.active).history.length !=
-                  this.state.tabs.find(t => t.active).historyMarker + 1
+                this.state.tabs.find(t => t.active).historyMarker + 1
               )
             }
             onClick={() => this.goBack()}
@@ -1145,8 +1146,8 @@ class Browser extends React.Component<Props, State> {
               rightOrientation={true}
             />
           ) : (
-            <div></div>
-          )}
+              <div></div>
+            )}
           {/*<BrowserNavigationButton icon="user" />
           <BrowserNavigationButton icon="cog" />*/}
         </div>

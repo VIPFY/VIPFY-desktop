@@ -1,13 +1,13 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { ErrorComp } from "../../common/functions";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import LoadingDiv from "../LoadingDiv";
 import Integration from "./Integration";
 
-interface Props {}
+interface Props { }
 
-interface State {}
+interface State { }
 
 const FETCH_INTEGRATIONS = gql`
   {

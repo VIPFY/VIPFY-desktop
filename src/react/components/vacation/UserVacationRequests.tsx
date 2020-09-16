@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import Collapsible from "../../common/Collapsible";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp, renderIcon } from "../../common/functions";

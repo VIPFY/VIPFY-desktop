@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import "moment-feiertage";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
@@ -120,7 +120,7 @@ export default (props: Props) => {
                   <i style={{ margin: "0 20px" }} className="fal fa-minus" />
                   <span>{`${computeVacationDays(startDate, duration)} day${
                     duration == 1 ? "" : "s"
-                  }`}</span>
+                    }`}</span>
                 </li>
               );
             })}

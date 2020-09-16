@@ -1,7 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import moment from "moment";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import LoadingDiv from "../components/LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import { WorkAround, User } from "../interfaces";

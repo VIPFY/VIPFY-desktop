@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Query, withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";

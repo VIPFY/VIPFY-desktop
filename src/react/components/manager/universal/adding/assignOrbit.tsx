@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { FETCH_ALL_BOUGHTPLANS_LICENCES } from "../../../../queries/billing";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
@@ -68,57 +68,57 @@ class AssignOrbit extends React.Component<Props, State> {
                     onClick={() => this.setState({ neworbit: true })}
                   />
                 ) : (
-                  <UniversalDropDownInput
-                    id="orbit-search"
-                    label="Search for orbits"
-                    options={orbits}
-                    noFloating={true}
-                    resetPossible={true}
-                    width="300px"
-                    codeFunction={orbit => orbit.id}
-                    nameFunction={orbit => orbit.alias}
-                    renderOption={(possibleValues, i, click, value) => (
-                      <div
-                        key={`searchResult-${i}`}
-                        className="searchResult"
-                        onClick={() => click(possibleValues[i])}>
-                        <span className="resultHighlight">
-                          {possibleValues[i].alias.substring(0, value.length)}
-                        </span>
-                        <span>{possibleValues[i].alias.substring(value.length)}</span>
-                      </div>
-                    )}
-                    alternativeText={inputelement => (
-                      <span
-                        className="inputInsideButton"
-                        style={{
-                          width: "auto",
-                          backgroundColor: "transparent",
-                          cursor: "text"
-                        }}>
+                    <UniversalDropDownInput
+                      id="orbit-search"
+                      label="Search for orbits"
+                      options={orbits}
+                      noFloating={true}
+                      resetPossible={true}
+                      width="300px"
+                      codeFunction={orbit => orbit.id}
+                      nameFunction={orbit => orbit.alias}
+                      renderOption={(possibleValues, i, click, value) => (
+                        <div
+                          key={`searchResult-${i}`}
+                          className="searchResult"
+                          onClick={() => click(possibleValues[i])}>
+                          <span className="resultHighlight">
+                            {possibleValues[i].alias.substring(0, value.length)}
+                          </span>
+                          <span>{possibleValues[i].alias.substring(value.length)}</span>
+                        </div>
+                      )}
+                      alternativeText={inputelement => (
                         <span
-                          onClick={() => inputelement.focus()}
-                          style={{ marginRight: "4px", fontSize: "12px" }}>
-                          Start typing or
+                          className="inputInsideButton"
+                          style={{
+                            width: "auto",
+                            backgroundColor: "transparent",
+                            cursor: "text"
+                          }}>
+                          <span
+                            onClick={() => inputelement.focus()}
+                            style={{ marginRight: "4px", fontSize: "12px" }}>
+                            Start typing or
                         </span>
-                        <UniversalButton
-                          type="low"
-                          tabIndex={-1}
-                          onClick={() => {
-                            this.setState({ showall: true });
-                          }}
-                          label="show all"
-                          customStyles={{ lineHeight: "24px" }}
-                        />
-                      </span>
-                    )}
-                    startvalue={this.state.orbit ? this.state.orbit + "" : ""}
-                    livecode={c => this.props.continue(orbits.find(o => o.id == c))}
-                    noresults="Create new orbit"
-                    noresultsClick={v => this.setState({ neworbit: true, neworbitname: v })}
-                    fewResults={true}
-                  />
-                )}
+                          <UniversalButton
+                            type="low"
+                            tabIndex={-1}
+                            onClick={() => {
+                              this.setState({ showall: true });
+                            }}
+                            label="show all"
+                            customStyles={{ lineHeight: "24px" }}
+                          />
+                        </span>
+                      )}
+                      startvalue={this.state.orbit ? this.state.orbit + "" : ""}
+                      livecode={c => this.props.continue(orbits.find(o => o.id == c))}
+                      noresults="Create new orbit"
+                      noresultsClick={v => this.setState({ neworbit: true, neworbitname: v })}
+                      fewResults={true}
+                    />
+                  )}
               </div>
               {this.state.showall && (
                 <PopupBase

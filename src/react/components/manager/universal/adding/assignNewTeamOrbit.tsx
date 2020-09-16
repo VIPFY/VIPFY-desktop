@@ -7,7 +7,7 @@ import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import AssignOrbit from "./assignOrbit";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchTeam } from "../../../../queries/departments";
@@ -271,18 +271,18 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                 been solved
               </div>
             ) : (
-              <AssignOrbit
-                service={this.state.service}
-                continue={o => this.setState({ orbit: o })}
-              />
-            )}
+                  <AssignOrbit
+                    service={this.state.service}
+                    continue={o => this.setState({ orbit: o })}
+                  />
+                )}
           </>
         ) : (
-          <AssignServiceToUser
-            continue={s => this.setState({ service: s })}
-            moveTo={this.props.moveTo}
-          />
-        )}
+            <AssignServiceToUser
+              continue={s => this.setState({ service: s })}
+              moveTo={this.props.moveTo}
+            />
+          )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
           <UniversalButton
@@ -292,7 +292,7 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
               !(
                 this.state.orbit &&
                 this.state.memberassignments.filter(ma => ma != null && ma.employeeid).length ==
-                  this.props.team.employees.length
+                this.props.team.employees.length
               )
             }
             onClick={async () => {
@@ -324,20 +324,20 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

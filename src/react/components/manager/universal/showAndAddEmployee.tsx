@@ -3,7 +3,8 @@ import moment from "moment";
 import PopupBase from "../../../popups/universalPopups/popupBase";
 import Calendar from "react-calendar";
 import UniversalButton from "../../universalButtons/universalButton";
-import { graphql, withApollo, Query } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import UniversalDropDownInput from "../../universalForms/universalDropdownInput";
@@ -83,7 +84,7 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
   render() {
     return (
       <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
-        {({ loading, error, data }) => {
+        {({ loading, error = null, data }) => {
           if (loading) {
             return <div>"Loading..."</div>;
           }
@@ -357,20 +358,20 @@ class ShowAndAddEmployee extends React.Component<Props, State> {
                       <div
                         className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                           this.state.error ? "loadError" : ""
-                        }`}>
+                          }`}>
                         <div
                           className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                             this.state.error ? "loadError" : ""
-                          }`}></div>
+                            }`}></div>
                       </div>
                       <div
                         className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                           this.state.error ? "loadError" : ""
-                        }`}>
+                          }`}>
                         <div
                           className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                             this.state.error ? "load-error" : ""
-                          }`}>
+                            }`}>
                           <div
                             className="checkmark draw"
                             style={this.state.saved ? { display: "block" } : {}}

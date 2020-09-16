@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation, Query } from "react-apollo";
+import { Mutation, Query } from "@apollo/client/react/components";
 import CreditCard from "./CreditCard";
 import LoadingDiv from "../LoadingDiv";
 import StripeForm from "./StripeForm";
@@ -142,8 +142,8 @@ export default (props: Props) => {
                         setCard={selectedCard => setCardData(selectedCard)}
                       />
                     ) : (
-                      <CreditCard {...cardData!} />
-                    )}
+                        <CreditCard {...cardData!} />
+                      )}
                     <ErrorComp error={e2} />
 
                     <UniversalButton

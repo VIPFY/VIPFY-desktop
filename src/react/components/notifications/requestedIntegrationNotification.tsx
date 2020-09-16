@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalLoginExecutor from "../UniversalLoginExecutor";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import {
@@ -310,34 +310,49 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
               partition={`RequestedIntegration-${this.props.notificationId}-${this.state.tryuniversal}`}
               //className={cssClassWeb}
               showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
-              setResult={async ({
-                loggedIn,
-                error,
-                direct,
-                emailEntered,
-                passwordEntered,
-                executeEnd,
-                currentUrl,
-                timedOut
-              }) => {
+              setResult={async (
+                {
+                  loggedIn,
+                  error,
+                  direct,
+                  emailEntered,
+                  passwordEntered,
+                  executeEnd,
+                  currentUrl,
+                  timedOut
+                },
+                _empty,
+                isUniversal
+              ) => {
                 if (executeEnd) {
                   setTimeout(
                     async () => await this.finishIntegration(this.state.tryuniversal),
                     5000
                   );
                 }
-                if (!this.state.tryuniversal && timedOut) {
+                if (
+                  this.state.step != 2 &&
+                  !this.state.tryuniversal &&
+                  !isUniversal &&
+                  !executeEnd &&
+                  (timedOut || (!emailEntered && !passwordEntered))
+                ) {
                   //Forward to support
                   await this.props.sendFailedIntegrationRequest({
                     variables: { appid: this.props.data.appId }
                   });
                   this.setState({ step: 2 });
                 }
-                if (this.state.tryuniversal && timedOut) {
+                if (
+                  this.state.tryuniversal &&
+                  isUniversal &&
+                  (timedOut || (!emailEntered && !passwordEntered))
+                ) {
                   this.setState({ tryuniversal: false });
                 }
                 if (
                   this.state.tryuniversal &&
+                  isUniversal &&
                   !this.state.finishedOnce &&
                   loggedIn &&
                   !error &&
@@ -347,78 +362,9 @@ class RequestedIntegrationNotification extends React.Component<Props, State> {
                   this.setState({ finishedOnce: true });
                   setTimeout(async () => await this.finishIntegration(true), 5000);
                 }
-                /*if (loggedIn) {
-                this.hideLoadingScreen();
-
-                if (emailEntered && passwordEntered && !direct) {
-                  await this.props.updateLicenceSpeed({
-                    variables: {
-                      licenceid: this.props.licenceID,
-                      speed: this.state.loginspeed,
-                      working: true
-                    }
-                  });
-                }
-              }
-
-              if (error) {
-                if (this.state.loginspeed == 1) {
-                  this.showErrorScreen();
-                  await this.props.updateLicenceSpeed({
-                    variables: {
-                      licenceid: this.props.licenceID,
-                      speed: this.state.loginspeed,
-                      oldspeed: this.state.oldspeed,
-                      working: false
-                    }
-                  });
-                  this.setState({
-                    progress: 1,
-                    error:
-                      "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
-                    errorshowed: true
-                  });
-                } else {
-                  await this.props.updateLicenceSpeed({
-                    variables: {
-                      licenceid: this.props.licenceID,
-                      speed: this.state.loginspeed,
-                      working: false
-                    }
-                  });
-                  this.setState(s => {
-                    return { loginspeed: 1, oldspeed: s.loginspeed };
-                  });
-                }
-              }*/
-                // console.log("PROPS", this.props, currentUrl, timedOut);
-                // console.log(loggedIn, error, direct, emailEntered, passwordEntered);
               }}
-              //progress={progress => this.setState({ progress })}
-              //speed={this.state.loginspeed || 1}
-              /*style={
-              context.isActive
-                ? { height: "calc(100vh - 32px - 40px)" }
-                : { height: "calc(100vh - 32px)" }
-            }*/
-              /*interactionHappenedCallback={() => {
-              let interactions = this.state.interactions;
-              interactions[this.state.planId] = new Date();
-              this.setState({ interactions });
-            }}*/
               execute={!this.state.tryuniversal ? this.props.data.trackedPlan : undefined}
               noError={true}
-              //individualShow={this.state.options.individualShow}
-              //noUrlCheck={this.state.options.noUrlCheck}
-              //individualNotShow={this.state.options.individualNotShow}
-              //addWebview={this.props.addWebview}
-              //licenceID={this.props.licenceID}
-              //setViewTitle={title =>
-              //  this.props.setViewTitle &&
-              //  this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
-              //}
-              //loggedIn={this.props.loggedIn}
-              //deleteCookies={this.state.options.deleteCookies}
               continueExecute={!this.state.tryuniversal}
               needSecurityCode={async type => {
                 await this.setState({ needSecurityCode: type });

@@ -1,7 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
 import { getBgImageTeam } from "../../../../common/images";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchTeam } from "../../../../queries/departments";
 
 interface Props {
@@ -18,12 +18,12 @@ interface Props {
 function constructBackgroundStyles(team, finalSize: number) {
   return team.profilepicture
     ? {
-        backgroundImage: getBgImageTeam(team.profilepicture, finalSize),
-        backgroundColor: "unset"
-      }
+      backgroundImage: getBgImageTeam(team.profilepicture, finalSize),
+      backgroundColor: "unset"
+    }
     : team.internaldata && team.internaldata.color
-    ? { backgroundColor: team.internaldata.color }
-    : { backgroundColor: "#9C13BC" };
+      ? { backgroundColor: team.internaldata.color }
+      : { backgroundColor: "#9C13BC" };
 }
 
 function renderRealTeamSquare(team, finalSize: number, props: Props) {

@@ -2,7 +2,7 @@ import * as React from "react";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import moment, { now } from "moment";
@@ -118,9 +118,9 @@ class DeleteTeam extends React.Component<Props, State> {
                                 k != ik
                                   ? asa
                                   : {
-                                      id: asa.assignmentid,
-                                      bool: v
-                                    }
+                                    id: asa.assignmentid,
+                                    bool: v
+                                  }
                               )
                             })
                         );
@@ -379,20 +379,20 @@ class DeleteTeam extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}
