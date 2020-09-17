@@ -2,7 +2,7 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { Query, Mutation } from "@apollo/client/react/components";
 import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp, filterError } from "../common/functions";
+import { ErrorComp } from "../common/functions";
 import { fetchPlans, fetchPlanInputs } from "../queries/products";
 import PlanHolder from "../components/PlanHolder";
 
@@ -54,6 +54,8 @@ const INITIALSTATE: State = {
   touched: false
 };
 
+// This is unused as of now. It was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
 class ChangePlan extends React.Component<Props, State> {
   state = INITIALSTATE;
 
@@ -176,58 +178,58 @@ class ChangePlan extends React.Component<Props, State> {
                     {selectedPlan.price == 0 ? (
                       <div className="addedprice">Free</div>
                     ) : (
-                        <div className="addedprice">
-                          ${selectedPlan.price}
+                      <div className="addedprice">
+                        ${selectedPlan.price}
                         /month
-                        </div>
-                      )}
+                      </div>
+                    )}
                   </div>
 
                   {selectedPlan.features ? <div className="OOptions">Options</div> : ""}
                   <ul className="featureBuy">
                     {selectedPlan.features &&
-                      selectedPlan.features[0].features &&
-                      selectedPlan.features.length > 0
+                    selectedPlan.features[0].features &&
+                    selectedPlan.features.length > 0
                       ? selectedPlan.features
-                        .map(more =>
-                          more.features.filter(feature => feature.addable).map(feature => feature)
-                        )
-                        .reduce(features => features)
-                        .map(feature => {
-                          const { key, number: amount, amountper, price } = feature;
+                          .map(more =>
+                            more.features.filter(feature => feature.addable).map(feature => feature)
+                          )
+                          .reduce(features => features)
+                          .map(feature => {
+                            const { key, number: amount, amountper, price } = feature;
 
-                          return (
-                            <li key={key}>
-                              <span className="precaption">{feature.precaption}</span>
+                            return (
+                              <li key={key}>
+                                <span className="precaption">{feature.precaption}</span>
 
-                              <input
-                                name={key}
-                                min={amount}
-                                step={feature.amountper}
-                                type="number"
-                                onBlur={e => {
-                                  const value = parseInt(e.target.value);
-                                  const sanitizedValue =
-                                    Math.ceil((value - amount) / amountper) * amountper + amount;
-                                  this.setState(prevState => ({
-                                    values: { ...prevState.values, [key]: sanitizedValue }
-                                  }));
-                                }}
-                                value={values[key] ? values[key] : amount}
-                                onChange={e => this.handleChange(e, amount, amountper, price)}
-                              />
-                              <span className="Pcaption">{feature.aftercaption}</span>
-                              {prices[key] ? `+ $${prices[key]}/${feature.priceper}` : "Included"}
-                            </li>
-                          );
-                        })
+                                <input
+                                  name={key}
+                                  min={amount}
+                                  step={feature.amountper}
+                                  type="number"
+                                  onBlur={e => {
+                                    const value = parseInt(e.target.value);
+                                    const sanitizedValue =
+                                      Math.ceil((value - amount) / amountper) * amountper + amount;
+                                    this.setState(prevState => ({
+                                      values: { ...prevState.values, [key]: sanitizedValue }
+                                    }));
+                                  }}
+                                  value={values[key] ? values[key] : amount}
+                                  onChange={e => this.handleChange(e, amount, amountper, price)}
+                                />
+                                <span className="Pcaption">{feature.aftercaption}</span>
+                                {prices[key] ? `+ $${prices[key]}/${feature.priceper}` : "Included"}
+                              </li>
+                            );
+                          })
                       : "No features for you"}
                   </ul>
                   <div className="totalprice">
                     $
                     {Object.values(prices).length > 0
                       ? selectedPlan.price +
-                      Object.values(prices).reduce((acc, price) => acc + price)
+                        Object.values(prices).reduce((acc, price) => acc + price)
                       : selectedPlan.price}
                     /month
                   </div>

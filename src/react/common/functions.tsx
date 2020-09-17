@@ -18,80 +18,63 @@ export function getPreloadScriptPath(script: string): string {
   );
 }
 
-export function showStars(stars, maxStars = 5) {
-  const starsArray: JSX.Element[] = [];
-  if (stars) {
-    for (let n = 0; n < maxStars; n++) {
-      if (n < stars - 0.5) {
-        starsArray.push(<i key={`star${n}`} className="fas fa-star" />);
-      } else if (n < stars) {
-        starsArray.push(
-          <span key={`star${n}`} className="halfStarHolder">
-            <i className="fas fa-star-half" />
-            <i className="far fa-star-half secondHalfStar" />
-          </span>
-        );
-      } else {
-        starsArray.push(<i key={`star${n}`} className="far fa-star star-empty" />);
-      }
-    }
-  } else {
-    starsArray.push(<div key="star">No Reviews yet</div>);
-  }
-  return starsArray;
-}
-
-export function calculatepartsum(plan, useralready, usercount): number {
-  if (!plan) {
-    return 0;
-  }
-  if (!plan.numlicences) {
-    return plan.price;
-  }
-  let calculatedprice = 0;
-  let calculateduseralready = useralready;
-  let nosp: any[] = [];
-
-  if (usercount - calculateduseralready <= 0) {
-    return calculatedprice;
-  } //if now enough licences already
-
-  calculatedprice += plan.price;
-  calculateduseralready += plan.numlicences;
-
-  if (usercount - calculateduseralready <= 0) {
-    return calculatedprice;
-  } //if now enough licences already
-
-  if (plan.subplans) {
-    plan.subplans.forEach(function (subplan) {
-      if (subplan.optional === false) {
-        nosp.push(subplan);
-      }
-    });
-  }
-
-  switch (nosp.length) {
-    case 0: // Kein nosp => add licences from plan and return
-      calculatedprice +=
-        Math.ceil((usercount - calculateduseralready) / plan.numlicences) * plan.price;
-      return calculatedprice;
-    case 1: // genau ein nosp
-      return calculatedprice + this.calculatepartsum(nosp[0], calculateduseralready, usercount);
-
-    default:
-      // More than one nonoptionalsubplan
-      let minnosp = Infinity;
-      let that = this;
-      nosp.forEach(function (subplan) {
-        minnosp = Math.min(
-          minnosp,
-          that.calculatepartsum(subplan, calculateduseralready, usercount)
-        );
-      });
-      return calculatedprice + minnosp;
-  }
-}
+// This function was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
+//
+// export function calculatepartsum(plan, useralready, usercount): number {
+//   if (!plan) {
+//     return 0;
+//   }
+//
+//   if (!plan.numlicences) {
+//     return plan.price;
+//   }
+//
+//   let calculatedprice = 0;
+//   let calculateduseralready = useralready;
+//   let nosp: any[] = [];
+//
+//   if (usercount - calculateduseralready <= 0) {
+//     return calculatedprice;
+//   } //if now enough licences already
+//
+//   calculatedprice += plan.price;
+//   calculateduseralready += plan.numlicences;
+//
+//   if (usercount - calculateduseralready <= 0) {
+//     return calculatedprice;
+//   } //if now enough licences already
+//
+//   if (plan.subplans) {
+//     plan.subplans.forEach(function (subplan) {
+//       if (subplan.optional === false) {
+//         nosp.push(subplan);
+//       }
+//     });
+//   }
+//
+//   switch (nosp.length) {
+//     case 0: // Kein nosp => add licences from plan and return
+//       calculatedprice +=
+//         Math.ceil((usercount - calculateduseralready) / plan.numlicences) * plan.price;
+//       return calculatedprice;
+//     case 1: // genau ein nosp
+//       return calculatedprice + this.calculatepartsum(nosp[0], calculateduseralready, usercount);
+//     default:
+//       // More than one nonoptionalsubplan
+//       let minnosp = Infinity;
+//       let that = this;
+//
+//       nosp.forEach(function (subplan) {
+//         minnosp = Math.min(
+//           minnosp,
+//           that.calculatepartsum(subplan, calculateduseralready, usercount)
+//         );
+//       });
+//
+//       return calculatedprice + minnosp;
+//   }
+// }
 
 export const filterError = error => {
   if (!error) {
@@ -240,8 +223,8 @@ export const AppIcon = ({ app }) => (
 
 export const ConsentText = () => (
   <span>
-    Your VIPFY usage can be analyzed to continuously improve the app's functionality
-    and to provide content from third parties. This is outlined in our{" "}
+    Your VIPFY usage can be analyzed to continuously improve the app's functionality and to provide
+    content from third parties. This is outlined in our{" "}
     <span
       style={{ color: "#20BAA9" }}
       className="fancy-link"

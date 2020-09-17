@@ -29,6 +29,8 @@ interface State {
   buying: number;
 }
 
+// This is unused as of now. It was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
 class CheckOrder extends React.Component<Props, State> {
   state: State = {
     tosOpen: false,
@@ -127,7 +129,7 @@ class CheckOrder extends React.Component<Props, State> {
                   onBlur={e => {
                     let valuenew =
                       Math.ceil((e.target.value - feature.number) / feature.amountper) *
-                      feature.amountper +
+                        feature.amountper +
                       feature.number;
                     this.setState(prevState => ({
                       featurenumbers: { ...prevState.featurenumbers, [i]: valuenew }
@@ -154,11 +156,11 @@ class CheckOrder extends React.Component<Props, State> {
           {this.props.plan.price == 0 ? (
             <div className="addedprice">Free</div>
           ) : (
-              <div className="addedprice">
-                ${this.props.plan.price}
+            <div className="addedprice">
+              ${this.props.plan.price}
               /month
-              </div>
-            )}
+            </div>
+          )}
         </div>
         {boption ? <div className="OOptions">Options</div> : ""}
         <ul className="featureBuy">{featureArray}</ul>
@@ -243,7 +245,7 @@ class CheckOrder extends React.Component<Props, State> {
             featureoptions[feature.key] = {
               amount: Math.ceil(
                 ((this.state.featurenumbers[index] || feature.number) - feature.number) /
-                feature.amountper
+                  feature.amountper
               ),
               value: (this.state.featurenumbers[index] || feature.number) - 0
             };
@@ -367,8 +369,8 @@ class CheckOrder extends React.Component<Props, State> {
                   {this.state.errordc === key ? (
                     <div className="agreementError">A domainname is required.</div>
                   ) : (
-                      ""
-                    )}
+                    ""
+                  )}
                 </div>
               );
             }}
@@ -450,8 +452,8 @@ class CheckOrder extends React.Component<Props, State> {
                               {company ? (
                                 <div className="orderCompanyName">{company.name}</div>
                               ) : (
-                                  "Myself"
-                                )}
+                                "Myself"
+                              )}
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   <div className="orderAddressLine">
@@ -468,8 +470,8 @@ class CheckOrder extends React.Component<Props, State> {
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
                                     <CreditCard {...data.fetchPaymentData[0]} />
                                   ) : (
-                                      "Please add a Credit Card to your Account"
-                                    )}
+                                    "Please add a Credit Card to your Account"
+                                  )}
                                 </div>
                               </div>
                               {this.showOrder(this.props.plan)}
@@ -485,8 +487,8 @@ class CheckOrder extends React.Component<Props, State> {
                               {company ? (
                                 <div className="orderCompanyName">{company.name}</div>
                               ) : (
-                                  "Myself"
-                                )}
+                                "Myself"
+                              )}
                               <div className="orderInformationHolder">
                                 <div className="orderAddressHolder">
                                   Please add a billing address.
@@ -495,8 +497,8 @@ class CheckOrder extends React.Component<Props, State> {
                                   {data.fetchPaymentData && data.fetchPaymentData.length > 0 ? (
                                     <CreditCard {...data.fetchPaymentData[0]} />
                                   ) : (
-                                      "Please add a Credit Card to your Account"
-                                    )}
+                                    "Please add a Credit Card to your Account"
+                                  )}
                                 </div>
                               </div>
                               {this.showOrder(this.props.plan)}
@@ -532,13 +534,13 @@ class CheckOrder extends React.Component<Props, State> {
                           {this.state.agreementError ? (
                             <div className="agreementError">Please agree to the agreements.</div>
                           ) : (
-                              ""
-                            )}
+                            ""
+                          )}
                         </div>
                       </div>
                     ) : (
-                        ""
-                      )}
+                      ""
+                    )}
                   </div>
                   <div className="checkOrderHolderButton">
                     <button className="cancelButton" onClick={() => this.props.onClose()}>
@@ -576,31 +578,31 @@ class CheckOrder extends React.Component<Props, State> {
                         return (
                           <div>
                             {!data.fetchPaymentData ||
-                              data.fetchPaymentData.length === 0 ||
-                              !data.fetchAddresses ||
-                              data.fetchAddresses.length === 0 ? (
-                                <button
-                                  disabled={!this.state.agreement || !this.state.totalprice}
-                                  className="checkoutButton">
-                                  Checkout for ${this.state.totalprice || this.props.plan.price}
+                            data.fetchPaymentData.length === 0 ||
+                            !data.fetchAddresses ||
+                            data.fetchAddresses.length === 0 ? (
+                              <button
+                                disabled={!this.state.agreement || !this.state.totalprice}
+                                className="checkoutButton">
+                                Checkout for ${this.state.totalprice || this.props.plan.price}
                                 /mo
-                                </button>
-                              ) : (
-                                <button
-                                  className="checkoutButton"
-                                  disabled={!this.state.agreement || !this.state.totalprice}
-                                  onClick={() =>
-                                    this.accept(
-                                      this.props.plan,
-                                      planInputs,
-                                      company,
-                                      billingAddresses
-                                    )
-                                  }>
-                                  Checkout for ${this.state.totalprice || this.props.plan.price}
+                              </button>
+                            ) : (
+                              <button
+                                className="checkoutButton"
+                                disabled={!this.state.agreement || !this.state.totalprice}
+                                onClick={() =>
+                                  this.accept(
+                                    this.props.plan,
+                                    planInputs,
+                                    company,
+                                    billingAddresses
+                                  )
+                                }>
+                                Checkout for ${this.state.totalprice || this.props.plan.price}
                                 /mo
-                                </button>
-                              )}
+                              </button>
+                            )}
                           </div>
                         );
                       }}
