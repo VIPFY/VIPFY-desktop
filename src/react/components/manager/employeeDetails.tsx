@@ -1,7 +1,7 @@
 import * as React from "react";
-import EmployeePicture from "../EmployeePicture";
 import RemoveTeamMember from "./removeTeamMember";
 import { concatName } from "../../common/functions";
+import { UserPicture, ThingShape } from "../ThingPicture";
 
 interface Props {
   employee: any;
@@ -60,7 +60,11 @@ class EmployeeDetails extends React.Component<Props, State> {
       <div className="tableRow" onClick={() => this.props.moveTo(`emanager/${employee.id}`)}>
         <div className="tableMain">
           <div className="tableColumnSmall">
-            <EmployeePicture employee={employee} />
+            <UserPicture
+              id={employee.id}
+              shape={ThingShape.Square}
+              size={32}
+            />
             <span className="name" title={concatName(employee)}>
               {employee.firstname} {employee.lastname}
             </span>

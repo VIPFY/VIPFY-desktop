@@ -1,7 +1,6 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import AssignServiceToUser from "./assignServiceToUser";
-import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
@@ -11,7 +10,7 @@ import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchTeam } from "../../../../queries/departments";
-import PrintTeamSquare from "../squares/printTeamSquare";
+import { TeamPicture, ThingShape, UserPicture } from "../../../ThingPicture";
 
 interface Props {
   team: any;
@@ -95,8 +94,9 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                 display: "flex",
                 alignItems: "center"
               }}>
-              <EmployeePicture
-                employee={e}
+              <UserPicture
+                id={e.id}
+                shape={ThingShape.Square}
                 size={24}
                 style={{
                   lineHeight: "24px",
@@ -145,8 +145,9 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                   display: "flex",
                   alignItems: "center"
                 }}>
-                <EmployeePicture
-                  employee={e}
+                <UserPicture
+                  id={e.id}
+                  shape={ThingShape.Square}
                   size={24}
                   style={{
                     lineHeight: "24px",
@@ -178,10 +179,11 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
         <h1>Assign Teamorbit</h1>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-          <PrintTeamSquare
-            team={this.props.team}
+          <TeamPicture
+            id={this.props.team.unitid.id}
+            shape={ThingShape.Square}
             size={24}
-            styles={{
+            style={{
               lineHeight: "24px",
               width: "24px",
               height: "24px",

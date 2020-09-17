@@ -112,23 +112,24 @@ class UploadImage extends React.Component<Props, State> {
               </div>
             )}
           </div>
-          {this.props.isadmin && (
-            <Dropzone
-              style={{
-                width: "0px",
-                height: "0px",
-                opacity: 0,
-                overflow: "hidden",
-                position: "absolute",
-                zIndex: -1
-              }}
-              accept="image/jpg,image/jpeg,image/tiff,image/gif,image/png,image/webp"
-              maxSize={20000000}
-              minSize={20}
-              type="file"
-              multiple={false}
-              onDrop={([file]) => this.setBothStates(file)}
-            />
+          {this.props.isadmin && (null
+            /* this is code for React-Dropzone 5, use {User|Team|Company|Thing}Picture instead */
+            // <Dropzone
+            //   style={{
+            //     width: "0px",
+            //     height: "0px",
+            //     opacity: 0,
+            //     overflow: "hidden",
+            //     position: "absolute",
+            //     zIndex: -1
+            //   }}
+            //   accept="image/jpg,image/jpeg,image/tiff,image/gif,image/png,image/webp"
+            //   maxSize={20000000}
+            //   minSize={20}
+            //   type="file"
+            //   multiple={false}
+            //   onDrop={([file]) => this.setBothStates(file)}
+            // />
           )}
         </label>
       </form>

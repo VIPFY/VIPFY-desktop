@@ -356,6 +356,20 @@ export const fetchTeam = gql`
   }
 `;
 
+export const fetchTeamSmall = gql`
+  query fetchTeam($teamid: ID!) {
+    fetchTeam(teamid: $teamid) {
+      name
+      unitid {
+        id
+      }
+      profilepicture
+      createdate
+      iscompany
+    }
+  }
+`;
+
 export const fetchCompanyTeams = gql`
   query fetchCompanyTeams {
     fetchCompanyTeams {
