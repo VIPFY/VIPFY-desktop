@@ -10,7 +10,6 @@ import PrintServiceSquare from "../../components/manager/universal/squares/print
 import OrbitSection from "../../components/manager/orbitSection";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
-import { resizeImage } from "../../common/images";
 import { AppContext } from "../../common/functions";
 import { ApolloClientType } from "../../interfaces";
 
@@ -42,23 +41,6 @@ class ServiceDetails extends React.Component<Props, State> {
     loading: false,
     search: "",
     create: false
-  };
-
-  uploadPic = async (picture: File) => {
-    const { teamid } = this.props.match.params;
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage, teamid }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      await this.setState({ loading: false });
-    }
   };
 
   render() {
