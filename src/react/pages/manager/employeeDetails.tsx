@@ -82,7 +82,9 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
-            const querydata = { ...data.fetchSemiPublicUser } || { ...data.me };
+            const querydata = data.fetchSemiPublicUser
+              ? { ...data.fetchSemiPublicUser }
+              : { ...data.me };
             const privatePhones = [];
             const workPhones = [];
 
@@ -113,17 +115,17 @@ class EmployeeDetails extends React.Component<Props, State> {
                     {this.props.profile ? (
                       <span style={{ color: "#253647" }}>Profile</span>
                     ) : (
-                        <>
-                          <span
-                            style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
-                            onClick={() => this.props.moveTo("emanager")}>
-                            Employee Manager
+                      <>
+                        <span
+                          style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                          onClick={() => this.props.moveTo("emanager")}>
+                          Employee Manager
                         </span>
-                          <span className="h2">
-                            {querydata.firstname} {querydata.lastname}
-                          </span>
-                        </>
-                      )}
+                        <span className="h2">
+                          {querydata.firstname} {querydata.lastname}
+                        </span>
+                      </>
+                    )}
                   </span>
 
                   {/*<UniversalSearchBox />*/}
