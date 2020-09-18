@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
@@ -12,7 +12,7 @@ interface Props {
   setreshowTutorial: Function;
 }
 
-interface State {}
+interface State { }
 
 const updateTutorialProgress = gql`
   mutation updateTutorialProgress($tutorialprogress: JSON!) {
@@ -125,8 +125,8 @@ class Tutorial extends React.Component<Props, State> {
         step: r,
         tutorialSave:
           nextProps.tutorialdata &&
-          nextProps.tutorialdata.me &&
-          nextProps.tutorialdata.me.tutorialprogress
+            nextProps.tutorialdata.me &&
+            nextProps.tutorialdata.me.tutorialprogress
             ? nextProps.tutorialdata.me.tutorialprogress
             : prevState.tutorialSave
       };
@@ -285,16 +285,16 @@ class Tutorial extends React.Component<Props, State> {
                 style={{
                   top: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateTop(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        -10
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      -10
+                    )
                     : "",
                   left: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateLeft(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        0,
-                        2
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      0,
+                      2
+                    )
                     : ""
                 }}>
                 <div className="tutorialCloseButton" onClick={() => this.closeTutorial()}>
@@ -314,8 +314,8 @@ class Tutorial extends React.Component<Props, State> {
                       Back
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {renderoptions.bigclose ? (
                     <button
                       className="naked-button generic-button back-button"
@@ -323,15 +323,15 @@ class Tutorial extends React.Component<Props, State> {
                       Skip Tutorial
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   <div className="tutorialSectionHolder">
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
                     ) : (
-                      <div className="tutorialSectionShower" />
-                    )}
+                        <div className="tutorialSectionShower" />
+                      )}
                   </div>
                   <button
                     className="naked-button generic-button next-button"
@@ -359,17 +359,17 @@ class Tutorial extends React.Component<Props, State> {
                 style={{
                   top: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateTop(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        30,
-                        2
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      30,
+                      2
+                    )
                     : "",
                   left: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateLeft(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        10,
-                        0
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      10,
+                      0
+                    )
                     : ""
                 }}>
                 <div className="tutorialCloseButton" onClick={() => this.closeTutorial()}>
@@ -389,8 +389,8 @@ class Tutorial extends React.Component<Props, State> {
                       Back
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {renderoptions.bigclose ? (
                     <button
                       className="naked-button generic-button back-button"
@@ -398,15 +398,15 @@ class Tutorial extends React.Component<Props, State> {
                       Skip Tutorial
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   <div className="tutorialSectionHolder">
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
                     ) : (
-                      <div className="tutorialSectionShower" />
-                    )}
+                        <div className="tutorialSectionShower" />
+                      )}
                   </div>
                   <button
                     className="naked-button generic-button next-button"
@@ -437,18 +437,18 @@ class Tutorial extends React.Component<Props, State> {
                 style={{
                   top: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateTop(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        30,
-                        2
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      30,
+                      2
+                    )
                     : "",
                   left: references.find(e => e.key === renderoptions.highlightelement)
                     ? this.calculateLeft(
-                        references.find(e => e.key === renderoptions.highlightelement)!.element,
-                        0,
-                        2,
-                        true
-                      )
+                      references.find(e => e.key === renderoptions.highlightelement)!.element,
+                      0,
+                      2,
+                      true
+                    )
                     : ""
                 }}>
                 <div className="tutorialCloseButton" onClick={() => this.closeTutorial()}>
@@ -468,8 +468,8 @@ class Tutorial extends React.Component<Props, State> {
                       Back
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {renderoptions.bigclose ? (
                     <button
                       className="naked-button generic-button back-button"
@@ -477,15 +477,15 @@ class Tutorial extends React.Component<Props, State> {
                       Skip Tutorial
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   <div className="tutorialSectionHolder">
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
                     ) : (
-                      <div className="tutorialSectionShower" />
-                    )}
+                        <div className="tutorialSectionShower" />
+                      )}
                   </div>
                   <button
                     className="naked-button generic-button next-button"
@@ -517,8 +517,8 @@ class Tutorial extends React.Component<Props, State> {
                       Back
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   {renderoptions.bigclose ? (
                     <button
                       className="naked-button generic-button back-button"
@@ -526,15 +526,15 @@ class Tutorial extends React.Component<Props, State> {
                       Skip Tutorial
                     </button>
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                   <div className="tutorialSectionHolder">
                     <div className="tutorialSectionShower">{this.state.page}</div>
                     {stepcount > 1 ? (
                       <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
                     ) : (
-                      <div className="tutorialSectionShower" />
-                    )}
+                        <div className="tutorialSectionShower" />
+                      )}
                   </div>
                   <button
                     className="naked-button generic-button next-button"
@@ -565,8 +565,8 @@ class Tutorial extends React.Component<Props, State> {
                   Back
                 </button>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               {renderoptions.bigclose ? (
                 <button
                   className="naked-button generic-button back-button"
@@ -574,15 +574,15 @@ class Tutorial extends React.Component<Props, State> {
                   Skip Tutorial
                 </button>
               ) : (
-                ""
-              )}
+                  ""
+                )}
               <div className="tutorialSectionHolder">
                 <div className="tutorialSectionShower">{this.state.page}</div>
                 {stepcount > 1 ? (
                   <div className="tutorialSectionShower">{this.showSteps(steps)}</div>
                 ) : (
-                  <div className="tutorialSectionShower" />
-                )}
+                    <div className="tutorialSectionShower" />
+                  )}
               </div>
               <button
                 className="naked-button generic-button next-button"

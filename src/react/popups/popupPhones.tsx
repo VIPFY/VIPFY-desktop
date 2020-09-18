@@ -2,7 +2,7 @@ import * as React from "react";
 import PopupBase from "./universalPopups/popupBase";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
@@ -213,20 +213,20 @@ class PopupPhone extends React.Component<Props, State> {
                   />
                 </React.Fragment>
               ) : (
-                <React.Fragment>
-                  <div>Your phonenumber has been successfully deleted</div>
-                  <UniversalButton
-                    type="high"
-                    closingPopup={true}
-                    label="Ok"
-                    closingAllPopups={true}
-                  />
-                </React.Fragment>
-              )}
+                    <React.Fragment>
+                      <div>Your phonenumber has been successfully deleted</div>
+                      <UniversalButton
+                        type="high"
+                        closingPopup={true}
+                        label="Ok"
+                        closingAllPopups={true}
+                      />
+                    </React.Fragment>
+                  )}
             </PopupBase>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </PopupBase>
       );
     }
@@ -294,24 +294,24 @@ class PopupPhone extends React.Component<Props, State> {
                 />
               </React.Fragment>
             ) : (
-              <React.Fragment>
-                <div>
-                  {this.props.oldvalues
-                    ? "Your phonenumber has been successfully updated"
-                    : "Your phonenumber has been successfully created"}
-                </div>
-                <UniversalButton
-                  type="high"
-                  closingPopup={true}
-                  label="Ok"
-                  closingAllPopups={true}
-                />
-              </React.Fragment>
-            )}
+                  <React.Fragment>
+                    <div>
+                      {this.props.oldvalues
+                        ? "Your phonenumber has been successfully updated"
+                        : "Your phonenumber has been successfully created"}
+                    </div>
+                    <UniversalButton
+                      type="high"
+                      closingPopup={true}
+                      label="Ok"
+                      closingAllPopups={true}
+                    />
+                  </React.Fragment>
+                )}
           </PopupBase>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </PopupBase>
     );
   }

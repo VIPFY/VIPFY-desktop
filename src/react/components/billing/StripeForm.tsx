@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import { Elements, StripeProvider } from "react-stripe-elements";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import StripeBody from "./StripeBody";
 import LoadingDiv from "../LoadingDiv";

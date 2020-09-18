@@ -1,16 +1,15 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import { me } from "../../queries/auth";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { updatePassword } from "../../common/passwords";
+import { ApolloClientType } from "../../interfaces";
 
 interface PasswordChangeProps {
   logMeOut: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   firstLogin?: boolean;
   className?: string;
 }

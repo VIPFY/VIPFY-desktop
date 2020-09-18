@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Component } from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
 import CardSection from "../../components/CardSection";
@@ -14,9 +14,9 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import { EDIT_DEPARTMENT } from "../../mutations/department";
 import { CREATE_ADDRESS } from "../../mutations/contact";
 
-interface Props {}
+interface Props { }
 
-interface State {}
+interface State { }
 class PaymentAddress extends Component<Props, State> {
   state = { emaildelete: [], emailadd: [], error: {} };
 
@@ -561,18 +561,18 @@ class PaymentAddress extends Component<Props, State> {
                                   prefix={this.state.country}
                                 />
                               ) : (
-                                <UniversalCheckbox
-                                  name="WithoutTaxes"
-                                  startingvalue={vatstatus?.selfCheck}
-                                  style={{ height: "48px", alignItems: "center", display: "flex" }}
-                                  liveValue={valid => {
-                                    this.setState({ vat: { valid, selfCheck: true } });
-                                  }}
-                                  errorhint="Unable to save vat"
-                                  errorEvaluation={this.state.error.vat}>
-                                  I am a company that can accept invoices without tax.
-                                </UniversalCheckbox>
-                              )}
+                                  <UniversalCheckbox
+                                    name="WithoutTaxes"
+                                    startingvalue={vatstatus?.selfCheck}
+                                    style={{ height: "48px", alignItems: "center", display: "flex" }}
+                                    liveValue={valid => {
+                                      this.setState({ vat: { valid, selfCheck: true } });
+                                    }}
+                                    errorhint="Unable to save vat"
+                                    errorEvaluation={this.state.error.vat}>
+                                    I am a company that can accept invoices without tax.
+                                  </UniversalCheckbox>
+                                )}
                             </div>
                           )}
                         </div>

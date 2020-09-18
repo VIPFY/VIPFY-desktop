@@ -1,9 +1,8 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, Query, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 
 import { fetchTeam } from "../../queries/departments";
@@ -12,6 +11,7 @@ import EmployeeSection from "../../components/manager/teamDetails/employeeSectio
 import ServiceSection from "../../components/manager/serviceSection";
 import UploadImage from "../../components/manager/universal/uploadImage";
 import { resizeImage, getBgImageTeam } from "../../common/images";
+import { ApolloClientType } from "../../interfaces";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -27,7 +27,7 @@ const UPDATE_PIC = gql`
 interface Props {
   moveTo: Function;
   updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
 }
 
 interface State {
@@ -72,10 +72,10 @@ class TeamDetails extends React.Component<Props, State> {
       <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error = null, data }) => {
           if (loading) {
-            return "Loading...";
+            return <span>Loading...</span>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <span>Error! ${error.message}</span>;
           }
 
           const team = data.fetchTeam;

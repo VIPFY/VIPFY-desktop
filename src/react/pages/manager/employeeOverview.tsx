@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import moment, { now } from "moment";
 import { Button } from "@vipfy-private/vipfy-ui-lib";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";

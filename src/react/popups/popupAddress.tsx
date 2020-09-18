@@ -2,7 +2,7 @@ import * as React from "react";
 import PopupBase from "./universalPopups/popupBase";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import UniversalButton from "../components/universalButtons/universalButton";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { CREATE_ADDRESS } from "../mutations/contact";
 import gql from "graphql-tag";
@@ -237,15 +237,15 @@ class PopupAddress extends React.Component<Props, State> {
                   <UniversalButton type="high" label="Ok" onClick={this.props.close} />
                 </React.Fragment>
               ) : (
-                <React.Fragment>
-                  <div>Your Adress has been successfully deleted</div>
-                  <UniversalButton type="high" label="Ok" onClick={this.props.close} />
-                </React.Fragment>
-              )}
+                    <React.Fragment>
+                      <div>Your Adress has been successfully deleted</div>
+                      <UniversalButton type="high" label="Ok" onClick={this.props.close} />
+                    </React.Fragment>
+                  )}
             </PopupBase>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </PopupBase>
       );
     }
@@ -331,19 +331,19 @@ class PopupAddress extends React.Component<Props, State> {
                 <UniversalButton type="high" label="Ok" onClick={this.props.close} />
               </React.Fragment>
             ) : (
-              <React.Fragment>
-                <div>
-                  {this.props.oldvalues
-                    ? "Your Address has been successfully updated"
-                    : "Your Address has been successfully created"}
-                </div>
-                <UniversalButton type="high" label="Ok" onClick={this.props.close} />
-              </React.Fragment>
-            )}
+                  <React.Fragment>
+                    <div>
+                      {this.props.oldvalues
+                        ? "Your Address has been successfully updated"
+                        : "Your Address has been successfully created"}
+                    </div>
+                    <UniversalButton type="high" label="Ok" onClick={this.props.close} />
+                  </React.Fragment>
+                )}
           </PopupBase>
         ) : (
-          ""
-        )}
+            ""
+          )}
       </PopupBase>
     );
   }

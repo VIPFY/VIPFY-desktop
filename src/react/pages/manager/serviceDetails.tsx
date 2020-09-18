@@ -1,8 +1,7 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import moment from "moment";
 import { fetchCompanyService } from "../../queries/products";
@@ -13,6 +12,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import CreateOrbit from "../../components/manager/universal/adding/orbit";
 import { resizeImage } from "../../common/images";
 import { AppContext } from "../../common/functions";
+import { ApolloClientType } from "../../interfaces";
 
 const UPDATE_PIC = gql`
   mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
@@ -28,7 +28,7 @@ const UPDATE_PIC = gql`
 interface Props {
   moveTo: Function;
   updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
 }
 
 interface State {

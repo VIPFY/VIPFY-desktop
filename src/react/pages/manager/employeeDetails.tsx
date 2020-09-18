@@ -1,13 +1,12 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
 
 import { QUERY_USER } from "../../queries/user";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import UploadImage from "../../components/manager/universal/uploadImage";
@@ -16,6 +15,7 @@ import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
 import { showStars } from "../../common/functions";
+import { ApolloClientType } from "../../interfaces";
 
 const UPDATE_PIC = gql`
   mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
@@ -29,10 +29,10 @@ const UPDATE_PIC = gql`
 interface Props {
   moveTo: Function;
   updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   profile?: Boolean;
   isadmin?: Boolean;
-  id: number;
+  id: string;
 }
 
 interface State {
@@ -82,7 +82,9 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
-            const querydata = data.fetchSemiPublicUser || data.me;
+            const querydata = data.fetchSemiPublicUser
+              ? { ...data.fetchSemiPublicUser }
+              : { ...data.me };
             const privatePhones = [];
             const workPhones = [];
 

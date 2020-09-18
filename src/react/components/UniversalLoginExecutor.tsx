@@ -9,7 +9,7 @@ import { remote } from "electron";
 import { parse } from "url";
 import psl from "psl";
 import gql from "graphql-tag";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import brain from "brain.js";
 import PopupBase from "../popups/universalPopups/popupBase";
 import {
@@ -551,7 +551,7 @@ class UniversalLoginExecutor extends React.Component<Props, State> {
             };
 
           let loginarray = Array.from(document.querySelectorAll("*")).filter(filterDom(["userprofile", "multiadmin-profile", "presence", "log.?out", "sign.?out", "sign.?off", "log.?off", "editaccountsetting", "navbar-profile-dropdown", "ref_=bnav_youraccount_btn", "header-account-dropdown", "user-details", "userarrow", "logged.?in", "gui_emulated_avatar", "account-settings", "app.asana.com/0/inbox/", "/app/settings/account", "cmds-header__avatar-menu qa-member-menu-trigger", "js_signout", "/profile" ${
-            this.props.individualShow ? `, "${this.props.individualShow}"` : ""
+          this.props.individualShow ? `, "${this.props.individualShow}"` : ""
           }],[${this.props.individualNotShow ? `"${this.props.individualNotShow}"` : ""}]));
           
           return loginarray;

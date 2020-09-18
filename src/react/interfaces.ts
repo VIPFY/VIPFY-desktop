@@ -1,3 +1,5 @@
+import { ApolloClient } from "@apollo/client";
+
 export interface Licence {
   id: string;
   pending: boolean;
@@ -224,6 +226,12 @@ export interface App {
     easeOfAdminRating: number;
   };
   tags?: { name: string; weight: number };
+  alternatives: {
+    externalid: string;
+    name: string;
+    rating: number;
+    reviews: number;
+  };
 }
 
 export interface Option {
@@ -334,3 +342,4 @@ export interface AppContextContent {
 }
 
 export type MoveToType = (string) => void;
+export type ApolloClientType = ApolloClient<object>

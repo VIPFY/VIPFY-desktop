@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { withApollo, Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { me } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";

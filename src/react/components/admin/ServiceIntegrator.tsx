@@ -1,27 +1,17 @@
 import * as React from "react";
-import * as fs from "fs";
 import WebView from "react-electron-web-view";
-import { DH_NOT_SUITABLE_GENERATOR } from "constants";
-import { url } from "inspector";
-const { shell, remote } = require("electron");
+const { remote } = require("electron");
 import { sleep, getPreloadScriptPath } from "../../common/functions";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalDropDownInput from "../universalForms/universalDropdownInput";
 import ClickElement from "./clickElement";
-import { element, number, object } from "prop-types";
-import PlanHolder from "../PlanHolder";
 import UniversalButton from "../universalButtons/universalButton";
-import { threadId } from "worker_threads";
 
-import * as ReactDOM from "react-dom";
-import { ipcRenderer, TouchBarScrubber } from "electron";
-import { clipboard } from "electron";
-import { Query, graphql } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import ExecuteAppEdit from "./ExecuteAppEdit";
-import { enhanceErrorWithDocument } from "apollo-cache-inmemory";
 
 // capture the session for reset reasons
 const { session } = remote;
@@ -47,9 +37,9 @@ interface State {
   showDivList: boolean;
   url: string;
   urlBevorChange: string;
-  finalexecutionPlan: Object[];
-  processedfinalexecutionPlan: Object[];
-  executionPlan: Object[];
+  finalexecutionPlan: any[];
+  processedfinalexecutionPlan: any[];
+  executionPlan: any[];
   searchurl: string;
   targetpage: string;
   test: boolean;
@@ -487,7 +477,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     });
   }
 
-  zeigeElement(onOff, id) {
+  displayElement(onOff, id) {
     if (this.state.test || this.state.end || !this.state.showDivList) {
       return;
     } else if (onOff) {
@@ -920,7 +910,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
   stopScroll() {
     // show the divs
     this.state.executionPlan.map((o, k) => {
-      this.zeigeElement(false, o.args.id, false);
+      this.displayElement(false, o.args.id, false);
     });
 
     scrolling = false;
@@ -1356,7 +1346,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
     if (!this.state.editexecute) {
       return (
         <Query query={FETCH_EXECUTIONAPPS}>
-          {({ data, loading, error, refetch }) => {
+          {({ data, loading, error = null, refetch }) => {
             if (loading) {
               return <div>LOADING</div>;
             }
@@ -1365,8 +1355,7 @@ class ServiceIntegrator extends React.Component<Props, State> {
               return <div>ERROR</div>;
             }
             const executionApps: JSX.Element[] = [];
-            data.fetchExecutionApps.sort((a, b) => (a.name > b.name ? 1 : -1));
-            data.fetchExecutionApps.forEach(e =>
+            [...data.fetchExecutionApps].sort((a, b) => (a.name > b.name ? 1 : -1)).forEach(e =>
               executionApps.push(
                 <div>
                   <span>{e.name}</span>
@@ -1465,22 +1454,22 @@ class ServiceIntegrator extends React.Component<Props, State> {
                   label="Stop Tracking"
                 />
               ) : (
-                <UniversalButton
-                  type="high"
-                  onClick={async () => {
-                    this.setState({ tracking: true, test: false, divList: [] });
-                    this.webview!.send("startTracking", {});
-                  }}
-                  label="Start Tracking"
-                />
-              )}
+                  <UniversalButton
+                    type="high"
+                    onClick={async () => {
+                      this.setState({ tracking: true, test: false, divList: [] });
+                      this.webview!.send("startTracking", {});
+                    }}
+                    label="Start Tracking"
+                  />
+                )}
             </div>
             <div style={{ overflowY: "scroll", width: "100%", height: "65%" }}>
               {this.state.executionPlan.map((o, k) => (
                 <div
                   id={o.args.id + "side"}
-                  onMouseEnter={() => this.zeigeElement(true, o.args.id)}
-                  onMouseLeave={() => this.zeigeElement(false, o.args.id)}
+                  onMouseEnter={() => this.displayElement(true, o.args.id)}
+                  onMouseLeave={() => this.displayElement(false, o.args.id)}
                   style={{ border: "1px solid red", marginTop: "10px" }}>
                   <ClickElement
                     id={`ce-${k}`}
@@ -1645,8 +1634,8 @@ class ServiceIntegrator extends React.Component<Props, State> {
                       </div>
                     ))
                   ) : (
-                    <div>No Functions</div>
-                  )}
+                      <div>No Functions</div>
+                    )}
                 </div>
               </PopupBase>
             )}

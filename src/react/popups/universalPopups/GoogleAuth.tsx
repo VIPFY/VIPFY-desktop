@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, useMutation } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { useMutation } from "@apollo/client/react/hooks";
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../../components/LoadingDiv";
 import PopupBase from "./popupBase";
@@ -94,34 +95,34 @@ const GoogleAuth = (props: InnerProps) => {
             {loading ? (
               <i className="fal fa-spinner fa-spin" />
             ) : (
-              <TwoFactorForm
-                buttonLabel="confirm"
-                handleSubmit={code =>
-                  verifyToken({
-                    variables: {
-                      userid: props.user.id,
-                      type: "totp",
-                      code,
-                      codeId: props.data.codeId
-                    }
-                  })
-                }
-                fieldNumber={6}
-                seperator={4}
-                buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
-              />
-            )}
+                <TwoFactorForm
+                  buttonLabel="confirm"
+                  handleSubmit={code =>
+                    verifyToken({
+                      variables: {
+                        userid: props.user.id,
+                        type: "totp",
+                        code,
+                        codeId: props.data.codeId
+                      }
+                    })
+                  }
+                  fieldNumber={6}
+                  seperator={4}
+                  buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
+                />
+              )}
             <ErrorComp error={error} />
           </React.Fragment>
         ) : (
-          <React.Fragment>
-            <p className="sub-header">
-              Download one of the free Authenticator apps for your phone - like Google Authenticator
-              -, click add and then scan this QR code to set up your account
+            <React.Fragment>
+              <p className="sub-header">
+                Download one of the free Authenticator apps for your phone - like Google Authenticator
+                -, click add and then scan this QR code to set up your account
             </p>
-            <img alt="The QR code to scan" src={props.data.qrCode} width={112} height={111} />
-          </React.Fragment>
-        )}
+              <img alt="The QR code to scan" src={props.data.qrCode} width={112} height={111} />
+            </React.Fragment>
+          )}
       </section>
       {props.close && <UniversalButton type="low" closingPopup={true} label="cancel" />}
       {!showInput && (

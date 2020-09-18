@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { Link } from "react-router-dom";
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
@@ -30,24 +30,24 @@ const ServiceEdit = (props: Props) => {
       {showApp ? (
         <Service appid={props.apps.find(app => app.id == showApp)!.id} />
       ) : (
-        <React.Fragment>
-          <SearchBox searchFunction={(searchValue: string) => setSearch(searchValue)} />
-          <div className="apps">
-            {props.apps
-              .filter(({ name }) => name.toLowerCase().includes(seachingFor.toLowerCase()))
-              .map(({ name, id, icon, disabled, hidden }) => (
-                <div
-                  title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
-                  key={id}
-                  className={`app ${disabled ? "disabled" : ""} ${hidden ? "hidden" : ""}`}
-                  onClick={() => setShow(id)}>
-                  <img height="100px" width="100px" src={`${preAppImageUrl}${icon}`} alt={name} />
-                  <h3>{name}</h3>
-                </div>
-              ))}
-          </div>
-        </React.Fragment>
-      )}
+          <React.Fragment>
+            <SearchBox searchFunction={(searchValue: string) => setSearch(searchValue)} />
+            <div className="apps">
+              {props.apps
+                .filter(({ name }) => name.toLowerCase().includes(seachingFor.toLowerCase()))
+                .map(({ name, id, icon, disabled, hidden }) => (
+                  <div
+                    title={`${disabled ? "Disabled" : ""} ${hidden ? "Hidden" : ""}`}
+                    key={id}
+                    className={`app ${disabled ? "disabled" : ""} ${hidden ? "hidden" : ""}`}
+                    onClick={() => setShow(id)}>
+                    <img height="100px" width="100px" src={`${preAppImageUrl}${icon}`} alt={name} />
+                    <h3>{name}</h3>
+                  </div>
+                ))}
+            </div>
+          </React.Fragment>
+        )}
 
       <button
         type="button"

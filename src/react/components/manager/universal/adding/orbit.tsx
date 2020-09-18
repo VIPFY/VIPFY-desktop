@@ -1,7 +1,8 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql, Query } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
 import {
@@ -200,8 +201,8 @@ class CreateOrbit extends React.Component<Props, State> {
                         </option>
                       </select>
                     ) : (
-                      this.props.service.options.predomain
-                    )
+                        this.props.service.options.predomain
+                      )
                   }
                   suffix={
                     this.state.selfhosting ? undefined : this.props.service.options.afterdomain
@@ -246,20 +247,20 @@ class CreateOrbit extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                  }`}>
+                    }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                    }`}></div>
+                      }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadCompletes" : ""} ${
                     this.state.error ? "loadErrors" : ""
-                  }`}>
+                    }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                    }`}>
+                      }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}
@@ -295,12 +296,12 @@ const CreateOrbitEnhanced = graphql(CREATE_ORBIT, {
 
 export default (props: Props) => (
   <Query query={fetchPlans} variables={{ appid: props.service.id }}>
-    {({ loading, error, data }) => {
+    {({ loading, error = null, data }) => {
       if (loading) {
-        return "Loading...";
+        return <span>Loading...</span>;
       }
       if (error) {
-        return `Error! ${error.message}`;
+        return <span>Error! {error.message}</span>;
       }
       let plans = data.fetchPlans;
 

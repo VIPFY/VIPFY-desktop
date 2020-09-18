@@ -6,7 +6,7 @@ import UniversalButton from "../universalButtons/universalButton";
 import IconButton from "../../common/IconButton";
 import { ErrorComp, computeFullDays } from "../../common/functions";
 import { FETCH_VACATION_REQUESTS } from "./graphql";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import LoadingDiv from "../LoadingDiv";
 import RequestVacationPopup from "./RequestVacationPopup";
 import RequestHalfDayPopup from "./RequestHalfDayPopup";

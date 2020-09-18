@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { ErrorComp, filterError } from "../common/functions";
 import gql from "graphql-tag";
@@ -79,21 +79,21 @@ class VoteForApp extends React.Component<Props, State> {
           {this.state.success ? (
             ""
           ) : (
-            <button
-              disabled={showloading}
-              className="naked-button genericButton"
-              onClick={() => this.props.onClose()}
-              style={{
-                marginRight: "0.5em",
-                backgroundColor: showloading ? "#ccc" : "#c73544",
-                cursor: showloading ? "not-allowed" : "pointer"
-              }}>
-              <span className="textButton">
-                <i className="fal fa-times" />
-              </span>
-              <span className="textButtonBesideLeft">Cancel</span>
-            </button>
-          )}
+              <button
+                disabled={showloading}
+                className="naked-button genericButton"
+                onClick={() => this.props.onClose()}
+                style={{
+                  marginRight: "0.5em",
+                  backgroundColor: showloading ? "#ccc" : "#c73544",
+                  cursor: showloading ? "not-allowed" : "pointer"
+                }}>
+                <span className="textButton">
+                  <i className="fal fa-times" />
+                </span>
+                <span className="textButtonBesideLeft">Cancel</span>
+              </button>
+            )}
 
           <button
             className="naked-button genericButton"
@@ -110,15 +110,15 @@ class VoteForApp extends React.Component<Props, State> {
                 Your vote was recorded successfully
               </span>
             ) : (
-              <React.Fragment>
-                <span className="textButton">
-                  <i className={showloading ? "fas fa-spinner fa-spin" : "fal fa-check"} />
-                </span>
-                <span className="textButtonBeside">
-                  {fieldsCheck ? "Vote" : "Please fill out all required fields"}
-                </span>
-              </React.Fragment>
-            )}
+                <React.Fragment>
+                  <span className="textButton">
+                    <i className={showloading ? "fas fa-spinner fa-spin" : "fal fa-check"} />
+                  </span>
+                  <span className="textButtonBeside">
+                    {fieldsCheck ? "Vote" : "Please fill out all required fields"}
+                  </span>
+                </React.Fragment>
+              )}
           </button>
         </div>
 

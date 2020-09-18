@@ -1,7 +1,8 @@
 import * as React from "react";
 import { remote } from "electron";
 import gql from "graphql-tag";
-import { Mutation, useApolloClient } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
+import { useApolloClient } from "@apollo/client/react/hooks";
 import UniversalButton from "../universalButtons/universalButton";
 import { generateNewKeypair, encryptLicence } from "../../common/crypto";
 import { ErrorComp } from "../../common/functions";

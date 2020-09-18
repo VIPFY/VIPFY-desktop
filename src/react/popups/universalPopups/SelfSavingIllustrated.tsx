@@ -1,6 +1,7 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, graphql, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { graphql, withApollo } from "@apollo/client/react/hoc"
 import compose from "lodash.flowright";
 import PopupBase from "./popupBase";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -344,10 +345,10 @@ class SelfSaving extends React.Component<Props, State> {
       } else {
         const moreInformation = this.state.showAssign
           ? {
-              orbit: this.state.orbit,
-              alias: this.state.alias,
-              user: this.state.user?.id
-            }
+            orbit: this.state.orbit,
+            alias: this.state.alias,
+            user: this.state.user?.id
+          }
           : {};
         const res = await this.props.failedIntegration({
           context: { hasUpload: true },
@@ -390,8 +391,8 @@ class SelfSaving extends React.Component<Props, State> {
           ) : this.state.success ? (
             <img className="status-pic" src={success_pic} />
           ) : (
-            <img className="status-pic" src={loading_pic} />
-          )}
+                <img className="status-pic" src={loading_pic} />
+              )}
           {!this.props.isEmployee && (
             <div
               style={{
@@ -438,7 +439,7 @@ class SelfSaving extends React.Component<Props, State> {
                 style={{ marginTop: "24px" }}
               />
               <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
-                {({ loading, error, data }) => {
+                {({ loading, error = null, data }) => {
                   if (loading) {
                     return <div>Loading...</div>;
                   }
@@ -485,56 +486,56 @@ class SelfSaving extends React.Component<Props, State> {
                             />
                           </div>
                         ) : (
-                          <UniversalDropDownInput
-                            id={`employee-search-${this.state.time}`}
-                            label="User"
-                            width="336px"
-                            options={employees}
-                            resetPossible={true}
-                            codeFunction={employee => employee.id}
-                            nameFunction={employee => concatName(employee)}
-                            renderOption={(possibleValues, i, click, value) => (
-                              <div
-                                key={`searchResult-${i}`}
-                                className="searchResult"
-                                onClick={() => click(possibleValues[i])}>
-                                <span className="resultHighlight">
-                                  {concatName(possibleValues[i]).substring(0, value.length)}
-                                </span>
-                                <span>{concatName(possibleValues[i]).substring(value.length)}</span>
-                              </div>
-                            )}
-                            alternativeText={inputelement => (
-                              <span
-                                className="inputInsideButton"
-                                style={{
-                                  width: "auto",
-                                  backgroundColor: "transparent",
-                                  cursor: "text"
-                                }}>
+                            <UniversalDropDownInput
+                              id={`employee-search-${this.state.time}`}
+                              label="User"
+                              width="336px"
+                              options={employees}
+                              resetPossible={true}
+                              codeFunction={employee => employee.id}
+                              nameFunction={employee => concatName(employee)}
+                              renderOption={(possibleValues, i, click, value) => (
+                                <div
+                                  key={`searchResult-${i}`}
+                                  className="searchResult"
+                                  onClick={() => click(possibleValues[i])}>
+                                  <span className="resultHighlight">
+                                    {concatName(possibleValues[i]).substring(0, value.length)}
+                                  </span>
+                                  <span>{concatName(possibleValues[i]).substring(value.length)}</span>
+                                </div>
+                              )}
+                              alternativeText={inputelement => (
                                 <span
-                                  onClick={() => inputelement.focus()}
-                                  style={{ marginRight: "4px", fontSize: "12px" }}>
-                                  Start typing or
+                                  className="inputInsideButton"
+                                  style={{
+                                    width: "auto",
+                                    backgroundColor: "transparent",
+                                    cursor: "text"
+                                  }}>
+                                  <span
+                                    onClick={() => inputelement.focus()}
+                                    style={{ marginRight: "4px", fontSize: "12px" }}>
+                                    Start typing or
                                 </span>
-                                <UniversalButton
-                                  type="low"
-                                  tabIndex={-1}
-                                  onClick={() => {
-                                    this.setState({ showall: true });
-                                  }}
-                                  label="show all"
-                                  customStyles={{ lineHeight: "24px" }}
-                                />
-                              </span>
-                            )}
-                            startvalue=""
-                            livecode={c => this.setState({ user: employees.find(a => a.id == c) })}
-                            //noresults="Create new user"
-                            //noresultsClick={v => this.setState({ add: true, value: v })}
-                            fewResults={true}
-                          />
-                        )}
+                                  <UniversalButton
+                                    type="low"
+                                    tabIndex={-1}
+                                    onClick={() => {
+                                      this.setState({ showall: true });
+                                    }}
+                                    label="show all"
+                                    customStyles={{ lineHeight: "24px" }}
+                                  />
+                                </span>
+                              )}
+                              startvalue=""
+                              livecode={c => this.setState({ user: employees.find(a => a.id == c) })}
+                              //noresults="Create new user"
+                              //noresultsClick={v => this.setState({ add: true, value: v })}
+                              fewResults={true}
+                            />
+                          )}
                       </div>
                       {this.state.showall && (
                         <PopupBase
@@ -642,59 +643,59 @@ class SelfSaving extends React.Component<Props, State> {
               </div>
             </>
           ) : (
-            <>
-              <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
-                {!this.state.receivedData && (
-                  <UniversalLoginExecutor
-                    loginUrl={this.props.sso.loginurl!}
-                    username={this.props.sso!.email!}
-                    password={this.props.sso.password!}
-                    partition={`self-sso-${this.props.sso.name}`}
-                    timeout={40000}
-                    takeScreenshot={false}
-                    setResult={async (result: LoginResult) => {
-                      await this.setState(oldstate => {
-                        if (!oldstate.receivedData) {
-                          return { ...oldstate, result, receivedData: true };
-                        } else {
-                          return oldstate;
-                        }
-                      });
-                      this.finishIntegration();
-                    }}
-                    progress={progress => {
-                      if (progress < 1) {
-                        this.setState({ progress: progress * 100 });
-                      }
-                    }}
-                  />
-                )}
+                  <>
+                    <div className="hide-sso-webview" /*style={{ height: "400px", width: "400px" }}*/>
+                      {!this.state.receivedData && (
+                        <UniversalLoginExecutor
+                          loginUrl={this.props.sso.loginurl!}
+                          username={this.props.sso!.email!}
+                          password={this.props.sso.password!}
+                          partition={`self-sso-${this.props.sso.name}`}
+                          timeout={40000}
+                          takeScreenshot={false}
+                          setResult={async (result: LoginResult) => {
+                            await this.setState(oldstate => {
+                              if (!oldstate.receivedData) {
+                                return { ...oldstate, result, receivedData: true };
+                              } else {
+                                return oldstate;
+                              }
+                            });
+                            this.finishIntegration();
+                          }}
+                          progress={progress => {
+                            if (progress < 1) {
+                              this.setState({ progress: progress * 100 });
+                            }
+                          }}
+                        />
+                      )}
 
-                {!this.state.receivedIcon && (
-                  <LogoExtractor
-                    url={this.props.sso.loginurl!}
-                    setResult={async (icon, color) => {
-                      await this.setState(oldstate => {
-                        if (!oldstate.receivedIcon) {
-                          return { ...oldstate, receivedIcon: true, icon, color };
-                        } else {
-                          return oldstate;
-                        }
-                      });
-                      this.finishIntegration();
-                    }}
-                  />
-                )}
-              </div>
+                      {!this.state.receivedIcon && (
+                        <LogoExtractor
+                          url={this.props.sso.loginurl!}
+                          setResult={async (icon, color) => {
+                            await this.setState(oldstate => {
+                              if (!oldstate.receivedIcon) {
+                                return { ...oldstate, receivedIcon: true, icon, color };
+                              } else {
+                                return oldstate;
+                              }
+                            });
+                            this.finishIntegration();
+                          }}
+                        />
+                      )}
+                    </div>
 
-              <h3 style={{ marginTop: "20px", marginBottom: "20px" }}>
-                <span>Just a moment.</span>
-                <span>We are verifying the Implementation.</span>
-              </h3>
-              <progress max="100" value={this.state.progress} style={{ marginBottom: "24px" }} />
-              <UniversalButton type="high" label="Cancel" onClick={() => this.close()} />
-            </>
-          )}
+                    <h3 style={{ marginTop: "20px", marginBottom: "20px" }}>
+                      <span>Just a moment.</span>
+                      <span>We are verifying the Implementation.</span>
+                    </h3>
+                    <progress max="100" value={this.state.progress} style={{ marginBottom: "24px" }} />
+                    <UniversalButton type="high" label="Cancel" onClick={() => this.close()} />
+                  </>
+                )}
         </div>
       </PopupBase>
     );

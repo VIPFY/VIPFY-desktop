@@ -1,21 +1,18 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { graphql, withApollo, Mutation } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { Mutation } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import { me } from "../../queries/auth";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
 import UniversalTextInput from "../universalForms/universalTextInput";
 import { filterError } from "../../common/functions";
 import { ADD_PROMOCODE } from "../../mutations/auth";
-import welcomeBack from "../../../images/welcome_back.png";
-import { WorkAround } from "../../interfaces";
+import { ApolloClientType } from "../../interfaces";
 
 interface Props {
   setupFinished: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   moveTo: Function;
   globalMeRefetch: Function;
 }
@@ -87,12 +84,12 @@ class DataNameForm extends React.Component<Props, State> {
             />
           </div>
 
-          <Mutation<WorkAround, WorkAround>
+          <Mutation
             mutation={ADD_PROMOCODE}
             onCompleted={() => {
               this.setState({ newError: true });
             }}>
-            {(mutate, { data, loading, error }) => (
+            {(mutate, { data = null, loading, error = null }) => (
               <React.Fragment>
                 <div className="promoCode">
                   <button
@@ -115,20 +112,20 @@ class DataNameForm extends React.Component<Props, State> {
                         <span>{`${this.state.promocode} successfully applied.`}</span>
                       </div>
                     ) : (
-                      <UniversalTextInput
-                        id="promocode"
-                        label="Promo Code"
-                        disabled={loading}
-                        livevalue={v =>
-                          this.setState({ promocode: v != "" ? v : undefined, newError: false })
-                        }
-                        errorEvaluation={error}
-                        errorhint={error && this.state.newError && filterError(error)}
-                      />
-                    )
+                        <UniversalTextInput
+                          id="promocode"
+                          label="Promo Code"
+                          disabled={loading}
+                          livevalue={v =>
+                            this.setState({ promocode: v != "" ? v : undefined, newError: false })
+                          }
+                          errorEvaluation={error}
+                          errorhint={error && this.state.newError && filterError(error)}
+                        />
+                      )
                   ) : (
-                    ""
-                  )}
+                      ""
+                    )}
                 </div>
 
                 <UniversalButton

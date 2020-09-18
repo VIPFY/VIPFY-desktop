@@ -1,13 +1,13 @@
 import * as os from "os";
 import { inspect } from "util";
 
-import type ApolloClient from "apollo-client";
 import Store from "electron-store";
 import gelf from "gelf-pro";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
 
 import config from "./configurationManager";
+import { ApolloClientType } from "./react/interfaces";
 
 // set up default list of logging levels for typescript
 declare module "gelf-pro" {
@@ -33,8 +33,8 @@ declare global {
 }
 
 // used for getting additional metadata if we can
-let client: ApolloClient<any> | null = null;
-export function setClient(c?: ApolloClient<any>) {
+let client: ApolloClientType | null = null;
+export function setClient(c?: ApolloClientType) {
   client = c;
 }
 

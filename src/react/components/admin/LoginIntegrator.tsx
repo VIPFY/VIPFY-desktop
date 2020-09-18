@@ -6,7 +6,7 @@ import UniversalTextInput from "../universalForms/universalTextInput";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ClickElement from "./clickElement";
 import UniversalButton from "../universalButtons/universalButton";
-import { graphql, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import HeaderNotificationContext from "../notifications/headerNotificationContext";
@@ -516,7 +516,7 @@ class LoginIntegrator extends React.Component<Props, State> {
   //queues the calls if too many com to quickly to prevent the funktion from breaking
   zeigeElementQueue = [];
   zeigeElementOnAir = false; //aka is "zeigeElementworking" already running
-  zeigeElement(onOff, id, invisible) {
+  displayElement(onOff, id, invisible) {
     if (this.zeigeElementOnAir) {
       this.zeigeElementQueue.push([onOff, id]);
     }
@@ -529,7 +529,7 @@ class LoginIntegrator extends React.Component<Props, State> {
       (this.state.test || this.state.end || !this.state.tracking) &&
       this.aktDivListState.divListHold.length > 0
     ) {
-      //console.log("zeigeElement NOT");
+      //console.log("displayElement NOT");
       return;
     } else if (onOff) {
       //Remove Cover Div
@@ -801,7 +801,7 @@ class LoginIntegrator extends React.Component<Props, State> {
           onClick={e => {
             this.setState({ divList: [], test: false, end: false, tracking: true });
             this.state.executionPlan.forEach(element => {
-              this.zeigeElement(true, element.args.id, element.args.isInvisible);
+              this.displayElement(true, element.args.id, element.args.isInvisible);
               this.webview!.send("startTracking", {});
             });
           }}
@@ -1389,8 +1389,8 @@ class LoginIntegrator extends React.Component<Props, State> {
                     ? { height: "calc(100vh - 24px - 40px)" }
                     : { height: "calc(100vh - 24px)" }
                   : context.isActive
-                  ? { height: "calc(100vh - 32px - 40px)" }
-                  : { height: "calc(100vh - 32px)" }
+                    ? { height: "calc(100vh - 32px - 40px)" }
+                    : { height: "calc(100vh - 32px)" }
               }>
               {/* This here just translates information for other funktions to check on */}
               {/* context.isActive ? (
@@ -1398,7 +1398,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                   id="isActivetrue"
                   onLoadStart={() => {
                     this.state.executionPlan.forEach(element => {
-                      this.zeigeElement(true, element.args.id, element.args.isInvisible);
+                      this.displayElement(true, element.args.id, element.args.isInvisible);
                     });
                   }}
                 />
@@ -1407,7 +1407,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                   id="isActivefalse"
                   onLoadStart={() => {
                     this.state.executionPlan.forEach(element => {
-                      this.zeigeElement(true, element.args.id, element.args.isInvisible);
+                      this.displayElement(true, element.args.id, element.args.isInvisible);
                     });
                   }}
                 />
@@ -1538,47 +1538,47 @@ class LoginIntegrator extends React.Component<Props, State> {
                       />
                     </div>
                     {!this.state.tracking &&
-                    !this.state.test &&
-                    this.state.executionPlan.length > 0 ? (
-                      <div>
-                        <input
-                          type="checkbox"
-                          id="show divs"
-                          name="show divs"
-                          value="show divs"
-                          checked={!(this.aktDivListState.divListHold.length > 0)}
-                          onClick={async () => {
-                            if (this.aktDivListState.divListHold.length > 0) {
-                              const templist = this.aktDivListState.divListHold;
-                              this.aktDivListState.divListHold = [];
-                              await this.setState(oldstate => {
-                                let list = oldstate.divList;
-                                templist.forEach(element => {
-                                  list.push(element);
+                      !this.state.test &&
+                      this.state.executionPlan.length > 0 ? (
+                        <div>
+                          <input
+                            type="checkbox"
+                            id="show divs"
+                            name="show divs"
+                            value="show divs"
+                            checked={!(this.aktDivListState.divListHold.length > 0)}
+                            onClick={async () => {
+                              if (this.aktDivListState.divListHold.length > 0) {
+                                const templist = this.aktDivListState.divListHold;
+                                this.aktDivListState.divListHold = [];
+                                await this.setState(oldstate => {
+                                  let list = oldstate.divList;
+                                  templist.forEach(element => {
+                                    list.push(element);
+                                  });
+                                  oldstate.divList = list;
+                                  return oldstate;
                                 });
-                                oldstate.divList = list;
-                                return oldstate;
-                              });
-                            } else {
-                              this.state.divList.forEach(element => {
-                                this.aktDivListState.divListHold.push(element);
-                              });
-                              this.setState({ divList: [] });
-                            }
-                          }}></input>
-                        <span style={{ color: "white", textDecoration: "underline" }}>
-                          Show Markers
+                              } else {
+                                this.state.divList.forEach(element => {
+                                  this.aktDivListState.divListHold.push(element);
+                                });
+                                this.setState({ divList: [] });
+                              }
+                            }}></input>
+                          <span style={{ color: "white", textDecoration: "underline" }}>
+                            Show Markers
                         </span>
-                      </div>
-                    ) : (
-                      <div />
-                    )}
+                        </div>
+                      ) : (
+                        <div />
+                      )}
                     <div></div>
                     {this.state.executionPlan.map((o, k) => (
                       <div
                         id={o.args.id + "side"}
-                        onMouseEnter={() => this.zeigeElement(true, o.args.id, o.args.isInvisible)}
-                        onMouseLeave={() => this.zeigeElement(false, o.args.id, o.args.isInvisible)}
+                        onMouseEnter={() => this.displayElement(true, o.args.id, o.args.isInvisible)}
+                        onMouseLeave={() => this.displayElement(false, o.args.id, o.args.isInvisible)}
                         style={Object.assign(
                           { marginTop: "16px", paddingLeft: "16px", paddingRight: "16px" },
                           k > 0
@@ -1620,8 +1620,8 @@ class LoginIntegrator extends React.Component<Props, State> {
                             ]}
                           />
                         ) : (
-                          <div />
-                        )}
+                            <div />
+                          )}
 
                         <div style={{ height: "24px" }}></div>
                         <UniversalButton
@@ -1650,7 +1650,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                       return oldstate;
                                     });
                                   }
-                                  this.zeigeElement(false, o.args.id, o.args.isInvisible);
+                                  this.displayElement(false, o.args.id, o.args.isInvisible);
                                 } else {
                                   const index = this.state.stealthList.indexOf(o);
                                   if (index != -1) {
@@ -1662,7 +1662,7 @@ class LoginIntegrator extends React.Component<Props, State> {
                                     });
                                   }
                                 }
-                                this.zeigeElement(true, o.args.id, o.args.isInvisible);
+                                this.displayElement(true, o.args.id, o.args.isInvisible);
                                 this.webview.send(
                                   "hide element",
                                   o.args.selector,
@@ -1709,168 +1709,168 @@ class LoginIntegrator extends React.Component<Props, State> {
                                 </div>
                               </div>
                             ) : (
-                              <div />
-                            )}
+                                <div />
+                              )}
                           </div>
                         ) : (
-                          <div />
-                        )}
+                            <div />
+                          )}
                         {!this.state.isLogin ? (
                           this.state.spyList.indexOf(o) == -1 &&
-                          this.state.redirectList.indexOf(o) == -1 ? (
-                            <div>
-                              <UniversalButton
-                                label="Alter Events"
-                                type="high"
-                                onClick={() => {
-                                  let popup = (
-                                    <PopupBase
-                                      id="inputPopup"
-                                      small={true}
-                                      styles={{ textAlign: "center" }}
-                                      buttonStyles={{ justifyContent: "space-around" }}
-                                      closeable={false}>
-                                      <UniversalButton
-                                        type="high"
-                                        label="add Event"
-                                        onClick={() => {
-                                          this.setState(oldstate => {
-                                            oldstate.divList = [];
-                                            this.state.executionPlan.forEach(element =>
-                                              this.zeigeElement(
-                                                false,
-                                                element.args.id,
-                                                element.isInvisible
-                                              )
-                                            );
-                                            const spyList = oldstate.spyList;
-                                            spyList.push(o);
-                                            oldstate.spyList = spyList;
-                                            return oldstate;
-                                          });
-                                        }}
-                                      />
-                                      <UniversalButton
-                                        type="high"
-                                        label="exchange Events"
-                                        onClick={() => {
-                                          this.setState(oldstate => {
-                                            oldstate.divList = [];
-                                            this.state.executionPlan.forEach(element =>
-                                              this.zeigeElement(
-                                                false,
-                                                element.args.id,
-                                                element.isInvisible
-                                              )
-                                            );
-                                            const redirectList = oldstate.redirectList;
-                                            redirectList.push(o);
-                                            oldstate.redirectList = redirectList;
-                                            return oldstate;
-                                          });
-                                        }}
-                                      />
-                                    </PopupBase>
-                                  );
-                                  this.setState(oldstate => {
-                                    const divList = oldstate.divList;
-                                    divList.push(popup);
-                                    oldstate.divList = divList;
-                                    return oldstate;
-                                  });
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div>
-                              <UniversalButton
-                                label="Remove Altered Events"
-                                type="high"
-                                onClick={() => {
-                                  if (this.state.spyList.indexOf(o) != -1) {
-                                    const spyList = this.state.spyList;
-                                    spyList.splice(spyList.indexOf(o), 1);
-                                    this.setState({ spyList });
-                                  } else {
-                                    const redirectList = this.state.redirectList;
-                                    redirectList.splice(redirectList.indexOf(o), 1);
-                                    this.setState({ redirectList });
-                                  }
-                                }}
-                              />
-                            </div>
-                          )
+                            this.state.redirectList.indexOf(o) == -1 ? (
+                              <div>
+                                <UniversalButton
+                                  label="Alter Events"
+                                  type="high"
+                                  onClick={() => {
+                                    let popup = (
+                                      <PopupBase
+                                        id="inputPopup"
+                                        small={true}
+                                        styles={{ textAlign: "center" }}
+                                        buttonStyles={{ justifyContent: "space-around" }}
+                                        closeable={false}>
+                                        <UniversalButton
+                                          type="high"
+                                          label="add Event"
+                                          onClick={() => {
+                                            this.setState(oldstate => {
+                                              oldstate.divList = [];
+                                              this.state.executionPlan.forEach(element =>
+                                                this.displayElement(
+                                                  false,
+                                                  element.args.id,
+                                                  element.isInvisible
+                                                )
+                                              );
+                                              const spyList = oldstate.spyList;
+                                              spyList.push(o);
+                                              oldstate.spyList = spyList;
+                                              return oldstate;
+                                            });
+                                          }}
+                                        />
+                                        <UniversalButton
+                                          type="high"
+                                          label="exchange Events"
+                                          onClick={() => {
+                                            this.setState(oldstate => {
+                                              oldstate.divList = [];
+                                              this.state.executionPlan.forEach(element =>
+                                                this.displayElement(
+                                                  false,
+                                                  element.args.id,
+                                                  element.isInvisible
+                                                )
+                                              );
+                                              const redirectList = oldstate.redirectList;
+                                              redirectList.push(o);
+                                              oldstate.redirectList = redirectList;
+                                              return oldstate;
+                                            });
+                                          }}
+                                        />
+                                      </PopupBase>
+                                    );
+                                    this.setState(oldstate => {
+                                      const divList = oldstate.divList;
+                                      divList.push(popup);
+                                      oldstate.divList = divList;
+                                      return oldstate;
+                                    });
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div>
+                                <UniversalButton
+                                  label="Remove Altered Events"
+                                  type="high"
+                                  onClick={() => {
+                                    if (this.state.spyList.indexOf(o) != -1) {
+                                      const spyList = this.state.spyList;
+                                      spyList.splice(spyList.indexOf(o), 1);
+                                      this.setState({ spyList });
+                                    } else {
+                                      const redirectList = this.state.redirectList;
+                                      redirectList.splice(redirectList.indexOf(o), 1);
+                                      this.setState({ redirectList });
+                                    }
+                                  }}
+                                />
+                              </div>
+                            )
                         ) : (
-                          <div />
-                        )}
+                            <div />
+                          )}
                         {!this.state.autosort ? (
                           <div style={{ float: "left" }}>
                             {this.state.executionPlan.findIndex(element => {
                               return element.args.id == o.args.id;
                             }) == 0 ? (
-                              <div />
-                            ) : (
-                              <UniversalButton
-                                type="high"
-                                onClick={async () => {
-                                  await this.zeigeElement(false, o.args.id, o.args.isInvisible);
-                                  await this.setState(oldstate => {
-                                    const index = oldstate.executionPlan.findIndex(element => {
-                                      return element.args.id == o.args.id;
+                                <div />
+                              ) : (
+                                <UniversalButton
+                                  type="high"
+                                  onClick={async () => {
+                                    await this.displayElement(false, o.args.id, o.args.isInvisible);
+                                    await this.setState(oldstate => {
+                                      const index = oldstate.executionPlan.findIndex(element => {
+                                        return element.args.id == o.args.id;
+                                      });
+                                      const element = oldstate.executionPlan[index];
+                                      this.displayElement(
+                                        true,
+                                        oldstate.executionPlan[index - 1].args.id,
+                                        oldstate.executionPlan[index - 1].args.isInvisible
+                                      );
+                                      oldstate.executionPlan[index] =
+                                        oldstate.executionPlan[index - 1];
+                                      oldstate.executionPlan[index - 1] = element;
+                                      oldstate.clickReload = false;
+                                      return oldstate;
                                     });
-                                    const element = oldstate.executionPlan[index];
-                                    this.zeigeElement(
-                                      true,
-                                      oldstate.executionPlan[index - 1].args.id,
-                                      oldstate.executionPlan[index - 1].args.isInvisible
-                                    );
-                                    oldstate.executionPlan[index] =
-                                      oldstate.executionPlan[index - 1];
-                                    oldstate.executionPlan[index - 1] = element;
-                                    oldstate.clickReload = false;
-                                    return oldstate;
-                                  });
-                                  //reload clickelement
-                                  this.setState({ clickReload: true });
-                                }}
-                                label="Up"
-                              />
-                            )}
+                                    //reload clickelement
+                                    this.setState({ clickReload: true });
+                                  }}
+                                  label="Up"
+                                />
+                              )}
                             {this.state.executionPlan.findIndex(element => {
                               return element.args.id == o.args.id;
                             }) ==
-                            this.state.executionPlan.length - 1 ? (
-                              <div />
-                            ) : (
-                              <UniversalButton
-                                type="high"
-                                onClick={async () => {
-                                  await this.zeigeElement(false, o.args.id, o.args.isInvisible);
-                                  await this.setState(oldstate => {
-                                    const index = oldstate.executionPlan.findIndex(element => {
-                                      return element.args.id == o.args.id;
+                              this.state.executionPlan.length - 1 ? (
+                                <div />
+                              ) : (
+                                <UniversalButton
+                                  type="high"
+                                  onClick={async () => {
+                                    await this.displayElement(false, o.args.id, o.args.isInvisible);
+                                    await this.setState(oldstate => {
+                                      const index = oldstate.executionPlan.findIndex(element => {
+                                        return element.args.id == o.args.id;
+                                      });
+                                      const element = oldstate.executionPlan[index];
+                                      this.displayElement(
+                                        true,
+                                        oldstate.executionPlan[index + 1].args.id,
+                                        oldstate.executionPlan[index + 1].args.isInvisible
+                                      );
+                                      oldstate.executionPlan[index] =
+                                        oldstate.executionPlan[index + 1];
+                                      oldstate.executionPlan[index + 1] = element;
+                                      oldstate.clickReload = false;
+                                      return oldstate;
                                     });
-                                    const element = oldstate.executionPlan[index];
-                                    this.zeigeElement(
-                                      true,
-                                      oldstate.executionPlan[index + 1].args.id,
-                                      oldstate.executionPlan[index + 1].args.isInvisible
-                                    );
-                                    oldstate.executionPlan[index] =
-                                      oldstate.executionPlan[index + 1];
-                                    oldstate.executionPlan[index + 1] = element;
-                                    oldstate.clickReload = false;
-                                    return oldstate;
-                                  });
-                                  this.setState({ clickReload: true });
-                                }}
-                                label="Down"
-                              />
-                            )}
+                                    this.setState({ clickReload: true });
+                                  }}
+                                  label="Down"
+                                />
+                              )}
                           </div>
                         ) : (
-                          <div />
-                        )}
+                            <div />
+                          )}
                       </div>
                     ))}
 
@@ -2021,38 +2021,38 @@ class LoginIntegrator extends React.Component<Props, State> {
                       close={() => this.setState({ showLoading: false, showExtend: false })}>
                       <div>
                         {this.state.app &&
-                        this.state.app.internaldata &&
-                        this.state.app.internaldata.execute.length > 0 ? (
-                          this.state.app.internaldata.execute.map(e => (
-                            <div
-                              onClick={() =>
-                                this.setState(oldstate => {
-                                  let finalexecutionPlan: Object[] = [];
-                                  if (oldstate.showExtend) {
-                                    oldstate.finalexecutionPlan.push({
-                                      operation: "function",
-                                      args: {
-                                        functionname: e.key
-                                      }
-                                    });
-                                    finalexecutionPlan = oldstate.finalexecutionPlan;
-                                  } else {
-                                    finalexecutionPlan = JSON.parse(e.script);
-                                    console.log("finalexecutionPlan", finalexecutionPlan, e.script);
-                                  }
-                                  return {
-                                    finalexecutionPlan,
-                                    showLoading: false,
-                                    showExtend: false
-                                  };
-                                })
-                              }>
-                              {e.key}
-                            </div>
-                          ))
-                        ) : (
-                          <div>No Functions</div>
-                        )}
+                          this.state.app.internaldata &&
+                          this.state.app.internaldata.execute.length > 0 ? (
+                            this.state.app.internaldata.execute.map(e => (
+                              <div
+                                onClick={() =>
+                                  this.setState(oldstate => {
+                                    let finalexecutionPlan: Object[] = [];
+                                    if (oldstate.showExtend) {
+                                      oldstate.finalexecutionPlan.push({
+                                        operation: "function",
+                                        args: {
+                                          functionname: e.key
+                                        }
+                                      });
+                                      finalexecutionPlan = oldstate.finalexecutionPlan;
+                                    } else {
+                                      finalexecutionPlan = JSON.parse(e.script);
+                                      console.log("finalexecutionPlan", finalexecutionPlan, e.script);
+                                    }
+                                    return {
+                                      finalexecutionPlan,
+                                      showLoading: false,
+                                      showExtend: false
+                                    };
+                                  })
+                                }>
+                                {e.key}
+                              </div>
+                            ))
+                          ) : (
+                            <div>No Functions</div>
+                          )}
                       </div>
                     </PopupBase>
                   )}
@@ -2128,8 +2128,8 @@ class LoginIntegrator extends React.Component<Props, State> {
                     />
                   </PopupBase>
                 ) : (
-                  <div />
-                )}
+                    <div />
+                  )}
               </div>
             </div>
           );
