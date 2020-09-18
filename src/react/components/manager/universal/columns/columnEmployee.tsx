@@ -17,13 +17,21 @@ class ColumnEmployees extends React.Component<Props, State> {
   state = { numemployees: 6 };
   ref = React.createRef();
 
+  componentDidMount() {
+    this.calculateNumber();
+  }
+
   componentDidUpdate() {
+    this.calculateNumber();
+  }
+
+  calculateNumber() {
     if (
       this.ref &&
       this.ref.current &&
-      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numemployees
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numemployees
     ) {
-      this.setState({ numemployees: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+      this.setState({ numemployees: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
   render() {

@@ -216,7 +216,7 @@ class UniversalTextInput extends React.Component<Props, State> {
             this.props.prefix || this.props.suffix
               ? { display: "flex", alignItems: "center", overflowX: "auto" }
               : {},
-            this.props.smallTextField ? { height: "30px" } : { height: "38px" },
+            this.props.smallTextField ? { height: "30px", fontSize: "14px" } : { height: "38px" },
             { ...this.props.style },
             { ...(!this.state.firstFocus && this.props.focus ? { borderColor: "#20baa9" } : {}) }
           )}
@@ -236,13 +236,7 @@ class UniversalTextInput extends React.Component<Props, State> {
             <div style={{ marginLeft: "8px", marginRight: "-4px" }}>{this.props.prefix}</div>
           )}
 
-          {this.props.icon && (
-            <i
-              className={`${this.props.icon} ${
-                this.props.smallTextField ? "smallTextField" : "largeTextField"
-              }`}
-            />
-          )}
+          {this.props.icon && <i className={classNames(this.props.icon, "textIcon")} />}
 
           {this.props.inputElement ? (
             this.props.inputElement
