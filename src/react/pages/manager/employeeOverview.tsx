@@ -59,16 +59,6 @@ class EmployeeOverview extends React.Component<Props, State> {
     willdeleting: null
   };
 
-  handleSortClick(sorted) {
-    if (sorted != this.state.sort) {
-      this.setState({ sortforward: true, sort: sorted });
-    } else {
-      this.setState(oldstate => {
-        return { sortforward: !oldstate.sortforward };
-      });
-    }
-  }
-
   loading() {
     const amountFakes = Math.random() * 10 + 1;
     const fakeArray: JSX.Element[] = [];
@@ -151,97 +141,9 @@ class EmployeeOverview extends React.Component<Props, State> {
                 return <div>Error: {error.message}</div>;
               }
 
-              // Sort employees
               let employees: any[] = [];
-              let interemployees: any[] = [];
               if (data.fetchDepartmentsData && data.fetchDepartmentsData[0].children_data) {
-                interemployees = data.fetchDepartmentsData[0].children_data.filter(e => e && e.id);
-                let sortforward = this.state.sortforward;
-
-                //Sortselection
-                switch (this.state.sort) {
-                  case "Name":
-                    interemployees.sort(function (a, b) {
-                      let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
-                      let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
-                      if (nameA < nameB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (nameA > nameB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      // namen müssen gleich sein
-                      return 0;
-                    });
-                    break;
-                  case "Status":
-                    interemployees.sort(function (a, b) {
-                      let onA = a.isonline;
-                      let onB = b.isonline;
-                      if (onA && !onB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (!onA && onB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      let nameA = moment(a.lastactive).isValid()
-                        ? moment(a.lastactive).toISOString()
-                        : "";
-                      let nameB = moment(b.lastactive).isValid()
-                        ? moment(b.lastactive).toISOString()
-                        : "";
-                      if (nameA < nameB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (nameA > nameB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      // namen müssen gleich sein
-                      return 0;
-                    });
-                    break;
-                  case "Teams":
-                    break;
-                  case "Services":
-                    break;
-
-                  default:
-                    break;
-                }
-
-                if (this.state.search != "") {
-                  employees = interemployees.filter(employee => {
-                    return `${employee.firstname} ${employee.lastname}`
-                      .toUpperCase()
-                      .includes(this.state.search.toUpperCase());
-                  });
-                } else {
-                  employees = interemployees;
-                }
+                employees = data.fetchDepartmentsData[0].children_data.filter(e => e && e.id);
               }
 
               const tabledata = [];

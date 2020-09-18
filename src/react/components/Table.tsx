@@ -210,72 +210,74 @@ class Table extends React.Component<Props, State> {
         </div>
 
         <div className="table">
-          <div className="table-rows table-header">
-            <div className="table-checkbox-column">
-              <UniversalCheckbox
-                name={"checkOrUncheckAllRows"}
-                liveValue={check => this.checkOrUncheckAllRows(check, "")}
-                startingvalue={
-                  selectedRows.length > 0
-                    ? selectedRows.length == pageRows.length
-                      ? true
-                      : "Some"
-                    : false
-                }
-                checkboxSmall={true}
-              />
-            </div>
+          <div className="table-header">
+            <div className="table-rows">
+              <div className="table-checkbox-column">
+                <UniversalCheckbox
+                  name={"checkOrUncheckAllRows"}
+                  liveValue={check => this.checkOrUncheckAllRows(check, "")}
+                  startingvalue={
+                    selectedRows.length > 0
+                      ? selectedRows.length == pageRows.length
+                        ? true
+                        : "Some"
+                      : false
+                  }
+                  checkboxSmall={true}
+                />
+              </div>
 
-            <div className="table-body-cols">
-              {headers &&
-                selectedRows.length === 0 &&
-                headers.map(header => (
-                  <span
-                    className="table-col header"
-                    style={header.fraction ? { flexGrow: header.fraction } : undefined}
-                    onClick={() => {
-                      this.sort(header.headline);
-                    }}
-                    key={header.headline}>
-                    {header.headline}
-                    {header.sortable &&
-                      (header.headline === sortBy ? (
-                        sortAscending ? (
-                          <i className="fad fa-sort-up sortIcon"></i>
+              <div className="table-body-cols">
+                {headers &&
+                  selectedRows.length === 0 &&
+                  headers.map(header => (
+                    <span
+                      className="table-col header"
+                      style={header.fraction ? { flexGrow: header.fraction } : undefined}
+                      onClick={() => {
+                        this.sort(header.headline);
+                      }}
+                      key={header.headline}>
+                      {header.headline}
+                      {header.sortable &&
+                        (header.headline === sortBy ? (
+                          sortAscending ? (
+                            <i className="fad fa-sort-up sortIcon"></i>
+                          ) : (
+                            <i className="fad fa-sort-down sortIcon"></i>
+                          )
                         ) : (
-                          <i className="fad fa-sort-down sortIcon"></i>
-                        )
-                      ) : (
-                        <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
-                      ))}
-                  </span>
-                ))}
-              {selectedRows.length > 0 && (
-                <div className="table-section-header-body">
-                  <div className="table-col">
-                    <span>{selectedRows.length}</span>
-                    <span className={"table-header-text"}>
-                      {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
+                          <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
+                        ))}
                     </span>
-                    {selectedRows.length !== data.length && (
-                      <span
-                        className={"table-header-text select-all-items"}
-                        onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
-                        Select all {data.length} items
+                  ))}
+                {selectedRows.length > 0 && (
+                  <div className="table-section-header-body">
+                    <div className="table-col">
+                      <span>{selectedRows.length}</span>
+                      <span className={"table-header-text"}>
+                        {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
                       </span>
+                      {selectedRows.length !== data.length && (
+                        <span
+                          className={"table-header-text select-all-items"}
+                          onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
+                          Select all {data.length} items
+                        </span>
+                      )}
+                    </div>
+                    {actionTagButtonComponent && (
+                      <div className="table-col">
+                        {actionTagButtonComponent(this.getRowIds(selectedRows))}
+                      </div>
                     )}
                   </div>
-                  {actionTagButtonComponent && (
-                    <div className="table-col">
-                      {actionTagButtonComponent(this.getRowIds(selectedRows))}
-                    </div>
-                  )}
-                </div>
+                )}
+              </div>
+              {actionButtonComponent && selectedRows.length === 0 && (
+                <div className="table-dropdown-col" />
               )}
             </div>
-            {actionButtonComponent && selectedRows.length === 0 && (
-              <div className="table-dropdown-col" />
-            )}
           </div>
 
           <div className="table-body" style={{ flexDirection: "column" }}>
@@ -309,7 +311,7 @@ class Table extends React.Component<Props, State> {
                       key={`row-${i}-cell-${j}`}
                       className="table-col"
                       style={headers[j].fraction ? { flexGrow: headers[j].fraction } : undefined}>
-                      <cell.component />
+                      {cell && cell.component && <cell.component />}
                     </div>
                   ))}
                 </div>

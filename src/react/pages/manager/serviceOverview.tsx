@@ -1,9 +1,10 @@
 import * as React from "react";
 import moment from "moment";
 import gql from "graphql-tag";
-import UniversalSearchBox from "../../components/universalSearchBox";
-import UniversalButton from "../../components/universalButtons/universalButton";
 import { Query, Mutation } from "@apollo/client/react/components";
+import PageHeader from "../../components/PageHeader";
+import { ServiceLogo, Button } from "@vipfy-private/vipfy-ui-lib";
+import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
 import { fetchCompanyServices } from "../../queries/products";
@@ -14,6 +15,8 @@ import AssignServiceToUser from "../../components/manager/universal/adding/assig
 import DeleteService from "../../components/manager/deleteService";
 import { AppContext } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
+import Table from "../../components/Table";
+import Tag from "../../common/Tag";
 
 interface Props {
   moveTo: Function;
@@ -80,6 +83,24 @@ const COMPANY_SERVICES_OPTIONS = gql`
   }
 `;
 
+const headers = [
+  {
+    headline: "Service Name",
+    sortable: true
+  },
+  {
+    headline: "Teams"
+  },
+  {
+    headline: "Users"
+  },
+  {
+    headline: "Status",
+    fraction: 3,
+    sortable: true
+  }
+];
+
 class ServiceOverview extends React.Component<Props, State> {
   state = {
     search: "",
@@ -96,174 +117,6 @@ class ServiceOverview extends React.Component<Props, State> {
     keepLicences: [],
     currentServices: []
   };
-
-  handleSortClick(sorted) {
-    if (sorted != this.state.sort) {
-      this.setState({ sortforward: true, sort: sorted });
-    } else {
-      this.setState(oldstate => {
-        return { sortforward: !oldstate.sortforward };
-      });
-    }
-  }
-
-  filterMotherfunction(service) {
-    if (service.app.name.toUpperCase().includes(this.state.search.toUpperCase())) {
-      return true;
-    } /*else if (service.teams && service.teams.filter(team => this.filterTeams(team)).length > 0) {
-      return true;
-    } else if (
-      service.licences.filter(
-        l =>
-          l &&
-          ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-          (l.options == null || l.options.teamlicence == null) &&
-          this.filterEmployee(l.unitid)
-      ).length > 0
-    ) {
-      return true;
-    }*/
-    return false;
-  }
-
-  filterEmployee(unitid) {
-    if (!unitid) {
-      return false;
-    }
-    return `${unitid.firstname} ${unitid.lastname}`
-      .toUpperCase()
-      .includes(this.state.search.toUpperCase());
-  }
-
-  filterTeams(team) {
-    if (team && team.departmentid && team.departmentid.name) {
-      return team.departmentid.name.toUpperCase().includes(this.state.search.toUpperCase());
-    }
-    return false;
-  }
-
-  printServices(services) {
-    const serviceArray: JSX.Element[] = [];
-    services.forEach(service => {
-      if (service.app.id == "aeb28408-464f-49f7-97f1-6a512ccf46c2") {
-        return;
-      }
-
-      const teams = [];
-      const accounts = [];
-      const singleAccounts = [];
-
-      if (service.app.options && !service.app.options.pending) {
-        service.orbitids.forEach(element => {
-          element &&
-            element.teams &&
-            element.teams.forEach(team => {
-              if (team != null) {
-                teams.push(team);
-              }
-            });
-        });
-
-        service.orbitids.forEach(element => {
-          if (element.endtime == null || moment(element.endtime).isSameOrAfter()) {
-            element.accounts.forEach(account => {
-              if (
-                account != null &&
-                (account.endtime == null || moment(account.endtime).isSameOrAfter()) &&
-                moment(account.starttime).isSameOrBefore()
-              ) {
-                accounts.push(account);
-                account.assignments.forEach(checkunit => {
-                  if (
-                    checkunit &&
-                    (checkunit.endtime == null || moment(checkunit.endtime).isSameOrAfter()) &&
-                    !singleAccounts.find(
-                      s => s && s && checkunit.unitid && s.id == checkunit.unitid.id
-                    )
-                  ) {
-                    singleAccounts.push(checkunit.unitid);
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-
-      serviceArray.push(
-        <div
-          key={service.app.name}
-          className="tableRow"
-          onClick={() => this.props.moveTo(`lmanager/${service.app.id}`)}>
-          <div className="tableMain">
-            <div className="tableColumnBig">
-              <PrintServiceSquare appidFunction={s => s.app} service={service} />
-              <span className="name">{service.app.name}</span>
-            </div>
-            {service.app.options.pending ? (
-              <div className="tableColumnSmall">
-                <span
-                  className="status"
-                  style={{
-                    width: "40px",
-                    backgroundColor: "rgb(219, 77, 63)",
-                    paddingLeft: "8px",
-                    paddingRight: "8px",
-                    marginTop: "18px",
-                    marginLeft: "8px",
-                    display: "block"
-                  }}>
-                  pending
-                </span>
-              </div>
-            ) : (
-                <div className="tableColumnSmall">
-                  <div
-                    className="managerSquare"
-                    style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                    {service.orbitids.length}
-                  </div>
-                  <div
-                    className="managerSquare"
-                    style={{ backgroundColor: "white", color: "#253647", fontWeight: "normal" }}>
-                    {accounts.length}
-                  </div>
-                </div>
-              )}
-            <ColumnTeams teams={teams} teamidFunction={team => team} />
-            <ColumnEmployees
-              employees={singleAccounts}
-              checkFunction={
-                l => true
-                /* l &&
-                ((l.unitid != null && l.endtime == null) || l.endtime > now()) &&
-                (l.options == null || l.options.teamlicence == null)*/
-              }
-              employeeidFunction={e => e}
-            />
-          </div>
-          <div style={{ width: "18px", display: "flex", alignItems: "center" }}>
-            {service.app.disabled && (
-              <i className="fad fa-exclamation-triangle warningColor" title="App is disabled"></i>
-            )}
-          </div>
-          <div className="tableEnd">
-            <div className="editOptions">
-              <i className="fal fa-external-link-alt editbuttons" />
-              <i
-                className="fal fa-trash-alt editbuttons"
-                onClick={e => {
-                  e.stopPropagation();
-                  this.setState({ willdeleting: service });
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      );
-    });
-    return serviceArray;
-  }
 
   loading() {
     const amountFakes = Math.random() * 10 + 1;
@@ -295,164 +148,191 @@ class ServiceOverview extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="managerPage">
-        <div className="heading">
-          <h1>Service Manager</h1>
-          <UniversalSearchBox
-            getValue={v => {
-              this.setState({ search: v });
-            }}
-          />
-        </div>
-        <div className="section">
-          <div className="heading">
-            <h1>Services</h1>
-            <AppContext.Consumer>
-              {({ addRenderElement }) => (
-                <UniversalButton
-                  innerRef={el => addRenderElement({ key: "addService", element: el })}
-                  type="high"
-                  label="Add Service"
-                  customStyles={{
-                    fontSize: "12px",
-                    lineHeight: "24px",
-                    fontWeight: "700",
-                    marginRight: "16px",
-                    width: "120px"
-                  }}
-                  onClick={() =>
-                    this.setState({
-                      add: true
-                    })
-                  }
-                />
-              )}
-            </AppContext.Consumer>
-          </div>
+      <div className="page">
+        <PageHeader
+          title="Employee Manager"
+          buttonConfig={{
+            label: "Add Service",
+            onClick: () =>
+              this.setState({
+                add: true
+              }),
+            innerRef: "addServiceInManager",
+            fAIcon: "fa-plus"
+          }}
+        />
+        <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
           <Query<WorkAround, WorkAround>
             pollInterval={60 * 10 * 1000 + 900}
             query={COMPANY_SERVICES_OPTIONS}>
             {({ loading, error, data }) => {
               if (loading) {
                 return (
-                  <div className="table" key="table-fake-key">
-                    <div className="tableHeading">
-                      <div className="tableMain">
-                        <div
-                          className="tableColumnBig"
-                          onClick={() => this.handleSortClick("Name")}>
-                          <h1>
-                            Name
-                            {this.state.sort == "Name" ? (
-                              this.state.sortforward ? (
-                                <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                              ) : (
-                                  <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                                )
-                            ) : (
-                                <i
-                                  className="fas fa-sort"
-                                  style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                              )}
-                          </h1>
-                        </div>
-                        <div className="tableColumnSmall">
-                          <h1>Orbits/Accounts</h1>
-                        </div>
-                        <div className="tableColumnBig">
-                          <h1>Teams</h1>
-                        </div>
-                        <div className="tableColumnBig">
-                          <h1>Single Users</h1>
-                        </div>
-                      </div>
-                      <div className="tableEnd"></div>
-                    </div>
-                    {this.loading()}
-                  </div>
+                  <Table
+                    key="fake-table-loader"
+                    title="Services"
+                    headers={headers}
+                    searchPlaceHolder="Search Services"
+                    data={[]}
+                  />
                 );
               }
               if (error) {
                 return <div>Error! {error.message}</div>;
               }
 
-              //Sort teams
-              let services: any[] = [];
-              let interservices: any[] = [];
-              if (data && data.fetchCompanyServices) {
-                interservices = [...data.fetchCompanyServices];
-                let sortforward = this.state.sortforward;
+              // Pure Data data.fetchCompanyServices
+              console.log(data.fetchCompanyServices);
 
-                //sortselection
-                switch (this.state.sort) {
-                  case "Name":
-                    interservices.sort(function (a, b) {
-                      let nameA = a.app.name.toUpperCase();
-                      let nameB = b.app.name.toUpperCase();
-                      if (nameA < nameB) {
-                        if (sortforward) {
-                          return -1;
-                        } else {
-                          return 1;
-                        }
-                      }
-                      if (nameA > nameB) {
-                        if (sortforward) {
-                          return 1;
-                        } else {
-                          return -1;
-                        }
-                      }
-                      // namen müssen gleich sein
-                      return 0;
-                    });
-                    break;
+              const tabledata = [];
+              let services = data.fetchCompanyServices || [];
 
-                  default:
-                    break;
+              services.forEach(service => {
+                // Remove VIPFY App
+                if (
+                  !service ||
+                  !service.app ||
+                  service.app.id == "aeb28408-464f-49f7-97f1-6a512ccf46c2"
+                ) {
+                  return;
                 }
-                if (this.state.search != "") {
-                  services = interservices.filter(service => this.filterMotherfunction(service));
-                } else {
-                  services = interservices;
+                let teamColumn = {};
+                let employeeColumn = {};
+                let statusColumn = {};
+
+                if (service.app.options && service.app.options.pending) {
+                  statusColumn = {
+                    component: () => (
+                      <Tag style={{ backgroundColor: "#FFC9BE", borderColor: "#FFC9BE" }}>
+                        Pending
+                      </Tag>
+                    ),
+                    searchText: "Pending"
+                  };
                 }
-              }
+
+                let users = [];
+                let teams = [];
+
+                if (service.orbitids[0]) {
+                  service.orbitids.forEach(orbit => {
+                    if (orbit.accounts && orbit.accounts[0]) {
+                      orbit.accounts.forEach(account => {
+                        if (account.assignments && account.assignments[0]) {
+                          account.assignments.forEach(assignment => {
+                            if (assignment) {
+                              if (!users.find(u => u.id == assignment.unitid.id)) {
+                                users.push({
+                                  id: assignment.unitid.id,
+                                  firstname: assignment.unitid.firstname,
+                                  lastname: assignment.unitid.lastname,
+                                  profilepicture: assignment.unitid.profilpicture
+                                });
+                              }
+                            }
+                          });
+                        }
+                      });
+                    }
+                    if (orbit.teams && orbit.teams[0]) {
+                      orbit.teams.forEach(team => {
+                        if (!teams.find(t => t.id == team.unitid.id)) {
+                          teams.push({
+                            id: team.unitid.id,
+                            name: team.name,
+                            profilpicture: team.profilpicture
+                          });
+                        }
+                      });
+                    }
+                  });
+                }
+
+                teamColumn = {
+                  component: () => (
+                    <ColumnTeams
+                      {...this.props}
+                      teams={teams}
+                      teamidFunction={team => team}
+                      fake={false}
+                    />
+                  )
+                };
+
+                employeeColumn = {
+                  component: () => (
+                    <ColumnEmployees
+                      {...this.props}
+                      employees={users}
+                      employeeidFunction={e => e}
+                      checkFunction={e => true}
+                      fake={false}
+                    />
+                  )
+                };
+
+                tabledata.push({
+                  id: service.app.id,
+                  onClick: () => this.props.moveTo(`lmanager/${service.app.id}`),
+                  cells: [
+                    {
+                      component: () => (
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <ServiceLogo key={service.app.id} icon={service.app.icon} size={32} />
+                          <span className="name">{service.app.name}</span>
+                        </div>
+                      ),
+                      searchableText: service.app.name
+                    },
+                    teamColumn,
+                    employeeColumn,
+                    statusColumn
+                  ]
+                });
+              });
+
               return (
                 <>
-                  <div className="table" key="table-fake-key">
-                    <div className="tableHeading">
-                      <div className="tableMain">
-                        <div
-                          className="tableColumnBig"
-                          onClick={() => this.handleSortClick("Name")}>
-                          <h1>Name</h1>
-                          {this.state.sort == "Name" ? (
-                            this.state.sortforward ? (
-                              <i className="fad fa-sort-up" style={{ marginLeft: "8px" }}></i>
-                            ) : (
-                                <i className="fad fa-sort-down" style={{ marginLeft: "8px" }}></i>
-                              )
-                          ) : (
-                              <i
-                                className="fas fa-sort"
-                                style={{ marginLeft: "8px", opacity: 0.4 }}></i>
-                            )}
-                        </div>
-                        <div className="tableColumnSmall">
-                          <h1>Orbits/Accounts</h1>
-                        </div>
-                        <div className="tableColumnBig">
-                          <h1>Teams</h1>
-                        </div>
-                        <div className="tableColumnBig">
-                          <h1>Single Users</h1>
-                        </div>
+                  <Table
+                    key="Table"
+                    title="Services"
+                    headers={headers}
+                    searchPlaceHolder="Search Services"
+                    data={tabledata}
+                    actionButtonComponent={id => (
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        {/*<Button
+                          label="Assign to User/Team"
+                          onClick={() => console.log("ASSIGN User/Team", id)}
+                          fAIcon="fa-user-plus"
+                        />
+                        <Button
+                          label="Remove from User/Team"
+                          onClick={() => console.log("Remove User/Team", id)}
+                          fAIcon="fa-user-minus"
+                        />*/}
+                        <Button
+                          label="Delete Service"
+                          onClick={() => console.log("Remove Team", id)}
+                          fAIcon="fa-trash-alt"
+                        />
                       </div>
-                      <div style={{ width: "18px", display: "flex", alignItems: "center" }}></div>
-                      <div className="tableEnd"></div>
-                    </div>
-                    {services.length > 0 && this.printServices(services)}
-                  </div>
+                    )}
+                    actionTagButtonComponent={id => (
+                      <div className="table-header-action-buttons">
+                        <p
+                          className="tag tag-table-header-buttons"
+                          onClick={() => console.log("choosen ids", id)}>
+                          Delete
+                        </p>
+                        <p
+                          className="tag tag-table-header-buttons"
+                          onClick={() => console.log("choosen ids", id)}>
+                          Insert
+                        </p>
+                      </div>
+                    )}
+                  />
                   {this.state.add && (
                     <AppContext.Consumer>
                       {({ addRenderElement }) => (

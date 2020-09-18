@@ -49,6 +49,8 @@
       position: sticky;
       z-index: 3;
       top: 144px;
+      background-color: $lightgrey-lightest;
+      border-radius: 0px 0px 24px 24px;
 
       .table-header-text {
         font: normal normal normal 14px/19px Roboto;

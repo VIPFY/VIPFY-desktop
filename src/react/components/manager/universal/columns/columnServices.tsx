@@ -1,5 +1,4 @@
 import * as React from "react";
-import PrintServiceSquare from "../squares/printServiceSquare";
 import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 
 interface Props {
