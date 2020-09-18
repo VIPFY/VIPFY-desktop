@@ -35,7 +35,7 @@ class UniversalCheckbox extends React.Component<Props, State> {
           disabled={this.props.disabled}
           className="checkbox"
           id={`checkbox-${this.props.name}`}
-          checked={this.state.value == true}
+          checked={this.state.value}
           name={this.props.name}
           onChange={e => {
             this.setState({ value: e.target.checked });
