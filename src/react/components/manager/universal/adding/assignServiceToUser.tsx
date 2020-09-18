@@ -43,7 +43,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
           if (error) {
             return <div>Error! {error.message}</div>;
           }
-          let apps = data.allApps;
+          let apps = [...data.allApps];
 
           apps.sort(function (a, b) {
             let nameA = a.name.toUpperCase(); // ignore upper and lowercase
