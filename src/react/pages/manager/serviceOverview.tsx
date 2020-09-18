@@ -23,13 +23,8 @@ interface Props {
 }
 
 interface State {
-  search: string;
-  sort: string;
-  sortforward: boolean;
   add: Boolean;
-  deleting: number | null;
   willdeleting: number | null;
-  keepLicences: { service: number; employee: number }[];
 }
 
 const DELETE_SERVICE = gql`
@@ -103,50 +98,45 @@ const headers = [
 
 class ServiceOverview extends React.Component<Props, State> {
   state = {
-    search: "",
-    sort: "Name",
-    sortforward: true,
     add: false,
-    addservice: null,
-    addStage: 1,
-    teams: [],
-    addemployees: [],
-    saving: false,
-    deleting: null,
-    willdeleting: null,
-    keepLicences: [],
-    currentServices: []
+    willdeleting: null
   };
 
-  loading() {
+  render() {
     const amountFakes = Math.random() * 10 + 1;
-    const fakeArray: JSX.Element[] = [];
+    const fakeData: JSX.Element[] = [];
 
     for (let index = 0; index < amountFakes; index++) {
-      fakeArray.push(
-        <div className="tableRow" key={`trl-${index}`}>
-          <div className="tableMain">
-            <div className="tableColumnBig">
-              <PrintServiceSquare appidFunction={s => s.app} service={{}} fake={true} />
-              <span className="name" />
-            </div>
-            <div className="tableColumnBig"></div>
-            <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
-            <ColumnEmployees
-              employees={[null]}
-              employeeidFunction={e => e}
-              checkFunction={e => true}
-              fake={true}
-            />
-          </div>
-          <div className="tableEnd" />
-        </div>
-      );
+      fakeData.push({
+        id: `fake-${index}`,
+        cells: [
+          {
+            component: () => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <ServiceLogo key={`fake-${index}`} size={32} />
+                <span className="name"></span>
+              </div>
+            )
+          },
+          {
+            component: () => (
+              <ColumnTeams teams={[null]} teamidFunction={team => team.departmentid} fake={true} />
+            )
+          },
+          {
+            component: () => (
+              <ColumnEmployees
+                employees={[null]}
+                employeeidFunction={e => e}
+                checkFunction={e => true}
+                fake={true}
+              />
+            )
+          },
+          {}
+        ]
+      });
     }
-    return fakeArray;
-  }
-
-  render() {
     return (
       <div className="page">
         <PageHeader
@@ -173,16 +163,13 @@ class ServiceOverview extends React.Component<Props, State> {
                     title="Services"
                     headers={headers}
                     searchPlaceHolder="Search Services"
-                    data={[]}
+                    data={fakeData}
                   />
                 );
               }
               if (error) {
                 return <div>Error! {error.message}</div>;
               }
-
-              // Pure Data data.fetchCompanyServices
-              console.log(data.fetchCompanyServices);
 
               const tabledata = [];
               let services = data.fetchCompanyServices || [];
@@ -313,7 +300,7 @@ class ServiceOverview extends React.Component<Props, State> {
                         />*/}
                         <Button
                           label="Delete Service"
-                          onClick={() => console.log("Remove Team", id)}
+                          onClick={() => this.setState({ willdeleting: id })}
                           fAIcon="fa-trash-alt"
                         />
                       </div>
@@ -366,33 +353,9 @@ class ServiceOverview extends React.Component<Props, State> {
 
         {this.state.willdeleting && (
           <DeleteService
-            service={this.state.willdeleting}
+            serviceid={this.state.willdeleting}
             close={() => this.setState({ willdeleting: null })}
           />
-        )}
-        {this.state.deleting && (
-          <Mutation mutation={DELETE_SERVICE}>
-            {deleteTeam => (
-              <PopupSelfSaving
-                savingmessage="Deleting service"
-                savedmessage="Service succesfully deleted"
-                saveFunction={async () =>
-                  await deleteTeam({
-                    variables: {
-                      serviceid: this.state.deleting
-                    },
-                    refetchQueries: [{ query: fetchCompanyServices }]
-                  })
-                }
-                closeFunction={() =>
-                  this.setState({
-                    deleting: null,
-                    keepLicences: []
-                  })
-                }
-              />
-            )}
-          </Mutation>
         )}
       </div>
     );

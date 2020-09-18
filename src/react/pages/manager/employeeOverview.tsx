@@ -1,14 +1,14 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import moment, { now } from "moment";
-import { Button } from "@vipfy-private/vipfy-ui-lib";
+import { Button, StarRating } from "@vipfy-private/vipfy-ui-lib";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import EmployeePicture from "../../components/EmployeePicture";
-import { AppContext, showStars } from "../../common/functions";
+import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
 import Table from "../../components/Table";
@@ -21,9 +21,6 @@ interface Props {
 }
 
 interface State {
-  search: string;
-  sort: string;
-  sortforward: boolean;
   add: Boolean;
   willdeleting: number | null;
 }
@@ -52,65 +49,79 @@ const headers = [
 
 class EmployeeOverview extends React.Component<Props, State> {
   state = {
-    search: "",
-    sort: "Name",
-    sortforward: true,
     add: false,
     willdeleting: null
   };
 
-  loading() {
-    const amountFakes = Math.random() * 10 + 1;
-    const fakeArray: JSX.Element[] = [];
-
-    for (let index = 0; index < amountFakes; index++) {
-      fakeArray.push(
-        <div className="tableRow" key={`trl-${index}`}>
-          <div className="tableMain">
-            <div className="tableColumnBig" style={{ width: "20%" }}>
-              <EmployeePicture employee={{}} fake={true} />
-              <span className="name" />
-            </div>
-            <div className="tableColumnSmall" style={{ width: "10%" }}>
-              <div
-                className="status"
-                style={{
-                  backgroundColor: "#F2F2F2",
-                  marginTop: "18px",
-                  marginLeft: "0px",
-                  width: "40px",
-                  height: "16px"
-                }}
-              />
-            </div>
-            <ColumnTeams
-              {...this.props}
-              style={{ width: "20%" }}
-              teams={[null]}
-              teamidFunction={team => team}
-              fake={true}
-            />
-            <ColumnServices
-              style={{ width: "30%" }}
-              services={[null]}
-              checkFunction={element =>
-                !element.disabled &&
-                !element.planid.appid.disabled &&
-                element.vacationstart <= now() &&
-                element.vacationend > now()
-              }
-              appidFunction={element => element.planid.appid}
-              fake={true}
-            />
-          </div>
-          <div className="tableEnd" />
-        </div>
-      );
-    }
-    return fakeArray;
-  }
-
   render() {
+    const amountFakes = Math.random() * 10 + 1;
+    const fakeData = [];
+    for (let index = 0; index < amountFakes; index++) {
+      fakeData.push({
+        id: `fake-${index}`,
+        cells: [
+          {
+            component: () => (
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <EmployeePicture employee={} circle={true} fake={true} />
+                <span className="name" />
+              </div>
+            )
+          },
+          {
+            component: () => (
+              <div>
+                {Math.random() > 0.5 && (
+                  <Tag
+                    style={{
+                      backgroundColor: "#F5F7F9",
+                      borderColor: "#F5F7F9",
+                      width: "50px"
+                    }}></Tag>
+                )}
+              </div>
+            )
+          },
+          {
+            component: () => (
+              <div>
+                <StarRating stars={Math.round(Math.random() * 4)} maxStars={4} />
+              </div>
+            )
+          },
+          {
+            component: () => (
+              <ColumnTeams {...this.props} teams={[]} teamidFunction={team => team} fake={true} />
+            )
+          },
+          {
+            component: () => (
+              <ColumnServices
+                {...this.props}
+                services={[]}
+                checkFunction={element =>
+                  !element.disabled &&
+                  !element.boughtplanid.planid.appid.disabled &&
+                  element.vacationstart <= now() &&
+                  element.vacationend > now()
+                }
+                appidFunction={element => element.boughtplanid.planid.appid}
+                overlayFunction={service =>
+                  service.options &&
+                  service.options.nosetup && (
+                    <div className="licenceError">
+                      <i className="fal fa-exclamation-circle" />
+                    </div>
+                  )
+                }
+                fake={true}
+              />
+            )
+          }
+        ]
+      });
+    }
+
     return (
       <div className="page">
         <PageHeader
@@ -132,7 +143,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                     title="Employer"
                     headers={headers}
                     searchPlaceHolder="Search Employees"
-                    data={[]}
+                    data={fakeData}
                   />
                 );
               }
@@ -190,7 +201,11 @@ class EmployeeOverview extends React.Component<Props, State> {
                 securityColumn = {
                   component: () => (
                     <div title={`Password Length: ${e.passwordlength}`}>
-                      {e.passwordstrength === null ? "unknown" : showStars(e.passwordstrength, 4)}
+                      {e.passwordstrength === null ? (
+                        "unknown"
+                      ) : (
+                        <StarRating stars={e.passwordstrength} maxStars={4} />
+                      )}
                     </div>
                   ),
                   searchableText: e.passwordstrength.toString()
