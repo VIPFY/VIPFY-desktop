@@ -40,7 +40,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
           <div className="captionIntegration">
             <h3>{name}</h3>
           </div>
-          <button className="button-external" onClick={() => this.setState({ popup: true })}>
+          <button onClick={() => this.setState({ popup: true })}>
             <i className="fas fa-boxes" /> Add as External
           </button>
         </div>

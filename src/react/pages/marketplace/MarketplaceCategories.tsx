@@ -47,7 +47,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   goToApp = (appId: number) => this.props.history.push(`/area/marketplace/categories/${appId}`);
 
   renderCategory(categoryName: string, icon: string) {
-    icon = "fa-star";
+    icon = "fa-moon";
 
     return (
       <div key={categoryName} className="category">

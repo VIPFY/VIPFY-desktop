@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { StarRating } from "@vipfy-private/vipfy-ui-lib";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
@@ -14,7 +15,6 @@ import { resizeImage, getBgImageUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
-import { showStars } from "../../common/functions";
 import { ApolloClientType } from "../../interfaces";
 
 const UPDATE_PIC = gql`
@@ -127,8 +127,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                       </>
                     )}
                   </span>
-
-                  {/*<UniversalSearchBox />*/}
                 </div>
                 <div className="section">
                   <div className="heading">
@@ -192,10 +190,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                           <h1>Password strength</h1>
                         </div>
                         <div className="tableColumnSmall">
-                          <h1>Is Admin</h1>
+                          <h1>Is admin</h1>
                         </div>
                         <div className="tableColumnSmall">
-                          <h1>Two Factor</h1>
+                          <h1>Two-factor authentication</h1>
                         </div>
                       </div>
                       <div className="tableEnd">
@@ -221,12 +219,14 @@ class EmployeeDetails extends React.Component<Props, State> {
                             : "Never"}
                         </div>
                         <div className="tableColumnSmall content">
-                          {querydata.passwordlength ?? "unknown"}
+                          {querydata.passwordlength ?? "Unknown"}
                         </div>
                         <div className="tableColumnSmall content">
-                          {querydata.passwordstrength === null
-                            ? "unknown"
-                            : showStars(querydata.passwordstrength, 4)}
+                          {querydata.passwordstrength === null ? (
+                            "Unknown"
+                          ) : (
+                            <StarRating stars={querydata.passwordstrength} maxStars={4} />
+                          )}
                         </div>
                         <div className="tableColumnSmall content">
                           {querydata.isadmin ? "Yes" : "No"}
@@ -234,18 +234,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                         <div className="tableColumnSmall content">
                           {(querydata.twofa && querydata.twofa[0]) || "None"}
                         </div>
-                      </div>
-                      <div className="tableEnd">
-                        {/*<div className="editOptions">
-                          <i className="fal fa-external-link-alt editbuttons" />
-                          <i
-                            className="fal fa-trash-alt editbuttons"
-                            onClick={e => {
-                              e.stopPropagation();
-                              this.setState({ delete: true });
-                            }}
-                          />
-                          </div>*/}
                       </div>
                     </div>
                   </div>
