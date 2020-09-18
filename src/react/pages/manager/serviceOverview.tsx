@@ -104,7 +104,7 @@ class ServiceOverview extends React.Component<Props, State> {
 
   render() {
     const amountFakes = Math.random() * 10 + 1;
-    const fakeData: JSX.Element[] = [];
+    const fakeData = [];
 
     for (let index = 0; index < amountFakes; index++) {
       fakeData.push({
