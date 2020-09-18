@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
-import { WorkAround } from "../interfaces";
 import gql from "graphql-tag";
 
 export default function OrbitName(props: {
@@ -30,13 +29,13 @@ export default function OrbitName(props: {
   `;
 
   return (
-    <Query<WorkAround, WorkAround> query={fetchOrbit} variables={{ orbitid }}>
-      {({ loading, error, data }) => {
+    <Query query={fetchOrbit} variables={{ orbitid }}>
+      {({ loading, error = null, data }) => {
         if (loading) {
           return <span />;
         }
 
-        if (error) {
+        if (error || !data) {
           return <span>(can't fetch orbit data)</span>;
         }
 
