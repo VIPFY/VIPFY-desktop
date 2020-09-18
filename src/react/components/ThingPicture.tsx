@@ -32,26 +32,40 @@ export enum ThingDesign {
     v2
 }
 
-interface ThingProps {
+interface ThingBaseProps {
+    /// width/height in pixel
     size: number;
+
+    /// class of the outer Div
+    className?: string;
+
+    /// Square or Circle
+    shape: ThingShape;
+
+    /// CSS Props for Div
+    style?: React.CSSProperties;
+
+    /// whether to hide title tag; default False
+    hideTitle?: boolean;
+
+    /// whether users can upload new picture per click/drag-n-drop
+    canUpload?: boolean;
+}
+
+interface ThingProps extends ThingBaseProps {
     name: string;
     initials?: React.ReactNode;
-    hideTitle?: boolean;
     type: ThingType;
-    className?: string;
-    shape: ThingShape;
     state?: ThingState;
-    style?: React.CSSProperties;
     picture?: string;
     design?: ThingDesign;
     color?: string;
-    canUpload?: boolean;
     children?: React.ReactNode;
     id?: string;
     onLoad?: () => void;
     onError?: () => void;
     onUpload?: (file: Blob) => any;
-    styleModifier?: (style: React.HTMLAttributes<HTMLDivElement>) => React.HTMLAttributes<HTMLDivElement>;
+    propsModifier?: (style: React.HTMLAttributes<HTMLDivElement>) => React.HTMLAttributes<HTMLDivElement>;
 }
 
 const calculateInitials = (state: ThingState, type: ThingType, name: string): string | JSX.Element => {
@@ -140,7 +154,7 @@ const computeImgProps = (state: ThingState, type: ThingType, design: ThingDesign
     return null
 }
 
-const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials = null, hideTitle = false, type, className = null, shape, state = ThingState.Normal, style, picture, color = null, design = ThingDesign.v1, children, onLoad = null, onError = null, styleModifier = (a) => a }) => {
+const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials = null, hideTitle = false, type, className = null, shape, state = ThingState.Normal, style, picture, color = null, design = ThingDesign.v1, children, onLoad = null, onError = null, propsModifier = (a) => a }) => {
     const finalSize = size || 32;
     const additionalStyle = computeBackgroundStyle(state, type, design, picture, color, size);
     initials = initials || calculateInitials(state, type, name);
@@ -148,7 +162,7 @@ const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials
     const imageProps = computeImgProps(state, type, design, picture, color, size);
     return (
         <div
-            {...styleModifier({
+            {...propsModifier({
                 title: hideTitle ? null : name,
                 className: classNames(
                     className || "managerSquare",
@@ -340,7 +354,7 @@ const ThingPictureUpload: React.FC<ThingProps> = (props) => {
     }
 
     return (
-        <ThingPictureLoadState {...props} {...propOverwrites} styleModifier={props.styleModifier ? (s) => getRootProps(props.styleModifier(s)) : getRootProps}>
+        <ThingPictureLoadState {...props} {...propOverwrites} propsModifier={props.propsModifier ? (s) => getRootProps(props.propsModifier(s)) : getRootProps}>
             <input {...getInputProps()} />
             {!isLoading && canUpload &&
                 <div className="imagehover" style={isDragActive || errorMessage ? { opacity: 1 } : {}}>
@@ -368,17 +382,16 @@ export const ThingPicture: React.FC<ThingProps> = (props) => {
 }
 
 
-interface UserPictureProps {
-    id: string;
-    size: number;
-    className?: string;
-    shape: ThingShape;
-    style?: React.CSSProperties;
-    hideTitle?: boolean;
-    canUpload?: boolean;
+interface AutoPictureProps extends ThingBaseProps {
+
 }
 
-export const UserPicture: React.FC<UserPictureProps> = (props) => {
+interface AutoIdPictureProps extends AutoPictureProps {
+    /// id of the entity the picture belongs to
+    id: string;
+}
+
+export const UserPicture: React.FC<AutoIdPictureProps> = (props) => {
     const { loading, error, data } = useQuery(QUERY_USER, { variables: { userid: props.id } });
 
     if (loading) {
@@ -424,10 +437,7 @@ export const UserPicture: React.FC<UserPictureProps> = (props) => {
         picture={data.fetchPublicUser.profilepicture} />
 }
 
-interface TeamPictureProps extends UserPictureProps {
-}
-
-export const TeamPicture: React.FC<TeamPictureProps> = (props) => {
+export const TeamPicture: React.FC<AutoIdPictureProps> = (props) => {
     const { loading, error, data } = useQuery(fetchTeamSmall, { variables: { teamid: props.id } });
 
     if (loading) {
@@ -475,16 +485,7 @@ export const TeamPicture: React.FC<TeamPictureProps> = (props) => {
         color={data.fetchTeam.internaldata?.color} />
 }
 
-interface CompanyPictureProps {
-    size: number;
-    className?: string;
-    shape: ThingShape;
-    style?: React.CSSProperties;
-    hideTitle?: boolean;
-    canUpload?: boolean;
-}
-
-export const CompanyPicture: React.FC<CompanyPictureProps> = (props) => {
+export const CompanyPicture: React.FC<AutoPictureProps> = (props) => {
     const { loading, error, data } = useQuery(FETCH_COMPANY);
 
     if (loading) {
@@ -529,3 +530,4 @@ export const CompanyPicture: React.FC<CompanyPictureProps> = (props) => {
         initials={data.fetchCompany.internaldata?.initials}
         color={data.fetchCompany.internaldata?.color} />
 }
+
