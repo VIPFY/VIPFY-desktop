@@ -91,7 +91,6 @@ class Integrations extends React.Component<{}, AppPageState> {
 
                 <button
                   type="button"
-                  className="button-external"
                   onClick={() =>
                     /*this.setState({ popupSSO: true })*/ this.props.moveTo("addcustomservice")
                   }>

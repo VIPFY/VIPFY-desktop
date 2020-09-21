@@ -7,7 +7,7 @@ import gql from "graphql-tag";
 import { fetchCompanyServices } from "../../queries/products";
 
 interface Props {
-  service: any;
+  serviceid: any;
   deleteService: Function;
   close: Function;
 }
@@ -52,7 +52,7 @@ class DeleteService extends React.Component<Props, State> {
               this.setState({ saving: true });
               await this.props.deleteService({
                 variables: {
-                  serviceid: this.props.service.app.id
+                  serviceid: this.props.serviceid
                 },
                 refetchQueries: [{ query: fetchCompanyServices }]
               });
@@ -69,20 +69,20 @@ class DeleteService extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

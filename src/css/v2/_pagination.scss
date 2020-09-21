@@ -1,8 +1,9 @@
 .pagination {
   display: flex;
   line-height: 32px;
+  margin-left: 16px;
 
-  &>p {
+  & > p {
     line-height: 32px;
   }
 

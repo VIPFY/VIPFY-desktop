@@ -19,13 +19,20 @@ class ColumnTeams extends React.Component<Props, State> {
   state = { numteams: 6 };
   ref = React.createRef();
 
+  componentDidMount() {
+    this.calculateNumber();
+  }
   componentDidUpdate() {
+    this.calculateNumber();
+  }
+
+  calculateNumber() {
     if (
       this.ref &&
       this.ref.current &&
-      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numteams
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numteams
     ) {
-      this.setState({ numteams: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+      this.setState({ numteams: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
 
@@ -88,7 +95,7 @@ class ColumnTeams extends React.Component<Props, State> {
     }
 
     return (
-      <div className="tableColumnBig" style={this.props.style || {}} ref={this.ref}>
+      <div className="iconCollectionHolder" style={this.props.style || {}} ref={this.ref}>
         {teamsArray}
       </div>
     );

@@ -6,21 +6,23 @@ import UniversalCheckbox from "./universalForms/universalCheckbox";
 import UniversalTextInput from "./universalForms/universalTextInput";
 
 interface TableCell {
-  component: JSX.Element;
+  component: React.Component;
   searchableText?: string;
 }
 
 interface TableRow {
   id: string;
+  onClick?: Function;
   cells: TableCell[];
 }
 
 interface Props {
   title: string;
-  headers: { headline: string; sortable?: boolean }[];
+  headers: { headline: string; sortable?: boolean; fraction: number }[];
   data: TableRow[];
   actionButtonComponent: Function;
   actionTagButtonComponent: Function;
+  searchPlaceHolder: string;
 }
 
 interface State {
@@ -76,7 +78,8 @@ class Table extends React.Component<Props, State> {
     const sortedRows = this.state.allRows.sort(function (rowA: TableRow, rowB: TableRow) {
       const stringA = rowA.cells[columnIndex].searchableText;
       const stringB = rowB.cells[columnIndex].searchableText;
-      const comparison = stringA.localeCompare(stringB, undefined, { sensitivity: "base" });
+      const comparison =
+        stringA && stringB && stringA.localeCompare(stringB, undefined, { sensitivity: "base" });
 
       return sortAscending ? comparison : -comparison;
     });
@@ -155,10 +158,16 @@ class Table extends React.Component<Props, State> {
       sortBy
     } = this.state;
 
-    const { actionButtonComponent, data, headers, actionTagButtonComponent } = this.props;
+    const {
+      actionButtonComponent,
+      data,
+      headers,
+      searchPlaceHolder,
+      actionTagButtonComponent
+    } = this.props;
 
-    const allRowsSelected = selectedRows.length && "Active";
-
+    const allRowsSelected =
+      selectedRows.length == pageRows.length || selectedRows.length == allRows.length;
     return (
       <section className="table-section">
         <div className="extended-header">
@@ -166,9 +175,11 @@ class Table extends React.Component<Props, State> {
             <div className="extended-header-col">
               <UniversalTextInput
                 id="tablesearchbox"
-                placeHolder="Search"
+                placeHolder={searchPlaceHolder || "Search"}
                 livevalue={searchTerm => this.search(searchTerm)}
                 icon="far fa-search"
+                smallTextField={true}
+                style={{ backgroundColor: "white" }}
               />
             </div>
 
@@ -199,94 +210,114 @@ class Table extends React.Component<Props, State> {
         </div>
 
         <div className="table">
-          <div className="table-rows table-header">
-            <div className="table-checkbox-column">
-              <UniversalCheckbox
-                name={"checkOrUncheckAllRows"}
-                liveValue={check => this.checkOrUncheckAllRows(check, "")}
-                startingvalue={allRowsSelected}
-              />
-            </div>
+          <div className="table-header">
+            <div className="table-rows">
+              <div className="table-checkbox-column">
+                <UniversalCheckbox
+                  name={"checkOrUncheckAllRows"}
+                  liveValue={check => this.checkOrUncheckAllRows(check, "")}
+                  startingvalue={
+                    selectedRows.length > 0
+                      ? selectedRows.length == pageRows.length
+                        ? true
+                        : "Some"
+                      : false
+                  }
+                  checkboxSmall={true}
+                />
+              </div>
 
-            <div className="table-body-cols">
-              {headers &&
-                selectedRows.length === 0 &&
-                headers.map(header => (
-                  <h3
-                    className="table-col"
-                    style={{ width: Math.round(100 / headers.length) + "%" }}
-                    onClick={() => {
-                      this.sort(header.headline);
-                    }}
-                    key={header.headline}>
-                    {header.headline}
-                    {header.sortable &&
-                      (header.headline === sortBy ? (
-                        sortAscending ? (
-                          <i className="fad fa-sort-up sortIcon"></i>
+              <div className="table-body-cols">
+                {headers &&
+                  selectedRows.length === 0 &&
+                  headers.map(header => (
+                    <span
+                      className="table-col header"
+                      style={header.fraction ? { flexGrow: header.fraction } : undefined}
+                      onClick={() => {
+                        this.sort(header.headline);
+                      }}
+                      key={header.headline}>
+                      {header.headline}
+                      {header.sortable &&
+                        (header.headline === sortBy ? (
+                          sortAscending ? (
+                            <i className="fad fa-sort-up sortIcon"></i>
+                          ) : (
+                            <i className="fad fa-sort-down sortIcon"></i>
+                          )
                         ) : (
-                          <i className="fad fa-sort-down sortIcon"></i>
-                        )
-                      ) : (
-                        <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
-                      ))}
-                  </h3>
-                ))}
-              {selectedRows.length > 0 && (
-                <div className="table-section-header-body">
-                  <div className="table-col">
-                    <span>{selectedRows.length}</span>
-                    <span className={"table-header-text"}>
-                      {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
+                          <i className="fas fa-sort sortIcon" style={{ opacity: 0.4 }}></i>
+                        ))}
                     </span>
-                    {selectedRows.length !== data.length && (
-                      <span
-                        className={"table-header-text select-all-items"}
-                        onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
-                        Select all {data.length} items
+                  ))}
+                {selectedRows.length > 0 && (
+                  <div className="table-section-header-body">
+                    <div className="table-col">
+                      <span>{selectedRows.length}</span>
+                      <span className={"table-header-text"}>
+                        {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
                       </span>
+                      {selectedRows.length !== data.length && (
+                        <span
+                          className={"table-header-text select-all-items"}
+                          onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
+                          Select all {data.length} items
+                        </span>
+                      )}
+                    </div>
+                    {actionTagButtonComponent && (
+                      <div className="table-col">
+                        {actionTagButtonComponent(this.getRowIds(selectedRows))}
+                      </div>
                     )}
                   </div>
-                  {actionTagButtonComponent && (
-                    <div className="table-col">
-                      {actionTagButtonComponent(this.getRowIds(selectedRows))}
-                    </div>
-                  )}
-                </div>
+                )}
+              </div>
+              {actionButtonComponent && selectedRows.length === 0 && (
+                <div className="table-dropdown-col" />
               )}
             </div>
-            {actionButtonComponent && selectedRows.length === 0 && (
-              <div className="table-dropdown-col" />
-            )}
           </div>
 
           <div className="table-body" style={{ flexDirection: "column" }}>
             {pageRows.map((row: TableRow, i: number) => (
               /* I am using index as key as element is an array of objects */
-              <div className="table-rows" key={i}>
-                <div className="table-checkbox-column">
+              <div
+                className="table-rows"
+                key={i}
+                ref={ref => (this.ref = ref)}
+                onClick={event => {
+                  if (row.onClick) {
+                    event.preventDefault();
+                    row.onClick();
+                  }
+                }}
+                style={row.onClick ? { cursor: "pointer" } : {}}>
+                <div className="table-checkbox-column" onClick={event => event.stopPropagation()}>
                   <UniversalCheckbox
                     name={`table-${i}`}
                     liveValue={newValue => {
                       this.checkOrUncheckRow(row, newValue);
                     }}
                     startingvalue={selectedRows.includes(row)}
+                    checkboxSmall={true}
                   />
                 </div>
 
                 <div className="table-body-cols">
                   {row.cells.map((cell, j) => (
                     <div
+                      key={`row-${i}-cell-${j}`}
                       className="table-col"
-                      style={{ width: Math.round(100 / headers.length) + "%" }}
-                      key={headers[j].headline}>
-                      {cell.component}
+                      style={headers[j].fraction ? { flexGrow: headers[j].fraction } : undefined}>
+                      {cell && cell.component && <cell.component />}
                     </div>
                   ))}
                 </div>
 
                 {actionButtonComponent && (
-                  <div className="table-dropdown-col">
+                  <div className="table-dropdown-col" onClick={event => event.stopPropagation()}>
                     <DropDownWithIcon dropDownComponent={actionButtonComponent(row.id)} />
                   </div>
                 )}

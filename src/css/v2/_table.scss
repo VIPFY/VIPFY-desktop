@@ -44,10 +44,13 @@
   }
 
   .table {
+    user-select: none;
     .table-header {
       position: sticky;
       z-index: 3;
       top: 144px;
+      background-color: $lightgrey-lightest;
+      border-radius: 0px 0px 24px 24px;
 
       .table-header-text {
         font: normal normal normal 14px/19px Roboto;
@@ -67,24 +70,37 @@
       background: $white 0% 0% no-repeat padding-box;
       box-shadow: 0px 1px 1px $boxshadow-black;
       border-radius: 12px;
-      display: flex;
+      display: grid;
+      grid-template-columns: 48px calc(100% - 112px) 64px;
       margin-top: 4px;
 
       .table-checkbox-column {
-        width: 32px;
-        padding: 12px 2px 0 16px;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: initial;
+      }
+
+      .table-dropdown-col {
+        cursor: initial;
       }
 
       .table-body-cols {
-        display: contents;
-        width: calc(100% - 112px);
+        display: flex;
 
         .table-col {
-          margin: 0 8px;
+          margin-right: 8px;
           line-height: 48px;
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+          flex-basis: 100px;
+          flex-grow: 6;
+          &.header {
+            font-size: 14px;
+          }
 
           .sortIcon {
             margin-left: 8px;
@@ -98,7 +114,20 @@
             cursor: pointer;
             margin-left: 8px;
             background: $lightgrey-light 0% 0% no-repeat padding-box;
-            ;
+          }
+          .iconCollectionHolder {
+            display: flex;
+            align-items: center;
+            height: 48px;
+            overflow: hidden;
+            & > * {
+              &:not(:last-child) {
+                margin-right: 8px;
+              }
+            }
+          }
+          .fa-star {
+            color: $lightgrey-darker;
           }
         }
 
@@ -108,10 +137,6 @@
           width: 100%;
           padding-right: 8px;
         }
-      }
-
-      .table-dropdown-col {
-        min-width: 64px;
       }
     }
   }

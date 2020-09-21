@@ -315,22 +315,6 @@ li {
 .appdiscripton {
   overflow: hidden;
 }
-.paddingPage {
-  padding: 5vh 10%;
-  height: calc(90vh - 4rem);
-}
-.halfStarHolder {
-  position: relative;
-}
-.secondHalfStar {
-  position: absolute;
-  transform: scaleX(-1);
-  left: 0;
-  top: 2px;
-}
-.appHeaderStars {
-  line-height: 2em;
-}
 .detail-fulldescription {
   padding: 20px;
   max-height: 500px;
@@ -355,76 +339,7 @@ li {
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   border-radius: 10px;
 }
-.detail-comments {
-}
-.detail-comments-heading {
-}
-.detail-comments-holder {
-  margin-top: 3rem;
-  display: grid;
-  grid-template-columns: 10rem 1fr 1fr;
-  height: 20rem;
-  margin-bottom: 3rem;
-}
-.detail-comments-oversizeholder {
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  display: none;
-  grid-column-end: 3;
-  grid-column-start: 1;
-}
-.detail-comments-stars {
-  padding: 5px;
-}
-.detail-comments-stars-bignum {
-  font-size: 2em;
-  text-align: center;
-}
-.detail-comments-stars-holder {
-}
-.commentOverviewBlock {
-  padding: 10px;
-  overflow: auto;
-  background-color: $white;
-  border-radius: 10px;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin: 0.5rem;
-  text-align: center;
-  position: relative;
-  .avgnumber {
-    font-size: 2rem;
-  }
-}
-.detail-comments-section {
-  display: flex;
-  min-width: 200px;
-  flex-direction: column;
-  flex-wrap: wrap;
-  height: 20rem;
-  justify-content: space-between;
-}
-.detail-comment {
-  padding: 10px;
-  overflow: auto;
-  background-color: $white;
-  border-radius: 10px;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin: 0.5rem;
-}
-.detail-comment-author {
-  font-style: italic;
-  font-size: 12px;
-}
-.detail-comment-date {
-  font-style: italic;
-  font-size: 12px;
-  float: right;
-}
-.detail-comment-text {
-  word-wrap: break-word;
-  text-align: left;
-}
+
 .area {
   height: 100%;
   transition: 400ms ease-in-out height;
@@ -487,194 +402,7 @@ li {
     }
   }
 }
-.appBreadCromp {
-  margin-bottom: 1.5rem;
-  font-size: 0.7rem;
-}
-.appBreadCrompNoLink {
-  color: #798892;
-  margin-bottom: 1.5rem;
-}
-.appBreadCrompLink {
-  font-weight: 600;
-  cursor: pointer;
-}
-.appHeader {
-  display: flex;
-  height: 20rem;
-  margin-bottom: 3rem;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  border-radius: 10px;
-}
-.appHeaderGallery {
-  width: calc(100% - 15rem);
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  border-radius: 10px 0px 0px 10px;
-}
-.appHeaderInfos {
-  width: 15rem;
-  background-color: $white;
-  position: relative;
-  border-radius: 0px 10px 10px 0px;
-}
-.appHeaderStars {
-  line-height: 2em;
-  padding: 1rem;
-}
-.appHeaderName {
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding-top: 0rem;
-  padding-bottom: 0.5rem;
-  padding-left: 1rem;
-  text-transform: uppercase;
-}
-.appHeaderType {
-  color: #798892;
-  padding-left: 1rem;
-  font-weight: 400;
-  text-transform: capitalize;
-}
-.appHeaderPriceHolder {
-  position: absolute;
-  bottom: 1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: calc(100% - 2rem);
-}
-.appHeaderBuyButton {
-  position: relative;
-  padding: 0.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  background-color: $primarygreen;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin-top: 0.25rem;
-  color: $white;
-  font-weight: bold;
-  transition: all 0.6s ease-in-out;
-  &:hover {
-    background-color: #117f91;
-    transition: all 0.6s ease-in-out;
-  }
-}
-.appHeaderSelectPlan {
-  position: relative;
-  padding: 0.5rem;
-  background-color: #e9ecef;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 0.25rem;
-  border: 1px solid #e9ecef;
-  margin-top: 0.25rem;
-}
-.caretApp {
-  float: right;
-}
 
-.app-description {
-  background-color: $white;
-  border-radius: 0.25rem;
-  display: flex;
-  min-height: 15rem;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
-  background-image: radial-gradient(farthest-corner at 0px 100%, $primarygreen 0%, #117f91 100%);
-  color: $white;
-
-  &-item {
-    padding: 1rem;
-  }
-}
-
-.appDescriptionHeading {
-  font-size: 1.15rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-.appDescriptionLink {
-  cursor: pointer;
-  text-decoration: underline;
-}
-.galleryDots {
-  position: absolute;
-  width: 100%;
-  bottom: 0.25rem;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.gallyDot {
-  height: 0.75rem;
-  width: 0.75rem;
-  border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.3);
-  margin-left: 0.1rem;
-  margin-right: 0.1rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-}
-.gallyDot:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-.gallyDotActive {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-.galleryLeft {
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: 15%;
-  line-height: 20rem;
-  padding-left: 1rem;
-  background-image: linear-gradient(to left, transparent 0%, #253647 100%);
-  color: $white;
-  cursor: pointer;
-  transition: 0.3s;
-  opacity: 0.5;
-  border-radius: 10px 0px 0px 10px;
-}
-.galleryRight {
-  position: absolute;
-  right: 0;
-  height: 100%;
-  width: 15%;
-  line-height: 20rem;
-  padding-right: 1rem;
-  text-align: right;
-  background-image: linear-gradient(to right, transparent 0%, #253647 100%);
-  color: $white;
-  cursor: pointer;
-  transition: 0.3s;
-  opacity: 0.5;
-}
-.galleryLeft:hover {
-  opacity: 1;
-}
-.galleryRight:hover {
-  opacity: 1;
-}
-.addHolderAll {
-  width: 11rem;
-  height: auto;
-  background-color: $white;
-  position: absolute;
-  z-index: 1000;
-  min-width: 15rem;
-  background-color: $white;
-  top: 2.5rem;
-  margin: 0.125rem 0 0;
-  background-clip: padding-box;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-  cursor: default;
-  overflow: hidden;
-}
 select {
   background-color: transparent;
   border: none;
@@ -1595,28 +1323,7 @@ option {
   height: 1.5rem;
   width: 1.5rem;
 }
-.reviewAddButton {
-  bottom: 0px;
-  position: absolute;
-  width: 100%;
-  left: 0px;
-  padding: 0.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  background-color: $primarygreen;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin-top: 0.25rem;
-  color: $white;
-  font-weight: bold;
-  transition: all 0.6s ease-in-out;
-  border: none;
-  outline: none;
-  &:hover {
-    background-color: #117f91;
-    transition: all 0.6s ease-in-out;
-  }
-}
+
 .editorMainHolder {
   margin-bottom: 3rem;
   height: 13rem;
@@ -2785,6 +2492,5 @@ progress[value] {
   line-height: 38px;
   margin-left: 8px;
 }
-
 
 @import "./v2/index";

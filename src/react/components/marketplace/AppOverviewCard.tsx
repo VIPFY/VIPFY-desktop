@@ -1,8 +1,7 @@
 import * as React from "react";
 import classNames from "classnames";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+import { ServiceLogo, StarRating } from "@vipfy-private/vipfy-ui-lib";
 import Tag from "../../common/Tag";
-import { showStars } from "../../common/functions";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
 import CardSection from "../CardSection";
@@ -17,9 +16,9 @@ interface AppOverviewCardProps {
 }
 
 class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
-  renderPricingTag(text: string, div?: boolean, className?: string) {
+  renderTag(text: string, className: string, div?: boolean) {
     return (
-      <Tag div={div} className={classNames("pricingTag", className)}>
+      <Tag div={div} className={className}>
         {text}
       </Tag>
     );
@@ -34,15 +33,15 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         <div className="title">
           <div>
             {this.props.app.name}
-            <p className="starRating">{showStars(4, 5)}</p>
+            <div className="starRatingHolder">
+              <StarRating stars={3.4} />
+            </div>
           </div>
         </div>
         {isWideFormat && (
           <div className="headerTags tags">
-            <div>
-              {hasFreeTrial && this.renderPricingTag("Free trial", true, "infoTag")}
-              {this.renderPricingTag("19.99$ p.m.", true)}
-            </div>
+            {hasFreeTrial && this.renderTag("Free trial", "infoTag", true)}
+            {this.renderTag("19.99$ p.m.", "pricingTag", true)}
           </div>
         )}
       </>
@@ -82,8 +81,8 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
 
         {!isWideFormat && (
           <CardSection className="tagsRow">
-            {hasFreeTrial && this.renderPricingTag("Free trial", false, "infoTag")}
-            {this.renderPricingTag("19.99$ p.m.")}
+            {hasFreeTrial && this.renderTag("Free trial", "infoTag", false)}
+            {this.renderTag("19.99$ p.m.", "pricingTag")}
           </CardSection>
         )}
 

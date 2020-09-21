@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintServiceSquare from "../squares/printServiceSquare";
+import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
 
 interface Props {
   checkFunction: Function;
@@ -17,14 +17,21 @@ interface State {
 class ColumnServices extends React.Component<Props, State> {
   state = { numservices: 6 };
   ref = React.createRef();
+  componentDidMount() {
+    this.calculateNumber();
+  }
 
   componentDidUpdate() {
+    this.calculateNumber();
+  }
+
+  calculateNumber() {
     if (
       this.ref &&
       this.ref.current &&
-      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numservices
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numservices
     ) {
-      this.setState({ numservices: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+      this.setState({ numservices: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
   render() {
@@ -77,18 +84,13 @@ class ColumnServices extends React.Component<Props, State> {
           break;
         } else {
           serviceArray.push(
-            <PrintServiceSquare
-              key={service.id}
-              service={service}
-              appidFunction={appidFunction}
-              overlayFunction={overlayFunction}
-            />
+            <ServiceLogo key={service.id} icon={appidFunction(service).icon} size={32} />
           );
         }
       }
     }
     return (
-      <div className="tableColumnBig" style={this.props.style || {}} ref={this.ref}>
+      <div className="iconCollectionHolder" style={this.props.style || {}} ref={this.ref}>
         {serviceArray}
       </div>
     );
