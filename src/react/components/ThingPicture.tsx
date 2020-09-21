@@ -8,6 +8,7 @@ import { concatName, sleep } from "../common/functions";
 import { useDropzone } from "react-dropzone";
 import gql from "graphql-tag";
 import { me } from "../queries/auth";
+import { fetchAppById } from "../queries/products";
 
 export enum ThingShape {
     Square,
@@ -40,7 +41,7 @@ interface ThingBaseProps {
     className?: string;
 
     /** Square or Circle */
-    shape: ThingShape;
+    shape?: ThingShape;
 
     /** CSS Props for Div */
     style?: React.CSSProperties;
@@ -154,7 +155,23 @@ const computeImgProps = (state: ThingState, type: ThingType, design: ThingDesign
     return null
 }
 
-const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials = null, hideTitle = false, type, className = null, shape, state = ThingState.Normal, style, picture, color = null, design = ThingDesign.v1, children, onLoad = null, onError = null, propsModifier = (a) => a }) => {
+const ThingPictureRaw: React.FC<ThingProps> = React.memo(({
+    size,
+    name,
+    initials = null,
+    hideTitle = false,
+    type, className = null,
+    shape = ThingShape.Circle,
+    state = ThingState.Normal,
+    style,
+    picture,
+    color = null,
+    design = ThingDesign.v1,
+    children,
+    onLoad = null,
+    onError = null,
+    propsModifier = (a) => a
+}) => {
     const finalSize = size || 32;
     const additionalStyle = computeBackgroundStyle(state, type, design, picture, color, size);
     initials = initials || calculateInitials(state, type, name);
@@ -191,7 +208,8 @@ const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials
                     position: "absolute",
                     display: "flex",
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    margin: 0
                 }}>
                 {initials}
             </span>}
@@ -533,3 +551,49 @@ export const CompanyPicture: React.FC<AutoPictureProps> = (props) => {
         color={data.fetchCompany.internaldata?.color} />
 }
 
+export const AppIcon: React.FC<AutoIdPictureProps> = (props) => {
+    const { loading, error, data } = useQuery(fetchAppById, { variables: { id: props.id } });
+
+    console.log(props.id, loading, error, data);
+    if (loading) {
+        return <ThingPicture
+            size={props.size}
+            className={props.className}
+            shape={props.shape}
+            style={props.style}
+            hideTitle={props.hideTitle}
+            editable={props.editable}
+            id={props.id}
+            type={ThingType.Service}
+            state={ThingState.Loading}
+            name={"Loading"} />
+    }
+
+    if (error || !data || !data.fetchAppById) {
+        console.error(error);
+        return <ThingPicture
+            size={props.size}
+            className={props.className}
+            shape={props.shape}
+            style={props.style}
+            hideTitle={props.hideTitle}
+            editable={props.editable}
+            id={props.id}
+            type={ThingType.Service}
+            state={ThingState.Error}
+            name={"Error loading data"} />
+    }
+
+    return <ThingPicture
+        size={props.size}
+        className={props.className}
+        shape={props.shape}
+        style={props.style}
+        hideTitle={props.hideTitle}
+        editable={props.editable}
+        id={props.id}
+        type={ThingType.Service}
+        state={ThingState.Normal}
+        name={`${data.fetchAppById.name}`}
+        picture={data.fetchAppById.icon} />
+}

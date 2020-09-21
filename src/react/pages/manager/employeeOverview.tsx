@@ -7,13 +7,13 @@ import AddEmployeePersonalData from "../../components/manager/addEmployeePersona
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
-import EmployeePicture from "../../components/EmployeePicture";
 import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
 import Table from "../../components/Table";
 import PageHeader from "../../components/PageHeader";
 import Tag from "../../common/Tag";
+import { ThingPicture, ThingState, ThingShape, ThingType, UserPicture } from "../../components/ThingPicture";
 
 interface Props {
   moveTo: Function;
@@ -63,7 +63,7 @@ class EmployeeOverview extends React.Component<Props, State> {
           {
             component: () => (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <EmployeePicture employee={} circle={true} fake={true} />
+                <ThingPicture type={ThingType.User} state={ThingState.Loading} size={32} name="Loading" />
                 <span className="name" />
               </div>
             )
@@ -189,8 +189,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                             {moment(e.lastactive).fromNow()}
                           </Tag>
                         ) : (
-                          <Tag style={{ backgroundColor: "#C9D1DA" }}>Never</Tag>
-                        )}
+                            <Tag style={{ backgroundColor: "#C9D1DA" }}>Never</Tag>
+                          )}
                       </div>
                     ),
                     searchableText: moment(e.lastactive).isValid()
@@ -204,8 +204,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                       {e.passwordstrength === null ? (
                         "unknown"
                       ) : (
-                        <StarRating stars={e.passwordstrength} maxStars={4} />
-                      )}
+                          <StarRating stars={e.passwordstrength} maxStars={4} />
+                        )}
                     </div>
                   ),
                   searchableText: e.passwordstrength.toString()
@@ -307,7 +307,7 @@ class EmployeeOverview extends React.Component<Props, State> {
                     {
                       component: () => (
                         <div style={{ display: "flex", alignItems: "center" }}>
-                          <EmployeePicture employee={e} circle={true} />
+                          <UserPicture id={e.id} shape={ThingShape.Circle} size={32} />
                           <span className="name" title={concatName(e)}>
                             {e.firstname} {e.lastname}
                           </span>
