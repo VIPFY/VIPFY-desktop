@@ -78,7 +78,7 @@
     "@types/react-router-dom": "^5.1.2",
     "@types/uuid": "^7.0.3",
     "@types/zxcvbn": "^4.4.0",
-    "@vipfy-private/vipfy-ui-lib": "1.3.0",
+    "@vipfy-private/vipfy-ui-lib": "1.3.1",
     "apexcharts": "^3.19.0",
     "apollo-upload-client": "^14.1.1",
     "babel-loader": "^8.1.0",

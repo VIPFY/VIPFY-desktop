@@ -1,10 +1,10 @@
 import * as React from "react";
 import { withRouter } from "react-router-dom";
 import classNames from "classnames";
-import BreadCrumbs from "./BreadCrumbs";
-import { Button, CTAButton } from "@vipfy-private/vipfy-ui-lib";
+import { Button, CTAButton, BreadCrumbs } from "@vipfy-private/vipfy-ui-lib";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { AppContext } from "../common/functions";
+import routes from "../routes";
 
 interface PillButtonProps {
   label: string;
@@ -103,7 +103,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             className="backButton"
             fAIcon="fa-angle-left"
           />
-          {showBreadCrumbs && <BreadCrumbs />}
+          {showBreadCrumbs && <BreadCrumbs routes={routes} />}
         </div>
 
         <div className="titleRow">

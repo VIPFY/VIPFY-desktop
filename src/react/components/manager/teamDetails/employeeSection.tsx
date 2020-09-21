@@ -45,9 +45,13 @@ class EmployeeSection extends React.Component<Props, State> {
     let interemployees: any[] = [];
 
     if (this.props.employees) {
-      interemployees = this.props.employees;
+      // Sort mutates the original Array. Somehow props are strictly
+      // enforced immutable, so something like
+      // interemployees = [...this.props.employees]
+      // is no longer possible, as it still references the original object
+      interemployees = [...this.props.employees];
 
-      interemployees.sort(function(a, b) {
+      interemployees.sort(function (a, b) {
         let nameA = `${a.firstname} ${a.lastname}`.toUpperCase();
         let nameB = `${b.firstname} ${b.lastname}`.toUpperCase();
         if (nameA < nameB) {
@@ -59,6 +63,7 @@ class EmployeeSection extends React.Component<Props, State> {
         // namen müssen gleich sein
         return 0;
       });
+
       if (this.props.search && this.props.search != "") {
         employees = interemployees.filter(a => {
           return `${a.firstname} ${a.lastname}`
