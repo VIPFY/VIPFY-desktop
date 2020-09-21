@@ -122,7 +122,7 @@ class CompanyDetails extends React.Component<Props, State> {
                             size={96}
                             className="managerBigSquare noBottomMargin"
                             style={{ marginLeft: "0px", marginTop: "0px" }}
-                            canUpload={true}
+                            editable={true}
                           />
                         </div>
 

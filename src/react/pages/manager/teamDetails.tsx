@@ -73,7 +73,7 @@ class TeamDetails extends React.Component<Props, State> {
                       id={team?.unitid?.id}
                       size={96}
                       shape={ThingShape.Square}
-                      canUpload={true}
+                      editable={true}
                       className="managerBigSquare profilepicture"
                     />
                   </div>

@@ -34,8 +34,8 @@ class TeamGeneralDataAdd extends React.Component<Props, State> {
           shape={ThingShape.Square}
           name={this.state.name}
           type={ThingType.Team}
-          canUpload={true}
-          onUpload={file => this.setBothStates({ picture: file })}
+          editable={true}
+          onEdit={file => this.setBothStates({ picture: file })}
           className="profilepictureTeam"
           picture={picture}
         />

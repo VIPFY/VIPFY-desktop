@@ -49,7 +49,7 @@ interface ThingBaseProps {
     hideTitle?: boolean;
 
     /** whether users can upload new picture per click/drag-n-drop */
-    canUpload?: boolean;
+    editable?: boolean;
 }
 
 interface ThingProps extends ThingBaseProps {
@@ -64,7 +64,7 @@ interface ThingProps extends ThingBaseProps {
     id?: string;
     onLoad?: () => void;
     onError?: () => void;
-    onUpload?: (file: Blob) => any;
+    onEdit?: (file: Blob) => any;
     propsModifier?: (style: React.HTMLAttributes<HTMLDivElement>) => React.HTMLAttributes<HTMLDivElement>;
 }
 
@@ -222,7 +222,7 @@ const ThingPictureLoadState: React.FC<ThingProps> = (props) => {
     return <ThingPictureRaw {...props} state={ThingState.Loading} onError={setError} onLoad={setIsDoneLoading} />
 }
 
-const ThingPictureUpload: React.FC<ThingProps> = (props) => {
+const ThingPictureEditable: React.FC<ThingProps> = (props) => {
 
     const [isLoading, setIsLoading] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
@@ -242,13 +242,13 @@ const ThingPictureUpload: React.FC<ThingProps> = (props) => {
         effectFunction(props.picture);
     }, [props.picture]);
 
-    const canUpload = !props.state &&
-        (props.onUpload ||
+    const editable = props.editable && !props.state &&
+        (props.onEdit ||
             (!meLoading && !meError && meData && meData.me && (!!meData.me.isadmin || meData.me.id == props.id))
         );
 
-    if (canUpload && !props.onUpload && (props.id === null || props.id === undefined)) {
-        throw new Error("ThingPicture with canUpload has not been provided an id");
+    if (editable && !props.onEdit && (props.id === null || props.id === undefined)) {
+        throw new Error("ThingPicture with editable=true has not been provided an id");
     }
 
     const onDrop = React.useCallback(async (acceptedFiles) => {
@@ -263,8 +263,8 @@ const ThingPictureUpload: React.FC<ThingProps> = (props) => {
             await sleep(1000);
             const image = await resizeImage(acceptedFiles[0]);
 
-            if (props.onUpload) {
-                await props.onUpload(image);
+            if (props.onEdit) {
+                await props.onEdit(image);
             }
             if (props.type == ThingType.User) {
                 const data = await client.mutate({
@@ -341,7 +341,7 @@ const ThingPictureUpload: React.FC<ThingProps> = (props) => {
         accept: ["image/jpg", "image/jpeg", "image/tiff", "image/gif", "image/png", "image/webp"],
         multiple: false,
         noDragEventsBubbling: true,
-        disabled: !canUpload
+        disabled: !editable
     });
 
     let text = "Upload";
@@ -358,7 +358,7 @@ const ThingPictureUpload: React.FC<ThingProps> = (props) => {
     return (
         <ThingPictureLoadState {...props} {...propOverwrites} propsModifier={props.propsModifier ? (s) => getRootProps(props.propsModifier(s)) : getRootProps}>
             <input {...getInputProps()} />
-            {!isLoading && canUpload &&
+            {!isLoading && editable &&
                 <div className="imagehover" style={isDragActive || errorMessage ? { opacity: 1 } : {}}>
                     <i className="fal fa-camera" />
                     <span style={{ lineHeight: "normal" }}>{text}</span>
@@ -372,7 +372,7 @@ export const ThingPicture: React.FC<ThingProps> = (props) => {
     // this component is purely a performance optimization, bypassing unnessesary logic
     // in theory we could just use ThingPictureUpload
     // however since there might be dozens of these Pictures on one page, so it's worth to optimize a bit
-    if (!props.canUpload || props.state) {
+    if (!props.editable || props.state) {
         if (!props.picture) {
             return <ThingPictureRaw {...props} />
         } else {
@@ -380,7 +380,7 @@ export const ThingPicture: React.FC<ThingProps> = (props) => {
         }
     }
 
-    return <ThingPictureUpload {...props} />
+    return <ThingPictureEditable {...props} />
 }
 
 
@@ -403,7 +403,7 @@ export const UserPicture: React.FC<AutoIdPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             id={props.id}
             type={ThingType.User}
             state={ThingState.Loading}
@@ -418,7 +418,7 @@ export const UserPicture: React.FC<AutoIdPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             id={props.id}
             type={ThingType.User}
             state={ThingState.Error}
@@ -431,7 +431,7 @@ export const UserPicture: React.FC<AutoIdPictureProps> = (props) => {
         shape={props.shape}
         style={props.style}
         hideTitle={props.hideTitle}
-        canUpload={props.canUpload}
+        editable={props.editable}
         id={props.id}
         type={ThingType.User}
         state={ThingState.Normal}
@@ -449,7 +449,7 @@ export const TeamPicture: React.FC<AutoIdPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             id={props.id}
             type={ThingType.Team}
             state={ThingState.Loading}
@@ -464,7 +464,7 @@ export const TeamPicture: React.FC<AutoIdPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             id={props.id}
             type={ThingType.Team}
             state={ThingState.Error}
@@ -477,7 +477,7 @@ export const TeamPicture: React.FC<AutoIdPictureProps> = (props) => {
         shape={props.shape}
         style={props.style}
         hideTitle={props.hideTitle}
-        canUpload={props.canUpload}
+        editable={props.editable}
         id={props.id}
         type={ThingType.Team}
         state={ThingState.Normal}
@@ -497,7 +497,7 @@ export const CompanyPicture: React.FC<AutoPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             type={ThingType.Company}
             state={ThingState.Loading}
             name={"Loading"} />
@@ -511,7 +511,7 @@ export const CompanyPicture: React.FC<AutoPictureProps> = (props) => {
             shape={props.shape}
             style={props.style}
             hideTitle={props.hideTitle}
-            canUpload={props.canUpload}
+            editable={props.editable}
             type={ThingType.Company}
             state={ThingState.Error}
             name={"Error loading data"} />
@@ -523,7 +523,7 @@ export const CompanyPicture: React.FC<AutoPictureProps> = (props) => {
         shape={props.shape}
         style={props.style}
         hideTitle={props.hideTitle}
-        canUpload={props.canUpload}
+        editable={props.editable}
         id={data.fetchCompany.unit.id}
         type={ThingType.Company}
         state={ThingState.Normal}

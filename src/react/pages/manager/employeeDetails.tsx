@@ -114,7 +114,7 @@ class EmployeeDetails extends React.Component<Props, State> {
                             shape={ThingShape.Square}
                             size={96}
                             className="managerBigSquare noBottomMargin"
-                            canUpload={true}
+                            editable={true}
                           />
                           <div
                             className="status"
