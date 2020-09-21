@@ -33,22 +33,22 @@ export enum ThingDesign {
 }
 
 interface ThingBaseProps {
-    /// width/height in pixel
+    /** width/height in pixel */
     size: number;
 
-    /// class of the outer Div
+    /** class of the outer Div */
     className?: string;
 
-    /// Square or Circle
+    /** Square or Circle */
     shape: ThingShape;
 
-    /// CSS Props for Div
+    /** CSS Props for Div */
     style?: React.CSSProperties;
 
-    /// whether to hide title tag; default False
+    /** whether to hide title tag; default False */
     hideTitle?: boolean;
 
-    /// whether users can upload new picture per click/drag-n-drop
+    /** whether users can upload new picture per click/drag-n-drop */
     canUpload?: boolean;
 }
 
@@ -200,8 +200,10 @@ const ThingPictureRaw: React.FC<ThingProps> = React.memo(({ size, name, initials
     )
 });
 
-/// similar to useState, but it always starts at false, and the setter always sets it to true
-/// changing value resets the value to false
+/**
+ * similar to useState, but it always starts at false, and the setter always sets it to true
+ * changing value resets the state to false
+ */
 function useTrigger(value: any): [boolean, () => void] {
     const [state, setState] = React.useState(false);
     const set = React.useCallback(() => setState(true), []);
@@ -387,7 +389,7 @@ interface AutoPictureProps extends ThingBaseProps {
 }
 
 interface AutoIdPictureProps extends AutoPictureProps {
-    /// id of the entity the picture belongs to
+    /** id of the entity the picture belongs to */
     id: string;
 }
 
