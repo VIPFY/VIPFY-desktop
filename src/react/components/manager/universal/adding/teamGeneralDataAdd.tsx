@@ -1,6 +1,6 @@
 import * as React from "react";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
-import UploadImage from "../uploadImage";
+import { ThingPicture, ThingShape, ThingType } from "../../../ThingPicture";
 
 interface Props {
   setOuterState: Function;
@@ -29,13 +29,15 @@ class TeamGeneralDataAdd extends React.Component<Props, State> {
     const { picture, name } = this.props;
     return (
       <div style={{ display: "flex", alignItems: "flex-end" }}>
-        <UploadImage
-          picture={picture}
-          onDrop={file => this.setBothStates({ picture: file })}
-          name={name}
+        <ThingPicture
+          size={88}
+          shape={ThingShape.Square}
+          name={this.state.name}
+          type={ThingType.Team}
+          editable={true}
+          onEdit={file => this.setBothStates({ picture: file })}
           className="profilepictureTeam"
-          isadmin={this.props.isadmin}
-          mainClassName="profilepictureTeam"
+          picture={picture}
         />
         <UniversalTextInput
           label="Team name"

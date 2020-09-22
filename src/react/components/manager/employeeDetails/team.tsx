@@ -1,7 +1,7 @@
 import * as React from "react";
 import moment from "moment";
-import PrintTeamSquare from "../universal/squares/printTeamSquare";
 import RemoveTeamMember from "../removeTeamMember";
+import { TeamPicture } from "../../ThingPicture";
 
 interface Props {
   employee: any;
@@ -33,7 +33,7 @@ class Team extends React.Component<Props, State> {
         }}>
         <div className="tableMain">
           <div className="tableColumnSmall">
-            <PrintTeamSquare team={team} />
+            <TeamPicture id={team.unitid.id} size={32} />
             <span className="name" title={team.name}>
               {team.name}
             </span>

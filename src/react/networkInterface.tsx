@@ -138,7 +138,7 @@ const cache = new InMemoryCache({
           return toReference({ __typename: "PublicTeam", unitid: { id: args.teamid } })
         },
         fetchAppById(_, { args, toReference }) {
-          return toReference({ __typename: "App", id: args.id })
+          return toReference({ __typename: "AppDetails", id: args.id })
         },
         fetchLicence(_, { args, toReference }) {
           return toReference({ __typename: "Licence", unitid: { id: args.licenceid } })

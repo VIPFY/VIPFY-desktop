@@ -5,8 +5,6 @@ import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import { FETCH_COMPANY, FETCH_VIPFY_PLAN } from "../../queries/departments";
 import gql from "graphql-tag";
-import UploadImage from "../../components/manager/universal/uploadImage";
-import { resizeImage, getBgImageTeam } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
@@ -18,17 +16,8 @@ import { ErrorComp } from "../../common/functions";
 import { SET_VAT_ID } from "../../mutations/department";
 import VIPFYPlanPopup from "../../popups/universalPopups/VIPFYPlanPopup";
 import { ApolloClientType } from "../../interfaces";
+import { CompanyPicture, ThingShape } from "../../components/ThingPicture";
 
-const UPDATE_PIC = gql`
-  mutation onUpdateCompanyPic($file: Upload!) {
-    updateCompanyPic(file: $file) {
-      unit: unitid {
-        id
-      }
-      profilepicture
-    }
-  }
-`;
 
 const FETCH_COMPANY_SERVICES = gql`
   query onFetchCompanyServices {
@@ -58,7 +47,6 @@ const FETCH_COMPANY_SERVICES = gql`
 
 interface Props {
   moveTo: Function;
-  updatePic: Function;
   client: ApolloClientType;
   applyPromocode: Function;
   setVatID: Function;
@@ -91,24 +79,6 @@ class CompanyDetails extends React.Component<Props, State> {
     error: null,
     showPlanModal: false,
     currentPlan: null
-  };
-
-  uploadPic = async (picture: File) => {
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      console.log("err", err);
-      await this.setState({ loading: false });
-    }
   };
 
   render() {
@@ -147,17 +117,12 @@ class CompanyDetails extends React.Component<Props, State> {
                     <div className="tableRow" style={{ height: "144px" }}>
                       <div className="tableMain" style={{ width: "calc(100% - 16px)" }}>
                         <div className="tableColumnSmall content">
-                          <UploadImage
-                            picture={
-                              profilepicture && {
-                                preview: getBgImageTeam(profilepicture, 96)
-                              }
-                            }
-                            name={name}
-                            onDrop={(file: File) => this.uploadPic(file)}
+                          <CompanyPicture
+                            shape={ThingShape.Square}
+                            size={96}
                             className="managerBigSquare noBottomMargin"
-                            isadmin={this.props.isadmin}
-                            formstyles={{ marginLeft: "0px", marginTop: "0px" }}
+                            style={{ marginLeft: "0px", marginTop: "0px" }}
+                            editable={true}
                           />
                         </div>
 
@@ -473,7 +438,6 @@ class CompanyDetails extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(UPDATE_PIC, { name: "updatePic" }),
   graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
   graphql(SET_VAT_ID, { name: "setVatID" })
 )(withApollo(CompanyDetails));

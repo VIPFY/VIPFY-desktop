@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintTeamSquare from "../squares/printTeamSquare";
+import { TeamPicture, ThingShape } from "../../../ThingPicture";
 
 interface Props {
   checkFunction?: Function;
@@ -81,8 +81,14 @@ class ColumnTeams extends React.Component<Props, State> {
           );
           break;
         } else {
+          const id = this.props.onlyids ? team : team.unitid.id;
           teamsArray.push(
-            <PrintTeamSquare key={`team-${counter}`} team={team} onlyids={this.props.onlyids} />
+            <TeamPicture
+              id={id}
+              shape={ThingShape.Square}
+              size={32}
+              key={`team-${id}`}
+            />
           );
         }
       }

@@ -1,17 +1,15 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import { Button } from "@vipfy-private/vipfy-ui-lib";
-import UniversalSearchBox from "../../components/universalSearchBox";
-import UniversalButton from "../../components/universalButtons/universalButton";
 import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
-import PrintTeamSquare from "../../components/manager/universal/squares/printTeamSquare";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import DeleteTeam from "../../components/manager/deleteTeam";
 import PageHeader from "../../components/PageHeader";
 import Table from "../../components/Table";
+import { ThingPicture, ThingType, ThingState, ThingShape, TeamPicture } from "../../components/ThingPicture";
 
 interface Props {
   moveTo: Function;
@@ -52,7 +50,7 @@ class TeamOverview extends React.Component<Props, State> {
           {
             component: () => (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <PrintTeamSquare team={{}} fake={true} />
+                <ThingPicture type={ThingType.Team} state={ThingState.Loading} size={32} name="Loading" />
                 <span className="name"></span>
               </div>
             )
@@ -140,7 +138,7 @@ class TeamOverview extends React.Component<Props, State> {
                     {
                       component: () => (
                         <div style={{ display: "flex", alignItems: "center" }}>
-                          <PrintTeamSquare team={team} />
+                          <TeamPicture id={team.unitid.id} size={32} />
                           <span className="name" title={team.name}>
                             {team.name}
                           </span>

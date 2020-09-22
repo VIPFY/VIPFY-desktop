@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
-import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { withApollo } from "@apollo/client/react/hoc";
 import { StarRating } from "@vipfy-private/vipfy-ui-lib";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
@@ -8,23 +8,12 @@ import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
 
 import { QUERY_USER } from "../../queries/user";
-import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import UploadImage from "../../components/manager/universal/uploadImage";
-import { resizeImage, getBgImageUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
 import { ApolloClientType } from "../../interfaces";
-
-const UPDATE_PIC = gql`
-  mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, userid: $unitid) {
-      id
-      profilepicture
-    }
-  }
-`;
+import { UserPicture, ThingShape } from "../../components/ThingPicture";
 
 interface Props {
   moveTo: Function;
@@ -44,24 +33,6 @@ class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
     showSecurityPopup: false
-  };
-
-  uploadPic = async (picture: File) => {
-    const { userid } = this.props.match.params;
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage, unitid: userid }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      console.log("err", err);
-      await this.setState({ loading: false });
-    }
   };
 
   render() {
@@ -115,17 +86,17 @@ class EmployeeDetails extends React.Component<Props, State> {
                     {this.props.profile ? (
                       <span style={{ color: "#253647" }}>Profile</span>
                     ) : (
-                      <>
-                        <span
-                          style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
-                          onClick={() => this.props.moveTo("emanager")}>
-                          Employee Manager
+                        <>
+                          <span
+                            style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                            onClick={() => this.props.moveTo("emanager")}>
+                            Employee Manager
                         </span>
-                        <span className="h2">
-                          {querydata.firstname} {querydata.lastname}
-                        </span>
-                      </>
-                    )}
+                          <span className="h2">
+                            {querydata.firstname} {querydata.lastname}
+                          </span>
+                        </>
+                      )}
                   </span>
                 </div>
                 <div className="section">
@@ -136,17 +107,12 @@ class EmployeeDetails extends React.Component<Props, State> {
                     <div className="tableRow" style={{ height: "144px" }}>
                       <div className="tableMain">
                         <div className="tableColumnSmall content twoline">
-                          <UploadImage
-                            picture={
-                              querydata.profilepicture && {
-                                preview: getBgImageUser(querydata.profilepicture, 96)
-                              }
-                            }
-                            name={`${querydata.firstname} ${querydata.lastname}`}
-                            onDrop={file => this.uploadPic(file)}
+                          <UserPicture
+                            id={querydata.id}
+                            shape={ThingShape.Square}
+                            size={96}
                             className="managerBigSquare noBottomMargin"
-                            isadmin={this.props.isadmin}
-                            formstyles={{ width: "100%", maxWidth: "96px", margin: "0px" }}
+                            editable={true}
                           />
                           <div
                             className="status"
@@ -225,8 +191,8 @@ class EmployeeDetails extends React.Component<Props, State> {
                           {querydata.passwordstrength === null ? (
                             "Unknown"
                           ) : (
-                            <StarRating stars={querydata.passwordstrength} maxStars={4} />
-                          )}
+                              <StarRating stars={querydata.passwordstrength} maxStars={4} />
+                            )}
                         </div>
                         <div className="tableColumnSmall content">
                           {querydata.isadmin ? "Yes" : "No"}
@@ -293,4 +259,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(EmployeeDetails));
+export default withApollo(EmployeeDetails);

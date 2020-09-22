@@ -1,6 +1,5 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
-import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
@@ -10,10 +9,10 @@ import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchTeam, fetchDepartmentsData, fetchTeams } from "../../../../queries/departments";
-import PrintTeamSquare from "../squares/printTeamSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddEmployeePersonalData from "../../addEmployeePersonalData";
 import Tag from "../../../../common/Tag";
+import { TeamPicture, UserPicture, ThingShape } from "../../../ThingPicture";
 
 interface Props {
   team: any;
@@ -189,10 +188,11 @@ class AssignNewTeamMember extends React.Component<Props, State> {
         <h1>Assign Teammember</h1>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-          <PrintTeamSquare
-            team={this.props.team}
+          <TeamPicture
+            id={this.props.team.unitid.id}
+            shape={ThingShape.Square}
             size={24}
-            styles={{
+            style={{
               lineHeight: "24px",
               width: "24px",
               height: "24px",
@@ -223,8 +223,9 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 position: "relative"
               }}>
               <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
-              <EmployeePicture
-                employee={this.state.employee}
+              <UserPicture
+                id={this.state.employee.id}
+                shape={ThingShape.Square}
                 size={24}
                 style={{
                   lineHeight: "24px",
