@@ -82,22 +82,27 @@ export default (props: Props) => {
           </div>
         </div>
       ) : (
-        <React.Fragment>
+        <>
           {Object.keys(appLists).map(list => {
             if (appLists[list].length > 0) {
               return (
-                <AppList
-                  key={list}
-                  header={list}
-                  licences={filterLicences(appLists[list])}
-                  setApp={(licence: number) => props.setApp(licence)}
-                />
+                <>
+                  <AppList
+                    key={list}
+                    header={list}
+                    licences={filterLicences(appLists[list])}
+                    setApp={(licence: number) => props.setApp(licence)}
+                  />
+                  {list === "My Favorites" && appLists["My Services"].length > 0 && (
+                    <hr style={{ paddingBottom: "16px" }}></hr>
+                  )}
+                </>
               );
             } else {
               return null;
             }
           })}
-        </React.Fragment>
+        </>
       )}
     </div>
   );
