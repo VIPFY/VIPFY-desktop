@@ -16,6 +16,7 @@ interface Props {
   licences: any[];
   isadmin: Boolean;
   impersonation?: boolean;
+  moveTo: Function;
 }
 
 export default (props: Props) => {
@@ -60,7 +61,16 @@ export default (props: Props) => {
   }
   return (
     <div className="dashboard page">
-      <PageHeader title="My Dashboard" buttonConfig={{ label: "Go to Marketplace" }} />
+      <PageHeader
+        title="My Dashboard"
+        buttonConfig={{
+          label: "Go to Marketplace",
+          fAIcon: "fa-store",
+          onClick: () => {
+            props.moveTo("integrations")
+          }
+        }}
+      />
       {!licenceCheck ? (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
           <div className="no-apps">
