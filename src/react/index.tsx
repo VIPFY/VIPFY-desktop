@@ -1,28 +1,25 @@
-//require("dotenv").config();
-
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
-import { ipcRenderer } from "electron";
+import * as is from "electron-is";
+import { ipcRenderer, remote } from "electron";
+const { session } = remote;
 
 declare module "*.scss" {
   const content: any;
   export default content;
 }
 
-import App from "./app";
 import client, {
   setLogoutFunction,
   setUpgradeErrorHandler,
   setShowPlanFunction
 } from "./networkInterface";
-import OuterErrorBoundary from "./error";
-import * as is from "electron-is";
-import UpgradeError from "./upgradeerror";
 
-import { remote } from "electron";
-const { session } = remote;
+import App from "./app";
+import { ErrorBoundary } from "./ErrorBoundary";
+import { UpgradeErrorPage } from "./UpgradeErrorPage";
 import { version } from "../../package.json";
 import UniversalLoginTestFetcher from "./components/admin/UniversalLoginTest/UniversalLoginTestFetcher";
 import UniversalLoginTest from "./components/admin/UniversalLoginTest/UniversalLoginTest";
@@ -86,10 +83,10 @@ class Application extends React.Component<IndexProps> {
   render = () => {
     return (
       <ApolloProvider client={client}>
-        <OuterErrorBoundary>
+        <ErrorBoundary>
           <Router>
             <Switch>
-              <Route exact path="/upgrade-error" component={UpgradeError} />
+              <Route exact path="/upgrade-error" component={UpgradeErrorPage} />
               {process.env.REACT_APP_TESTING && (
                 <Route
                   exact
@@ -114,7 +111,7 @@ class Application extends React.Component<IndexProps> {
               />
             </Switch>
           </Router>
-        </OuterErrorBoundary>
+        </ErrorBoundary>
       </ApolloProvider>
     );
   };
