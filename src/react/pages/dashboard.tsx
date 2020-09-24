@@ -14,7 +14,6 @@ interface Props {
   id: string;
   setApp: Function;
   licences: any[];
-  switchLayout: Function;
   isadmin: Boolean;
   impersonation?: boolean;
 }

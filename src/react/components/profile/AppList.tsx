@@ -18,15 +18,10 @@ export default (props: Props) => {
       <div className="heading">
         <h3>{props.header || "Apps"}</h3>
       </div>
-      <div className="dashboard-apps">
-        <div className="grid4Cols smGrid2Cols">
-          {props.licences
-            .map((licence, key) => {
-              return (
-                <AppTile key={key} licence={licence} setTeam={props.setApp}/>
-              );
-            })}
-        </div>
+      <div className="dashboard-apps grid4Cols smGrid2Cols">
+        {props.licences.map((licence, key) => {
+          return <AppTile key={key} licence={licence} setTeam={props.setApp} />;
+        })}
       </div>
     </div>
   );
