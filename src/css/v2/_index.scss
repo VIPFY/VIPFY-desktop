@@ -25,8 +25,5 @@
 @import "tags";
 @import "vipfy";
 
-// Last add macos specials
-@import "macosx";
-
 // last must be imported last
 @import "~@vipfy-private/vipfy-ui-lib/src/css/importLast/index";

@@ -37,71 +37,53 @@ export default (props: Props) => {
     licence: {
       id,
       boughtplanid: { planid },
-      alias
-    },
-    empty
+      alias,
+      tags,
+      rightscount
+    }
   } = props;
   const name = alias ? alias : planid.appid.name;
   const licenceId = id;
-  const isFavorite = props.licence.tags.indexOf("favorite") > -1;
+  const isFavorite = tags.indexOf("favorite") > -1;
   const [addFavorite] = useMutation(ADD_FAVORITE);
   const [removeFavorite] = useMutation(REMOVE_FAVORITE);
-  let tagIcon = props.licence.rightscount > 1 ? "fal fa-users" : "fal fa-user";
-  if (props.licence.tags.length > 0) {
-    for (const tag of props.licence.tags) {
-      if (tag == "vacation") {
-        tagIcon = "fal fa-island-tropical";
-        break;
-      }
-    }
-  }
+  let tagIcon = rightscount > 1 ? "fal fa-users" : "fal fa-user";
+  tagIcon = tags.length > 0 && tags.includes("vacation") && "fal fa-island-tropical";
 
   return (
     <div
-      className={classNames("card", "clickable", "service-box")}
       title={props.tileTitle || name}
-      onClick={() => (props.setTeam ? props.setTeam(id) : "")}>
-      {empty ? (
-        <div className="favourite">
-          <i className="fal fa-plus" />
-        </div>
-      ) : (
-        <React.Fragment>
-          <CardSection className="service-box-top">
-            <ServiceLogo icon={planid.appid.icon} size={40}></ServiceLogo>
-            <h2 className="service-box-top-text">{planid.appid.name}</h2>
-            <i
-              onClick={async e => {
-                e.stopPropagation();
-                if (isFavorite) {
-                  await removeFavorite({
-                    variables: { licenceId }
-                  });
-                } else {
-                  await addFavorite({
-                    variables: { licenceId }
-                  });
-                }
-              }}
-              style={{
-                color: isFavorite && "red"
-              }}
-              className={isFavorite ? "fa fa-heart heart-icon" : "fal fa-heart heart-icon"}
-            />
-          </CardSection>
-          <CardSection className="service-box-bottom">
-            <Tag
-              icon={
-                <i
-                  className={tagIcon}
-                  style={{
-                    paddingRight: "8px"
-                  }}></i>
+      onClick={() => props.setTeam && props.setTeam(id)}
+      className={classNames("card", "clickable")}>
+      <>
+        <CardSection className="service-box-top">
+          <ServiceLogo icon={planid.appid.icon} size={40} />
+          <h2 className="service-box-top-text">{planid.appid.name}</h2>
+          <i
+            onClick={async e => {
+              e.stopPropagation();
+              if (isFavorite) {
+                await removeFavorite({
+                  variables: { licenceId }
+                });
+              } else {
+                await addFavorite({
+                  variables: { licenceId }
+                });
               }
-              children={<p className="service-box-bottom-button-text">{name}</p>}></Tag>
-          </CardSection>
-        </React.Fragment>
-      )}
+            }}
+            style={{
+              color: isFavorite && "red"
+            }}
+            className={isFavorite ? "fa fa-heart heart-icon" : "fal fa-heart heart-icon"}
+          />
+        </CardSection>
+        <CardSection>
+          <Tag faIcon={tagIcon}>
+            <p className="service-box-bottom-button-text">{name}</p>
+          </Tag>
+        </CardSection>
+      </>
     </div>
   );
 };
