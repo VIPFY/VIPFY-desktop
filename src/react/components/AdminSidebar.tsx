@@ -4,7 +4,7 @@ import config from "../../configurationManager";
 import { useLocation } from "react-router";
 import type { Location } from "history";
 import { vipfyAdmins, vipfyVacationAdmins } from "../common/constants";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/client/react/hooks";
 import { me } from "../queries/auth";
 import type { AppContextContent, MoveToType } from "../interfaces";
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
 import gql from "graphql-tag";
 import UserName from "../../components/UserName";

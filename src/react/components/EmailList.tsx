@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import LoadingDiv from "./LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import UniversalButton from "./universalButtons/universalButton";
@@ -182,16 +182,16 @@ export default (props: Props) => {
                             </UniversalCheckbox>
                           ))
                         ) : (
-                          <UniversalTextInput
-                            width="360px"
-                            errorEvaluation={!newEmail.match(emailRegex)}
-                            errorhint="This is not a valid email"
-                            style={{ margin: "20px 0" }}
-                            id="new-email"
-                            livevalue={v => setEmail(v)}
-                            label="New Billing Email"
-                          />
-                        )}
+                            <UniversalTextInput
+                              width="360px"
+                              errorEvaluation={!newEmail.match(emailRegex)}
+                              errorhint="This is not a valid email"
+                              style={{ margin: "20px 0" }}
+                              id="new-email"
+                              livevalue={v => setEmail(v)}
+                              label="New Billing Email"
+                            />
+                          )}
                       </form>
                       <ErrorComp error={e2} />
                     </section>

@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { withApollo, Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import { me } from "../../queries/auth";
 import { getBgImageApp } from "../../common/images";
@@ -39,7 +40,7 @@ class AppCardIntegrations extends React.Component<Props, State> {
           <div className="captionIntegration">
             <h3>{name}</h3>
           </div>
-          <button className="button-external" onClick={() => this.setState({ popup: true })}>
+          <button onClick={() => this.setState({ popup: true })}>
             <i className="fas fa-boxes" /> Add as External
           </button>
         </div>

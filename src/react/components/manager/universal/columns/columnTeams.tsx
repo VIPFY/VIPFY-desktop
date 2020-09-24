@@ -1,5 +1,5 @@
 import * as React from "react";
-import PrintTeamSquare from "../squares/printTeamSquare";
+import { TeamPicture, ThingShape } from "../../../ThingPicture";
 
 interface Props {
   checkFunction?: Function;
@@ -19,13 +19,20 @@ class ColumnTeams extends React.Component<Props, State> {
   state = { numteams: 6 };
   ref = React.createRef();
 
+  componentDidMount() {
+    this.calculateNumber();
+  }
   componentDidUpdate() {
+    this.calculateNumber();
+  }
+
+  calculateNumber() {
     if (
       this.ref &&
       this.ref.current &&
-      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numteams
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numteams
     ) {
-      this.setState({ numteams: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+      this.setState({ numteams: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
 
@@ -74,15 +81,21 @@ class ColumnTeams extends React.Component<Props, State> {
           );
           break;
         } else {
+          const id = this.props.onlyids ? team : team.unitid.id;
           teamsArray.push(
-            <PrintTeamSquare key={`team-${counter}`} team={team} onlyids={this.props.onlyids} />
+            <TeamPicture
+              id={id}
+              shape={ThingShape.Square}
+              size={32}
+              key={`team-${id}`}
+            />
           );
         }
       }
     }
 
     return (
-      <div className="tableColumnBig" style={this.props.style || {}} ref={this.ref}>
+      <div className="iconCollectionHolder" style={this.props.style || {}} ref={this.ref}>
         {teamsArray}
       </div>
     );

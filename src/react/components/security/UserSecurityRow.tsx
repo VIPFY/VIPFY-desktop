@@ -2,8 +2,10 @@ import * as React from "react";
 import * as moment from "moment";
 import gql from "graphql-tag";
 import { withRouter } from "react-router";
-import { Mutation, withApollo } from "react-apollo";
-import { showStars, filterError } from "../../common/functions";
+import { Mutation } from "@apollo/client/react/components";
+import { withApollo } from "@apollo/client/react/hoc";
+import { StarRating } from "@vipfy-private/vipfy-ui-lib";
+import { filterError } from "../../common/functions";
 import { FETCH_USER_SECURITY_OVERVIEW } from "./graphqlOperations";
 import UserName from "../UserName";
 import EmployeePicture from "../EmployeePicture";
@@ -82,7 +84,11 @@ class UserSecurityRow extends React.Component<Props, State> {
           )}
         </td>
         <td>
-          {user.passwordstrength === null ? "unknown" : showStars(user.passwordstrength, 4)}
+          {user.passwordstrength === null ? (
+            "unknown"
+          ) : (
+            <StarRating stars={user.passwordstrength} maxStars={4} />
+          )}
           <i
             className="fal fa-info-cirlce"
             title={`Password Length: ${
@@ -175,7 +181,7 @@ class UserSecurityRow extends React.Component<Props, State> {
                         />
                       </React.Fragment>
                     ) : (
-                      <div>You can't take your own admin rights!</div>
+                      <div>You can't take your own admin rights.</div>
                     )}
                   </PopupBase>
                 )}
@@ -188,8 +194,8 @@ class UserSecurityRow extends React.Component<Props, State> {
               <div className="security-dialogue">
                 <h1>{`${user.unitid.isadmin ? "Give" : "Take"} Admin Rights`}</h1>
                 <p>
-                  {user.unitid.isadmin ? "Giving" : "Taking"} <UserName unitid={user.id} /> Admin
-                  Rights was successful
+                  {user.unitid.isadmin ? "Giving" : "Taking"} <UserName unitid={user.id} /> admin
+                  rights was successful
                 </p>
               </div>
 

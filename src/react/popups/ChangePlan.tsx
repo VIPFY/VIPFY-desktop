@@ -1,8 +1,8 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import LoadingDiv from "../components/LoadingDiv";
-import { ErrorComp, filterError } from "../common/functions";
+import { ErrorComp } from "../common/functions";
 import { fetchPlans, fetchPlanInputs } from "../queries/products";
 import PlanHolder from "../components/PlanHolder";
 
@@ -54,6 +54,8 @@ const INITIALSTATE: State = {
   touched: false
 };
 
+// This is unused as of now. It was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
 class ChangePlan extends React.Component<Props, State> {
   state = INITIALSTATE;
 

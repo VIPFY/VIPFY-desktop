@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import gql from "graphql-tag";
 import { shell } from "electron";
 import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
@@ -115,7 +115,7 @@ class FloatingNotification extends React.Component<Props, State> {
       <div
         className={`floatingNotification ${this.props.disabled ? "disabled" : "useable"} ${
           this.props.failed ? "failed" : ""
-        }`}>
+          }`}>
         {!this.props.disabled ||
           ((this.props.closeable || this.props.closeable == undefined) && (
             <div className="closeButton" onClick={() => this.props.close()}>
@@ -142,8 +142,8 @@ class FloatingNotification extends React.Component<Props, State> {
               style={Object.assign(this.props.vipfyTask.iconStyles || {}, { marginRight: "8px" })}
             />
           ) : (
-            ""
-          )}
+                ""
+              )}
           <span>
             {(this.props.vipfyTask && this.props.vipfyTask.name) ||
               (this.props.service && this.props.service.name) ||

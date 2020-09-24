@@ -1,6 +1,7 @@
 import * as React from "react";
 import { PureComponent } from "react";
-import { Query, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { withApollo } from "@apollo/client/react/hoc";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
 const screen = require("electron").remote.screen;

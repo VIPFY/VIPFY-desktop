@@ -1,38 +1,27 @@
 import * as React from "react";
-import { graphql, Query, withApollo } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { withApollo } from "@apollo/client/react/hoc";
+import { StarRating } from "@vipfy-private/vipfy-ui-lib";
 import { QUERY_SEMIPUBLICUSER, QUERY_ME } from "../../queries/user";
 import LicencesSection from "../../components/manager/licencesSection";
 import PersonalDetails from "../../components/manager/personalDetails";
 import TeamsSection from "../../components/manager/teamsSection";
 
 import { QUERY_USER } from "../../queries/user";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import UploadImage from "../../components/manager/universal/uploadImage";
-import { resizeImage, getBgImageUser } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import SecurityPopup from "./securityPopup";
 import moment from "moment";
-import { showStars } from "../../common/functions";
-
-const UPDATE_PIC = gql`
-  mutation onUpdateEmployeePic($file: Upload!, $unitid: ID!) {
-    updateEmployeePic(file: $file, userid: $unitid) {
-      id
-      profilepicture
-    }
-  }
-`;
+import { ApolloClientType } from "../../interfaces";
+import { UserPicture, ThingShape } from "../../components/ThingPicture";
 
 interface Props {
   moveTo: Function;
   updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   profile?: Boolean;
   isadmin?: Boolean;
-  id: number;
+  id: string;
 }
 
 interface State {
@@ -44,24 +33,6 @@ class EmployeeDetails extends React.Component<Props, State> {
   state = {
     loading: false,
     showSecurityPopup: false
-  };
-
-  uploadPic = async (picture: File) => {
-    const { userid } = this.props.match.params;
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage, unitid: userid }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      console.log("err", err);
-      await this.setState({ loading: false });
-    }
   };
 
   render() {
@@ -82,7 +53,9 @@ class EmployeeDetails extends React.Component<Props, State> {
           }
 
           if (data && (data.fetchSemiPublicUser || data.me)) {
-            const querydata = data.fetchSemiPublicUser || data.me;
+            const querydata = data.fetchSemiPublicUser
+              ? { ...data.fetchSemiPublicUser }
+              : { ...data.me };
             const privatePhones = [];
             const workPhones = [];
 
@@ -113,20 +86,18 @@ class EmployeeDetails extends React.Component<Props, State> {
                     {this.props.profile ? (
                       <span style={{ color: "#253647" }}>Profile</span>
                     ) : (
-                      <>
-                        <span
-                          style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
-                          onClick={() => this.props.moveTo("emanager")}>
-                          Employee Manager
+                        <>
+                          <span
+                            style={{ cursor: "pointer", whiteSpace: "nowrap", color: "#253647" }}
+                            onClick={() => this.props.moveTo("emanager")}>
+                            Employee Manager
                         </span>
-                        <span className="h2">
-                          {querydata.firstname} {querydata.lastname}
-                        </span>
-                      </>
-                    )}
+                          <span className="h2">
+                            {querydata.firstname} {querydata.lastname}
+                          </span>
+                        </>
+                      )}
                   </span>
-
-                  {/*<UniversalSearchBox />*/}
                 </div>
                 <div className="section">
                   <div className="heading">
@@ -136,17 +107,12 @@ class EmployeeDetails extends React.Component<Props, State> {
                     <div className="tableRow" style={{ height: "144px" }}>
                       <div className="tableMain">
                         <div className="tableColumnSmall content twoline">
-                          <UploadImage
-                            picture={
-                              querydata.profilepicture && {
-                                preview: getBgImageUser(querydata.profilepicture, 96)
-                              }
-                            }
-                            name={`${querydata.firstname} ${querydata.lastname}`}
-                            onDrop={file => this.uploadPic(file)}
+                          <UserPicture
+                            id={querydata.id}
+                            shape={ThingShape.Square}
+                            size={96}
                             className="managerBigSquare noBottomMargin"
-                            isadmin={this.props.isadmin}
-                            formstyles={{ width: "100%", maxWidth: "96px", margin: "0px" }}
+                            editable={true}
                           />
                           <div
                             className="status"
@@ -190,10 +156,10 @@ class EmployeeDetails extends React.Component<Props, State> {
                           <h1>Password strength</h1>
                         </div>
                         <div className="tableColumnSmall">
-                          <h1>Is Admin</h1>
+                          <h1>Is admin</h1>
                         </div>
                         <div className="tableColumnSmall">
-                          <h1>Two Factor</h1>
+                          <h1>Two-factor authentication</h1>
                         </div>
                       </div>
                       <div className="tableEnd">
@@ -219,12 +185,14 @@ class EmployeeDetails extends React.Component<Props, State> {
                             : "Never"}
                         </div>
                         <div className="tableColumnSmall content">
-                          {querydata.passwordlength ?? "unknown"}
+                          {querydata.passwordlength ?? "Unknown"}
                         </div>
                         <div className="tableColumnSmall content">
-                          {querydata.passwordstrength === null
-                            ? "unknown"
-                            : showStars(querydata.passwordstrength, 4)}
+                          {querydata.passwordstrength === null ? (
+                            "Unknown"
+                          ) : (
+                              <StarRating stars={querydata.passwordstrength} maxStars={4} />
+                            )}
                         </div>
                         <div className="tableColumnSmall content">
                           {querydata.isadmin ? "Yes" : "No"}
@@ -232,18 +200,6 @@ class EmployeeDetails extends React.Component<Props, State> {
                         <div className="tableColumnSmall content">
                           {(querydata.twofa && querydata.twofa[0]) || "None"}
                         </div>
-                      </div>
-                      <div className="tableEnd">
-                        {/*<div className="editOptions">
-                          <i className="fal fa-external-link-alt editbuttons" />
-                          <i
-                            className="fal fa-trash-alt editbuttons"
-                            onClick={e => {
-                              e.stopPropagation();
-                              this.setState({ delete: true });
-                            }}
-                          />
-                          </div>*/}
                       </div>
                     </div>
                   </div>
@@ -303,4 +259,4 @@ class EmployeeDetails extends React.Component<Props, State> {
     );
   }
 }
-export default graphql(UPDATE_PIC, { name: "updatePic" })(withApollo(EmployeeDetails));
+export default withApollo(EmployeeDetails);

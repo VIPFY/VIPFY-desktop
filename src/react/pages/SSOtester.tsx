@@ -1,5 +1,5 @@
 import * as React from "react";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 import WebView from "react-electron-web-view";
 
 import * as TestData from "../../../ssoTestData.json";
@@ -56,7 +56,7 @@ class SsoTester extends React.PureComponent<Props, State> {
             <i
               className={`button-hide fas ${
                 this.state.showBoughtplans ? "fa-angle-left" : "fa-angle-down"
-              }`}
+                }`}
             />
             <span>SSO Configurator</span>
           </div>

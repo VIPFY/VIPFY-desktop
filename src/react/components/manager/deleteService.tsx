@@ -1,13 +1,13 @@
 import * as React from "react";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchCompanyServices } from "../../queries/products";
 
 interface Props {
-  service: any;
+  serviceid: any;
   deleteService: Function;
   close: Function;
 }
@@ -52,7 +52,7 @@ class DeleteService extends React.Component<Props, State> {
               this.setState({ saving: true });
               await this.props.deleteService({
                 variables: {
-                  serviceid: this.props.service.app.id
+                  serviceid: this.props.serviceid
                 },
                 refetchQueries: [{ query: fetchCompanyServices }]
               });

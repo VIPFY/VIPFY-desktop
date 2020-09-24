@@ -200,8 +200,7 @@
       }
       .name {
         font-size: 13px;
-        line-height: 56px;
-        margin-left: 16px;
+        margin-left: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -723,7 +722,6 @@
 .managerSquare {
   border-radius: 4px;
   float: left;
-  margin-top: 12px;
   line-height: 32px;
   text-align: center;
   font-size: 16px;

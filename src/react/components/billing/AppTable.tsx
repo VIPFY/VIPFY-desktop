@@ -1,15 +1,12 @@
 import * as React from "react";
-import { Mutation, Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import humanizeDuration from "humanize-duration";
 import moment from "moment";
-import { ErrorComp } from "../../common/functions";
 import IconButton from "../../common/IconButton";
 import LoadingDiv from "../LoadingDiv";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import PrintServiceSquare from "../manager/universal/squares/printServiceSquare";
 import Collapsible from "../../common/Collapsible";
+import { AppIcon, ThingShape } from "../ThingPicture";
 
 const REACTIVATE_PLAN = gql`
   mutation onReactivatePlan($planid: ID!) {
@@ -154,8 +151,8 @@ class AppListInner extends React.Component<Props, State> {
           stats.minutestotal == 0
             ? "0"
             : shortEnglishHumanizer(stats.minutestotal * 60 * 1000, {
-                largest: 2
-              });
+              largest: 2
+            });
         let endsAt = "forever";
 
         if (endtime) {
@@ -172,10 +169,7 @@ class AppListInner extends React.Component<Props, State> {
               })
             }>
             <td>
-              <PrintServiceSquare
-                service={boughtplan}
-                appidFunction={boughtplan => boughtplan.planid.appid}
-              />
+              <AppIcon id={boughtplan?.planid?.appid?.id} size={32} />
               <span>{appName}</span>
             </td>
             <td>{boughtplan.alias}</td>

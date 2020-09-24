@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchCompanyTeams } from "../../../../queries/departments";
 import PrintTeamSquare from "../squares/printTeamSquare";
 
@@ -26,7 +26,7 @@ class TeamGrid extends React.Component<Props, State> {
     });
     let teamsArray: JSX.Element[] = [];
     if (filteredTeams.length > 0) {
-      filteredTeams.sort(function(a, b) {
+      filteredTeams.sort(function (a, b) {
         let nameA = a.name.toUpperCase(); // ignore upper and lowercase
         let nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
@@ -119,7 +119,7 @@ class TeamGrid extends React.Component<Props, State> {
               e.name.toUpperCase().includes(this.props.search.toUpperCase())
             );
 
-            teams.sort(function(a, b) {
+            teams.sort(function (a, b) {
               let nameA = a.name.toUpperCase(); // ignore upper and lowercase
               let nameB = b.name.toUpperCase(); // ignore upper and lowercase
               if (nameA < nameB) {
@@ -155,13 +155,13 @@ class TeamGrid extends React.Component<Props, State> {
                       <span>Click or drag to add</span>
                     </div>
                   ) : (
-                    <React.Fragment>
-                      <div className="greyed" />
-                      <div className="ribbon ribbon-top-right">
-                        <span>Member</span>
-                      </div>
-                    </React.Fragment>
-                  )}
+                      <React.Fragment>
+                        <div className="greyed" />
+                        <div className="ribbon ribbon-top-right">
+                          <span>Member</span>
+                        </div>
+                      </React.Fragment>
+                    )}
                 </div>
               );
             });

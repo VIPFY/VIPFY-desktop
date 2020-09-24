@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/client/react/hooks";
 import { Link } from "react-router-dom";
 import UniversalButton from "../universalButtons/universalButton";
 import { App, CompanySizes, IndustryDistribution } from "../../interfaces";
@@ -13,10 +13,10 @@ const PROCESS_APPS = gql`
   }
 `;
 
-type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags">>;
+type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags" | "alternatives">>;
 
 interface ScrapedApp extends Excluded {
-  alternatives: { [id: number]: { name: string; rating: number; reviews } };
+  alternatives: { [id: number]: { name: string; rating: number; reviews: number } };
   ratings: {
     overallRating: number;
     combinedCustomerSupportRating?: number;
@@ -52,12 +52,13 @@ const ServiceUpload: React.FunctionComponent = () => {
   const [jsonError, setError] = React.useState<string | null>(null);
   const [jsonLoading, setLoading] = React.useState<boolean>(false);
   const [success, setSuccess] = React.useState<boolean>(false);
+  const [progress, setProgress] = React.useState<number | null>(null);
   const [processApps, { loading, error }] = useMutation(PROCESS_APPS);
+  const PARTS = 10;
 
   const handleSubmit = async () => {
     try {
       const fullList = Object.values(services);
-      const PARTS = 10;
       const divideBY = Math.floor(fullList.length / PARTS);
 
       if (fullList.length < 4) {
@@ -92,6 +93,8 @@ const ServiceUpload: React.FunctionComponent = () => {
             tags: Object.values(app.tags).map(tag => ({ name: tag[0], weight: tag[1] }))
           };
 
+          // We don't want the scraped logo as their url links to unfavorable places
+          delete returnApp.logo;
           delete returnApp.pricing;
           delete returnApp.categories;
           delete returnApp.id;
@@ -107,15 +110,13 @@ const ServiceUpload: React.FunctionComponent = () => {
             returnApp.teaserdescription = app.description.capterraShort;
           }
 
-          delete returnApp.alternatives;
-          // Maybe needed when Conrad finishes the alternative logic
-          // if (Object.keys(app.alternatives).length > 0) {
-          //   const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
-          //     return { externalid: appID, ...app.alternatives[appID] };
-          //   });
+          if (Object.keys(app.alternatives).length > 0) {
+            const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
+              return { externalid: appID, ...app.alternatives[appID] };
+            });
 
-          //   app.alternatives = normalizedAlternatives;
-          // }
+            returnApp.alternatives = normalizedAlternatives;
+          }
 
           // TODO: [VIP-1336] Add pros and cons when Conrad has the data
 
@@ -129,6 +130,7 @@ const ServiceUpload: React.FunctionComponent = () => {
         const bytes = new TextEncoder().encode(str);
         const blob = new Blob([bytes], { type: "application/json;charset=utf-8" });
 
+        await setProgress(i + 1);
         await processApps({ variables: { apps: blob }, context: { hasUpload: true } });
       }
     } catch (error) {
@@ -246,7 +248,16 @@ const ServiceUpload: React.FunctionComponent = () => {
               {renderList("Industry Distribution", service.industryDistribution)}
             </React.Fragment>
           )}
+
           <ErrorComp error={error} />
+
+          {loading && (
+            <div className="progress">
+              <label htmlFor="scrapedApps">{`Uploading part ${progress} of ${PARTS}`}</label>
+              <progress id="scrapedApps" max="10" value={progress} />
+            </div>
+          )}
+
           {success && (
             <div className="success">{`Upload of ${
               Object.keys(services).length

@@ -1,4 +1,4 @@
-import { MutationUpdaterFn, useApolloClient } from "react-apollo";
+import { MutationUpdaterFn, useApolloClient } from "@apollo/client";
 import { useState, ReactElement } from "react";
 
 export function MutationLike(props: {
@@ -23,7 +23,7 @@ export function MutationLike(props: {
         try {
           d = await props.mutation(...args);
           if (props.update) {
-            props.update(client, d);
+            props.update(client.cache, d);
           }
         } catch (error) {
           if (props.onError) {

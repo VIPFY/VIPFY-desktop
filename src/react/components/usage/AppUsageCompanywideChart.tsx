@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import moment from "moment";
 import Chart from "react-apexcharts";
 
@@ -159,8 +159,8 @@ export default class AppCompanyChart extends React.Component<Props, State> {
             }}
           />
         ) : (
-          <div />
-        )}
+            <div />
+          )}
       </div>
     );
   };
@@ -204,8 +204,8 @@ export default class AppCompanyChart extends React.Component<Props, State> {
                 ) : error || !data ? (
                   <ErrorComp error={error} />
                 ) : (
-                  this.renderTable(data.fetchTotalAppUsage)
-                )}
+                        this.renderTable(data.fetchTotalAppUsage)
+                      )}
               </React.Fragment>
             )}
           </Query>

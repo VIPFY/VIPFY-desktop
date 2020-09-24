@@ -1,10 +1,8 @@
 import * as React from "react";
 
-import { graphql, Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { shell } from "electron";
-import { AppContext } from "../common/functions";
-import WebView from "react-electron-web-view";
 import CreditCard from "../components/billing/CreditCard";
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
@@ -31,6 +29,8 @@ interface State {
   buying: number;
 }
 
+// This is unused as of now. It was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
 class CheckOrder extends React.Component<Props, State> {
   state: State = {
     tosOpen: false,
@@ -343,7 +343,7 @@ class CheckOrder extends React.Component<Props, State> {
                 }
               }
             `}>
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
                 return <span>"Fetching invoice data..."</span>;
               }
@@ -411,7 +411,7 @@ class CheckOrder extends React.Component<Props, State> {
       let billingAddresses = null;
       return (
         <Query query={me}>
-          {({ data, loading, error }) => {
+          {({ data, loading, error = null }) => {
             if (loading) {
               return <LoadingDiv text="Loading Data" />;
             }
@@ -427,13 +427,13 @@ class CheckOrder extends React.Component<Props, State> {
                 <div className="checkOrderMain">
                   <div className="checkOrderHolderPart">
                     <Query query={fetchBuyingInput} variables={{ planid: this.props.plan.id }}>
-                      {({ loading, error, data }) => {
+                      {({ loading, error = null, data }) => {
                         if (loading) {
                           return <LoadingDiv text="Fetching invoice data..." />;
                         }
 
                         if (error) {
-                          return "Error loading Billing Data";
+                          return <span>Error loading Billing Data</span>;
                         }
 
                         planInputs = data.fetchPlanInputs;
@@ -441,7 +441,7 @@ class CheckOrder extends React.Component<Props, State> {
 
                         if (billingAddresses && billingAddresses.length >= 1) {
                           if (!billingAddresses[0].address.street) {
-                            return "Please update your address with a valid street.";
+                            return <span>Please update your address with a valid street.</span>;
                           }
 
                           return (
@@ -567,12 +567,12 @@ class CheckOrder extends React.Component<Props, State> {
                           }
                         }
                       `}>
-                      {({ loading, error, data }) => {
+                      {({ loading, error = null, data }) => {
                         if (loading) {
-                          return "Fetching invoice data...";
+                          return <span>Fetching invoice data...</span>;
                         }
                         if (error) {
-                          return "Error loading Billing Data";
+                          return <span>Error loading Billing Data</span>;
                         }
 
                         return (

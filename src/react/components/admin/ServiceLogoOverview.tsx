@@ -1,5 +1,6 @@
 import * as React from "react";
-import { Query, useMutation } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
+import { useMutation } from "@apollo/client/react/hooks";
 import { Link } from "react-router-dom";
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";

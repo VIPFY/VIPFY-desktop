@@ -1,6 +1,6 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import { Mutation } from "react-apollo";
+import { Mutation } from "@apollo/client/react/components";
 import DomainCheck from "../components/domains/DomainCheck";
 import { filterError } from "../common/functions";
 import { domainValidation } from "../common/validation";

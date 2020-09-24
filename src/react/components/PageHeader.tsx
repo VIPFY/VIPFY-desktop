@@ -1,10 +1,11 @@
 import * as React from "react";
 import { withRouter } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import classNames from "classnames";
-import BreadCrumbs from "./BreadCrumbs";
-import UniversalButton from "./universalButtons/universalButton";
+import { Button, CTAButton, BreadCrumbs } from "@vipfy-private/vipfy-ui-lib";
 import UniversalSearchBox from "../components/universalSearchBox";
-import Tag from "../common/Tag";
+import { AppContext } from "../common/functions";
+import routes from "../routes";
 
 interface PillButtonProps {
   label: string;
@@ -24,7 +25,8 @@ interface ButtonConfig {
   label: string;
   onClick: Function;
   disabled: boolean;
-  icon?: string;
+  fAIcon?: string;
+  buttonRef?: string;
 }
 
 interface SearchConfig {
@@ -96,8 +98,13 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
     return (
       <div className="pageHeader">
         <div>
-          <UniversalButton label="Back" onClick={this.goBack} className="backButton" />
-          {showBreadCrumbs && <BreadCrumbs />}
+          <Button
+            label="Back"
+            onClick={this.goBack}
+            className="backButton"
+            fAIcon="fa-angle-left"
+          />
+          {showBreadCrumbs && <BreadCrumbs NavLink={NavLink} routes={routes} />}
         </div>
 
         <div className="titleRow">
@@ -113,14 +120,22 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             </div>
           )}
           {buttonConfig && (
-            <UniversalButton
-              label={buttonConfig.label}
-              onClick={buttonConfig.onClick}
-              type="high"
-              disabled={buttonConfig.disabled || loading}
-              // old button can't do this, new button will:
-              // icon={buttonConfig.button}
-            ></UniversalButton>
+            <AppContext.Consumer>
+              {({ addRenderElement }) => (
+                <CTAButton
+                  innerRef={
+                    buttonConfig.buttonRef
+                      ? el => addRenderElement({ key: buttonConfig.buttonRef, element: el })
+                      : undefined
+                  }
+                  label={buttonConfig.label}
+                  onClick={buttonConfig.onClick}
+                  type="high"
+                  disabled={buttonConfig.disabled || loading}
+                  fAIcon={buttonConfig.fAIcon}
+                />
+              )}
+            </AppContext.Consumer>
           )}
         </div>
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+import { ServiceLogo, StarRating } from "@vipfy-private/vipfy-ui-lib";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -11,7 +11,6 @@ import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
 
-import { showStars } from "../../common/functions";
 import Tag from "../../common/Tag";
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
@@ -428,7 +427,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   <div className="title details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
-                      <p className="starRating">{showStars(3, 5)}</p>
+                      <StarRating stars={3.4} />
                     </div>
                     <div>
                       <Tag className="pricingTag">{DUMMY_APP.pricing}</Tag>

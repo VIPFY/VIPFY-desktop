@@ -81,10 +81,12 @@ export async function hashPassword(
     fetchPolicy: "network-only"
   });
 
+  const params = { ...pwParams.data.fetchPwParams };
+
   if (salt) {
-    pwParams.data.fetchPwParams.salt = salt;
+    params.salt = salt;
   }
-  return await hashPasswordWithParams(password, pwParams.data.fetchPwParams);
+  return await hashPasswordWithParams(password, params);
 }
 
 export async function hashPasswordWithParams(

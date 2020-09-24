@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchApps } from "../../../../queries/products";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import moment from "moment";

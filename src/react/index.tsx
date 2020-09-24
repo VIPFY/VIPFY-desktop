@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/client";
 import { ipcRenderer } from "electron";
 
 declare module "*.scss" {
@@ -21,17 +21,16 @@ import OuterErrorBoundary from "./error";
 import * as is from "electron-is";
 import UpgradeError from "./upgradeerror";
 
-import { ApolloClient } from "apollo-client";
-import { InMemoryCache } from "apollo-cache-inmemory";
 import { remote } from "electron";
 const { session } = remote;
 import { version } from "../../package.json";
 import UniversalLoginTestFetcher from "./components/admin/UniversalLoginTest/UniversalLoginTestFetcher";
 import UniversalLoginTest from "./components/admin/UniversalLoginTest/UniversalLoginTest";
 import config from "../configurationManager";
+import { ApolloClientType } from "./interfaces";
 
 interface IndexProps {
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
 }
 
 class Application extends React.Component<IndexProps> {

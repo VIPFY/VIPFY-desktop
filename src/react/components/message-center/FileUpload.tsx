@@ -1,6 +1,6 @@
 import * as React from "react";
 import Dropzone from "react-dropzone";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import { MUTATION_SENDMESSAGE } from "./common";
 
 const FileUpload = ({ children, disableClick, mutate, groupid }) => {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import UniversalButton from "../components/universalButtons/universalButton";
@@ -148,7 +148,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
     }
 
     remainingFields.forEach(rF => {
-      if (field.arg.id === hasEmail) {
+      if (rF.arg.id === hasEmail) {
         return;
       }
       fields.push(

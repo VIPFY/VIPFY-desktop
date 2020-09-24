@@ -1,6 +1,6 @@
 import * as React from "react";
 import { parse } from "url";
-import { withApollo, graphql } from "react-apollo";
+import { withApollo, graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 
@@ -371,110 +371,110 @@ export class Webview extends React.Component<WebViewProps, WebViewState> {
                             ? { height: "calc(100vh - 24px - 40px - 1px)" }
                             : { height: "calc(100vh - 24px - 1px)" }
                           : context.isActive
-                          ? { height: "calc(100vh - 32px - 40px - 1px)" }
-                          : { height: "calc(100vh - 32px - 1px)" }
+                            ? { height: "calc(100vh - 32px - 40px - 1px)" }
+                            : { height: "calc(100vh - 32px - 1px)" }
                       }
                     />
                   )}
 
                   {this.state.options.type == "universalLogin" ||
-                  this.state.options.type == "execute" ? (
-                    <UniversalLoginExecutor
-                      key={`${this.state.setUrl}-${this.state.loginspeed}`}
-                      loginUrl={this.props.url || this.state.setUrl}
-                      username={this.state.key.email || this.state.key.username}
-                      password={this.state.key.password}
-                      domain={this.state.key.domain}
-                      timeout={60000}
-                      takeScreenshot={false}
-                      partition={`service-${this.state.licenceId}`}
-                      className={cssClassWeb}
-                      showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
-                      setResult={async ({
-                        loggedIn,
-                        error,
-                        direct,
-                        emailEntered,
-                        passwordEntered
-                      }) => {
-                        if (loggedIn) {
-                          this.hideLoadingScreen();
+                    this.state.options.type == "execute" ? (
+                      <UniversalLoginExecutor
+                        key={`${this.state.setUrl}-${this.state.loginspeed}`}
+                        loginUrl={this.props.url || this.state.setUrl}
+                        username={this.state.key.email || this.state.key.username}
+                        password={this.state.key.password}
+                        domain={this.state.key.domain}
+                        timeout={60000}
+                        takeScreenshot={false}
+                        partition={`service-${this.state.licenceId}`}
+                        className={cssClassWeb}
+                        showLoadingScreen={b => this.setState({ showLoadingScreen: b })}
+                        setResult={async ({
+                          loggedIn,
+                          error,
+                          direct,
+                          emailEntered,
+                          passwordEntered
+                        }) => {
+                          if (loggedIn) {
+                            this.hideLoadingScreen();
 
-                          if (emailEntered && passwordEntered && !direct) {
-                            await this.props.updateLicenceSpeed({
-                              variables: {
-                                licenceid: this.props.licenceID,
-                                speed: this.state.loginspeed,
-                                working: true
-                              }
-                            });
+                            if (emailEntered && passwordEntered && !direct) {
+                              await this.props.updateLicenceSpeed({
+                                variables: {
+                                  licenceid: this.props.licenceID,
+                                  speed: this.state.loginspeed,
+                                  working: true
+                                }
+                              });
+                            }
                           }
-                        }
 
-                        if (error) {
-                          if (this.state.loginspeed == 1) {
-                            this.showErrorScreen();
-                            await this.props.updateLicenceSpeed({
-                              variables: {
-                                licenceid: this.props.licenceID,
-                                speed: this.state.loginspeed,
-                                oldspeed: this.state.oldspeed,
-                                working: false
-                              }
-                            });
-                            this.setState({
-                              progress: 1,
-                              error:
-                                "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
-                              errorshowed: true
-                            });
-                          } else {
-                            await this.props.updateLicenceSpeed({
-                              variables: {
-                                licenceid: this.props.licenceID,
-                                speed: this.state.loginspeed,
-                                working: false
-                              }
-                            });
-                            this.setState(s => {
-                              return { loginspeed: 1, oldspeed: s.loginspeed };
-                            });
+                          if (error) {
+                            if (this.state.loginspeed == 1) {
+                              this.showErrorScreen();
+                              await this.props.updateLicenceSpeed({
+                                variables: {
+                                  licenceid: this.props.licenceID,
+                                  speed: this.state.loginspeed,
+                                  oldspeed: this.state.oldspeed,
+                                  working: false
+                                }
+                              });
+                              this.setState({
+                                progress: 1,
+                                error:
+                                  "Sorry, login was not possible. Please go back to the Dashboard and retry. Contact support if the problem persists.",
+                                errorshowed: true
+                              });
+                            } else {
+                              await this.props.updateLicenceSpeed({
+                                variables: {
+                                  licenceid: this.props.licenceID,
+                                  speed: this.state.loginspeed,
+                                  working: false
+                                }
+                              });
+                              this.setState(s => {
+                                return { loginspeed: 1, oldspeed: s.loginspeed };
+                              });
+                            }
                           }
+                        }}
+                        progress={progress => this.setState({ progress })}
+                        speed={this.state.loginspeed || 1}
+                        style={
+                          is.macOS()
+                            ? context.isActive
+                              ? { height: "calc(100vh - 24px - 40px)" }
+                              : { height: "calc(100vh - 24px)" }
+                            : context.isActive
+                              ? { height: "calc(100vh - 32px - 40px)" }
+                              : { height: "calc(100vh - 32px)" }
                         }
-                      }}
-                      progress={progress => this.setState({ progress })}
-                      speed={this.state.loginspeed || 1}
-                      style={
-                        is.macOS()
-                          ? context.isActive
-                            ? { height: "calc(100vh - 24px - 40px)" }
-                            : { height: "calc(100vh - 24px)" }
-                          : context.isActive
-                          ? { height: "calc(100vh - 32px - 40px)" }
-                          : { height: "calc(100vh - 32px)" }
-                      }
-                      interactionHappenedCallback={() => {
-                        let interactions = this.state.interactions;
-                        interactions[this.state.planId] = new Date();
-                        this.setState({ interactions });
-                      }}
-                      execute={this.state.options.execute}
-                      noError={this.state.options.noError}
-                      individualShow={this.state.options.individualShow}
-                      noUrlCheck={this.state.options.noUrlCheck}
-                      individualNotShow={this.state.options.individualNotShow}
-                      addWebview={this.props.addWebview}
-                      licenceID={this.props.licenceID}
-                      setViewTitle={title =>
-                        this.props.setViewTitle &&
-                        this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
-                      }
-                      loggedIn={this.props.loggedIn}
-                      deleteCookies={this.state.options.deleteCookies}
-                    />
-                  ) : (
-                    <div>Please update VIPFY to use this service.</div>
-                  )}
+                        interactionHappenedCallback={() => {
+                          let interactions = this.state.interactions;
+                          interactions[this.state.planId] = new Date();
+                          this.setState({ interactions });
+                        }}
+                        execute={this.state.options.execute}
+                        noError={this.state.options.noError}
+                        individualShow={this.state.options.individualShow}
+                        noUrlCheck={this.state.options.noUrlCheck}
+                        individualNotShow={this.state.options.individualNotShow}
+                        addWebview={this.props.addWebview}
+                        licenceID={this.props.licenceID}
+                        setViewTitle={title =>
+                          this.props.setViewTitle &&
+                          this.props.setViewTitle(title, this.props.viewID, this.props.licenceID)
+                        }
+                        loggedIn={this.props.loggedIn}
+                        deleteCookies={this.state.options.deleteCookies}
+                      />
+                    ) : (
+                      <div>Please update VIPFY to use this service.</div>
+                    )}
                   {this.state.error && (
                     <PopupBase small={true}>
                       <h2>Ooopps, sorry it seems that we can't log you in</h2>

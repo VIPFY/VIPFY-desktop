@@ -12,6 +12,8 @@ interface State {
   plan: number | null;
 }
 
+// This is unused as of now. It was used in the old app page, which has been replace by AppDetails.
+// We want to keep the function around for while, because it may be helpful once we (re)implement the checkout process.
 class PlanHolder extends React.Component<Props, State> {
   state = {
     plan: 0

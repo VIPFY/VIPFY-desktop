@@ -1,17 +1,16 @@
 import * as React from "react";
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import AssignServiceToUser from "./assignServiceToUser";
-import EmployeePicture from "../../../EmployeePicture";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import AssignOrbit from "./assignOrbit";
-import { graphql } from "react-apollo";
+import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { fetchTeam } from "../../../../queries/departments";
-import PrintTeamSquare from "../squares/printTeamSquare";
+import { TeamPicture, ThingShape, UserPicture } from "../../../ThingPicture";
 
 interface Props {
   team: any;
@@ -95,8 +94,9 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                 display: "flex",
                 alignItems: "center"
               }}>
-              <EmployeePicture
-                employee={e}
+              <UserPicture
+                id={e.id}
+                shape={ThingShape.Square}
                 size={24}
                 style={{
                   lineHeight: "24px",
@@ -145,8 +145,9 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                   display: "flex",
                   alignItems: "center"
                 }}>
-                <EmployeePicture
-                  employee={e}
+                <UserPicture
+                  id={e.id}
+                  shape={ThingShape.Square}
                   size={24}
                   style={{
                     lineHeight: "24px",
@@ -178,10 +179,11 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
         <h1>Assign Teamorbit</h1>
         <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
           <span style={{ lineHeight: "24px", width: "84px" }}>To:</span>
-          <PrintTeamSquare
-            team={this.props.team}
+          <TeamPicture
+            id={this.props.team.unitid.id}
+            shape={ThingShape.Square}
             size={24}
-            styles={{
+            style={{
               lineHeight: "24px",
               width: "24px",
               height: "24px",
@@ -271,18 +273,18 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
                 been solved
               </div>
             ) : (
-              <AssignOrbit
-                service={this.state.service}
-                continue={o => this.setState({ orbit: o })}
-              />
-            )}
+                  <AssignOrbit
+                    service={this.state.service}
+                    continue={o => this.setState({ orbit: o })}
+                  />
+                )}
           </>
         ) : (
-          <AssignServiceToUser
-            continue={s => this.setState({ service: s })}
-            moveTo={this.props.moveTo}
-          />
-        )}
+            <AssignServiceToUser
+              continue={s => this.setState({ service: s })}
+              moveTo={this.props.moveTo}
+            />
+          )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
           <UniversalButton
@@ -292,7 +294,7 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
               !(
                 this.state.orbit &&
                 this.state.memberassignments.filter(ma => ma != null && ma.employeeid).length ==
-                  this.props.team.employees.length
+                this.props.team.employees.length
               )
             }
             onClick={async () => {
@@ -324,20 +326,20 @@ class AssignNewTeamOrbit extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                }`}></div>
+                  }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-              }`}>
+                }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                }`}>
+                  }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

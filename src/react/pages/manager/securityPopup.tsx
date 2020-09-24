@@ -9,7 +9,7 @@ import PasswordForce from "../../popups/universalPopups/PasswordReset";
 import PasswordUpdate from "../../popups/universalPopups/PasswordUpdate";
 import TwoFactorForce from "../../popups/universalPopups/TwoFactorForce";
 import UserName from "../../components/UserName";
-import { Query, Mutation } from "react-apollo";
+import { Query, Mutation } from "@apollo/client/react/components";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp, AppContext, getMyUnitId } from "../../common/functions";
@@ -76,14 +76,14 @@ export default (props: Props) => {
             header: "Two-Factor Authentication",
             text: `Google Authenticator is recommended${
               securityPage ? ". Set it up for the user." : ""
-            }`,
+              }`,
             state: "show2FA"
           },
           {
             header: "Current Sessions",
             text: `See with which sessions ${
               securityPage ? "the user is" : "you are"
-            } currently logged into the account`,
+              } currently logged into the account`,
             state: "showSessions"
           }
         ];
@@ -168,8 +168,8 @@ export default (props: Props) => {
                         label={link.button}
                       />
                     ) : (
-                      <i className="fal fa-pen end" />
-                    )}
+                        <i className="fal fa-pen end" />
+                      )}
                   </li>
                 ))}
               </ul>

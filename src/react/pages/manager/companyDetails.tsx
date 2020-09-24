@@ -1,13 +1,10 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, Query, withApollo } from "react-apollo";
+import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import compose from "lodash.flowright";
 import { FETCH_COMPANY, FETCH_VIPFY_PLAN } from "../../queries/departments";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
 import gql from "graphql-tag";
-import UploadImage from "../../components/manager/universal/uploadImage";
-import { resizeImage, getBgImageTeam } from "../../common/images";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
@@ -16,20 +13,11 @@ import { ADD_PROMOCODE } from "../../mutations/auth";
 import moment from "moment";
 import LoadingDiv from "../../components/LoadingDiv";
 import { ErrorComp } from "../../common/functions";
-import { WorkAround } from "../../interfaces";
 import { SET_VAT_ID } from "../../mutations/department";
 import VIPFYPlanPopup from "../../popups/universalPopups/VIPFYPlanPopup";
+import { ApolloClientType } from "../../interfaces";
+import { CompanyPicture, ThingShape } from "../../components/ThingPicture";
 
-const UPDATE_PIC = gql`
-  mutation onUpdateCompanyPic($file: Upload!) {
-    updateCompanyPic(file: $file) {
-      unit: unitid {
-        id
-      }
-      profilepicture
-    }
-  }
-`;
 
 const FETCH_COMPANY_SERVICES = gql`
   query onFetchCompanyServices {
@@ -59,8 +47,7 @@ const FETCH_COMPANY_SERVICES = gql`
 
 interface Props {
   moveTo: Function;
-  updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
+  client: ApolloClientType;
   applyPromocode: Function;
   setVatID: Function;
   isadmin: boolean;
@@ -94,28 +81,10 @@ class CompanyDetails extends React.Component<Props, State> {
     currentPlan: null
   };
 
-  uploadPic = async (picture: File) => {
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      console.log("err", err);
-      await this.setState({ loading: false });
-    }
-  };
-
   render() {
     return (
-      <Query<WorkAround, WorkAround> pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
-        {({ loading, error, data }) => {
+      <Query pollInterval={60 * 10 * 1000 + 300} query={FETCH_COMPANY}>
+        {({ loading, error = null, data }) => {
           if (loading) {
             return <LoadingDiv />;
           }
@@ -148,17 +117,12 @@ class CompanyDetails extends React.Component<Props, State> {
                     <div className="tableRow" style={{ height: "144px" }}>
                       <div className="tableMain" style={{ width: "calc(100% - 16px)" }}>
                         <div className="tableColumnSmall content">
-                          <UploadImage
-                            picture={
-                              profilepicture && {
-                                preview: getBgImageTeam(profilepicture, 96)
-                              }
-                            }
-                            name={name}
-                            onDrop={(file: File) => this.uploadPic(file)}
+                          <CompanyPicture
+                            shape={ThingShape.Square}
+                            size={96}
                             className="managerBigSquare noBottomMargin"
-                            isadmin={this.props.isadmin}
-                            formstyles={{ marginLeft: "0px", marginTop: "0px" }}
+                            style={{ marginLeft: "0px", marginTop: "0px" }}
+                            editable={true}
                           />
                         </div>
 
@@ -199,11 +163,11 @@ class CompanyDetails extends React.Component<Props, State> {
                             onClick={() => this.props.moveTo("lmanager")}>
                             <h1>Used Services</h1>
                             <h2>
-                              <Query<WorkAround, WorkAround>
+                              <Query
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data }) => {
+                                {({ loading, error = null, data }) => {
                                   if (loading) {
                                     return <LoadingDiv />;
                                   }
@@ -231,11 +195,11 @@ class CompanyDetails extends React.Component<Props, State> {
                             onClick={() => this.props.moveTo("lmanager")}>
                             <h1>Used Accounts</h1>
                             <h2>
-                              <Query<WorkAround, WorkAround>
+                              <Query
                                 pollInterval={60 * 10 * 1000 + 900}
                                 query={FETCH_COMPANY_SERVICES}
                                 fetchPolicy="cache-and-network">
-                                {({ loading, error, data }) => {
+                                {({ loading, error = null, data }) => {
                                   if (loading) {
                                     return <LoadingDiv />;
                                   }
@@ -252,17 +216,17 @@ class CompanyDetails extends React.Component<Props, State> {
                                             accounts: {
                                               filter: (
                                                 arg0: (ac: { endtime: number }) => boolean
-                                              ) => { (): any; new (): any; length: any };
+                                              ) => { (): any; new(): any; length: any };
                                             };
                                           }) =>
                                             (sum +=
                                               o && o.accounts
                                                 ? o.accounts.filter(
-                                                    (ac: { endtime: number }) =>
-                                                      ac &&
-                                                      (ac.endtime == null ||
-                                                        moment(ac.endtime).isAfter())
-                                                  ).length
+                                                  (ac: { endtime: number }) =>
+                                                    ac &&
+                                                    (ac.endtime == null ||
+                                                      moment(ac.endtime).isAfter())
+                                                ).length
                                                 : 0)
                                         )
                                     );
@@ -279,8 +243,8 @@ class CompanyDetails extends React.Component<Props, State> {
                             </div>
                           </div>
                         </div>
-                        <Query<WorkAround, WorkAround> query={FETCH_VIPFY_PLAN}>
-                          {({ data, loading, error }) => {
+                        <Query query={FETCH_VIPFY_PLAN}>
+                          {({ data, loading, error = null }) => {
                             if (loading) {
                               return <LoadingDiv />;
                             }
@@ -295,19 +259,19 @@ class CompanyDetails extends React.Component<Props, State> {
                                 <div
                                   className="tableColumnSmall" // editable"
                                   style={{ width: "100%" }}
-                                  /*onClick={() =>
-                                    this.setState({
-                                      showPlanModal: true,
-                                      currentPlan: {
-                                        id: data.fetchVipfyPlan.plan.id,
-                                        endtime: data.fetchVipfyPlan.endtime,
-                                        firstPlan: false,
-                                        payperiod,
-                                        cancelperiod,
-                                        features: data.fetchVipfyPlan.plan.options
-                                      }
-                                    })
-                                  }*/
+                                /*onClick={() =>
+                                  this.setState({
+                                    showPlanModal: true,
+                                    currentPlan: {
+                                      id: data.fetchVipfyPlan.plan.id,
+                                      endtime: data.fetchVipfyPlan.endtime,
+                                      firstPlan: false,
+                                      payperiod,
+                                      cancelperiod,
+                                      features: data.fetchVipfyPlan.plan.options
+                                    }
+                                  })
+                                }*/
                                 >
                                   <h1>VIPFY-Plan</h1>
                                   <h2>{data.fetchVipfyPlan.plan.name}</h2>
@@ -321,10 +285,10 @@ class CompanyDetails extends React.Component<Props, State> {
                                     typeof payperiod == "string"
                                       ? payperiod.split(" ")[1]
                                       : Object.keys(payperiod)[0].substring(
-                                          0,
-                                          Object.keys(payperiod)[0].length - 1
-                                        )
-                                  }`}</h1>
+                                        0,
+                                        Object.keys(payperiod)[0].length - 1
+                                      )
+                                    }`}</h1>
                                   <h2>
                                     {data.fetchVipfyPlan.totalprice
                                       ? `${data.fetchVipfyPlan.totalprice} ${data.fetchVipfyPlan.plan.currency}`
@@ -389,8 +353,8 @@ class CompanyDetails extends React.Component<Props, State> {
                               type={this.state.edit!.type}
                             />
                           ) : (
-                            <span>Please contact support to change this information</span>
-                          )}
+                              <span>Please contact support to change this information</span>
+                            )}
                         </div>
                         <UniversalButton
                           label="Cancel"
@@ -474,7 +438,6 @@ class CompanyDetails extends React.Component<Props, State> {
 }
 
 export default compose(
-  graphql(UPDATE_PIC, { name: "updatePic" }),
   graphql(ADD_PROMOCODE, { name: "applyPromocode" }),
   graphql(SET_VAT_ID, { name: "setVatID" })
 )(withApollo(CompanyDetails));

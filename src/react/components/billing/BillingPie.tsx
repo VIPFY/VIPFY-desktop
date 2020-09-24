@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import Chart from "react-apexcharts";
 import moment from "moment";
 import { FETCH_UNIT_APPS } from "../../queries/billing";
@@ -43,7 +43,7 @@ const BillingPie = (props: Props) => {
           returnData.data.push(
             (-moment(plan.endtime).diff(moment().startOf("month"), "days") /
               moment().daysInMonth()) *
-              plan.price
+            plan.price
           );
         } else {
           returnData.data.push(plan.price);
@@ -152,9 +152,9 @@ export default props => (
             <h1>
               {`Next scheduled bill on
               ${moment()
-                .add(1, "month")
-                .startOf("month")
-                .format("ll")}
+                  .add(1, "month")
+                  .startOf("month")
+                  .format("ll")}
               : approx. ${sumNextMonth} ${currency}`}
             </h1>
           )}

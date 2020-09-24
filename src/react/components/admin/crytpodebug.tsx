@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import * as crypto from "../../common/crypto";
 import { randomBytes } from "crypto";
 import { getMyEmail } from "../../common/functions";
-import { withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
 
 function CryptoDebug(props) {
   const [message, setMessage] = useState("");

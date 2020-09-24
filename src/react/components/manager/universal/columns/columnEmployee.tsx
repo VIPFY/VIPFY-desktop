@@ -1,5 +1,5 @@
 import * as React from "react";
-import EmployeePicture from "../../../EmployeePicture";
+import { UserPicture, ThingShape } from "../../../ThingPicture";
 
 interface Props {
   checkFunction: Function;
@@ -15,15 +15,23 @@ interface State {
 
 class ColumnEmployees extends React.Component<Props, State> {
   state = { numemployees: 6 };
-  ref = React.createRef();
+  ref = React.createRef<HTMLDivElement>();
+
+  componentDidMount() {
+    this.calculateNumber();
+  }
 
   componentDidUpdate() {
+    this.calculateNumber();
+  }
+
+  calculateNumber() {
     if (
       this.ref &&
       this.ref.current &&
-      Math.floor((this.ref.current.offsetWidth - 10) / 40) != this.state.numemployees
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numemployees
     ) {
-      this.setState({ numemployees: Math.floor((this.ref.current.offsetWidth - 10) / 40) });
+      this.setState({ numemployees: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
   render() {
@@ -52,6 +60,7 @@ class ColumnEmployees extends React.Component<Props, State> {
 
       for (counter = 0; counter < activelicences.length; counter++) {
         const employee: {
+          id: string;
           profilepicture: string;
           firstname: string;
           lastname: string;
@@ -76,9 +85,10 @@ class ColumnEmployees extends React.Component<Props, State> {
           break;
         } else {
           employeesArray.push(
-            <EmployeePicture
+            <UserPicture
               key={`employee-${employee.id}`}
-              employee={employee}
+              id={employee.id}
+              shape={ThingShape.Square}
               overlayFunction={this.props.overlayFunction}
             />
           );

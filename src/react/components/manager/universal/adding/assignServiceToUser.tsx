@@ -3,7 +3,7 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchApps } from "../../../../queries/products";
 import PopupSSO from "../../../../popups/universalPopups/PopupSSO";
 import SelfSavingIllustrated from "../../../../popups/universalPopups/SelfSavingIllustrated";
@@ -43,7 +43,7 @@ class AssignServiceToUser extends React.Component<Props, State> {
           if (error) {
             return <div>Error! {error.message}</div>;
           }
-          let apps = data.allApps;
+          let apps = [...data.allApps];
 
           apps.sort(function (a, b) {
             let nameA = a.name.toUpperCase(); // ignore upper and lowercase

@@ -1,12 +1,13 @@
 import * as React from "react";
-import { Query, withApollo } from "react-apollo";
+import { withApollo } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import moment from "moment";
 import { getMyUnitId } from "../../common/functions";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
 import TerminateAssignedAccount from "./universal/adding/terminateAssignedAccount";
 import { shortEnglishHumanizer } from "../../common/duration";
 import Tag from "../../common/Tag";
+import { AppIcon } from "../ThingPicture";
 
 interface Props {
   e: any;
@@ -82,18 +83,13 @@ class ServiceDetails extends React.Component<Props, State> {
             style={
               e.rightscount > 1 || e.tags
                 ? {
-                    display: "grid",
-                    alignItems: "center",
-                    gridTemplateColumns: "32px 1fr 150px"
-                  }
+                  display: "grid",
+                  alignItems: "center",
+                  gridTemplateColumns: "32px 1fr 150px"
+                }
                 : { display: "grid", alignItems: "center", gridTemplateColumns: "32px 1fr" }
             }>
-            <PrintServiceSquare
-              appidFunction={app => app.boughtplanid.planid.appid}
-              service={e}
-              className="managerSquare"
-              additionalStyles={{ marginTop: "0px" }}
-            />
+            <AppIcon id={e?.boughtplanid?.planid?.appid?.id} size={32} className="managerSquare" style={{ marginTop: "0px" }} />
             <span className="name" style={{ marginLeft: "8px" }} title={e.boughtplanid.alias}>
               {e.boughtplanid.alias}
             </span>
@@ -174,9 +170,9 @@ class ServiceDetails extends React.Component<Props, State> {
                         <div className="percentage" style={{ width: "60px" }}>
                           {data && data.assignment
                             ? shortEnglishHumanizer(data.assignment * 60000, {
-                                largest: 2,
-                                round: true
-                              })
+                              largest: 2,
+                              round: true
+                            })
                             : 0}
                         </div>
                         <div className="percantageBar">
@@ -200,14 +196,14 @@ class ServiceDetails extends React.Component<Props, State> {
               {(!e.options ||
                 !e.options.private ||
                 e.unitid.id == getMyUnitId(this.props.client)) && (
-                <i
-                  className="fal fa-trash-alt editbuttons"
-                  onClick={e => {
-                    e.stopPropagation();
-                    this.setState({ terminate: true });
-                  }}
-                />
-              )}
+                  <i
+                    className="fal fa-trash-alt editbuttons"
+                    onClick={e => {
+                      e.stopPropagation();
+                      this.setState({ terminate: true });
+                    }}
+                  />
+                )}
             </div>
           )}
         </div>

@@ -1,33 +1,17 @@
 import * as React from "react";
 import UniversalSearchBox from "../../components/universalSearchBox";
-import { graphql, Query, withApollo } from "react-apollo";
-import compose from "lodash.flowright";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
-import gql from "graphql-tag";
+import { Query } from "@apollo/client/react/components";
 
 import { fetchTeam } from "../../queries/departments";
 import TeamGeneralData from "../../components/manager/teamGeneralData";
 import EmployeeSection from "../../components/manager/teamDetails/employeeSection";
 import ServiceSection from "../../components/manager/serviceSection";
-import UploadImage from "../../components/manager/universal/uploadImage";
-import { resizeImage, getBgImageTeam } from "../../common/images";
+import { TeamPicture, ThingShape } from "../../components/ThingPicture";
 
-const UPDATE_PIC = gql`
-  mutation onUpdateTeamPic($file: Upload!, $teamid: ID!) {
-    updateTeamPic(file: $file, teamid: $teamid) {
-      unitid {
-        id
-      }
-      profilepicture
-    }
-  }
-`;
 
 interface Props {
   moveTo: Function;
   updatePic: Function;
-  client: ApolloClient<InMemoryCache>;
 }
 
 interface State {
@@ -43,39 +27,16 @@ class TeamDetails extends React.Component<Props, State> {
     uploadError: null
   };
 
-  uploadPic = async (picture: File) => {
-    const { teamid } = this.props.match.params;
-    await this.setState({ loading: true });
-
-    try {
-      const resizedImage = await resizeImage(picture);
-
-      await this.props.updatePic({
-        context: { hasUpload: true },
-        variables: { file: resizedImage, teamid }
-      });
-
-      await this.setState({ loading: false });
-    } catch (err) {
-      console.log("err", err);
-      await this.setState({ loading: false, uploadError: "Upload failed" }, () => {
-        setTimeout(() => {
-          this.setState({ uploadError: null });
-        }, 2000);
-      });
-    }
-  };
-
   render() {
     const { teamid } = this.props.match.params;
     return (
       <Query pollInterval={60 * 10 * 1000 + 200} query={fetchTeam} variables={{ teamid }}>
         {({ loading, error = null, data }) => {
           if (loading) {
-            return "Loading...";
+            return <span>Loading...</span>;
           }
           if (error) {
-            return `Error! ${error.message}`;
+            return <span>Error! ${error.message}</span>;
           }
 
           const team = data.fetchTeam;
@@ -108,23 +69,12 @@ class TeamDetails extends React.Component<Props, State> {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <div>
-                    <UploadImage
-                      picture={{
-                        preview:
-                          team && team.profilepicture
-                            ? getBgImageTeam(team.profilepicture, 96)
-                            : null
-                      }}
-                      name={
-                        team.internaldata && team.internaldata.letters
-                          ? team.internaldata.letters
-                          : team.name
-                      }
-                      onDrop={s => this.uploadPic(s)}
-                      className="managerBigSquare"
-                      uploadError={this.state.uploadError}
-                      isadmin={this.props.isadmin}
-                      isteam={true}
+                    <TeamPicture
+                      id={team?.unitid?.id}
+                      size={96}
+                      shape={ThingShape.Square}
+                      editable={true}
+                      className="managerBigSquare profilepicture"
                     />
                   </div>
                   <div style={{ width: "calc(100% - 176px - (100% - 160px - 5*176px)/4)" }}>
@@ -149,4 +99,4 @@ class TeamDetails extends React.Component<Props, State> {
     );
   }
 }
-export default compose(graphql(UPDATE_PIC, { name: "updatePic" }))(withApollo(TeamDetails));
+export default TeamDetails;

@@ -3,7 +3,7 @@ import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 import { fetchDepartmentsData } from "../../../../queries/departments";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
@@ -104,9 +104,9 @@ class AssignVacation extends React.Component<Props, State> {
                         this.state.user
                           ? this.state.user.id
                           : this.props.forceUser
-                          ? this.props.forceUser.id
-                          : ""
-                      }`}
+                            ? this.props.forceUser.id
+                            : ""
+                        }`}
                       label="Search for users"
                       options={employees}
                       noFloating={true}
@@ -154,8 +154,8 @@ class AssignVacation extends React.Component<Props, State> {
                         this.state.user && employees.find(a => a.id == this.state.user.id)
                           ? employees.find(a => a.id == this.state.user.id).id
                           : this.props.forceUser
-                          ? this.props.forceUser.id
-                          : ""
+                            ? this.props.forceUser.id
+                            : ""
                       }
                       noNoResults={true}
                       livecode={c => {

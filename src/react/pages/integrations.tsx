@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Query } from "react-apollo";
+import { Query } from "@apollo/client/react/components";
 
 import { fetchApps } from "../queries/products";
 import LoadingDiv from "../components/LoadingDiv";
@@ -91,7 +91,6 @@ class Integrations extends React.Component<{}, AppPageState> {
 
                 <button
                   type="button"
-                  className="button-external"
                   onClick={() =>
                     /*this.setState({ popupSSO: true })*/ this.props.moveTo("addcustomservice")
                   }>
