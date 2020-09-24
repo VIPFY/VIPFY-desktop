@@ -6,12 +6,6 @@ import UniversalSearchBox from "../components/universalSearchBox";
 import { Link } from "react-router-dom";
 import { Licence } from "../interfaces";
 import dashboardPic from "../../images/dashboard.png";
-<<<<<<< HEAD
-=======
-import { graphql } from "@apollo/client/react/hoc";
-import compose from "lodash.flowright";
-import gql from "graphql-tag";
->>>>>>> origin/master
 
 const favourites: { [key: number]: Licence | null } = {};
 [...Array(8).keys()].map(n => (favourites[n] = null));
@@ -106,12 +100,11 @@ class Dashboard extends React.Component<Props, State> {
                   services.
                 </div>
               ) : (
-                  <div>Please ask your administrator to integrate Services for you</div>
-                )}
+                <div>Please ask your administrator to integrate Services for you</div>
+              )}
             </div>
           </div>
         ) : (
-<<<<<<< HEAD
           <React.Fragment>
             {Object.keys(appLists).map(list => {
               if (appLists[list].length > 0) {
@@ -132,29 +125,6 @@ class Dashboard extends React.Component<Props, State> {
             })}
           </React.Fragment>
         )}
-=======
-            <React.Fragment>
-              {Object.keys(appLists).map(list => {
-                if (appLists[list].length > 0) {
-                  return (
-                    <AppList
-                      key={list}
-                      header={list}
-                      dragStartFunction={this.dragStartFunction}
-                      dragEndFunction={this.dragEndFunction}
-                      search={this.state.search}
-                      licences={filterLicences(appLists[list])}
-                      setApp={this.setApp}
-                      width={this.props.width}
-                    />
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </React.Fragment>
-          )}
->>>>>>> origin/master
       </div>
     );
   }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Licence } from "../interfaces";
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/client/react/hooks";
 import CardSection from "./CardSection";
 import classNames from "classnames";
 import ServiceLogo from "./services/ServiceLogo";
