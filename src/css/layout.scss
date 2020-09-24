@@ -48,7 +48,6 @@
   from {
     width: 16px;
   }
-
   to {
     width: 80px;
   }
@@ -126,16 +125,18 @@ li {
 }
 
 #App {
+  background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
 }
 
 #DevTools {
+  color: #253647; //#333 durch #253647 ersetzen
+  font-family: "Roboto", sans-serif;
   width: 0;
+  background-color: $white;
   height: calc(100vh - 32px);
   margin-top: 32px;
-  background-color: $white;
-  font-family: "Roboto", sans-serif;
 }
 
 .button > span:hover {
@@ -219,12 +220,10 @@ li {
   background-color: #f5f5f5;
   transition: all 300ms ease-in-out;
 }
-
 .centerText {
   display: flex;
   justify-content: center;
 }
-
 .newMainPosition {
   height: 100%;
 }
@@ -249,7 +248,6 @@ li {
     transform: scale(0);
     -webkit-transform: scale(0);
   }
-
   50% {
     transform: scale(1);
     -webkit-transform: scale(1);
@@ -270,7 +268,6 @@ li {
   overflow-y: scroll;
   transition: margin-left 0.6s ease, margin-right 0.6s ease-in-out;
   margin-right: 0rem;
-  background-color: $lightgrey-lightest;
 
   > div {
     height: 100%;
@@ -301,7 +298,6 @@ li {
     box-shadow: 1px 3px 6px 0px rgba(0, 0, 0, 0.4);
   }
 }
-
 .app-thumbnail-logo {
   width: 90%;
   height: 4em;
@@ -318,48 +314,23 @@ li {
 .appdiscripton {
   overflow: hidden;
 }
-
-.paddingPage {
-  padding: 5vh 10%;
-  height: calc(90vh - 4rem);
-}
-
-.halfStarHolder {
-  position: relative;
-}
-
-.secondHalfStar {
-  position: absolute;
-  transform: scaleX(-1);
-  left: 0;
-  top: 2px;
-}
-
-.appHeaderStars {
-  line-height: 2em;
-}
-
 .detail-fulldescription {
   padding: 20px;
   max-height: 500px;
   position: relative;
   overflow: hidden;
 }
-
 .detail-fulldescription-showmore {
   position: absolute;
   top: 450px;
   width: calc(100% - 40px);
 }
-
 .detail-fulldescription-full {
   max-height: 100000px;
 }
-
 .detail-fulldescription-showmore-full {
   display: none;
 }
-
 .planHolder {
   overflow-x: scroll;
   margin-top: 3rem;
@@ -368,103 +339,17 @@ li {
   border-radius: 10px;
 }
 
-.detail-comments {
-}
-
-.detail-comments-heading {
-}
-
-.detail-comments-holder {
-  margin-top: 3rem;
-  display: grid;
-  grid-template-columns: 10rem 1fr 1fr;
-  height: 20rem;
-  margin-bottom: 3rem;
-}
-
-.detail-comments-oversizeholder {
-  display: flex;
-  align-items: center;
-  overflow-x: auto;
-  display: none;
-  grid-column-end: 3;
-  grid-column-start: 1;
-}
-
-.detail-comments-stars {
-  padding: 5px;
-}
-
-.detail-comments-stars-bignum {
-  font-size: 2em;
-  text-align: center;
-}
-
-.detail-comments-stars-holder {
-}
-
-.commentOverviewBlock {
-  padding: 10px;
-  overflow: auto;
-  background-color: $white;
-  border-radius: 10px;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin: 0.5rem;
-  text-align: center;
-  position: relative;
-
-  .avgnumber {
-    font-size: 2rem;
-  }
-}
-
-.detail-comments-section {
-  display: flex;
-  min-width: 200px;
-  flex-direction: column;
-  flex-wrap: wrap;
-  height: 20rem;
-  justify-content: space-between;
-}
-
-.detail-comment {
-  padding: 10px;
-  overflow: auto;
-  background-color: $white;
-  border-radius: 10px;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin: 0.5rem;
-}
-
-.detail-comment-author {
-  font-style: italic;
-  font-size: 12px;
-}
-
-.detail-comment-date {
-  font-style: italic;
-  font-size: 12px;
-  float: right;
-}
-
-.detail-comment-text {
-  word-wrap: break-word;
-  text-align: left;
-}
-
 .area {
   height: 100%;
   transition: 400ms ease-in-out height;
   background-color: $lightgrey-lightest;
 }
-
 .goToMarketplace {
   font-size: 0.5em;
   text-align: center;
   line-height: 2em;
   margin-top: 2em;
 }
-
 .chatBar {
   width: 15rem;
   position: fixed;
@@ -474,11 +359,9 @@ li {
   background-color: #333;
   height: 100vh;
 }
-
 .chat-open {
   margin-right: 15rem;
 }
-
 .notify-user {
   animation: notify 2s ease-in-out 0s 2;
 
@@ -506,7 +389,6 @@ li {
     }
   }
 }
-
 .proposal-holder {
   margin-top: 1rem;
 
@@ -519,219 +401,6 @@ li {
     }
   }
 }
-
-.appBreadCromp {
-  margin-bottom: 1.5rem;
-  font-size: 0.7rem;
-}
-
-.appBreadCrompNoLink {
-  color: #798892;
-  margin-bottom: 1.5rem;
-}
-
-.appBreadCrompLink {
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.appHeader {
-  display: flex;
-  height: 20rem;
-  margin-bottom: 3rem;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  border-radius: 10px;
-}
-
-.appHeaderGallery {
-  width: calc(100% - 15rem);
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  border-radius: 10px 0px 0px 10px;
-}
-
-.appHeaderInfos {
-  width: 15rem;
-  background-color: $white;
-  position: relative;
-  border-radius: 0px 10px 10px 0px;
-}
-
-.appHeaderStars {
-  line-height: 2em;
-  padding: 1rem;
-}
-
-.appHeaderName {
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding-top: 0rem;
-  padding-bottom: 0.5rem;
-  padding-left: 1rem;
-  text-transform: uppercase;
-}
-
-.appHeaderType {
-  color: #798892;
-  padding-left: 1rem;
-  font-weight: 400;
-  text-transform: capitalize;
-}
-
-.appHeaderPriceHolder {
-  position: absolute;
-  bottom: 1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: calc(100% - 2rem);
-}
-
-.appHeaderBuyButton {
-  position: relative;
-  padding: 0.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  background-color: $primarygreen;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin-top: 0.25rem;
-  color: $white;
-  font-weight: bold;
-  transition: all 0.6s ease-in-out;
-
-  &:hover {
-    background-color: #117f91;
-    transition: all 0.6s ease-in-out;
-  }
-}
-
-.appHeaderSelectPlan {
-  position: relative;
-  padding: 0.5rem;
-  background-color: #e9ecef;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 0.25rem;
-  border: 1px solid #e9ecef;
-  margin-top: 0.25rem;
-}
-
-.caretApp {
-  float: right;
-}
-
-.app-description {
-  background-color: $white;
-  border-radius: 0.25rem;
-  display: flex;
-  min-height: 15rem;
-  padding: 1rem;
-  border-radius: 10px;
-  box-shadow: 0 0 19px -3px rgba(0, 0, 0, 0.36);
-  background-image: radial-gradient(farthest-corner at 0px 100%, $primarygreen 0%, #117f91 100%);
-  color: $white;
-
-  &-item {
-    padding: 1rem;
-  }
-}
-
-.appDescriptionHeading {
-  font-size: 1.15rem;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.appDescriptionLink {
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.galleryDots {
-  position: absolute;
-  width: 100%;
-  bottom: 0.25rem;
-  height: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.gallyDot {
-  height: 0.75rem;
-  width: 0.75rem;
-  border-radius: 1rem;
-  background-color: rgba(255, 255, 255, 0.3);
-  margin-left: 0.1rem;
-  margin-right: 0.1rem;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  cursor: pointer;
-}
-
-.gallyDot:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.gallyDotActive {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.galleryLeft {
-  position: absolute;
-  left: 0;
-  height: 100%;
-  width: 15%;
-  line-height: 20rem;
-  padding-left: 1rem;
-  background-image: linear-gradient(to left, transparent 0%, #253647 100%);
-  color: $white;
-  cursor: pointer;
-  transition: 0.3s;
-  opacity: 0.5;
-  border-radius: 10px 0px 0px 10px;
-}
-
-.galleryRight {
-  position: absolute;
-  right: 0;
-  height: 100%;
-  width: 15%;
-  line-height: 20rem;
-  padding-right: 1rem;
-  text-align: right;
-  background-image: linear-gradient(to right, transparent 0%, #253647 100%);
-  color: $white;
-  cursor: pointer;
-  transition: 0.3s;
-  opacity: 0.5;
-}
-
-.galleryLeft:hover {
-  opacity: 1;
-}
-
-.galleryRight:hover {
-  opacity: 1;
-}
-
-.addHolderAll {
-  width: 11rem;
-  height: auto;
-  background-color: $white;
-  position: absolute;
-  z-index: 1000;
-  min-width: 15rem;
-  background-color: $white;
-  top: 2.5rem;
-  margin: 0.125rem 0 0;
-  background-clip: padding-box;
-  border: 1px solid #e9ecef;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
-  cursor: default;
-  overflow: hidden;
-}
-
 select {
   background-color: transparent;
   border: none;
@@ -740,49 +409,40 @@ select {
   font-family: "Roboto";
   border-bottom: 1px solid $primarygreen;
 }
-
 select:focus {
   outline: none;
 }
-
 option {
   border: none;
 }
-
 .optionsHolder {
   display: flex;
   width: 100%;
   height: 100vh;
 }
-
 .optionsSidebar {
   width: 20rem;
   background-color: #357aa5;
   overflow: auto;
 }
-
 .optionsExplainBlock {
   width: calc(50% - 10rem);
   display: flex;
   align-items: center;
   background-color: #eee;
 }
-
 .optionsFormularBlock {
   width: calc(50% - 10rem);
   display: flex;
   align-items: center;
 }
-
 .optionsExplainTextHolder {
   margin: 5rem;
 }
-
 .optionsExplainIconHolder {
   font-size: 5rem;
   color: #357aa5;
 }
-
 .optionsExplainHeading {
   line-height: 5rem;
   font-size: 2rem;
@@ -790,7 +450,6 @@ option {
   color: #357aa5;
   font-weight: bold;
 }
-
 .inputBox {
   padding: 0.25rem;
   background-color: $white;
@@ -801,7 +460,6 @@ option {
   margin: 2rem;
   position: relative;
 }
-
 .inputBoxTitle {
   font-size: 0.75rem;
   font-weight: bold;
@@ -809,7 +467,6 @@ option {
   width: 100%;
   border-bottom: 1px solid #ccc;
 }
-
 .inputBoxField {
   width: 100%;
   border: 0px;
@@ -817,11 +474,9 @@ option {
   line-height: 1.5rem;
   color: #357aa5;
 }
-
 .inputBoxField:focus {
   outline: none;
 }
-
 .tabBox {
   padding: 0.25rem;
   min-width: 15rem;
@@ -832,7 +487,6 @@ option {
   display: flex;
   justify-content: center;
 }
-
 .tab {
   padding: 0.25rem;
   background-color: #aaa;
@@ -841,27 +495,22 @@ option {
   cursor: pointer;
   text-align: center;
 }
-
 .tab:hover {
   background-color: #3389bf;
 }
-
 .tabActive {
   background-color: #357aa5;
   color: $white;
 }
-
 .journeyHolder {
   position: relative;
   margin: 2rem;
 }
-
 .journeyHeader {
   color: $white;
   font-size: 1.25rem;
   text-align: center;
 }
-
 .journeyCircle {
   width: 6rem;
   border: solid white;
@@ -874,7 +523,6 @@ option {
   cursor: pointer;
   padding: 0.25rem;
 }
-
 .journeyDoneCircle {
   width: 6rem;
   border: solid white;
@@ -888,37 +536,30 @@ option {
   padding: 0.25rem;
   background-color: #1ca543;
 }
-
 .journeyCircle:hover {
   background-color: #3389bf;
 }
-
 .inputBoxHolder {
   display: flex;
   align-items: center;
 }
-
 .inputBoxSymbol {
   padding-right: 0.25rem;
   color: #357aa5;
 }
-
 .inputBoxError {
   font-size: 0.5rem;
   position: absolute;
   right: 0;
   color: #a52c2c;
 }
-
 .lawbox {
   overflow-y: scroll;
   height: 20rem;
 }
-
 .productPlanName {
   text-align: center;
 }
-
 .check {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -949,40 +590,32 @@ option {
   transform: translate3d(0, 0, 0);
   transition: all 0.2s ease;
 }
-
 .check svg path {
   stroke-dasharray: 60;
   stroke-dashoffset: 0;
 }
-
 .check svg polyline {
   stroke-dasharray: 22;
   stroke-dashoffset: 66;
 }
-
 .check:hover:before {
   opacity: 1;
 }
-
 .check:hover svg {
   stroke: #117f91;
 }
-
 .cbx:checked + .check svg {
   stroke: #117f91;
 }
-
 .cbx:checked + .check svg path {
   stroke-dashoffset: 60;
   transition: all 0.3s linear;
 }
-
 .cbx:checked + .check svg polyline {
   stroke-dashoffset: 42;
   transition: all 0.2s linear;
   transition-delay: 0.15s;
 }
-
 .lawlink {
   cursor: pointer;
   background-color: $primarygreen;
@@ -996,37 +629,31 @@ option {
   font-size: 0.8rem;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   transition: all 0.6s ease-in-out;
-
   &:hover {
     background-color: #117f91;
     transition: all 0.6s ease-in-out;
   }
 }
-
 .lawholder {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-
 .lawheading {
   font-size: 0.9rem;
   font-weight: bold;
   display: block;
 }
-
 .agreementBox {
   display: flex;
   align-items: center;
   position: relative;
 }
-
 .agreementSentence {
   font-size: 0.8rem;
   margin-left: 0.4rem;
   top: -0.35rem;
   position: relative;
 }
-
 .checkoutButton {
   cursor: pointer;
   background-color: $primarygreen;
@@ -1053,7 +680,6 @@ option {
     }
   }
 }
-
 .cancelButton {
   cursor: pointer;
   background-color: #c73544;
@@ -1065,13 +691,11 @@ option {
   border: none;
   box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
   transition: all 0.6s ease-in-out;
-
   &:hover {
     background-color: #991b78;
     transition: all 0.6s ease-in-out;
   }
 }
-
 .agreementError {
   position: absolute;
   bottom: -1.75rem;
@@ -1081,7 +705,6 @@ option {
   padding-right: 0.2rem;
   border-radius: 3px;
 }
-
 .agreementError:before {
   content: " ";
   position: absolute;
@@ -1094,7 +717,6 @@ option {
   border-bottom: 9px solid #c73544;
   border-radius: 3px;
 }
-
 .agreementError:after {
   content: " ";
   position: absolute;
@@ -1107,19 +729,15 @@ option {
   border-bottom: 8px solid white;
   border-radius: 3px;
 }
-
 .orderHeading {
   margin-bottom: 0.5rem;
 }
-
 .orderCompanyName {
   font-weight: bold;
 }
-
 .orderAddressLine {
   font-size: 0.9rem;
 }
-
 .orderAddressHolder {
   margin: 0.5rem;
 }
@@ -1132,7 +750,6 @@ option {
 
   .featured-table {
     box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-
     h2 {
       background-color: $primarygreen;
       color: $white;
@@ -1155,12 +772,10 @@ option {
       color: #909090;
       background: #e0e0e0;
     }
-
     &__starting {
       margin: 0px;
       color: #a0a0a0;
     }
-
     &__price {
       color: $primarygreen;
       padding: 1rem;
@@ -1168,7 +783,6 @@ option {
       font-size: 2rem;
       font-weight: normal;
     }
-
     &__button {
       display: block;
       background: $primarygreen;
@@ -1212,11 +826,9 @@ option {
         background: #117f91;
       }
     }
-
     &__list {
       padding: 1rem;
       color: #a0a0a0;
-
       li {
         padding: 1rem;
         border-bottom: 1px solid #c8c8c8;
@@ -1225,30 +837,25 @@ option {
         &:last-child {
           border: none;
         }
-
         .Pcaption {
           font-size: 0.9rem;
         }
-
         .Pvalue {
           font-size: 0.9rem;
           font-weight: bold;
           margin-left: 0.2rem;
           margin-right: 0.2rem;
         }
-
         .PextraHolder {
           position: relative;
           height: 1rem;
           left: 0.5rem;
-
           .PIvalue {
             font-size: 0.9rem;
             font-weight: bold;
             position: relative;
             top: -0.25rem;
           }
-
           .PEvalue {
             font-size: 0.9rem;
             font-weight: bold;
@@ -1266,13 +873,11 @@ option {
       .pricing-table__button {
         padding-left: 0;
         padding-right: 35px;
-
         &:before {
           top: -80%;
           transform: rotate(0deg);
           width: 100%;
         }
-
         &:after {
           opacity: 1;
           padding-right: 15px;
@@ -1281,7 +886,6 @@ option {
     }
   }
 }
-
 .checkOrderHolder {
   display: grid;
   grid-template-columns: 20% 75%;
@@ -1303,7 +907,6 @@ option {
         font-weight: bold;
       }
     }
-
     .featureList {
       list-style: none;
       padding: 0;
@@ -1359,7 +962,6 @@ option {
       .Pcaption {
         float: left;
       }
-
       .inputNew {
         width: 4rem;
         border: none;
@@ -1370,7 +972,6 @@ option {
       }
     }
   }
-
   .totalprice {
     border-top: 1px solid black;
     text-align: right;
@@ -1378,17 +979,14 @@ option {
     font-weight: bold;
   }
 }
-
 .orderInformationHolder {
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
   align-items: center;
 }
-
 .acceptLicenceHolder {
   padding: 3rem;
-
   .checkOrderHolderButton {
     position: absolute;
     right: 3rem;
@@ -1426,7 +1024,6 @@ option {
   100% {
     -webkit-transform: scale(0);
   }
-
   50% {
     -webkit-transform: scale(1);
   }
@@ -1438,7 +1035,6 @@ option {
     transform: scale(0);
     -webkit-transform: scale(0);
   }
-
   50% {
     transform: scale(1);
     -webkit-transform: scale(1);
@@ -1460,7 +1056,6 @@ option {
     left: 0rem;
     transition-duration: 0.6s;
     transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
-
     &_Register {
       left: -40rem;
     }
@@ -1472,7 +1067,6 @@ option {
       height: 21rem;
       z-index: 2;
     }
-
     .formError {
       position: absolute;
       width: 40rem;
@@ -1489,7 +1083,6 @@ option {
       position: absolute;
       left: 20rem;
     }
-
     .logoSeperator {
       position: absolute;
       left: 33rem;
@@ -1503,14 +1096,12 @@ option {
       background-position: center;
       transition-duration: 0.6s;
       transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
-
       &_Right {
         left: 42rem;
         transition-duration: 0.6s;
         transition-timing-function: cubic-bezier(0.77, 0.2, 0.04, 0.81);
       }
     }
-
     .partHeading {
       &_Login {
         position: absolute;
@@ -1518,14 +1109,12 @@ option {
         left: 3rem;
         font-size: 1.5rem;
       }
-
       &_Register {
         position: absolute;
         top: 3rem;
         left: 20rem;
         font-size: 1.5rem;
         text-align: center;
-
         span {
           font-size: 0.75rem;
         }
@@ -1548,18 +1137,15 @@ option {
         flex-flow: column;
         max-width: 26rem;
       }
-
       &_ChangePassword {
         left: 3rem;
         top: 6rem;
       }
-
       &_TOS {
         left: 3rem;
         top: 6rem;
         width: 22rem;
       }
-
       .newInputField {
         border: 0;
         font-size: 0.75em;
@@ -1577,7 +1163,6 @@ option {
           outline: 0;
         }
       }
-
       .forgotPW {
         position: absolute;
         font-size: 0.5rem;
@@ -1597,12 +1182,10 @@ option {
         font-size: 80%;
         color: #d1462f;
       }
-
       .flowtext {
         font-size: 90%;
       }
     }
-
     .partButton {
       margin-top: 3rem;
       display: inline-block;
@@ -1612,7 +1195,6 @@ option {
       color: $white;
       box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
       cursor: pointer;
-
       &_ToRegister {
         width: 5rem;
         height: 1.19rem;
@@ -1630,7 +1212,6 @@ option {
         align-items: center;
         justify-content: center;
       }
-
       &_Next {
         position: absolute;
         bottom: 0;
@@ -1642,7 +1223,6 @@ option {
         box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
         cursor: pointer;
       }
-
       &_ToLogin {
         position: absolute;
         bottom: 0;
@@ -1692,16 +1272,13 @@ option {
       top: 10rem;
       position: absolute;
       left: 7rem;
-
       &active {
         background-color: $white;
       }
-
       &done {
         background-color: $white;
       }
     }
-
     .registerButtons {
       position: absolute;
       bottom: 2rem;
@@ -1745,45 +1322,18 @@ option {
   width: 1.5rem;
 }
 
-.reviewAddButton {
-  bottom: 0px;
-  position: absolute;
-  width: 100%;
-  left: 0px;
-  padding: 0.5rem;
-  cursor: pointer;
-  font-size: 0.8rem;
-  border-radius: 3px;
-  background-color: $primarygreen;
-  box-shadow: 0px 0px 19px -3px rgba(0, 0, 0, 0.36);
-  margin-top: 0.25rem;
-  color: $white;
-  font-weight: bold;
-  transition: all 0.6s ease-in-out;
-  border: none;
-  outline: none;
-
-  &:hover {
-    background-color: #117f91;
-    transition: all 0.6s ease-in-out;
-  }
-}
-
 .editorMainHolder {
   margin-bottom: 3rem;
   height: 13rem;
   padding: 1rem;
-
   .editorHolder {
     height: 100%;
   }
 }
-
 .addReviewButtonHolder {
   display: flex;
   justify-content: space-between;
 }
-
 .addReviewButton {
   width: 100%;
   left: 0px;
@@ -1800,13 +1350,11 @@ option {
   transition: all 0.6s ease-in-out;
   border: none;
   outline: none;
-
   &:hover {
     background-color: #117f91;
     transition: all 0.6s ease-in-out;
   }
 }
-
 .domainHolderMargin {
   position: relative;
   margin-bottom: 2rem;
@@ -1956,13 +1504,11 @@ option {
 
   & > .inside {
     transition: all 0.6s ease-in-out;
-
     &-profile {
       display: grid;
       grid-template-columns: 2fr 7fr;
       grid-template-areas: "pic information" "address address" "phone phone";
     }
-
     & > .inside-padding {
       padding: 20px;
 
@@ -2124,7 +1670,6 @@ option {
     }
   }
 }
-
 .addresses-header {
   text-align: left;
 }
@@ -2246,7 +1791,6 @@ progress[value] {
   align-items: center;
   justify-content: space-around;
 }
-
 .appIntegrationLogo {
   width: 8em;
   height: 4em;
@@ -2254,7 +1798,6 @@ progress[value] {
   background-repeat: no-repeat;
   background-position: center;
 }
-
 .captionIntegration {
   width: 30%;
   text-align: center;
@@ -2384,19 +1927,15 @@ progress[value] {
     h1 {
       margin: 0;
     }
-
     h2 {
       margin: 0;
     }
-
     .tip {
       color: #117f91;
-
       &::before {
         content: "Tip: ";
       }
     }
-
     p {
       margin-bottom: 1em;
       margin-top: 1em;
@@ -2433,7 +1972,6 @@ progress[value] {
     .back-button {
       background-color: #253647;
       grid-column: 1;
-
       &:hover {
         background-color: #275452;
       }
@@ -2442,7 +1980,6 @@ progress[value] {
     .next-button {
       background-color: #117f91;
       grid-column: 3;
-
       &:hover {
         background-color: #34b3a4;
       }
@@ -2458,7 +1995,6 @@ progress[value] {
   transition: all 0.5s ease-in;
   color: $white;
   display: block;
-
   &:hover {
     background-color: #34b3a4;
   }
@@ -2469,7 +2005,6 @@ progress[value] {
   position: fixed;
   margin-left: 20px;
   margin-top: -10px;
-
   &:after {
     right: 100%;
     top: 0%;
@@ -2489,7 +2024,6 @@ progress[value] {
 .tutorialPopupBelow {
   @extend .tutorialPopup;
   position: fixed;
-
   &:after {
     left: 0%;
     bottom: 100%;
@@ -2509,7 +2043,6 @@ progress[value] {
 .tutorialPopupBelowRight {
   @extend .tutorialPopup;
   position: fixed;
-
   &:after {
     right: 0%;
     bottom: 100%;
@@ -2566,11 +2099,9 @@ progress[value] {
     border-bottom-color: #253647;
     width: 400px;
   }
-
   label {
     color: #253647;
   }
-
   .flying-label {
     color: #253647 !important;
   }
@@ -2583,11 +2114,9 @@ progress[value] {
   transition: all 0.6s ease-in-out;
   color: $white;
 }
-
 .back-button {
   background-color: #253647;
   grid-column: 1;
-
   &:hover {
     background-color: #275452;
   }
@@ -2620,23 +2149,19 @@ progress[value] {
   font-size: 24px;
   font-weight: 300;
   display: inline-block;
-
   @at-root h2#{&} {
     font-size: 16px;
   }
 }
-
 .boldHeading {
   font-size: 24px;
   font-weight: 800;
   display: inline-block;
   margin-bottom: 40px;
-
   @at-root h2#{&} {
     font-size: 16px;
   }
 }
-
 .universalButton {
   line-height: 34px;
   min-width: 60px;
@@ -2656,12 +2181,10 @@ progress[value] {
       background-color: $primarygreen;
       color: $white;
       transition: background-color 200ms ease-in-out;
-
       &:hover {
         background-color: #37c8ba;
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
-
       .universalCoverButton:focus > & {
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
@@ -2681,13 +2204,11 @@ progress[value] {
       color: $primarygreen;
       transition: background-color 200ms ease-in-out;
       transition: color 200ms ease-in-out;
-
       &:hover {
         background-color: $primarygreen;
         color: $white;
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
-
       .universalCoverButton:focus > & {
         box-shadow: 0px 2px 2px rgba(#000000, 0.14);
       }
@@ -2706,11 +2227,9 @@ progress[value] {
       color: $primarygreen;
       font-weight: 500;
       transition: background-color 200ms ease-in-out;
-
       &:hover {
         background-color: rgba($primarygreen, 0.1);
       }
-
       .universalCoverButton:focus > & {
         background-color: rgba($primarygreen, 0.1);
       }
@@ -2723,35 +2242,27 @@ progress[value] {
     }
   }
 }
-
 .buttonSeperator {
   width: 40px;
 }
-
 .universalPopup {
   letter-spacing: 0.02em;
-
   p {
     margin-bottom: 16px;
   }
-
   .light {
     font-size: 16px;
     font-weight: 300;
   }
-
   .small {
     font-size: 12px;
   }
-
   .error {
     color: #e32022;
   }
-
   .bold {
     font-weight: 500;
   }
-
   li {
     display: table;
     margin-bottom: 8px;
@@ -2805,7 +2316,6 @@ progress[value] {
   grid-template-columns: 300px 300px;
   grid-template-rows: 56px 56px 56px;
 }
-
 .genericSearchHolder {
   .genericSearchBox {
     height: 40px;
@@ -2859,7 +2369,6 @@ progress[value] {
       }
     }
   }
-
   .resultHolder {
     background-color: $white;
     position: relative;
@@ -2883,7 +2392,6 @@ progress[value] {
         border: 1px solid $vipfy-grey;
         border-radius: 5px;
       }
-
       .resultHighlight {
         font-family: "Roboto Medium";
       }
@@ -2936,7 +2444,6 @@ progress[value] {
 
 .devtoolbar {
   white-space: nowrap;
-
   .smalltab {
     width: 128px;
     height: 26px;
@@ -2952,7 +2459,6 @@ progress[value] {
     &:hover {
       background-color: rgba(0, 0, 0, 0.1);
     }
-
     &.active {
       border-bottom: 2px solid $darkgrey-lighter;
     }
@@ -2970,7 +2476,6 @@ progress[value] {
   height: 32px;
   width: 600px;
   background: lightgrey;
-
   &::-webkit-scrollbar {
     height: 4px;
   }
@@ -2985,6 +2490,5 @@ progress[value] {
   line-height: 38px;
   margin-left: 8px;
 }
-
 
 @import "./v2/index";
