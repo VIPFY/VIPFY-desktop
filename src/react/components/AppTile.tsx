@@ -48,7 +48,6 @@ export default (props: Props) => {
   const [addFavorite] = useMutation(ADD_FAVORITE);
   const [removeFavorite] = useMutation(REMOVE_FAVORITE);
   let tagIcon = rightscount > 1 ? "fal fa-users" : "fal fa-user";
-  tagIcon = tags.length > 0 && tags.includes("vacation") && "fal fa-island-tropical";
 
   return (
     <div

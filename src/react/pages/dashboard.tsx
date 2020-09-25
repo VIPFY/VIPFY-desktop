@@ -104,7 +104,7 @@ export default (props: Props) => {
                     setApp={(licence: number) => props.setApp(licence)}
                   />
                   {list === "My Favorites" && appLists["My Services"].length > 0 && (
-                    <hr style={{ paddingBottom: "16px" }}></hr>
+                    <hr className="apps-divider"></hr>
                   )}
                 </>
               );
