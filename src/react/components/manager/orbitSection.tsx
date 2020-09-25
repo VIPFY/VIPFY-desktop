@@ -1,20 +1,21 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
 import moment from "moment";
+import Calendar from "react-calendar";
+import compose from "lodash.flowright";
+import gql from "graphql-tag";
+import { withApollo, graphql } from "@apollo/client/react/hoc";
+import { Tag } from "@vipfy-private/vipfy-ui-lib";
+
+import UniversalButton from "../universalButtons/universalButton";
 import AccountRow from "./accountRow";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
-import Calendar from "react-calendar";
-import { withApollo, graphql } from "@apollo/client/react/hoc";
-import compose from "lodash.flowright";
-import gql from "graphql-tag";
 import ChangeAccount from "./universal/changeAccount";
 import ShowAndAddEmployee from "./universal/showAndAddEmployee";
 import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
 import { AppContext } from "../../common/functions";
 import UniversalCheckbox from "../universalForms/universalCheckbox";
-import Tag from "../../common/Tag";
 
 interface Props {
   orbit: any;
@@ -93,9 +94,9 @@ class OrbitSection extends React.Component<Props, State> {
       ? this.props.orbit.key.selfhosting
         ? this.props.orbit.key.domain.substring(this.props.orbit.key.domain.search(/:\/\/{1}/) + 3)
         : this.props.orbit.key.domain &&
-        this.props.orbit.key.domain
-          .replace(this.props.app.options.predomain, "")
-          .replace(this.props.app.options.afterdomain, "")
+          this.props.orbit.key.domain
+            .replace(this.props.app.options.predomain, "")
+            .replace(this.props.app.options.afterdomain, "")
       : undefined,
     alias: this.props.orbit.alias,
     todate: this.props.orbit.endtime && moment(this.props.orbit.endtime).toDate(),
@@ -167,19 +168,19 @@ class OrbitSection extends React.Component<Props, State> {
               Employee Orbit
             </div>
           ) : (
-              <UniversalButton
-                type="high"
-                label="Change Orbit"
-                customStyles={{
-                  fontSize: "12px",
-                  lineHeight: "24px",
-                  fontWeight: "700",
-                  marginRight: "16px",
-                  width: "120px"
-                }}
-                onClick={() => this.setState({ change: true })}
-              />
-            )}
+            <UniversalButton
+              type="high"
+              label="Change Orbit"
+              customStyles={{
+                fontSize: "12px",
+                lineHeight: "24px",
+                fontWeight: "700",
+                marginRight: "16px",
+                width: "120px"
+              }}
+              onClick={() => this.setState({ change: true })}
+            />
+          )}
         </div>
         <div className="table">
           <div className="tableHeading">
@@ -418,8 +419,8 @@ class OrbitSection extends React.Component<Props, State> {
                         </option>
                       </select>
                     ) : (
-                        this.props.app.options.predomain
-                      )
+                      this.props.app.options.predomain
+                    )
                   }
                   suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
                 />
@@ -548,20 +549,20 @@ class OrbitSection extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}></div>
+                    }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                      }`}>
+                    }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}

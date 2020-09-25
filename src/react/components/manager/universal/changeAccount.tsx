@@ -1,22 +1,23 @@
 import * as React from "react";
 import moment from "moment";
-import PopupBase from "../../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../../universalForms/universalTextInput";
-import UniversalCheckbox from "../../universalForms/universalCheckbox";
 import Calendar from "react-calendar";
-import UniversalButton from "../../universalButtons/universalButton";
-import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
-import ShowAndAddEmployee from "./showAndAddEmployee";
 import gql from "graphql-tag";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
+import { Tag } from "@vipfy-private/vipfy-ui-lib";
+
+import PopupBase from "../../../popups/universalPopups/popupBase";
+import UniversalTextInput from "../../universalForms/universalTextInput";
+import UniversalCheckbox from "../../universalForms/universalCheckbox";
+import UniversalButton from "../../universalButtons/universalButton";
+import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
+import ShowAndAddEmployee from "./showAndAddEmployee";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
 import {
   createEncryptedLicenceKeyObject,
   reencryptLicenceKeyObject
 } from "../../../common/licences";
-import Tag from "../../../common/Tag";
 
 interface Props {
   account: any;
@@ -126,8 +127,8 @@ class ChangeAccount extends React.Component<Props, State> {
     alias: this.props.account && this.props.account.alias,
     todate:
       this.props.account &&
-        this.props.account.endtime != 8640000000000000 &&
-        this.props.account.endtime != null
+      this.props.account.endtime != 8640000000000000 &&
+      this.props.account.endtime != null
         ? moment(this.props.account ? this.props.account.endtime - 0 : 0).toDate()
         : null,
     email: this.props.account && this.props.account.key ? this.props.account.key.email : "",
@@ -412,8 +413,8 @@ class ChangeAccount extends React.Component<Props, State> {
                         </option>
                       </select>
                     ) : (
-                        this.props.app.options.predomain
-                      )
+                      this.props.app.options.predomain
+                    )
                   }
                   suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
                 />
@@ -456,14 +457,14 @@ class ChangeAccount extends React.Component<Props, State> {
                 this.state.showall || newaccount
                   ? this.state.showall
                     ? {
-                      height: "245px",
-                      marginTop: "40px",
-                      transition: "height 300ms ease-in-out, margin-top 0ms ease-in-out 0ms"
-                    }
+                        height: "245px",
+                        marginTop: "40px",
+                        transition: "height 300ms ease-in-out, margin-top 0ms ease-in-out 0ms"
+                      }
                     : {
-                      height: "245px",
-                      transition: "height 300ms ease-in-out, margin-top 0ms ease-in-out 0ms"
-                    }
+                        height: "245px",
+                        transition: "height 300ms ease-in-out, margin-top 0ms ease-in-out 0ms"
+                      }
                   : { height: "0px" }
               }>
               {this.printFields()}
@@ -541,22 +542,22 @@ class ChangeAccount extends React.Component<Props, State> {
                   )}
                 </div>
               ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "24px",
-                      marginTop: "28px",
-                      position: "relative"
-                    }}>
-                    <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
-                    <span style={{ lineHeight: "24px" }}>
-                      {!newaccount && account.starttime
-                        ? moment(account.starttime!).format("DD.MM.YYYY")
-                        : "Now"}
-                    </span>
-                  </div>
-                )}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "24px",
+                    marginTop: "28px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "24px", width: "84px" }}>From:</span>
+                  <span style={{ lineHeight: "24px" }}>
+                    {!newaccount && account.starttime
+                      ? moment(account.starttime!).format("DD.MM.YYYY")
+                      : "Now"}
+                  </span>
+                </div>
+              )}
               <div
                 style={{
                   display: "flex",
@@ -673,29 +674,29 @@ class ChangeAccount extends React.Component<Props, State> {
                       this.state.changedt ||
                       this.state.changedl ||
                       Object.keys(this.state.loginValues).length > 0
-                      ? "Save"
-                      : "Close"
+                    ? "Save"
+                    : "Close"
                 }
                 disabled={
                   newaccount
                     ? !(
-                      (this.state.changeda && this.state.changede && this.state.changedp) ||
-                      (this.props.app.options &&
+                        (this.state.changeda && this.state.changede && this.state.changedp) ||
+                        (this.props.app.options &&
+                          this.props.app.options.loginFields &&
+                          this.state.loginValues &&
+                          Object.keys(this.state.loginValues).length ==
+                            this.props.app.options.loginFields.length)
+                      )
+                    : (((this.state.changede || this.state.changedp) &&
+                        !(this.state.changede && this.state.changedp)) ||
+                        (this.state.changedl && !(this.state.changede && this.state.changedp))) &&
+                      !(
+                        this.props.app.options &&
                         this.props.app.options.loginFields &&
                         this.state.loginValues &&
                         Object.keys(this.state.loginValues).length ==
-                        this.props.app.options.loginFields.length)
-                    )
-                    : (((this.state.changede || this.state.changedp) &&
-                      !(this.state.changede && this.state.changedp)) ||
-                      (this.state.changedl && !(this.state.changede && this.state.changedp))) &&
-                    !(
-                      this.props.app.options &&
-                      this.props.app.options.loginFields &&
-                      this.state.loginValues &&
-                      Object.keys(this.state.loginValues).length ==
-                      this.props.app.options.loginFields.length
-                    )
+                          this.props.app.options.loginFields.length
+                      )
                 }
                 onClick={async () => {
                   if (newaccount) {
@@ -765,9 +766,9 @@ class ChangeAccount extends React.Component<Props, State> {
                               (this.state.changede &&
                                 this.state.changedp &&
                                 this.state.changedl && {
-                                loginurl: `${this.state.protocol}${this.state.loginurl}`,
-                                selfhosting: this.state.selfhosting
-                              }) ||
+                                  loginurl: `${this.state.protocol}${this.state.loginurl}`,
+                                  selfhosting: this.state.selfhosting
+                                }) ||
                               undefined
                           },
                           refetchQueries: [
@@ -802,20 +803,20 @@ class ChangeAccount extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}></div>
+                    }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                      }`}>
+                    }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}

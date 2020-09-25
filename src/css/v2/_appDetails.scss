@@ -57,24 +57,16 @@
         }
       }
 
-      .licenseTags {
+      .buttons {
         width: 192px;
         margin-left: 24px;
 
-        .tag {
-          display: flex;
-          height: 32px;
-          border-radius: 8px;
-          font-size: 14px;
+        button {
+          width: 100%;
 
           &:not(:last-child) {
             margin-bottom: 16px;
           }
-        }
-
-        .buyLicenseButton {
-          background-color: $primarygreen;
-          color: $white;
         }
       }
     }
@@ -244,10 +236,7 @@
 
     .buyPlanButton {
       width: calc(100% - 10px);
-      min-height: 32px;
       margin-top: 16px;
-      background-color: $primarygreen;
-      color: $white;
     }
 
     .pricing {

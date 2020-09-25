@@ -249,11 +249,11 @@ class Phones extends React.Component<Props, State> {
                       const normalizedTags =
                         tags && tags.length > 0
                           ? tags.map((tag, key) => (
-                            <td key={key}>
-                              <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                              {tag}
-                            </td>
-                          ))
+                              <td key={key}>
+                                <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
+                                {tag}
+                              </td>
+                            ))
                           : "";
                       return (
                         <tr className="phones-list" key={id}>
@@ -263,59 +263,28 @@ class Phones extends React.Component<Props, State> {
                               <td>{phoneData.description}</td>
                             </React.Fragment>
                           ) : (
-                              <form
-                                className="inline-form"
-                                id={`phone-form-${id}`}
-                                onSubmit={e => this.editPhone(e, id)}>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="number"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.number}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    type="text"
-                                    name="description"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.description}
-                                  />
-                                </td>
-                                {/*<td>
-                                  <input
-                                    name="priority"
-                                    type="number"
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.priority}
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    name="verified"
-                                    type="checkbox"
-                                    style={{ margin: "auto" }}
-                                    disabled={true}
-                                    className="inline-searchbar"
-                                    defaultValue={phoneData.verified}
-                                  />
-                                </td>
-                                <td>
-                                  <div className="tags">
-                                    <CoolCheckbox
-                                      name="billing"
-                                      value={tags ? tags.includes("billing") : false}
-                                    />
-
-                                    <CoolCheckbox
-                                      name="main"
-                                      value={tags ? tags.includes("main") : false}
-                                    />
-                                  </div>
-                                </td>*/}
-                              </form>
-                            )}
+                            <form
+                              className="inline-form"
+                              id={`phone-form-${id}`}
+                              onSubmit={e => this.editPhone(e, id)}>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="number"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.number}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="description"
+                                  className="inline-searchbar"
+                                  defaultValue={phoneData.description}
+                                />
+                              </td>
+                            </form>
+                          )}
                           {this.state.edit == id ? (
                             <React.Fragment>
                               <td>
@@ -334,10 +303,10 @@ class Phones extends React.Component<Props, State> {
                               </td>
                             </React.Fragment>
                           ) : (
-                              <React.Fragment>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() =>
+                            <React.Fragment>
+                              <td className="editButton">
+                                <i
+                                  onClick={() =>
                                     /*this.showDeletion(id)*/ this.setState({
                                       delete: true,
                                       oldPhone: {
@@ -346,13 +315,13 @@ class Phones extends React.Component<Props, State> {
                                         id: id
                                       }
                                     })
-                                    }
-                                    className="fal fa-trash-alt"
-                                  />
-                                </td>
-                                <td className="editButton">
-                                  <i
-                                    onClick={() =>
+                                  }
+                                  className="fal fa-trash-alt"
+                                />
+                              </td>
+                              <td className="editButton">
+                                <i
+                                  onClick={() =>
                                     /*this.setState({ edit: id })*/ this.setState({
                                       update: true,
                                       oldPhone: {
@@ -361,20 +330,20 @@ class Phones extends React.Component<Props, State> {
                                         id: id
                                       }
                                     })
-                                    }
-                                    className="fal fa-edit"
-                                  />
-                                </td>
-                              </React.Fragment>
-                            )}
+                                  }
+                                  className="fal fa-edit"
+                                />
+                              </td>
+                            </React.Fragment>
+                          )}
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
               ) : (
-                  ""
-                );
+                ""
+              );
             }}
           </Query>
 

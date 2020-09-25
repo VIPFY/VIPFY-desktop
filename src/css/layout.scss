@@ -125,12 +125,6 @@ li {
   background: #e8c8c8;
 }
 
-#App {
-  background-color: $white;
-  height: calc(100vh - 32px);
-  margin-top: 32px;
-}
-
 #DevTools {
   color: #253647; //#333 durch #253647 ersetzen
   font-family: "Roboto", sans-serif;
@@ -2274,42 +2268,38 @@ progress[value] {
 
 .tag {
   &.warn {
-    background-color: #ffc15d;
-    color: $white;
+    background-color: $orange-lighter;
   }
 
   &.error {
-    background-color: $vipfy-cancel-color;
+    background-color: $red-darkest;
     color: $white;
   }
 
   &.info1 {
-    background-color: #3e576e;
+    background-color: $blue-darkest;
     color: $white;
   }
 
   &.info2 {
-    background-color: $primarygreen;
-    color: $white;
+    background-color: $pink-lighter;
   }
 
   &.info3 {
-    background-color: #ffc15d;
+    background-color: $lightyellow-darkest;
   }
 
   &.info4 {
-    background-color: $vipfy-normaltext;
-    color: $white;
+    background-color: $teal-lighter;
   }
 
   &.info5 {
-    background-color: #ffc15d;
-    color: #253647;
+    background-color: $darkgreen-darkest;
+    color: $white;
   }
 
   &.info6 {
-    background-color: #9c13bc;
-    color: $white;
+    background-color: $ultramarin-lighter;
   }
 }
 

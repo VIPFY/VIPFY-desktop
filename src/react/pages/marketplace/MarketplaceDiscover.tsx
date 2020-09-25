@@ -33,7 +33,7 @@ const DUMMY_APP = {
     "File sharing",
     "Excel export",
     "Brain wipe",
-    "And many, many, many more"
+    "And many, many, many, many, many, many, many, many, many, many, many, many, many, many, many more"
   ]
 };
 
@@ -41,7 +41,7 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
   goToApp = (appId: number) => this.props.history.push(`/area/marketplace/${appId}`);
 
   renderApps(apps: App[]) {
-    const marketplaceApps = apps.filter(app => app.options.marketplace);
+    const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
     if (marketplaceApps.length == 0) {
       return (
@@ -53,8 +53,8 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
     }
 
     return (
-      <div className="marketplace">
-        <div className="marketplaceContainer">
+      <div className="marketplace page">
+        <div className="pageContent">
           <PageHeader
             title="Discover"
             showBreadCrumbs={true}
