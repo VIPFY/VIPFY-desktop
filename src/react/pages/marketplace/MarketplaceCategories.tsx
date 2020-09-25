@@ -56,7 +56,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   }
 
   renderApps(apps: App[]) {
-    const marketplaceApps = apps.filter(app => app.options.marketplace);
+    const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
     if (!marketplaceApps.length) {
       return (
