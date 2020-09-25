@@ -65,6 +65,11 @@
       display: block;
       margin-left: auto;
       margin-right: auto;
+      object-fit: cover;
+      object-position: center top;
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: #00000026 0 3px 4px;
     }
   }
 
@@ -91,5 +96,19 @@
       border: 1px solid $primarygreen;
       outline: none;
     }
+  }
+
+  .descriptionSection {
+    p {
+      // despite being prefixed with -webkit, these are widely supported
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+
+      line-height: 24px;
+      height: 96px; // 4*line-height
+    }
+    height: 96px;
   }
 }
