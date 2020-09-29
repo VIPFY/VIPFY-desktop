@@ -97,18 +97,4 @@
       outline: none;
     }
   }
-
-  .descriptionSection {
-    p {
-      // despite being prefixed with -webkit, these are widely supported
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
-      overflow: hidden;
-
-      line-height: 24px;
-      height: 96px; // 4*line-height
-    }
-    height: 96px;
-  }
 }

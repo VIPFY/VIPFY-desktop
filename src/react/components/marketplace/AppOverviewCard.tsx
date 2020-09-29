@@ -51,7 +51,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   }
 
   render() {
-    let { app, isWideFormat, showPic, style, onClick, showPriceTags } = this.props;
+    const { app, isWideFormat, showPic, style, onClick, showPriceTags } = this.props;
 
     const renderPic = (showPic || isWideFormat) && !!app.pic;
     const hasPros = app.pros && !!app.pros.length;
@@ -59,11 +59,9 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
     const hasFreeTrial = Math.random() < 0.5;
 
     const ratings = !app.ratings ? [] : Object.values(app.ratings).filter(a => a != null);
-    const rating = ratings.length == 0 ? null : ratings.reduce((a, b) => a + b, 0) / ratings.length / 2;
+    const averageRating = ratings.length == 0 ? null : ratings.reduce((a, b) => a + b, 0) / ratings.length / 2;
 
-    let c = chroma(app.color);
-    c = chroma.mix(c, "white", 0.7, "lrgb");
-    const color = c.hex();
+    const color = chroma.mix(app.color, "white", 0.7).hex();
 
     return (
       <div
@@ -71,20 +69,20 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         className={classNames("card appOverviewCard clickable", { wide: isWideFormat })}
         style={style}>
         {renderPic && (
-          <div className="cardSection" style={{ backgroundColor: color, padding: "32px" }}>
+          <div className="cardSection picSection" style={{ backgroundColor: color }}>
             <div className="picHolder">
-              <img src={app.pic} alt="App Image" className="pic" style={{ objectFit: "cover", objectPosition: isWideFormat ? "center center" : "center top", width: "100%" }} />
+              <img src={app.pic} alt="App Image" className="pic" style={{ objectPosition: isWideFormat ? "center center" : "center top" }} />
             </div>
           </div>
         )}
 
         {renderPic ? (
           <CardSection className="header">
-            {this.renderMainInfo(isWideFormat, hasFreeTrial, rating, showPriceTags)}
+            {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </CardSection>
         ) : (
             <div className="cardSection header" style={{ backgroundColor: color }}>
-              {this.renderMainInfo(isWideFormat, hasFreeTrial, rating, showPriceTags)}
+              {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
             </div>
           )}
 
@@ -95,7 +93,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
           </CardSection>
         )}
 
-        <CardSection className="tagsRow descriptionSection">
+        <CardSection className="descriptionSection">
           <p>{app.teaserdescription}</p>
         </CardSection>
 

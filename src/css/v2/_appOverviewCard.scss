@@ -35,4 +35,20 @@
   .tagsRow {
     min-height: 64px;
   }
+
+  .descriptionSection {
+    height: 96px; // same as height of inner p
+
+    p {
+      // despite being prefixed with -webkit, these are widely supported
+      // for more details, google -webkit-line-clamp
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+
+      line-height: 24px;
+      height: 96px; // 4*line-height
+    }
+  }
 }
