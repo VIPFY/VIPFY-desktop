@@ -99,4 +99,6 @@
   }
 }
 
+// specialisations of card imported last, so that their
+// styles overrule general card styles
 @import "appOverviewCard";
