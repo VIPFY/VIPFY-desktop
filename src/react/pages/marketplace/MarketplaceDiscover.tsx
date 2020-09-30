@@ -34,7 +34,7 @@ const DUMMY_APP = {
     "File sharing",
     "Excel export",
     "Brain wipe",
-    "And many, many, many more"
+    "And many, many, many, many, many, many, many, many, many, many, many, many, many, many, many more"
   ]
 };
 
@@ -56,8 +56,8 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
     }
 
     return (
-      <div className="marketplace">
-        <div className="marketplaceContainer">
+      <div className="marketplace page">
+        <div className="pageContent">
           <PageHeader
             title="Discover"
             showBreadCrumbs={true}

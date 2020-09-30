@@ -2,7 +2,7 @@ import * as React from "react";
 import { withRouter } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
-import { Button, CTAButton, BreadCrumbs } from "@vipfy-private/vipfy-ui-lib";
+import { Button, BreadCrumbs } from "@vipfy-private/vipfy-ui-lib";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { AppContext } from "../common/functions";
 import routes from "../routes";
@@ -122,7 +122,8 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
           {buttonConfig && (
             <AppContext.Consumer>
               {({ addRenderElement }) => (
-                <CTAButton
+                <Button
+                  className="cta"
                   innerRef={
                     buttonConfig.buttonRef
                       ? el => addRenderElement({ key: buttonConfig.buttonRef, element: el })
@@ -130,7 +131,6 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
                   }
                   label={buttonConfig.label}
                   onClick={buttonConfig.onClick}
-                  type="high"
                   disabled={buttonConfig.disabled || loading}
                   fAIcon={buttonConfig.fAIcon}
                 />

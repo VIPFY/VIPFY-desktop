@@ -1,22 +1,18 @@
 import * as React from "react";
-import moment from "moment";
 import gql from "graphql-tag";
-import { Query, Mutation } from "@apollo/client/react/components";
+import { Query } from "@apollo/client/react/components";
+import { Button, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import PageHeader from "../../components/PageHeader";
-import { ServiceLogo, Button } from "@vipfy-private/vipfy-ui-lib";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
-import PopupSelfSaving from "../../popups/universalPopups/selfSaving";
-import { fetchCompanyServices } from "../../queries/products";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
-import PrintServiceSquare from "../../components/manager/universal/squares/printServiceSquare";
 import AssignServiceToUser from "../../components/manager/universal/adding/assignServiceToUser";
 import DeleteService from "../../components/manager/deleteService";
 import { AppContext } from "../../common/functions";
 import { WorkAround } from "../../interfaces";
 import Table from "../../components/Table";
-import Tag from "../../common/Tag";
 
 interface Props {
   moveTo: Function;
@@ -26,12 +22,6 @@ interface State {
   add: Boolean;
   willdeleting: number | null;
 }
-
-const DELETE_SERVICE = gql`
-  mutation deleteService($serviceid: ID!) {
-    deleteService(serviceid: $serviceid)
-  }
-`;
 
 const COMPANY_SERVICES_OPTIONS = gql`
   query fetchCompanyServices {

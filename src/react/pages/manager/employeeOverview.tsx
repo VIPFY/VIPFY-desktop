@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import moment, { now } from "moment";
-import { Button, StarRating } from "@vipfy-private/vipfy-ui-lib";
+import { Button, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -12,8 +13,13 @@ import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
 import Table from "../../components/Table";
 import PageHeader from "../../components/PageHeader";
-import Tag from "../../common/Tag";
-import { ThingPicture, ThingState, ThingShape, ThingType, UserPicture } from "../../components/ThingPicture";
+import {
+  ThingPicture,
+  ThingState,
+  ThingShape,
+  ThingType,
+  UserPicture
+} from "../../components/ThingPicture";
 
 interface Props {
   moveTo: Function;
@@ -63,7 +69,12 @@ class EmployeeOverview extends React.Component<Props, State> {
           {
             component: () => (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <ThingPicture type={ThingType.User} state={ThingState.Loading} size={32} name="Loading" />
+                <ThingPicture
+                  type={ThingType.User}
+                  state={ThingState.Loading}
+                  size={32}
+                  name="Loading"
+                />
                 <span className="name" />
               </div>
             )
@@ -189,8 +200,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                             {moment(e.lastactive).fromNow()}
                           </Tag>
                         ) : (
-                            <Tag style={{ backgroundColor: "#C9D1DA" }}>Never</Tag>
-                          )}
+                          <Tag style={{ backgroundColor: "#C9D1DA" }}>Never</Tag>
+                        )}
                       </div>
                     ),
                     searchableText: moment(e.lastactive).isValid()
@@ -204,8 +215,8 @@ class EmployeeOverview extends React.Component<Props, State> {
                       {e.passwordstrength === null ? (
                         "unknown"
                       ) : (
-                          <StarRating stars={e.passwordstrength} maxStars={4} />
-                        )}
+                        <StarRating stars={e.passwordstrength} maxStars={4} />
+                      )}
                     </div>
                   ),
                   searchableText: e.passwordstrength.toString()

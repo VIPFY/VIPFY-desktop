@@ -70,8 +70,8 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     const sortedApps = sortApps(marketplaceApps);
 
     return (
-      <div className="marketplace">
-        <div className="marketplaceContainer">
+      <div className="marketplace page">
+        <div className="pageContent">
           <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}

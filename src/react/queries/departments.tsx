@@ -522,6 +522,7 @@ export const fetchUserLicences = gql`
       rightscount
       alias
       accountid
+      assignmentid
       teamlicence {
         id
         profilepicture

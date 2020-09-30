@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ServiceLogo, StarRating } from "@vipfy-private/vipfy-ui-lib";
+import { Button, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -11,7 +11,6 @@ import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
 
-import Tag from "../../common/Tag";
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
 import ProsConsList from "../../components/marketplace/ProsConsList";
@@ -305,9 +304,7 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
               </SeparatedSection>
             )}
           </div>
-          <Tag div={true} className="buyPlanButton">
-            <p>Add to Basket</p>
-          </Tag>
+          <Button label="Add to Basket" className="cta buyPlanButton" />
         </div>
         <div className="features">
           <div>
@@ -411,8 +408,8 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
     return (
-      <div className="marketplace">
-        <div className="marketplaceContainer appDetails">
+      <div className="marketplace page">
+        <div className="pageContent appDetails">
           <PageHeader title={DUMMY_APP.name} showBreadCrumbs={true} />
 
           <div className="marketplaceContent">
@@ -446,16 +443,10 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                     </div>
                   </div>
 
-                  <div className="licenseTags">
-                    <Tag div={true} className="buyLicenseButton">
-                      Buy New License
-                    </Tag>
-                    <Tag div={true} className="marketplaceTag" style={{ textTransform: "none" }}>
-                      Integrate Existing License
-                    </Tag>
-                    <Tag div={true} className="featureTag" style={{ textTransform: "none" }}>
-                      Write Review
-                    </Tag>
+                  <div className="buttons">
+                    <Button label="Buy New License" className="cta" />
+                    <Button label="Integrate Existing License" />
+                    <Button label="Write Review" />
                   </div>
                 </CardSection>
 
