@@ -97,15 +97,6 @@ class Addresses extends React.Component<Props, State> {
                           {data.fetchAddresses.map(
                             ({ address, description, country, priority, tags, id }) => {
                               let { street, postalCode, city } = address;
-                              // const normalizedTags =
-                              //   tags && tags.length > 0
-                              //     ? tags.map((tag, key) => (
-                              //         <span key={key}>
-                              //           <i className={`fas fa-${tag == "main" ? "sign" : "dollar-sign"}`} />
-                              //           {tag}
-                              //         </span>
-                              //       ))
-                              //     : "";
 
                               return (
                                 <tr className="addresses-list" key={id}>
@@ -114,9 +105,6 @@ class Addresses extends React.Component<Props, State> {
                                   <td>{city ? city : "not set"}</td>
                                   <td>{country}</td>
                                   <td>{description ? description : "not set"}</td>
-                                  {/*<td>{priority}</td>*/}
-                                  {/* <span className="tags">{normalizedTags}</span> */}
-
                                   <td align="right" className="row-icons">
                                     <IconButton
                                       title="Edit"

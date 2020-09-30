@@ -1,7 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
 
-import { goToApp } from "../../common/functions";
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
@@ -9,7 +8,6 @@ import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
 import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
-import Tag from "../../common/Tag";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import PageHeader from "../../components/PageHeader";
 
@@ -58,7 +56,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   }
 
   renderApps(apps: App[]) {
-    const marketplaceApps = apps.filter(app => app.options.marketplace);
+    const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
     if (marketplaceApps.length == 0) {
       return (
@@ -72,8 +70,8 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     const sortedApps = sortApps(marketplaceApps);
 
     return (
-      <div className="marketplace">
-        <div className="marketplaceContainer">
+      <div className="marketplace page">
+        <div className="pageContent">
           <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
@@ -123,7 +121,6 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   }
 
   render() {
-    // console.log(this.props);
     return <QueryWrapper query={fetchApps}>{data => this.renderApps(data.allApps)}</QueryWrapper>;
   }
 }
