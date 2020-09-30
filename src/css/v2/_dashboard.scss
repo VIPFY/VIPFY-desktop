@@ -1,0 +1,44 @@
+.dashboard {
+  .dashboard-apps {
+    padding: 16px 0 24px 0;
+
+    .service-box-top {
+      display: flex;
+      align-items: center;
+
+      .service-logo-circle {
+        margin-right: 8px;
+      }
+      .heart-icon {
+        color: $lightgrey-darker;
+        margin-left: auto;
+      }
+    }
+  }
+
+  .apps-divider {
+    padding-bottom: 16px;
+  }
+
+  .no-apps {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 600px;
+    width: 500px;
+    color: $midgrey-dark;
+    font-size: 20px;
+    text-align: center;
+
+    img {
+      width: 192px;
+      height: 224px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-size: 44px;
+    }
+  }
+}
