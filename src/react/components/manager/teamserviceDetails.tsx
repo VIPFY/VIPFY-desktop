@@ -1,8 +1,9 @@
 import * as React from "react";
 import moment from "moment";
+import { Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import RemoveTeamOrbit from "./removeTeamOrbit";
 import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import Tag from "../../common/Tag";
 
 interface Props {
   service: any;

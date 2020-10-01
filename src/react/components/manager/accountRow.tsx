@@ -1,11 +1,12 @@
 import * as React from "react";
 import moment, { now } from "moment";
 import { withApollo } from "@apollo/client/react/hoc";
+import { Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import { getMyUnitId } from "../../common/functions";
 import ColumnEmployees from "./universal/columns/columnEmployee";
 import ChangeAccount from "./universal/changeAccount";
 import ColumnTeams from "./universal/columns/columnTeams";
-import Tag from "../../common/Tag";
 
 interface Props {
   account: any;
@@ -136,12 +137,12 @@ class AccountRow extends React.Component<Props, State> {
             {(!account.options ||
               (account.options && !account.options.private) ||
               account.assignments.some(as => as.unitid.id == getMyUnitId(this.props.client))) && (
-                <i
-                  className="fal fa-pen editbuttons"
-                  title="Edit account settings"
-                  onClick={() => this.setState({ change: true })}
-                />
-              )}
+              <i
+                className="fal fa-pen editbuttons"
+                title="Edit account settings"
+                onClick={() => this.setState({ change: true })}
+              />
+            )}
           </div>
         </div>
         {(!account.options ||

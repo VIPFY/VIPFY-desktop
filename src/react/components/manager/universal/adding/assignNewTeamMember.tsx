@@ -1,17 +1,18 @@
 import * as React from "react";
+import { graphql } from "@apollo/client/react/hoc";
+import { Query } from "@apollo/client/react/components";
+import compose from "lodash.flowright";
+import gql from "graphql-tag";
+import { Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import { concatName } from "../../../../common/functions";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import AssignAccount from "./assignAccount";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import { graphql } from "@apollo/client/react/hoc";
-import { Query } from "@apollo/client/react/components";
-import compose from "lodash.flowright";
-import gql from "graphql-tag";
 import { fetchTeam, fetchDepartmentsData, fetchTeams } from "../../../../queries/departments";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import AddEmployeePersonalData from "../../addEmployeePersonalData";
-import Tag from "../../../../common/Tag";
 import { TeamPicture, UserPicture, ThingShape } from "../../../ThingPicture";
 
 interface Props {
@@ -262,147 +263,147 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 </Tag>
               </div>
             ) : (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    marginTop: "14px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "12px", width: "84px" }}></span>
+                  {this.showTeamOrbits().length > 0 && (
+                    <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
+                  )}
+                </div>
+                {this.showTeamOrbits()}
+              </>
+            )}
+          </>
+        ) : (
+          <Query
+            pollInterval={60 * 10 * 1000 + 1000}
+            query={fetchDepartmentsData}
+            fetchPolicy="network-only">
+            {({ loading, error = null, data }) => {
+              if (loading) {
+                return <>Loading...</>;
+              }
+
+              if (error) {
+                return <>Error! {error.message}</>;
+              }
+
+              const employees = data.fetchDepartmentsData[0].employees;
+
+              return (
                 <>
                   <div
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      marginBottom: "20px",
-                      marginTop: "14px",
+                      marginBottom: "24px",
                       position: "relative"
                     }}>
-                    <span style={{ lineHeight: "12px", width: "84px" }}></span>
-                    {this.showTeamOrbits().length > 0 && (
-                      <span style={{ lineHeight: "12px", fontSize: "10px" }}>Assign orbits</span>
-                    )}
-                  </div>
-                  {this.showTeamOrbits()}
-                </>
-              )}
-          </>
-        ) : (
-            <Query
-              pollInterval={60 * 10 * 1000 + 1000}
-              query={fetchDepartmentsData}
-              fetchPolicy="network-only">
-              {({ loading, error = null, data }) => {
-                if (loading) {
-                  return <>Loading...</>;
-                }
-
-                if (error) {
-                  return <>Error! {error.message}</>;
-                }
-
-                const employees = data.fetchDepartmentsData[0].employees;
-
-                return (
-                  <>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: "24px",
-                        position: "relative"
-                      }}>
-                      <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
-                      <UniversalDropDownInput
-                        id="employee-search-new"
-                        label="Search for users"
-                        options={employees}
-                        noFloating={true}
-                        resetPossible={true}
-                        width="300px"
-                        codeFunction={employee => employee.id}
-                        nameFunction={employee => concatName(employee)}
-                        renderOption={(possibleValues, i, click, value) => (
-                          <div
-                            key={`searchResult-${i}`}
-                            className="searchResult"
-                            onClick={() => click(possibleValues[i])}>
-                            <span className="resultHighlight">
-                              {concatName(possibleValues[i]).substring(0, value.length)}
-                            </span>
-                            <span>{concatName(possibleValues[i]).substring(value.length)}</span>
-                          </div>
-                        )}
-                        alternativeText={inputelement => (
-                          <span
-                            className="inputInsideButton"
-                            style={{
-                              width: "auto",
-                              backgroundColor: "transparent",
-                              cursor: "text"
-                            }}>
-                            <span
-                              onClick={() => inputelement.focus()}
-                              style={{ marginRight: "4px", fontSize: "12px" }}>
-                              Start typing or
+                    <span style={{ lineHeight: "24px", width: "84px" }}>Employee:</span>
+                    <UniversalDropDownInput
+                      id="employee-search-new"
+                      label="Search for users"
+                      options={employees}
+                      noFloating={true}
+                      resetPossible={true}
+                      width="300px"
+                      codeFunction={employee => employee.id}
+                      nameFunction={employee => concatName(employee)}
+                      renderOption={(possibleValues, i, click, value) => (
+                        <div
+                          key={`searchResult-${i}`}
+                          className="searchResult"
+                          onClick={() => click(possibleValues[i])}>
+                          <span className="resultHighlight">
+                            {concatName(possibleValues[i]).substring(0, value.length)}
                           </span>
-                            <UniversalButton
-                              type="low"
-                              tabIndex={-1}
-                              onClick={() => {
-                                this.setState({ showall: true });
-                              }}
-                              label="show all"
-                              customStyles={{ lineHeight: "24px" }}
-                            />
-                          </span>
-                        )}
-                        startvalue=""
-                        livecode={c => this.setState({ employee: employees.find(a => a.id == c) })}
-                        livevalue={v => this.setState({ value: v })}
-                        //noresults="Create new user"
-                        //noresultsClick={v => this.setState({ add: true })}
-                        fewResults={true}
-                      />
-                      {this.state.add && (
-                        <PopupBase
-                          small={true}
-                          close={() => this.setState({ add: false })}
-                          nooutsideclose={true}
-                          additionalclassName="formPopup deletePopup">
-                          <AddEmployeePersonalData
-                            continue={data => {
-                              this.setState({ add: false, employee: data.employee });
-                            }}
-                            close={() => {
-                              this.setState({ add: false });
-                            }}
-                            addpersonal={{ name: this.state.value }}
-                            isadmin={true}
-                          />
-                        </PopupBase>
+                          <span>{concatName(possibleValues[i]).substring(value.length)}</span>
+                        </div>
                       )}
-                    </div>
-                    {this.state.showall && (
+                      alternativeText={inputelement => (
+                        <span
+                          className="inputInsideButton"
+                          style={{
+                            width: "auto",
+                            backgroundColor: "transparent",
+                            cursor: "text"
+                          }}>
+                          <span
+                            onClick={() => inputelement.focus()}
+                            style={{ marginRight: "4px", fontSize: "12px" }}>
+                            Start typing or
+                          </span>
+                          <UniversalButton
+                            type="low"
+                            tabIndex={-1}
+                            onClick={() => {
+                              this.setState({ showall: true });
+                            }}
+                            label="show all"
+                            customStyles={{ lineHeight: "24px" }}
+                          />
+                        </span>
+                      )}
+                      startvalue=""
+                      livecode={c => this.setState({ employee: employees.find(a => a.id == c) })}
+                      livevalue={v => this.setState({ value: v })}
+                      //noresults="Create new user"
+                      //noresultsClick={v => this.setState({ add: true })}
+                      fewResults={true}
+                    />
+                    {this.state.add && (
                       <PopupBase
-                        nooutsideclose={true}
                         small={true}
-                        close={() => this.setState({ showall: false })}
-                        buttonStyles={{ justifyContent: "space-between" }}>
-                        <h1>All Employees</h1>
-                        {employees.map(employee => (
-                          <div className="listingDiv" key={employee.id}>
-                            <UniversalButton
-                              type="low"
-                              label={concatName(employee)}
-                              onClick={() => {
-                                this.setState({ showall: false });
-                                this.setState({ employee: employee });
-                              }}
-                            />
-                          </div>
-                        ))}
-                        <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                        close={() => this.setState({ add: false })}
+                        nooutsideclose={true}
+                        additionalclassName="formPopup deletePopup">
+                        <AddEmployeePersonalData
+                          continue={data => {
+                            this.setState({ add: false, employee: data.employee });
+                          }}
+                          close={() => {
+                            this.setState({ add: false });
+                          }}
+                          addpersonal={{ name: this.state.value }}
+                          isadmin={true}
+                        />
                       </PopupBase>
                     )}
-                  </>
-                );
-              }}
-            </Query>
-          )}
+                  </div>
+                  {this.state.showall && (
+                    <PopupBase
+                      nooutsideclose={true}
+                      small={true}
+                      close={() => this.setState({ showall: false })}
+                      buttonStyles={{ justifyContent: "space-between" }}>
+                      <h1>All Employees</h1>
+                      {employees.map(employee => (
+                        <div className="listingDiv" key={employee.id}>
+                          <UniversalButton
+                            type="low"
+                            label={concatName(employee)}
+                            onClick={() => {
+                              this.setState({ showall: false });
+                              this.setState({ employee: employee });
+                            }}
+                          />
+                        </div>
+                      ))}
+                      <UniversalButton type="low" label="Cancel" closingPopup={true} />
+                    </PopupBase>
+                  )}
+                </>
+              );
+            }}
+          </Query>
+        )}
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "40px" }}>
           <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
           <UniversalButton
@@ -413,7 +414,7 @@ class AssignNewTeamMember extends React.Component<Props, State> {
                 this.state.employee &&
                 !this.props.team.employees.find(e => e.id == this.state.employee.id) &&
                 this.state.orbitassignment.filter(oa => oa.account && oa.account.id).length ==
-                this.props.team.services.length
+                  this.props.team.services.length
               )
             }
             onClick={async () => {
@@ -446,20 +447,20 @@ class AssignNewTeamMember extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}

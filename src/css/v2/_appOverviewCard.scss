@@ -33,10 +33,11 @@
   .headerTags {
     margin: -4px 0 -4px 16px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 
-    .tag:nth-child(2) {
+    .vipuiTag:nth-child(2) {
       margin-top: 8px;
     }
   }

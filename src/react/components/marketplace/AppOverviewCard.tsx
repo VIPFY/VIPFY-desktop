@@ -1,8 +1,8 @@
 import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
-import { ServiceLogo, StarRating } from "@vipfy-private/vipfy-ui-lib";
-import Tag from "../../common/Tag";
+import { ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import { App } from "../../interfaces";
 import CardSection from "../CardSection";
@@ -41,7 +41,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
           </div>
         </div>
         {showPriceTags && isWideFormat && (
-          <div className="headerTags tags">
+          <div className="headerTags">
             {hasFreeTrial && this.renderTag("Free trial", "infoTag", true)}
             {this.renderTag("19.99$ p.m.", "pricingTag", true)}
           </div>
