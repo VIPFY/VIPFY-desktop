@@ -65,6 +65,11 @@
       display: block;
       margin-left: auto;
       margin-right: auto;
+      object-fit: cover;
+      object-position: center top;
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: #00000026 0 3px 4px;
     }
   }
 
@@ -93,3 +98,7 @@
     }
   }
 }
+
+// specialisations of card imported last, so that their
+// styles overrule general card styles
+@import "appOverviewCard";
