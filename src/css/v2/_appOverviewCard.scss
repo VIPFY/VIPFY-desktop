@@ -7,6 +7,15 @@
     padding-top: 56%;
   }
 
+  .picSection {
+    padding: 32px;
+
+    img {
+      object-fit: cover;
+      width: 100%;
+    }
+  }
+
   &.wide .picHolder {
     padding-top: 26%;
   }
@@ -30,6 +39,31 @@
 
     .vipuiTag:nth-child(2) {
       margin-top: 8px;
+    }
+  }
+
+  .tagsRow {
+    min-height: 64px;
+
+    // this combines the normal tagRow's margin with the cardSection Padding to get proper overflow behavior
+    margin: 16px 8px 8px 16px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .descriptionSection {
+    height: 96px; // same as height of inner p
+
+    p {
+      // despite being prefixed with -webkit, these are widely supported
+      // for more details, google -webkit-line-clamp
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      overflow: hidden;
+
+      line-height: 24px;
+      height: 96px; // 4*line-height
     }
   }
 }
