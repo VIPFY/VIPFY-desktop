@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import moment from "moment";
-import UniversalButton from "../components/universalButtons/universalButton";
+import { Button } from "@vipfy-private/vipfy-ui-lib";
 
 interface Props {
   minDate?: string | moment.Moment;
@@ -26,9 +26,7 @@ interface State {
   year: number;
 }
 
-const firstYear = moment()
-  .subtract(100, "y")
-  .year();
+const firstYear = moment().subtract(100, "y").year();
 
 export default class DatePicker extends React.PureComponent<Props, State> {
   state = {
@@ -201,9 +199,7 @@ export default class DatePicker extends React.PureComponent<Props, State> {
       days.push({ day: i, month, year });
     }
 
-    let firstDay = moment(`${year}-${month}-1`, "YYYY-MM-D")
-      .startOf("month")
-      .day();
+    let firstDay = moment(`${year}-${month}-1`, "YYYY-MM-D").startOf("month").day();
 
     // Sunday will be 0
     if (firstDay == 0) {
@@ -340,13 +336,13 @@ export default class DatePicker extends React.PureComponent<Props, State> {
                   {time.day}
                 </span>
               ))}
-
-              <UniversalButton
-                onClick={() => this.setState({ show: false })}
-                type="low"
-                label="Cancel"
-              />
             </div>
+
+            <Button
+              label="Cancel"
+              className="cta ghost"
+              onClick={() => this.setState({ show: false })}
+            />
           </div>
         )}
       </div>
