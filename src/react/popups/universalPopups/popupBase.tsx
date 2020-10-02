@@ -91,7 +91,9 @@ class PopupBase extends React.Component<Props, State> {
       if (document.activeElement) {
         (document.activeElement as HTMLElement).blur();
       }
-      let firstinput = document.querySelector("#" + this.state.id)!.querySelector<HTMLElement>("input,button");
+      let firstinput = document
+        .querySelector("#" + this.state.id)!
+        .querySelector<HTMLElement>("input,button");
       if (firstinput) {
         firstinput.focus();
       }
@@ -109,12 +111,7 @@ class PopupBase extends React.Component<Props, State> {
 
     if (Array.isArray(children)) {
       children.forEach((element, key) => {
-        if (
-          element &&
-          element.type &&
-          element.type.name &&
-          element.type.name.endsWith("UniversalButton")
-        ) {
+        if (element && element.type && element.type.name && element.type.name.endsWith("Button")) {
           if (popupButtonArray.length > 0) {
             popupButtonArray.push(<div key={`${key}-sep`} className="buttonSeperator" />);
           }
@@ -180,8 +177,8 @@ class PopupBase extends React.Component<Props, State> {
       autoclosing = this.state.autoclosing
         ? { maxWidth: "0rem", transition: `max-width ${closingtime}ms linear` }
         : this.props.small
-          ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
-          : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
+        ? { maxWidth: "30rem", transition: `max-width ${closingtime}ms linear` }
+        : { maxWidth: "60rem", transition: `max-width ${closingtime}ms linear` };
     }
     return (
       <SideBarContext.Consumer>
@@ -233,7 +230,7 @@ class PopupBase extends React.Component<Props, State> {
                 <div
                   className={`contentPopup ${
                     this.props.additionalclassName ? this.props.additionalclassName : ""
-                    }`}>
+                  }`}>
                   {this.renderChildren(this.props.children)}
                 </div>
                 {this.props.autoclosing && !this.props.notimer && (
@@ -247,4 +244,6 @@ class PopupBase extends React.Component<Props, State> {
     );
   }
 }
-export default React.forwardRef<HTMLElement, Props>((props, ref) => <PopupBase innerRef={ref} {...props} />);
+export default React.forwardRef<HTMLElement, Props>((props, ref) => (
+  <PopupBase innerRef={ref} {...props} />
+));

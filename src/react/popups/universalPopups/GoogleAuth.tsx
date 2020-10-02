@@ -2,10 +2,11 @@ import * as React from "react";
 import gql from "graphql-tag";
 import { Query } from "@apollo/client/react/components";
 import { useMutation } from "@apollo/client/react/hooks";
+import { Button } from "@vipfy-private/vipfy-ui-lib";
+
 import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../../components/LoadingDiv";
 import PopupBase from "./popupBase";
-import UniversalButton from "../../components/universalButtons/universalButton";
 import { User } from "../../interfaces";
 import TwoFactorForm from "../../common/TwoFactorForm";
 import { FETCH_USER_SECURITY_OVERVIEW } from "../../components/security/graphqlOperations";
@@ -67,10 +68,10 @@ const GoogleAuth = (props: InnerProps) => {
             your mobile device
           </p>
         </section>
-        <UniversalButton
-          type="high"
+        <Button
+          label="OK"
+          className="cta"
           onClick={props.finishSetup ? props.finishSetup : props.close}
-          label="ok"
         />
       </PopupBase>
     );
@@ -95,39 +96,38 @@ const GoogleAuth = (props: InnerProps) => {
             {loading ? (
               <i className="fal fa-spinner fa-spin" />
             ) : (
-                <TwoFactorForm
-                  buttonLabel="confirm"
-                  handleSubmit={code =>
-                    verifyToken({
-                      variables: {
-                        userid: props.user.id,
-                        type: "totp",
-                        code,
-                        codeId: props.data.codeId
-                      }
-                    })
-                  }
-                  fieldNumber={6}
-                  seperator={4}
-                  buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
-                />
-              )}
+              <TwoFactorForm
+                buttonLabel="confirm"
+                handleSubmit={code =>
+                  verifyToken({
+                    variables: {
+                      userid: props.user.id,
+                      type: "totp",
+                      code,
+                      codeId: props.data.codeId
+                    }
+                  })
+                }
+                fieldNumber={6}
+                seperator={4}
+                buttonStyles={{ position: "absolute", bottom: "25px", right: "44px" }}
+              />
+            )}
             <ErrorComp error={error} />
           </React.Fragment>
         ) : (
-            <React.Fragment>
-              <p className="sub-header">
-                Download one of the free Authenticator apps for your phone - like Google Authenticator
-                -, click add and then scan this QR code to set up your account
+          <React.Fragment>
+            <p className="sub-header">
+              Download one of the free Authenticator apps for your phone - like Google Authenticator
+              -, click add and then scan this QR code to set up your account
             </p>
-              <img alt="The QR code to scan" src={props.data.qrCode} width={112} height={111} />
-            </React.Fragment>
-          )}
+            <img alt="The QR code to scan" src={props.data.qrCode} width={112} height={111} />
+          </React.Fragment>
+        )}
       </section>
-      {props.close && <UniversalButton type="low" closingPopup={true} label="cancel" />}
-      {!showInput && (
-        <UniversalButton type="high" label="confirm" onClick={() => toggleInput(true)} />
-      )}
+
+      {props.close && <Button label="Cancel" className="cta ghost" closingPopup={true} />}
+      {!showInput && <Button label="Confirm" className="cta" onClick={() => toggleInput(true)} />}
     </PopupBase>
   );
 };
