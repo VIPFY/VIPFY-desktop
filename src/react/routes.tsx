@@ -1,3 +1,4 @@
+import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
 import Billing from "./pages/billing";
 import Dashboard from "./pages/dashboard";
 import MarketplaceDiscover from "./pages/marketplace/MarketplaceDiscover";
@@ -6,7 +7,6 @@ import MessageCenter from "./pages/messagecenter";
 import AdminDashboard from "./components/admin/Dashboard";
 import ServiceCreation from "./components/admin/ServiceCreation";
 import ClickTrackingStudy from "./components/admin/ClickTrackingStudy";
-import ErrorPage from "./pages/error";
 import UsageStatistics from "./pages/usagestatistics";
 import UsageStatisticsBoughtplan from "./pages/usagestatisticsboughtplans";
 import SupportPage from "./pages/support";

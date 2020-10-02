@@ -101,18 +101,14 @@ const SAVE_COOKIES = gql`
 class App extends React.Component<AppProps, AppState> {
   state: AppState = INITIAL_STATE;
 
-  references: { key; element; listener?; action?}[] = [];
+  references: { key; element; listener?; action? }[] = [];
 
   async componentDidMount() {
     setClient(this.props.client); // client never gets swapped out at runtime, so doing this at mount is enough
+
     this.props.logoutFunction(this.logMeOut);
     this.props.showPlanFunction(this.showPlanModal);
     this.props.upgradeErrorHandlerSetter(() => this.props.history.push("/upgrade-error"));
-    // session.defaultSession.cookies.get({}, (error, cookies) => {
-    //   if (error) {
-    //     return;
-    //   }
-    // });
 
     if (this.props.history.location.pathname != "/area") {
       this.props.history.push("/area");

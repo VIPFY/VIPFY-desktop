@@ -1,12 +1,12 @@
 import * as React from "react";
 import classNames from "classnames";
+import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
 
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { App } from "../../interfaces";
 import { sortApps } from "../../common/functions";
-import ErrorPage from "../error";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import PageHeader from "../../components/PageHeader";
@@ -58,7 +58,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
-    if (marketplaceApps.length == 0) {
+    if (!marketplaceApps.length) {
       return (
         <ErrorPage>
           No apps available. Please check your permissions and verify that VIPFY is available in

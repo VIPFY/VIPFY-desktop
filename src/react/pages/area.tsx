@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
 import { Route } from "react-router-dom";
 import { withRouter, Switch, Redirect } from "react-router";
 import { ipcRenderer } from "electron";
@@ -9,7 +10,6 @@ import moment from "moment";
 import Domains from "./domains";
 import Sidebar from "../components/Sidebar";
 import Webview from "./webview";
-import ErrorPage from "./error";
 import VIPFYPlanPopup from "../popups/universalPopups/VIPFYPlanPopup";
 import { FETCH_NOTIFICATIONS } from "../queries/notification";
 import SupportPage from "./support";

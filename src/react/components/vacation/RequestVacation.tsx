@@ -77,7 +77,7 @@ export default (props: Props) => {
   return (
     <Collapsible title="Request Vacation">
       <Query query={FETCH_VACATION_REQUESTS} variables={{ userid: props.id }}>
-        {({ data, loading, error }) => {
+        {({ data, loading, error = null }) => {
           if (loading) {
             return <LoadingDiv />;
           }
