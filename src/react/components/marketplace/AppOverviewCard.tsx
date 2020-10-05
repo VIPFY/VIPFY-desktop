@@ -2,9 +2,9 @@ import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
 import { ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
-import { App } from "../../interfaces";
 import CardSection from "../CardSection";
 import ProsConsList from "./ProsConsList";
 
@@ -26,7 +26,12 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
     );
   }
 
-  renderMainInfo(isWideFormat: boolean, hasFreeTrial: boolean, rating: number, showPriceTags: boolean) {
+  renderMainInfo(
+    isWideFormat: boolean,
+    hasFreeTrial: boolean,
+    rating: number,
+    showPriceTags: boolean
+  ) {
     return (
       <>
         <div className="pic">
@@ -59,7 +64,8 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
     const hasFreeTrial = Math.random() < 0.5;
 
     const ratings = !app.ratings ? [] : Object.values(app.ratings).filter(a => a != null);
-    const averageRating = ratings.length == 0 ? null : ratings.reduce((a, b) => a + b, 0) / ratings.length / 2;
+    const averageRating =
+      ratings.length == 0 ? null : ratings.reduce((a, b) => a + b, 0) / ratings.length / 2;
 
     const color = chroma.mix(app.color, "white", 0.7).hex();
 
@@ -71,7 +77,12 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         {renderPic && (
           <div className="cardSection picSection" style={{ backgroundColor: color }}>
             <div className="picHolder">
-              <img src={app.pic} alt="App Image" className="pic" style={{ objectPosition: isWideFormat ? "center center" : "center top" }} />
+              <img
+                src={app.pic}
+                alt="App Image"
+                className="pic"
+                style={{ objectPosition: isWideFormat ? "center center" : "center top" }}
+              />
             </div>
           </div>
         )}
@@ -81,10 +92,10 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
             {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </CardSection>
         ) : (
-            <div className="cardSection header" style={{ backgroundColor: color }}>
-              {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
-            </div>
-          )}
+          <div className="cardSection header" style={{ backgroundColor: color }}>
+            {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
+          </div>
+        )}
 
         {showPriceTags && !isWideFormat && (
           <CardSection className="tagsRow">
@@ -114,7 +125,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         <CardSection className="compareServiceCheckbox">
-          <UniversalCheckbox startingvalue={false} liveValue={e => { }} />
+          <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
           <span>Compare Service</span>
         </CardSection>
       </div>

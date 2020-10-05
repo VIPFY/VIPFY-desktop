@@ -1,9 +1,10 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client/react/hooks";
-import { Link } from "react-router-dom";
+import type { App, CompanySizes, IndustryDistribution } from "@vipfy-private/vipfy-ui-lib";
+
 import UniversalButton from "../universalButtons/universalButton";
-import { App, CompanySizes, IndustryDistribution } from "../../interfaces";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 
