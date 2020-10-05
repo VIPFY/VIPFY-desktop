@@ -3,13 +3,16 @@ import gql from "graphql-tag";
 import { shell } from "electron";
 import path from "path";
 import moment from "moment";
+import type { App } from "@vipfy-private/vipfy-ui-lib";
+
+import type { AppContextContent, ApolloClientType } from "../interfaces";
+
 import PrintServiceSquare from "../components/manager/universal/squares/printServiceSquare";
 import UserName from "../components/UserName";
 import TeamName from "../components/TeamName";
 import OrbitName from "../components/OrbitName";
 import AccountName from "../components/AccountName";
 import ServiceName from "../components/ServiceName";
-import { App, AppContextContent, ApolloClientType } from "../interfaces";
 
 export function getPreloadScriptPath(script: string): string {
   return (

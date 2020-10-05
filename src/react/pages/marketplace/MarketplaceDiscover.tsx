@@ -1,10 +1,10 @@
 import * as React from "react";
 import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import { fetchApps } from "../../queries/products";
 import QueryWrapper from "../../common/QueryWrapper";
 import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
-import { App } from "../../interfaces";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import PageHeader from "../../components/PageHeader";

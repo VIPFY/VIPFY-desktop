@@ -2,10 +2,12 @@ import React from "react";
 import type { ReactChildren, ReactChild, FunctionComponent } from "react";
 import classNames from "classnames";
 import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
-import { App, User } from "../interfaces";
+import type { App } from "@vipfy-private/vipfy-ui-lib";
+
 import { concatName } from "../common/functions";
 import EmployeePicture from "../components/EmployeePicture";
 import PrintTeamSquare from "../components/manager/universal/squares/printTeamSquare";
+import type { User } from "../interfaces";
 
 interface TagProps {
   children: ReactChild | ReactChildren;

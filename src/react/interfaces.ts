@@ -1,4 +1,5 @@
 import { ApolloClient } from "@apollo/client";
+import { App, Unit } from "@vipfy-private/vipfy-ui-lib";
 
 export interface Licence {
   id: string;
@@ -18,12 +19,6 @@ export interface Licence {
   vacationstart?: number | Date;
   vacationend?: number | Date;
   accountid: string;
-}
-
-export interface Unit {
-  id: string;
-  profilepicture: string;
-  createdate: string;
 }
 
 export interface User extends Unit {
@@ -165,79 +160,11 @@ export interface Plan {
   hidden: boolean;
 }
 
-export interface IndustryDistribution {
-  Business: number;
-  ResearchAndDevelopment: number;
-  Education: number;
-  CustomerRelations: number;
-  Accounting: number;
-  Administration: number;
-  Design: number;
-}
-
-export interface CompanySizes {
-  "201-500 employees": 0;
-  "5001-10,000 employees": 0;
-  "51-200 employees": 0;
-  "11-50 employees": 0;
-  Unspecified: 0;
-  "10,001+ employees": 0;
-  "1-10 employees": 0;
-  "501-1000 employees": 0;
-  "Self-employed": 0;
-  "1001-5000 employees": 0;
-}
-
-export interface App {
-  id: string;
-  name: string;
-  icon: string;
-  loginurl: string;
-  description: string;
-  teaserdescription: string;
-  needssubdomain: boolean;
-  website: string;
-  disabled: boolean;
-  logo: string;
-  images: string[];
-  features: JSON;
-  options: { marketplace?: boolean; [option: string]: any };
-  developer: Unit;
-  supportunit: Unit;
-  color: string;
-  deprecated: boolean;
-  hidden: boolean;
-  hasboughtplan: boolean;
-  category?: string;
-  externalid?: string;
-  externalstatistics?: {
-    jobDistribution: { [industry: string]: number } | {};
-    industryDistribution: IndustryDistribution | {};
-    companySizes: CompanySizes | {};
-  };
-  ratings?: {
-    overallRating: number;
-    combinedCustomerSupportRating: number;
-    combinedEaseOfUseRating: number;
-    combinedFunctionalityRating: number;
-    valueForMoneyRating: number;
-    recommendationRating: number;
-    easeOfSetupRating: number;
-    easeOfAdminRating: number;
-  };
-  tags?: { name: string; weight: number };
-  alternatives: {
-    externalid: string;
-    name: string;
-    rating: number;
-    reviews: number;
-  };
-}
-
 export interface Option {
   label: any;
   value: any;
 }
+
 export interface InputProps {
   name: string;
   form?: string;
@@ -342,4 +269,4 @@ export interface AppContextContent {
 }
 
 export type MoveToType = (string) => void;
-export type ApolloClientType = ApolloClient<object>
+export type ApolloClientType = ApolloClient<object>;
