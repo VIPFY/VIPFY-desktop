@@ -47,7 +47,7 @@ interface Props {
     employees: number;
     name?: string;
     setupFinished: boolean;
-    legalinformation: { vatID: string;[moreProps: string]: any };
+    legalinformation: { vatID: string; [moreProps: string]: any };
   };
 }
 
@@ -172,9 +172,9 @@ export default (props: Props) => {
                     <div className="vipfy-plan-notice">
                       {`Currently there ${company.employees > 1 ? "are" : "is"} ${
                         company.employees
-                        } User${
+                      } User${
                         company.employees > 1 ? "s" : ""
-                        } in this company. You will pay a total of `}
+                      } in this company. You will pay a total of `}
                       <b>
                         {selected.price * company.employees} {selected.currency} per{" "}
                         {Object.keys(selected.payperiod)[0].substring(
@@ -200,11 +200,11 @@ export default (props: Props) => {
                   </UniversalCheckbox>
                   <p className="legal-notice">{`By clicking the order button you agree to a contract between ${
                     company.name
-                    } and VIPFY GmbH. The resulting subscription can be cancelled every ${
+                  } and VIPFY GmbH. The resulting subscription can be cancelled every ${
                     selected.cancelperiod[Object.keys(selected.cancelperiod)[0]]
-                    } ${Object.keys(
-                      selected.cancelperiod
-                    )}. We will use the chosen payment method in your account to deduct the amount of money.`}</p>
+                  } ${Object.keys(
+                    selected.cancelperiod
+                  )}. We will use the chosen payment method in your account to deduct the amount of money.`}</p>
 
                   <ErrorComp error={e2} />
 

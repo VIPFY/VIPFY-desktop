@@ -27,7 +27,15 @@ export const FETCH_CARDS = gql`
         last4
         name
       }
-      address
+      address {
+        id
+        country
+        address
+        description
+        priority
+        tags
+        verified
+      }
     }
   }
 `;
