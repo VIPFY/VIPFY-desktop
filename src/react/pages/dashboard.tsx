@@ -1,11 +1,14 @@
 import * as React from "react";
 import moment from "moment";
-import AppList from "../components/profile/AppList";
+import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+
 import { filterLicences } from "../common/functions";
-import { Link } from "react-router-dom";
 import { Licence } from "../interfaces";
-import dashboardPic from "../../images/dashboard.png";
+import AppList from "../components/profile/AppList";
 import PageHeader from "../components/PageHeader";
+import SeparatedSection from "../components/SeparatedSection";
+
+import dashboardImg from "../../images/dashboard.png";
 
 const favourites: { [key: number]: Licence | null } = {};
 [...Array(8).keys()].map(n => (favourites[n] = null));
@@ -14,7 +17,7 @@ interface Props {
   id: string;
   setApp: Function;
   licences: any[];
-  isadmin: Boolean;
+  isadmin: boolean;
   impersonation?: boolean;
   moveTo: Function;
 }
@@ -30,9 +33,9 @@ export default (props: Props) => {
     "Pending Apps": []
   };
 
-  const licenceCheck = props.licences && props.licences.length > 0;
+  const hasLicences = props.licences?.length > 0;
 
-  if (licenceCheck) {
+  if (hasLicences) {
     props.licences.forEach(licence => {
       if (!(props.impersonation && licence.options && licence.options.private)) {
         if (
@@ -46,6 +49,7 @@ export default (props: Props) => {
           if (licence.dashboard !== null && licence.dashboard <= 8) {
             favourites[licence.dashboard] = licence;
           }
+
           if (licence.pending) {
             appLists["Pending Apps"].push(licence);
           } else {
@@ -59,6 +63,7 @@ export default (props: Props) => {
       }
     });
   }
+
   return (
     <div className="dashboard page">
       <PageHeader
@@ -67,52 +72,35 @@ export default (props: Props) => {
           label: "Go to Marketplace",
           fAIcon: "fa-store",
           onClick: () => {
-            props.moveTo("integrations")
+            props.moveTo("integrations");
           }
         }}
       />
-      {!licenceCheck ? (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "64px" }}>
-          <div className="no-apps">
-            <div>This is your</div>
-            <h1>DASHBOARD</h1>
-            <div>
-              It's a central point of information about your connected services and licenses.
-            </div>
-            <img src={dashboardPic} alt="Cool pic of a dashboard" />
-            <div>You haven't integrated any services yet.</div>
-            {props.isadmin ? (
-              <div>
-                Go to <Link to="/area/integrations">Integrating Accounts</Link> to integrate your
-                services.
-              </div>
-            ) : (
-              <div>Please ask your administrator to integrate Services for you</div>
-            )}
-          </div>
-        </div>
+
+      {!hasLicences ? (
+        <ErrorPage headline="You are not ready yet" img={dashboardImg} hideSupportHint={true}>
+          <p>
+            It seems that you have not yet integrated any services. In the VIPFY Marketplace you can
+            easily integrate your services or purchase new ones.
+          </p>
+        </ErrorPage>
       ) : (
-        <>
-          {Object.keys(appLists).map(list => {
-            if (appLists[list].length > 0) {
-              return (
-                <>
-                  <AppList
-                    key={list}
-                    header={list}
-                    licences={filterLicences(appLists[list])}
-                    setApp={(licence: number) => props.setApp(licence)}
-                  />
-                  {list === "My Favorites" && appLists["My Services"].length > 0 && (
-                    <hr className="apps-divider"></hr>
-                  )}
-                </>
-              );
-            } else {
-              return null;
-            }
-          })}
-        </>
+        Object.keys(appLists).map(list => {
+          if (!appLists[list].length) {
+            return null;
+          }
+
+          return (
+            <SeparatedSection>
+              <AppList
+                key={list}
+                header={list}
+                licences={filterLicences(appLists[list])}
+                setApp={(licence: number) => props.setApp(licence)}
+              />
+            </SeparatedSection>
+          );
+        })
       )}
     </div>
   );
