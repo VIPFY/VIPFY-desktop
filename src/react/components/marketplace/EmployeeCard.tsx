@@ -1,8 +1,7 @@
 import * as React from "react";
-import { ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import { concatName } from "../../common/functions";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 
@@ -31,7 +30,10 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
           <div className="title">{concatName(employee)}</div>
 
           <div>
-            <UniversalCheckbox liveValue={() => {}}></UniversalCheckbox>
+            <Checkbox
+              name="Not implemented yet"
+              title="Not implemented yet"
+              handleChange={() => console.log("Not implemented yet: Select Employee")}></Checkbox>
           </div>
         </CardSection>
 
