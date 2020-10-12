@@ -1,16 +1,16 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
+import gql from "graphql-tag";
 import { Query } from "@apollo/client/react/components";
 import { useMutation } from "@apollo/client/react/hooks";
-import { Link } from "react-router-dom";
-import { ErrorComp } from "../../common/functions";
-import LoadingDiv from "../LoadingDiv";
-import SearchBox from "../SearchBox";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
 
-import { FETCH_APPS } from "./apollo";
+import { ErrorComp } from "../../common/functions";
 import { getBgImageApp } from "../../common/images";
 import UploadImage from "../manager/universal/uploadImage";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import gql from "graphql-tag";
+import LoadingDiv from "../LoadingDiv";
+import SearchBox from "../SearchBox";
+import { FETCH_APPS } from "./apollo";
 
 interface Props {
   apps: App[];
@@ -46,17 +46,19 @@ const UPDATE_APP = gql`
 `;
 
 const TableRow = (props: { service; showBorder }) => {
-  let { name, id, icon, logo, disabled, hidden } = props.service;
+  let { name, id, icon, logo } = props.service;
   const { showBorder } = props;
   const [updateApp, { data }] = useMutation(UPDATE_APP);
 
   icon = data ? data.updateApp.icon : icon;
   logo = data ? data.updateApp.logo : logo;
+
   return (
     <tr key={id}>
       <td>
         <h3>{name}</h3>
       </td>
+
       <td>
         <UploadImage
           picture={{ preview: getBgImageApp(icon, 256) }}
@@ -79,6 +81,7 @@ const TableRow = (props: { service; showBorder }) => {
           backgroundSize="contain"
         />
       </td>
+
       <td>
         <UploadImage
           picture={{ preview: getBgImageApp(logo, 512) }}
@@ -115,11 +118,12 @@ const ServiceLogoEdit = (props: Props) => {
 
       <React.Fragment>
         <SearchBox searchFunction={(searchValue: string) => setSearch(searchValue)} />
-        <UniversalCheckbox
-          liveValue={v => setBorder(v)}
-          name={"Show Borders"}
-          startingvalue={true}
-        />{" "}
+        <Checkbox
+          title="Show borders"
+          name={"checkbox_show_table_row_borders"}
+          handleChange={v => setBorder(v)}
+          checked={true}
+        />
         Show Borders
         <div className="apps">
           <table style={{ borderSpacing: "6px" }}>
@@ -148,7 +152,7 @@ const ServiceLogoEdit = (props: Props) => {
 
 export default () => (
   <Query query={FETCH_APPS}>
-    {({ data, loading, error }) => {
+    {({ data, loading, error = null }) => {
       if (loading) {
         return <LoadingDiv />;
       }
