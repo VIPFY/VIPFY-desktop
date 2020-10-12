@@ -2,7 +2,12 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Button, Checkbox, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+
+import CardSection from "../../components/CardSection";
+import SeparatedSection from "../../components/SeparatedSection";
+import ProsConsList from "../../components/marketplace/ProsConsList";
+import PageHeader from "../../components/PageHeader";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -10,12 +15,6 @@ import logo_hell from "../../../images/logo_hell.png";
 import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
-
-import CardSection from "../../components/CardSection";
-import SeparatedSection from "../../components/SeparatedSection";
-import ProsConsList from "../../components/marketplace/ProsConsList";
-import PageHeader from "../../components/PageHeader";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 
 const DUMMY_ID = 1;
 
@@ -461,8 +460,12 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 )}
 
                 <CardSection className="compareServiceCheckbox">
-                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
-                  <span>Compare Service</span>
+                  <Checkbox
+                    title="Compare Service"
+                    name="checkbox_compare_service"
+                    handleChange={e => console.log("Not implemented yet: Compare Service")}>
+                    Compare Service
+                  </Checkbox>
                 </CardSection>
               </div>
             </CardSection>
