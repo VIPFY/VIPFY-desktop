@@ -1,10 +1,9 @@
 import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
-import { ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
 import ProsConsList from "./ProsConsList";
 
@@ -125,8 +124,12 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         <CardSection className="compareServiceCheckbox">
-          <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
-          <span>Compare Service</span>
+          <Checkbox
+            name="checkbox_compare_service"
+            title="Compare Service"
+            handleChange={e => console.log("Not implemented yet: Compare Service")}>
+            Compare Service
+          </Checkbox>
         </CardSection>
       </div>
     );
