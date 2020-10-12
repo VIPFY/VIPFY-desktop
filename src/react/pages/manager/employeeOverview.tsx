@@ -345,27 +345,27 @@ class EmployeeOverview extends React.Component<Props, State> {
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         <Button
                           label="Assign to Service"
-                          onClick={() => console.log("ASSIGN SERVICE", id)}
+                          onClick={() => console.log("Not implemented yet: ASSIGN SERVICE", id)}
                           fAIcon="fa-file-plus"
                         />
                         <Button
                           label="Remove from Service"
-                          onClick={() => console.log("Remove SERVICE", id)}
+                          onClick={() => console.log("Not implemented yet: Remove SERVICE", id)}
                           fAIcon="fa-file-minus"
                         />
                         <Button
                           label="Assign to Team"
-                          onClick={() => console.log("ASSIGN Team", id)}
+                          onClick={() => console.log("Not implemented yet: ASSIGN Team", id)}
                           fAIcon="fa-user-plus"
                         />
                         <Button
                           label="Remove from Team"
-                          onClick={() => console.log("Remove Team", id)}
+                          onClick={() => console.log("Not implemented yet: Remove Team", id)}
                           fAIcon="fa-user-minus"
                         />
                         <Button
                           label="Remove Employee"
-                          onClick={() => console.log("Remove Team", id)}
+                          onClick={() => console.log("Not implemented yet: Remove Employee", id)}
                           fAIcon="fa-trash-alt"
                         />
                       </div>

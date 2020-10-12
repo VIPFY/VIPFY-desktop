@@ -2,11 +2,12 @@ import * as React from "react";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchDepartmentsData } from "../../queries/departments";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import UserName from "../../components/UserName";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import { fetchDepartmentsData } from "../../queries/departments";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   user: any;
@@ -62,12 +63,13 @@ class DeleteUser extends React.Component<Props, State> {
               display: "flex",
               justifyContent: "center"
             }}>
-            <UniversalCheckbox
+            <Checkbox
               name="auto-delete"
-              liveValue={v => {
+              title="Delete automatically"
+              checked={this.state.autodelete}
+              handleChange={v => {
                 this.setState({ autodelete: v });
               }}
-              startingvalue={this.state.autodelete}
             />
           </span>
 
@@ -110,20 +112,20 @@ class DeleteUser extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}
@@ -147,4 +149,5 @@ class DeleteUser extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(graphql(DELETE_USER, { name: "deleteUser" }))(DeleteUser);
