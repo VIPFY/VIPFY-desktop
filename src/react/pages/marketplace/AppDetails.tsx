@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Button, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -13,7 +13,6 @@ import onboarding from "../../../images/onboarding.png";
 
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
-import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 
