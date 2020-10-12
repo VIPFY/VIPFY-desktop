@@ -4,7 +4,7 @@ import Calendar from "react-calendar";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { withApollo, graphql } from "@apollo/client/react/hoc";
-import { Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import UniversalButton from "../universalButtons/universalButton";
 import AccountRow from "./accountRow";
@@ -15,29 +15,27 @@ import ShowAndAddEmployee from "./universal/showAndAddEmployee";
 import ShowAndDeleteEmployee from "./universal/showAndDeleteEmployee";
 import { fetchCompanyServices } from "./../../queries/products";
 import { AppContext } from "../../common/functions";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
 
 interface Props {
   orbit: any;
   app: any;
   changeOrbit: Function;
-
   refetch: Function;
 }
 
 interface State {
-  change: Boolean;
+  change: boolean;
   todate: Date | null;
-  editto: Boolean;
+  editto: boolean;
   loginurl: String | null;
-  saving: Boolean;
-  saved: Boolean;
+  saving: boolean;
+  saved: boolean;
   error: String | null;
   alias: String | null;
-  changeda: Boolean;
-  changedl: Boolean;
-  changedt: Boolean;
-  newaccount: Boolean;
+  changeda: boolean;
+  changedl: boolean;
+  changedt: boolean;
+  newaccount: boolean;
   addUsers: any;
   selfhosting: boolean;
   protocol: String;
@@ -160,7 +158,7 @@ class OrbitSection extends React.Component<Props, State> {
               style={{
                 fontSize: "12px",
                 lineHeight: "24px",
-                fontWeight: "700",
+                fontWeight: 700,
                 marginRight: "16px",
                 width: "120px",
                 textAlign: "center"
@@ -186,7 +184,7 @@ class OrbitSection extends React.Component<Props, State> {
           <div className="tableHeading">
             <div className="tableMain">
               <div className="tableColumnBig">
-                <h1>Accountalias</h1>
+                <h1>Account Alias</h1>
               </div>
               <div className="tableColumnSmall">
                 <h1>Status</h1>
@@ -341,90 +339,97 @@ class OrbitSection extends React.Component<Props, State> {
               </span>
             </div>
             {this.props.app.needssubdomain && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "24px",
-                  marginTop: "28px",
-                  position: "relative"
-                }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>
-                  <span>Domain:</span>
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "24px",
+                    marginTop: "28px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "24px", width: "84px" }}>
+                    <span>Domain:</span>
+                  </span>
+
+                  <UniversalTextInput
+                    width="300px"
+                    id="domain"
+                    className="scrollable"
+                    inputStyles={{ minWidth: "100px" }}
+                    startvalue={this.state.loginurl}
+                    livevalue={value => {
+                      let domain = value;
+                      let protocol = undefined;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                        domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                      } else {
+                        protocol = this.state.protocol;
+                      }
+                      if (value != this.state.loginurl && value != "") {
+                        this.setState({ loginurl: domain, changedl: true, protocol });
+                      } else {
+                        this.setState({ loginurl: domain, changedl: false, protocol });
+                      }
+                    }}
+                    modifyValue={value => {
+                      let deletedPrefix = value;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
+                      }
+                      let deletedSuffix = deletedPrefix;
+                      if (
+                        this.props.orbit &&
+                        this.props.orbit.options &&
+                        this.props.orbit.options.afterdomain &&
+                        deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                      ) {
+                        deletedSuffix = deletedPrefix.substring(
+                          0,
+                          deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                        );
+                      }
+                      return deletedSuffix;
+                    }}
+                    prefix={
+                      this.state.selfhosting ? (
+                        <select
+                          className="universalTextInput"
+                          style={{ width: "75px" }}
+                          value={this.state.protocol}
+                          onChange={e =>
+                            this.setState({ protocol: e.target.value, changedl: true })
+                          }>
+                          <option value="http://" key="http://">
+                            http://
+                          </option>
+                          <option value="https://" key="https://">
+                            https://
+                          </option>
+                        </select>
+                      ) : (
+                        this.props.app.options.predomain
+                      )
+                    }
+                    suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
+                  />
+                </div>
+
+                <div>
                   {this.props.app.options.selfhosting && (
-                    <div style={{ alignItems: "center", display: "flex" }}>
-                      <UniversalCheckbox
-                        startingvalue={this.props.orbit.key.selfhosting}
-                        liveValue={e => this.setState({ selfhosting: e, changedl: true })}
-                        style={{ float: "left" }}
-                      />
-                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
-                        Selfhosting
-                      </span>
-                    </div>
+                    <Checkbox
+                      name="checkbox_selfhosting"
+                      title="Selfhosting"
+                      small={true}
+                      style={{ marginLeft: "84px" }}
+                      checked={this.props.orbit.key.selfhosting}
+                      handleChange={e => this.setState({ selfhosting: e, changedl: true })}>
+                      Selfhosting
+                    </Checkbox>
                   )}
-                </span>
-                <UniversalTextInput
-                  width="300px"
-                  id="domain"
-                  className="scrollable"
-                  inputStyles={{ minWidth: "100px" }}
-                  startvalue={this.state.loginurl}
-                  livevalue={value => {
-                    let domain = value;
-                    let protocol = undefined;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
-                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      protocol = this.state.protocol;
-                    }
-                    if (value != this.state.loginurl && value != "") {
-                      this.setState({ loginurl: domain, changedl: true, protocol });
-                    } else {
-                      this.setState({ loginurl: domain, changedl: false, protocol });
-                    }
-                  }}
-                  modifyValue={value => {
-                    let deletedPrefix = value;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
-                    }
-                    let deletedSuffix = deletedPrefix;
-                    if (
-                      this.props.orbit &&
-                      this.props.orbit.options &&
-                      this.props.orbit.options.afterdomain &&
-                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
-                    ) {
-                      deletedSuffix = deletedPrefix.substring(
-                        0,
-                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
-                      );
-                    }
-                    return deletedSuffix;
-                  }}
-                  prefix={
-                    this.state.selfhosting ? (
-                      <select
-                        className="universalTextInput"
-                        style={{ width: "75px" }}
-                        value={this.state.protocol}
-                        onChange={e => this.setState({ protocol: e.target.value, changedl: true })}>
-                        <option value="http://" key="http://">
-                          http://
-                        </option>
-                        <option value="https://" key="https://">
-                          https://
-                        </option>
-                      </select>
-                    ) : (
-                      this.props.app.options.predomain
-                    )
-                  }
-                  suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
-                />
-              </div>
+                </div>
+              </>
             )}
 
             <div
@@ -591,4 +596,5 @@ class OrbitSection extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(graphql(CHANGE_ORBIT, { name: "changeOrbit" }))(withApollo(OrbitSection));
