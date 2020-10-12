@@ -1,12 +1,11 @@
 import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
-import { ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import CardSection from "../CardSection";
-import ProsConsList from "./ProsConsList";
 
 interface AppOverviewCardProps {
   app: App;
