@@ -1,30 +1,29 @@
 import * as React from "react";
+import { Query } from "@apollo/client/react/components";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import PopupBase from "../../../../popups/universalPopups/popupBase";
 import UniversalButton from "../../../../components/universalButtons/universalButton";
-import Calendar from "react-calendar";
-import moment, { now } from "moment";
-import { Query } from "@apollo/client/react/components";
 import { fetchDepartmentsData } from "../../../../queries/departments";
 import PrintServiceSquare from "../squares/printServiceSquare";
 import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
 import { concatName } from "../../../../common/functions";
-import UniversalCheckbox from "../../../../components/universalForms/universalCheckbox";
 
 interface Props {
   e: any;
   liveid: Function;
   livecheck: Function;
   style?: Object;
-  forceValue?: Boolean;
+  forceValue?: boolean;
   forceUser?: Object | null;
 }
 
 interface State {
   fromdate: Date | null;
-  editfrom: Boolean;
+  editfrom: boolean;
   todate: Date | null;
-  editto: Boolean;
-  showall: Boolean;
+  editto: boolean;
+  showall: boolean;
   user: any;
 }
 
@@ -37,9 +36,10 @@ class AssignVacation extends React.Component<Props, State> {
     showall: false,
     user: this.props.forceUser || null
   };
+
   render() {
-    //console.log("AV", this.props, this.state);
     const { e } = this.props;
+
     return (
       <div
         style={
@@ -59,10 +59,11 @@ class AssignVacation extends React.Component<Props, State> {
             flexFlow: "column",
             alignItems: "center"
           }}>
-          <UniversalCheckbox
+          <Checkbox
+            title=""
             name={e.id}
-            liveValue={v => this.props.livecheck(v)}
-            startingvalue={this.props.forceValue}
+            checked={this.props.forceValue}
+            handleChange={v => this.props.livecheck(v)}
           />
         </div>
         <div
@@ -86,16 +87,19 @@ class AssignVacation extends React.Component<Props, State> {
         </div>
         <span style={{ lineHeight: "24px" }}>
           <Query pollInterval={60 * 10 * 1000 + 1000} query={fetchDepartmentsData}>
-            {({ loading, error, data }) => {
+            {({ loading, error = null, data }) => {
               if (loading) {
-                return "Loading...";
+                return <div>Loading...</div>;
               }
+
               if (error) {
-                return `Error! ${error.message}`;
+                return <div>{`Error! ${error.message}`}</div>;
               }
+
               const employees = data.fetchDepartmentsData[0].employees.filter(
                 emp => emp.id != this.props.employeeid
               );
+
               if (employees.length > 0) {
                 return (
                   <>
@@ -104,9 +108,9 @@ class AssignVacation extends React.Component<Props, State> {
                         this.state.user
                           ? this.state.user.id
                           : this.props.forceUser
-                            ? this.props.forceUser.id
-                            : ""
-                        }`}
+                          ? this.props.forceUser.id
+                          : ""
+                      }`}
                       label="Search for users"
                       options={employees}
                       noFloating={true}
@@ -154,8 +158,8 @@ class AssignVacation extends React.Component<Props, State> {
                         this.state.user && employees.find(a => a.id == this.state.user.id)
                           ? employees.find(a => a.id == this.state.user.id).id
                           : this.props.forceUser
-                            ? this.props.forceUser.id
-                            : ""
+                          ? this.props.forceUser.id
+                          : ""
                       }
                       noNoResults={true}
                       livecode={c => {
@@ -185,13 +189,6 @@ class AssignVacation extends React.Component<Props, State> {
                             />
                           </div>
                         ))}
-                        {/*<div className="listingDiv" key="new">
-                        <UniversalButton
-                          type="low"
-                          label="Create new User"
-                          onClick={() => this.setState({ showall: false })}
-                        />
-                          </div>*/}
                         <UniversalButton type="low" label="Cancel" closingPopup={true} />
                       </PopupBase>
                     )}
