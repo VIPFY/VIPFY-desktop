@@ -115,10 +115,12 @@
     }
   }
 }
+
 .recoveryKeyPopup {
   .explained {
     margin-top: 24px;
   }
+
   .important {
     background: $red-lightest;
     border-radius: 12px;
@@ -130,6 +132,7 @@
       text-transform: uppercase;
     }
   }
+
   .recoveryKey {
     border: 1px solid $lightgrey-darker;
     border-radius: 8px;
@@ -154,30 +157,38 @@
     }
   }
 }
+
 .nameFormPopup {
   p {
     margin-top: 24px;
   }
+
   .textField {
     margin-top: 24px;
   }
+
   .promoCode {
     margin-top: 24px;
+
     button {
       font-size: 12px;
+
       span {
         color: $primarygreen;
       }
     }
+
     .textField {
       margin-top: 12px;
     }
   }
 }
+
 .twoFactor {
   p {
     margin-top: 24px;
   }
+
   #twoFactorForm {
     margin-top: 24px;
     display: flex;
@@ -203,6 +214,7 @@
     }
   }
 }
+
 .firstLogin {
   p {
     margin-top: 24px;
@@ -213,6 +225,7 @@
   .textField {
     margin-top: 24px;
   }
+
   .error {
     background: $red-lightest;
     border-radius: 12px;

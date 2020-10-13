@@ -1,10 +1,11 @@
 import * as React from "react";
 import { withApollo } from "@apollo/client/react/hoc";
 import { shell } from "electron";
+import { Checkbox, Link } from "@vipfy-private/vipfy-ui-lib";
+
+import { ApolloClientType } from "../../interfaces";
 import { agreeTos } from "../../mutations/auth";
 import UniversalButton from "../universalButtons/universalButton";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import { ApolloClientType } from "../../interfaces";
 
 interface FirstLoginProps {
   logMeOut: Function;
@@ -30,6 +31,7 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
   private async confirm(): Promise<void> {
     if (this.state.tos && this.state.privacy) {
       await this.setState({ error: null, loading: true });
+
       try {
         await this.props.client.mutate({
           mutation: agreeTos
@@ -63,23 +65,35 @@ class FirstLogin extends React.Component<FirstLoginProps, FirstLoginState> {
             justifyContent: "space-around",
             height: "92px"
           }}>
-          <UniversalCheckbox name="tos" liveValue={v => this.setState({ tos: v })}>
-            <div className="agreementText">
-              By registering I agree to the
-              <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-                VIPFY Terms of Service
-              </a>
-            </div>
-          </UniversalCheckbox>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Checkbox
+              title="Terms of service agreement"
+              name="tos"
+              handleChange={v => this.setState({ tos: v })}>
+              <span className="agreementText">By registering I agree to the</span>
+            </Checkbox>
+            <Link
+              label="VIPFY Terms of Service"
+              className="cta agreementText"
+              style={{ marginLeft: "4px" }}
+              onClick={() => shell.openExternal("https://vipfy.store/tos")}
+            />
+          </div>
 
-          <UniversalCheckbox name="privacy" liveValue={v => this.setState({ privacy: v })}>
-            <div className="agreementText">
-              By registering I agree to the
-              <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-                VIPFY Privacy Agreement
-              </a>
-            </div>
-          </UniversalCheckbox>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <Checkbox
+              title="Privacy agreement"
+              name="privacy"
+              handleChange={v => this.setState({ privacy: v })}>
+              <span className="agreementText">By registering I agree to the</span>
+            </Checkbox>
+            <Link
+              label="VIPFY Privacy Agreement"
+              className="cta agreementText"
+              style={{ marginLeft: "4px" }}
+              onClick={() => shell.openExternal("https://vipfy.store/privacy")}
+            />
+          </div>
         </div>
 
         <UniversalButton
