@@ -1,15 +1,16 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
-import { fetchTeam } from "../../queries/departments";
+import Calendar from "react-calendar";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import moment from "moment";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import { concatName } from "../../common/functions";
-import Calendar from "react-calendar";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import { fetchTeam } from "../../queries/departments";
 import EmployeePicture from "../EmployeePicture";
+import UniversalButton from "../universalButtons/universalButton";
 import PrintTeamSquare from "./universal/squares/printTeamSquare";
 
 interface Props {
@@ -249,7 +250,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
 
     this.props.orbit.accounts.forEach((account, indexa) => {
       const assignments: JSX.Element[] = [];
-      let outsideAssignment = false;
+
       if (account && (account.endtime == null || moment(account.endtime).isAfter())) {
         account.assignments.forEach((assignment, index) => {
           if (assignment && (assignment.endtime == null || moment(assignment.endtime).isAfter())) {
@@ -417,7 +418,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
             );
           }
         });
-        account.outsideAssignment = outsideAssignment;
+
         accounts.push(
           <>
             <div
@@ -543,10 +544,10 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                 marginTop: "28px",
                 position: "relative"
               }}>
-              <span style={{ lineHeight: "24px", width: "84px" }}>Enddate:</span>
+              <span style={{ lineHeight: "24px", width: "84px" }}>End date:</span>
               <span style={{ lineHeight: "24px" }}>
                 {this.state.todate &&
-                  moment(this.state.todate!).format("DD.MM.YYYY") !=
+                moment(this.state.todate!).format("DD.MM.YYYY") !=
                   moment(new Date()).format("DD.MM.YYYY")
                   ? moment(this.state.todate!).format("DD.MM.YYYY")
                   : "Now"}
@@ -562,7 +563,7 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                   close={() => this.setState({ editto: false, todate: null })}
                   buttonStyles={{ justifyContent: "space-between" }}>
                   <span style={{ fontSize: "18px", marginBottom: "8px", display: "block" }}>
-                    Select Enddate
+                    Select end date
                   </span>
                   <Calendar
                     className="calendarEdit"
@@ -587,355 +588,170 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
                 </PopupBase>
               )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
-                }}>
-                <UniversalCheckbox
-                  name="Orbit-1"
-                  liveValue={v => {
-                    if (v) {
-                      this.setState(oldstate => {
-                        const array = this.returnEmptyDeleteArray();
-                        array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
-                        return {
-                          orbitoption: 1,
-                          deleteArray: array
-                        };
-                      });
-                    } else {
-                      this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
-                    }
-                  }}
-                  startingvalue={this.state.orbitoption == 1}
-                />
-              </span>
 
-              <span
-                style={{ lineHeight: "24px", cursor: "pointer" }}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    if (oldstate.orbitoption != 1) {
+            <div style={{ marginBottom: "12px" }}>
+              <Checkbox
+                title="Orbit 1"
+                name="Orbit-1"
+                checked={this.state.orbitoption === 1}
+                handleChange={v => {
+                  if (v) {
+                    this.setState(oldstate => {
                       const array = this.returnEmptyDeleteArray();
                       array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
                       return {
                         orbitoption: 1,
                         deleteArray: array
                       };
-                    } else {
-                      return {
-                        orbitoption: 0,
-                        deleteArray: this.returnEmptyDeleteArray()
-                      };
-                    }
-                  })
-                }>
+                    });
+                  } else {
+                    this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
+                  }
+                }}>
                 Remove Orbit from team but keep all assignments
-              </span>
+              </Checkbox>
             </div>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
-                }}>
-                <UniversalCheckbox
-                  name="Orbit-2"
-                  liveValue={v => {
-                    if (v) {
-                      this.setState(oldstate => {
-                        const array = this.returnEmptyDeleteArray();
-                        //Delete Team
-                        array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
-                        //Delete all team assignments
-                        array.accounts.forEach(a =>
-                          a.assignments.forEach(as => {
-                            if (this.props.orbit.accounts.find(oa => oa.id == a.id)) {
-                              if (
-                                this.props.orbit.accounts
-                                  .find(oa => oa.id == a.id)
-                                  .assignments.find(oas => oas.assignmentid == as.id)
-                              ) {
-                                if (
-                                  this.props.orbit.accounts
-                                    .find(oa => oa.id == a.id)
-                                    .assignments.find(oas => oas.assignmentid == as.id)
-                                    .assignoptions &&
-                                  this.props.orbit.accounts
-                                    .find(oa => oa.id == a.id)
-                                    .assignments.find(oas => oas.assignmentid == as.id)
-                                    .assignoptions.teamlicence == this.props.team.unitid.id
-                                ) {
-                                  as.bool = true;
-                                }
-                              }
-                            }
-                            if (oldstate.autodelete) {
-                              if (
-                                !array.accounts
-                                  .find(da => da.id == a.id)
-                                  .assignments.find(das => !das.bool)
-                              ) {
-                                array.accounts.find(da => da.id == a.id).bool = true;
-                                if (
-                                  !array.teams.find(dt => !dt.bool) &&
-                                  !array.accounts.find(da => !da.bool)
-                                ) {
-                                  array.orbit = true;
-                                }
-                              }
-                            }
-                          })
-                        );
-                        return {
-                          orbitoption: 2,
-                          deleteArray: array
-                        };
-                      });
-                    } else {
-                      this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
-                    }
-                  }}
-                  startingvalue={this.state.orbitoption == 2}
-                />
-              </span>
 
-              <span
-                style={{ lineHeight: "24px", cursor: "pointer" }}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    if (oldstate.orbitoption != 2) {
-                      this.setState(oldstate => {
-                        const array = this.returnEmptyDeleteArray();
-                        //Delete Team
-                        array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
-                        //Delete all team assignments
-                        array.accounts.forEach(a =>
-                          a.assignments.forEach(as => {
-                            if (this.props.orbit.accounts.find(oa => oa.id == a.id)) {
+            <div style={{ marginBottom: "12px" }}>
+              <Checkbox
+                title="Orbit 2"
+                name="Orbit-2"
+                checked={this.state.orbitoption === 2}
+                handleChange={v => {
+                  if (v) {
+                    this.setState(oldstate => {
+                      const array = this.returnEmptyDeleteArray();
+
+                      //Delete Team
+                      array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
+
+                      //Delete all team assignments
+                      array.accounts.forEach(a =>
+                        a.assignments.forEach(as => {
+                          if (this.props.orbit.accounts.find(oa => oa.id == a.id)) {
+                            if (
+                              this.props.orbit.accounts
+                                .find(oa => oa.id == a.id)
+                                .assignments.find(oas => oas.assignmentid == as.id)
+                            ) {
                               if (
                                 this.props.orbit.accounts
                                   .find(oa => oa.id == a.id)
                                   .assignments.find(oas => oas.assignmentid == as.id)
+                                  .assignoptions &&
+                                this.props.orbit.accounts
+                                  .find(oa => oa.id == a.id)
+                                  .assignments.find(oas => oas.assignmentid == as.id).assignoptions
+                                  .teamlicence == this.props.team.unitid.id
                               ) {
-                                if (
-                                  this.props.orbit.accounts
-                                    .find(oa => oa.id == a.id)
-                                    .assignments.find(oas => oas.assignmentid == as.id)
-                                    .assignoptions &&
-                                  this.props.orbit.accounts
-                                    .find(oa => oa.id == a.id)
-                                    .assignments.find(oas => oas.assignmentid == as.id)
-                                    .assignoptions.teamlicence == this.props.team.unitid.id
-                                ) {
-                                  as.bool = true;
-                                }
+                                as.bool = true;
                               }
                             }
-                            if (oldstate.autodelete) {
+                          }
+
+                          if (oldstate.autodelete) {
+                            if (
+                              !array.accounts
+                                .find(da => da.id == a.id)
+                                .assignments.find(das => !das.bool)
+                            ) {
+                              array.accounts.find(da => da.id == a.id).bool = true;
                               if (
-                                !array.accounts
-                                  .find(da => da.id == a.id)
-                                  .assignments.find(das => !das.bool)
+                                !array.teams.find(dt => !dt.bool) &&
+                                !array.accounts.find(da => !da.bool)
                               ) {
-                                array.accounts.find(da => da.id == a.id).bool = true;
-                                if (
-                                  !array.teams.find(dt => !dt.bool) &&
-                                  !array.accounts.find(da => !da.bool)
-                                ) {
-                                  array.orbit = true;
-                                }
+                                array.orbit = true;
                               }
                             }
-                          })
-                        );
-                        return {
-                          orbitoption: 2,
-                          deleteArray: array
-                        };
-                      });
-                    } else {
+                          }
+                        })
+                      );
+
                       return {
-                        orbitoption: 0,
-                        deleteArray: this.returnEmptyDeleteArray()
+                        orbitoption: 2,
+                        deleteArray: array
                       };
-                    }
-                  })
-                }>
+                    });
+                  } else {
+                    this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
+                  }
+                }}>
                 Remove Orbit from team and all related assignments
-              </span>
+              </Checkbox>
             </div>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
-                }}>
-                <UniversalCheckbox
-                  name="Orbit-3"
-                  liveValue={v => {
-                    if (v) {
-                      this.setState({
-                        orbitoption: 3,
-                        deleteArray: {
-                          orbit: true,
-                          teams: this.props.orbit.teams.map(t => {
-                            return { id: t.unitid.id, bool: true };
-                          }),
-                          accounts: this.props.orbit.accounts.map(a => {
-                            if (a) {
-                              return {
-                                id: a.id,
-                                bool: true,
-                                assignments: a.assignments.map(as => {
-                                  return { id: as.assignmentid, bool: true };
-                                })
-                              };
-                            }
-                          })
-                        }
-                      });
-                    } else {
-                      this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
-                    }
-                  }}
-                  startingvalue={this.state.orbitoption == 3}
-                />
-              </span>
 
-              <span
-                style={{ lineHeight: "24px", cursor: "pointer" }}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    if (oldstate.orbitoption != 3) {
-                      this.setState({
-                        orbitoption: 3,
-                        deleteArray: {
-                          orbit: true,
-                          teams: this.props.orbit.teams.map(t => {
-                            return { id: t.unitid.id, bool: true };
-                          }),
-                          accounts: this.props.orbit.accounts.map(a => {
-                            if (a) {
-                              return {
-                                id: a.id,
-                                bool: true,
-                                assignments: a.assignments.map(as => {
-                                  return { id: as.assignmentid, bool: true };
-                                })
-                              };
-                            }
-                          })
-                        }
-                      });
-                    } else {
-                      return {
-                        orbitoption: 0,
-                        deleteArray: this.returnEmptyDeleteArray()
-                      };
-                    }
-                  })
-                }>
+            <div style={{ marginBottom: "12px" }}>
+              <Checkbox
+                title="Orbit 3"
+                name="Orbit-3"
+                checked={this.state.orbitoption === 3}
+                handleChange={v => {
+                  if (v) {
+                    this.setState({
+                      orbitoption: 3,
+                      deleteArray: {
+                        orbit: true,
+                        teams: this.props.orbit.teams.map(t => {
+                          return { id: t.unitid.id, bool: true };
+                        }),
+                        accounts: this.props.orbit.accounts.map(a => {
+                          if (a) {
+                            return {
+                              id: a.id,
+                              bool: true,
+                              assignments: a.assignments.map(as => {
+                                return { id: as.assignmentid, bool: true };
+                              })
+                            };
+                          }
+                        })
+                      }
+                    });
+                  } else {
+                    this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
+                  }
+                }}>
                 Remove Orbit from team and completely delete it
-              </span>
+              </Checkbox>
             </div>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "12px" }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
-                }}>
-                <UniversalCheckbox
-                  name="Orbit-4"
-                  liveValue={v => {
-                    if (v) {
-                      this.setState(oldstate => {
-                        const array = this.returnEmptyDeleteArray();
-                        array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
-                        return {
-                          orbitoption: 4,
-                          deleteArray: array
-                        };
-                      });
-                    } else {
-                      this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
-                    }
-                  }}
-                  startingvalue={this.state.orbitoption == 4}
-                />
-              </span>
 
-              <span
-                style={{ lineHeight: "24px", cursor: "pointer" }}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    if (oldstate.orbitoption != 4) {
-                      this.setState(oldstate => {
-                        const array = this.returnEmptyDeleteArray();
-                        array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
-                        return {
-                          orbitoption: 4,
-                          deleteArray: array
-                        };
-                      });
-                    } else {
+            <div style={{ marginBottom: "12px" }}>
+              <Checkbox
+                title="Orbit 4"
+                name="Orbit-4"
+                checked={this.state.orbitoption === 4}
+                handleChange={v => {
+                  if (v) {
+                    this.setState(oldstate => {
+                      const array = this.returnEmptyDeleteArray();
+                      array.teams.find(t => t.id == this.props.team.unitid.id).bool = true;
                       return {
-                        orbitoption: 0,
-                        deleteArray: this.returnEmptyDeleteArray()
+                        orbitoption: 4,
+                        deleteArray: array
                       };
-                    }
-                  })
-                }>
-                Configure yourself
-              </span>
-            </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginTop: "24px"
-              }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
+                    });
+                  } else {
+                    this.setState({ orbitoption: 0, deleteArray: this.returnEmptyDeleteArray() });
+                  }
                 }}>
-                <UniversalCheckbox
-                  name="auto-delete"
-                  liveValue={v => {
-                    if (v) {
-                      this.setState({ autodelete: true });
-                    } else {
-                      this.setState({ autodelete: false });
-                    }
-                  }}
-                  startingvalue={this.state.autodelete}
-                />
-              </span>
+                Configure yourself
+              </Checkbox>
+            </div>
 
-              <span
-                style={{ lineHeight: "24px" }}
-                onClick={() =>
-                  this.setState(oldstate => {
-                    return {
-                      autodelete: !oldstate.autodelete
-                    };
-                  })
-                }>
+            <div style={{ marginBottom: "12px" }}>
+              <Checkbox
+                title="Auto delete account and orbit when no assignment"
+                name="auto-delete"
+                checked={this.state.autodelete}
+                handleChange={v => {
+                  if (v) {
+                    this.setState({ autodelete: true });
+                  } else {
+                    this.setState({ autodelete: false });
+                  }
+                }}>
                 Auto delete account and orbit when no assignment
-              </span>
+              </Checkbox>
             </div>
           </div>
           <div
@@ -945,18 +761,6 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
               overflow: "hidden",
               textOverflow: "ellipsis"
             }}>
-            {/*this.state.orbitoption != 3 && (
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  left: "0px",
-                  top: "0px",
-                  position: "absolute",
-                  zIndex: 1,
-                  backgroundColor: "rgba(255,255,255,0.5)"
-                }}></div>
-              )*/}
             <div
               style={{
                 display: "flex",
@@ -1057,25 +861,26 @@ class RemoveTeamOrbit extends React.Component<Props, State> {
             }
           }}
         />
+
         {this.state.saving && (
           <>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}
