@@ -1,17 +1,19 @@
 import * as React from "react";
-import PopupBase from "../../../../popups/universalPopups/popupBase";
-import UniversalButton from "../../../../components/universalButtons/universalButton";
 import { graphql } from "@apollo/client/react/hoc";
 import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
+import { AppContext } from "../../../../common/functions";
+import UniversalButton from "../../../../components/universalButtons/universalButton";
 import UniversalTextInput from "../../../../components/universalForms/universalTextInput";
+import PopupBase from "../../../../popups/universalPopups/popupBase";
 import {
   fetchPlans,
   fetchCompanyService,
   fetchCompanyServices
 } from "../../../../queries/products";
-import { AppContext } from "../../../../common/functions";
-import UniversalCheckbox from "../../../universalForms/universalCheckbox";
+import { fromPromise } from "@apollo/client";
 
 interface Props {
   service: any;
@@ -131,85 +133,91 @@ class CreateOrbit extends React.Component<Props, State> {
             additionalclassName="assignNewAccountPopup"
             buttonStyles={{ justifyContent: "space-between" }}>
             <h1>Create Orbit</h1>
+
             {this.props.service.needssubdomain && (
-              <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>
-                  <span>Domain:</span>
-                  {this.props.service.options.selfhosting && (
-                    <div style={{ alignItems: "center", display: "flex" }}>
-                      <UniversalCheckbox
-                        liveValue={e => this.setState({ selfhosting: e })}
-                        style={{ float: "left" }}
-                      />
-                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
-                        Selfhosting
-                      </span>
-                    </div>
-                  )}
-                </span>
-                <UniversalTextInput
-                  width="300px"
-                  id="domain"
-                  className="scrollable"
-                  inputStyles={{ minWidth: "100px" }}
-                  livevalue={value => {
-                    let domain = value;
-                    let protocol = undefined;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
-                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      protocol = this.state.protocol;
-                    }
-                    if (this.props.alias || this.state.aliastouched) {
-                      this.setState({ domain, protocol });
-                    } else {
-                      this.setState({ domain, protocol, alias: domain });
-                    }
-                  }}
-                  modifyValue={value => {
-                    let deletedPrefix = value;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
-                    }
-                    let deletedSuffix = deletedPrefix;
-                    if (
-                      this.props.orbit &&
-                      this.props.orbit.options &&
-                      this.props.orbit.options.afterdomain &&
-                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
-                    ) {
-                      deletedSuffix = deletedPrefix.substring(
-                        0,
-                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
-                      );
-                    }
-                    return deletedSuffix;
-                  }}
-                  prefix={
-                    this.state.selfhosting ? (
-                      <select
-                        className="universalTextInput"
-                        style={{ width: "75px" }}
-                        value={this.state.protocol}
-                        onChange={e => this.setState({ protocol: e.target.value })}>
-                        <option value="http://" key="http://">
-                          http://
-                        </option>
-                        <option value="https://" key="https://">
-                          https://
-                        </option>
-                      </select>
-                    ) : (
+              <>
+                <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
+                  <span style={{ lineHeight: "24px", width: "84px" }}>
+                    <span>Domain:</span>
+                  </span>
+                  <UniversalTextInput
+                    width="300px"
+                    id="domain"
+                    className="scrollable"
+                    inputStyles={{ minWidth: "100px" }}
+                    livevalue={value => {
+                      let domain = value;
+                      let protocol = undefined;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                        domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                      } else {
+                        protocol = this.state.protocol;
+                      }
+
+                      if (this.props.alias || this.state.aliastouched) {
+                        this.setState({ domain, protocol });
+                      } else {
+                        this.setState({ domain, protocol, alias: domain });
+                      }
+                    }}
+                    modifyValue={value => {
+                      let deletedPrefix = value;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
+                      }
+                      let deletedSuffix = deletedPrefix;
+                      if (
+                        this.props.orbit &&
+                        this.props.orbit.options &&
+                        this.props.orbit.options.afterdomain &&
+                        deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                      ) {
+                        deletedSuffix = deletedPrefix.substring(
+                          0,
+                          deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                        );
+                      }
+                      return deletedSuffix;
+                    }}
+                    prefix={
+                      this.state.selfhosting ? (
+                        <select
+                          className="universalTextInput"
+                          style={{ width: "75px" }}
+                          value={this.state.protocol}
+                          onChange={e => this.setState({ protocol: e.target.value })}>
+                          <option value="http://" key="http://">
+                            http://
+                          </option>
+                          <option value="https://" key="https://">
+                            https://
+                          </option>
+                        </select>
+                      ) : (
                         this.props.service.options.predomain
                       )
-                  }
-                  suffix={
-                    this.state.selfhosting ? undefined : this.props.service.options.afterdomain
-                  }
-                />
-              </div>
+                    }
+                    suffix={
+                      this.state.selfhosting ? undefined : this.props.service.options.afterdomain
+                    }
+                  />
+                </div>
+
+                {this.props.service.options.selfhosting && (
+                  <div style={{ margin: "-12px 0 24px 84px" }}>
+                    <Checkbox
+                      title="Self-hosting"
+                      name="checkbox_self-hosting"
+                      small={true}
+                      handleChange={e => this.setState({ selfhosting: e })}>
+                      Self-hosting
+                    </Checkbox>
+                  </div>
+                )}
+              </>
             )}
+
             <div style={{ display: "flex", alignItems: "center", marginBottom: "24px" }}>
               <span style={{ lineHeight: "24px", width: "84px" }}>Alias:</span>
               <UniversalTextInput
@@ -247,20 +255,20 @@ class CreateOrbit extends React.Component<Props, State> {
                 <div
                   className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                     this.state.error ? "loadError" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}></div>
+                    }`}></div>
                 </div>
                 <div
                   className={`circeSave ${this.state.saved ? "loadCompletes" : ""} ${
                     this.state.error ? "loadErrors" : ""
-                    }`}>
+                  }`}>
                   <div
                     className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                       this.state.error ? "load-error" : ""
-                      }`}>
+                    }`}>
                     <div
                       className="checkmark draw"
                       style={this.state.saved ? { display: "block" } : {}}
