@@ -1,17 +1,16 @@
 import * as React from "react";
-import UniversalButton from "../universalButtons/universalButton";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
 import { shell } from "electron";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import { emailRegex, PW_MIN_LENGTH } from "../../common/constants";
-import welcomeBack from "../../../images/welcome_back.png";
+import { Checkbox, Link } from "@vipfy-private/vipfy-ui-lib";
+
+import { emailRegex } from "../../common/constants";
 import * as crypto from "../../common/crypto";
 import { computePasswordScore } from "../../common/passwords";
-import IconButton from "../../common/IconButton";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import UniversalButton from "../universalButtons/universalButton";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 const SIGNUP = gql`
   mutation onSignUp(
@@ -54,9 +53,9 @@ interface Props {
 interface State {
   email: string;
   company: string;
-  privacy: Boolean;
+  privacy: boolean;
   tos: boolean;
-  register: Boolean;
+  register: boolean;
   passwordData: Password;
   error: string;
 }
@@ -178,31 +177,35 @@ class RegisterCompany extends React.Component<Props, State> {
           additionalPasswordChecks={[this.state.email, this.state.company]}
         />
 
-        <UniversalCheckbox
-          name="tos"
-          liveValue={v => this.setState({ tos: v })}
-          checkboxSmall={true}
-          style={{ marginTop: "16px" }}>
-          <div className="agreementText">
-            By registering I agree to the
-            <a onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-              VIPFY Terms of Service
-            </a>
-          </div>
-        </UniversalCheckbox>
+        <div style={{ display: "flex", alignItems: "center", marginTop: "16px" }}>
+          <Checkbox
+            title="Terms of service agreement"
+            name="tos"
+            handleChange={v => this.setState({ tos: v })}>
+            <span className="agreementText">By registering I agree to the</span>
+          </Checkbox>
+          <Link
+            label="VIPFY Terms of Service"
+            className="cta agreementText"
+            style={{ marginLeft: "4px" }}
+            onClick={() => shell.openExternal("https://vipfy.store/tos")}
+          />
+        </div>
 
-        <UniversalCheckbox
-          name="privacy"
-          liveValue={v => this.setState({ privacy: v })}
-          checkboxSmall={true}
-          style={{ marginTop: "16px" }}>
-          <div className="agreementText">
-            By registering I agree to the
-            <a onClick={() => shell.openExternal("https://vipfy.store/privacy")}>
-              VIPFY Privacy Agreement
-            </a>
-          </div>
-        </UniversalCheckbox>
+        <div style={{ display: "flex", alignItems: "center", marginTop: "16px" }}>
+          <Checkbox
+            title="Privacy agreement"
+            name="privacy"
+            handleChange={v => this.setState({ privacy: v })}>
+            <span className="agreementText">By registering I agree to the</span>
+          </Checkbox>
+          <Link
+            label="VIPFY Privacy Agreement"
+            className="cta agreementText"
+            style={{ marginLeft: "4px" }}
+            onClick={() => shell.openExternal("https://vipfy.store/privacy")}
+          />
+        </div>
 
         <UniversalButton
           label="Sign up for free"
@@ -217,6 +220,7 @@ class RegisterCompany extends React.Component<Props, State> {
           onClick={this.continue}
           customButtonStyles={{ width: "100%", marginTop: "24px", marginBottom: "16px" }}
         />
+
         {this.state.register && (
           <PopupBase
             close={() => this.setState({ register: false, error: "" })}
@@ -234,13 +238,13 @@ class RegisterCompany extends React.Component<Props, State> {
                 />
               </React.Fragment>
             ) : (
-                <div>
-                  <div style={{ fontSize: "32px", textAlign: "center" }}>
-                    <i className="fal fa-spinner fa-spin" />
-                    <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
-                  </div>
+              <div>
+                <div style={{ fontSize: "32px", textAlign: "center" }}>
+                  <i className="fal fa-spinner fa-spin" />
+                  <div style={{ marginTop: "32px", fontSize: "16px" }}>Setting up your company</div>
                 </div>
-              )}
+              </div>
+            )}
           </PopupBase>
         )}
       </div>
