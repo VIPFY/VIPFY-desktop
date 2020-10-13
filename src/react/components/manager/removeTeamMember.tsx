@@ -1,14 +1,14 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
 import { graphql } from "@apollo/client/react/hoc";
-import compose from "lodash.flowright";
 import gql from "graphql-tag";
+import compose from "lodash.flowright";
 import moment, { now } from "moment";
-import Calendar from "react-calendar";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
+import PopupBase from "../../popups/universalPopups/popupBase";
 import { fetchTeam, fetchTeams, fetchUserLicences } from "../../queries/departments";
+import { AppIcon } from "../ThingPicture";
+import UniversalButton from "../universalButtons/universalButton";
 
 interface Props {
   employee: any;
@@ -63,8 +63,10 @@ class RemoveTeamMember extends React.Component<Props, State> {
       )
       .map(asa => ({ id: asa.assignmentid, bool: false }))
   };
+
   printAssignments() {
     const assignments: JSX.Element[] = [];
+
     if (this.props.employee.assignments) {
       this.props.employee.assignments
         .filter(
@@ -76,71 +78,43 @@ class RemoveTeamMember extends React.Component<Props, State> {
         )
         .forEach((asa, k) => {
           assignments.push(
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "16px"
-              }}>
-              <span
-                style={{
-                  lineHeight: "24px",
-                  width: "84px",
-                  display: "flex",
-                  justifyContent: "center"
+            <div style={{ marginBottom: "16px" }}>
+              <Checkbox
+                title="Check to delete assignment"
+                name={`checkbox_delete_assignment__${k}`}
+                checked={this.state.deleteArray[k] && this.state.deleteArray[k].bool}
+                handleChange={v => {
+                  if (v) {
+                    this.setState(
+                      oldstate => (oldstate.deleteArray[k] = { id: asa.assignmentid, bool: v })
+                    );
+                  }
                 }}>
-                <UniversalCheckbox
-                  name={`Assignments-${k}`}
-                  liveValue={v => {
-                    if (v) {
-                      this.setState(
-                        oldstate => (oldstate.deleteArray[k] = { id: asa.assignmentid, bool: v })
-                      );
-                    }
-                  }}
-                  startingvalue={this.state.deleteArray[k] && this.state.deleteArray[k].bool}
-                />
-              </span>
-
-              <span
-                style={{
-                  lineHeight: "24px",
-                  alignItems: "center",
-                  width: "calc(100% - 84px)",
-                  display: "flex"
-                }}>
-                <PrintServiceSquare
-                  service={asa.boughtplanid.planid.appid}
-                  appidFunction={e => e}
-                  size={24}
-                  additionalStyles={{
-                    lineHeight: "24px",
-                    width: "24px",
-                    height: "24px",
-                    fontSize: "13px",
-                    marginTop: "0px",
-                    marginLeft: "0px"
-                  }}
-                />
-                <div style={{ marginLeft: "8px" }}>{asa.alias}</div>
-              </span>
+                <span style={{ display: "flex", alignItems: "center" }}>
+                  <AppIcon id={asa.boughtplanid.planid.appid} size={24} />
+                  <div style={{ marginLeft: "8px" }}>{asa.alias}</div>
+                </span>
+              </Checkbox>
             </div>
           );
         });
     }
+
     return assignments;
   }
 
   render() {
     const employee = this.props.employee;
+
     return (
       <PopupBase
         small={true}
         close={() => this.props.close()}
         nooutsideclose={true}
-        additionalclassName="assignNewAccountPopup"
         buttonStyles={{ justifyContent: "space-between" }}>
-        <h1>Remove Member</h1>
+        <h1 style={{ display: "block", textAlign: "center", marginBottom: "24px" }}>
+          Remove Member
+        </h1>
         {/* Quick fix. Database has to be changed
         <div style={{ position: "relative", marginLeft: "16px" }}>
           <div
@@ -196,58 +170,29 @@ class RemoveTeamMember extends React.Component<Props, State> {
             )}
           </div>
                 </div>*/}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "16px"
-          }}>
-          <span
-            style={{
-              lineHeight: "24px",
-              width: "84px",
-              display: "flex",
-              justifyContent: "center"
-            }}></span>
-          <span style={{ lineHeight: "24px", fontSize: "12px" }}>Check to delete assignment</span>
-        </div>
-        {this.printAssignments()}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            borderTop: "1px solid",
-            paddingTop: "8px"
-          }}>
-          <span
-            style={{
-              lineHeight: "24px",
-              width: "84px",
-              display: "flex",
-              justifyContent: "center"
-            }}>
-            <UniversalCheckbox
-              name="auto-delete"
-              liveValue={v => {
-                this.setState({ autodelete: v });
-              }}
-              startingvalue={this.state.autodelete}
-            />
-          </span>
 
-          <span
-            style={{ lineHeight: "24px", fontSize: "12px" }}
-            onClick={() =>
-              this.setState(oldstate => {
-                return {
-                  autodelete: !oldstate.autodelete
-                };
-              })
-            }>
+        <h3 style={{ marginBottom: "16px" }}>Check to delete assignment</h3>
+        {this.printAssignments()}
+
+        <hr />
+
+        <div
+          style={{
+            paddingTop: "16px"
+          }}>
+          <Checkbox
+            title="Also delete account/orbit if no assignment left"
+            name="auto-delete"
+            checked={this.state.autodelete}
+            handleChange={v => {
+              this.setState({ autodelete: v });
+            }}>
             Also delete account/orbit if no assignment left
-          </span>
+          </Checkbox>
         </div>
+
         <UniversalButton type="low" label="Cancel" onClick={() => this.props.close()} />
+
         <UniversalButton
           type="high"
           label="Save"
@@ -283,20 +228,20 @@ class RemoveTeamMember extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}
@@ -320,6 +265,7 @@ class RemoveTeamMember extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(graphql(REMOVE_MEMBER_FROM_TEAM, { name: "removeMemberFromTeam" }))(
   RemoveTeamMember
 );
