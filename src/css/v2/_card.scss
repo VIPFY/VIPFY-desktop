@@ -1,32 +1,26 @@
 .card {
+  border: 1px solid $lightgrey-lightest;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 1px 1px #00000026;
-  border: 1px solid #f4f5f7;
-  font-size: 14px;
   background-color: $white;
-
-  &:hover {
-    .cardButton {
-      opacity: 1;
-    }
-  }
+  font-size: 14px;
+  overflow: hidden;
 
   &.clickable:hover {
     box-shadow: 0 3px 4px #00000026;
     cursor: pointer;
   }
 
-  .header {
+  .cardHeader {
     display: flex;
     align-items: center;
 
-    .pic {
+    .cardPic {
       display: flex;
       margin-right: 16px;
     }
 
-    .title {
+    .cardTitle {
       display: flex;
       flex-grow: 1;
       font-weight: 500;
@@ -38,24 +32,14 @@
     }
   }
 
-  > hr {
-    border: none;
-    border-top: 1px solid $lightgrey-dark;
-    margin: 0 16px;
-
-    &:last-child {
-      display: none;
-    }
-  }
-
   .cardSection {
     padding: 16px;
   }
 
-  .picHolder {
+  .cardPicHolder {
     position: relative;
 
-    .pic {
+    .cardPic {
       position: absolute;
       top: 0;
       left: 0;
@@ -73,28 +57,13 @@
     }
   }
 
-  .cardButton {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 32px;
-    cursor: pointer;
-    transition: background-color 200ms ease-in-out, opacity 200ms ease-in-out;
-    opacity: 0;
+  > hr {
+    border: none;
+    border-top: 1px solid $lightgrey-dark;
+    margin: 0 16px;
 
-    &:hover,
-    &:active {
-      background-color: $lightgrey-light;
-    }
-
-    &:focus {
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      border: 1px solid $primarygreen;
-      outline: none;
+    &:last-child {
+      display: none;
     }
   }
 }
