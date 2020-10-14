@@ -2,7 +2,7 @@ import * as React from "react";
 import { withRouter } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import classNames from "classnames";
-import { Button, BreadCrumbs } from "@vipfy-private/vipfy-ui-lib";
+import { Button } from "@vipfy-private/vipfy-ui-lib";
 import UniversalSearchBox from "../components/universalSearchBox";
 import { AppContext } from "../common/functions";
 import routes from "../routes";
@@ -104,7 +104,7 @@ class PageHeader extends React.PureComponent<PageHeaderProps, PageHeaderState> {
             className="backButton"
             fAIcon="fa-angle-left"
           />
-          {showBreadCrumbs && <BreadCrumbs NavLink={NavLink} routes={routes} />}
+          {/* {showBreadCrumbs && <BreadCrumbs NavLink={NavLink} routes={routes} />} */}
         </div>
 
         <div className="titleRow">

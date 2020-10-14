@@ -2,12 +2,11 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, Checkbox, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Button, Checkbox, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import CardSection from "../../components/CardSection";
-import SeparatedSection from "../../components/SeparatedSection";
-import ProsConsList from "../../components/marketplace/ProsConsList";
 import PageHeader from "../../components/PageHeader";
+import SeparatedSection from "../../components/SeparatedSection";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -414,13 +413,13 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
           <div className="marketplaceContent">
             <CardSection>
               <div className="card serviceCard">
-                <CardSection className="header" style={{ padding: "24px 0" }}>
-                  <div className="pic">
+                <CardSection className="cardHeader" style={{ padding: "24px 0" }}>
+                  <div className="cardPic">
                     <ServiceLogo icon={DUMMY_APP.icon} size={136} className="smHide" />
                     <ServiceLogo icon={DUMMY_APP.icon} size={112} className="lgHide" />
                   </div>
 
-                  <div className="title details">
+                  <div className="cardTitle details">
                     <h3>{DUMMY_APP.name}</h3>
                     <div>
                       <StarRating stars={3.4} />
@@ -475,7 +474,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
               <div className="grid3Cols">
                 {DUMMY_APP.pics.map((pic, i) => (
                   <div key={i} className="card">
-                    <div className="picHolder">
+                    <div className="cardPicHolder">
                       <img src={pic} className="servicePreviewPic" />
                     </div>
                   </div>

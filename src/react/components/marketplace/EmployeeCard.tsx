@@ -18,16 +18,16 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
 
     return (
       <div className="card employeeCard">
-        <CardSection className="header">
+        <CardSection className="cardHeader">
           <EmployeePicture
-            className="pic"
+            className="cardPic"
             size={40}
             employee={employee}
             circle={true}
             style={{ marginTop: "0", fontSize: "14px" }}
           />
 
-          <div className="title">{concatName(employee)}</div>
+          <div className="cardTitle">{concatName(employee)}</div>
 
           <div>
             <Checkbox

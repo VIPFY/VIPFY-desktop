@@ -1,11 +1,10 @@
 import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
-import { Checkbox, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import CardSection from "../CardSection";
-import ProsConsList from "./ProsConsList";
 
 interface AppOverviewCardProps {
   app: App;
@@ -33,10 +32,10 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
   ) {
     return (
       <>
-        <div className="pic">
+        <div className="cardPic">
           <ServiceLogo icon={this.props.app.icon} />
         </div>
-        <div className="title">
+        <div className="cardTitle">
           <div>
             {this.props.app.name}
             <div className="starRatingHolder">
@@ -75,11 +74,11 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         style={style}>
         {renderPic && (
           <div className="cardSection picSection" style={{ backgroundColor: color }}>
-            <div className="picHolder">
+            <div className="cardPicHolder">
               <img
                 src={app.pic}
                 alt="App Image"
-                className="pic"
+                className="cardPic"
                 style={{ objectPosition: isWideFormat ? "center center" : "center top" }}
               />
             </div>
@@ -87,11 +86,11 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
         )}
 
         {renderPic ? (
-          <CardSection className="header">
+          <CardSection className="cardHeader">
             {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </CardSection>
         ) : (
-          <div className="cardSection header" style={{ backgroundColor: color }}>
+          <div className="cardSection cardHeader" style={{ backgroundColor: color }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </div>
         )}
