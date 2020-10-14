@@ -2,9 +2,17 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, Checkbox, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import {
+  Button,
+  Card,
+  CardSection,
+  Checkbox,
+  ProsConsList,
+  ServiceLogo,
+  StarRating,
+  Tag
+} from "@vipfy-private/vipfy-ui-lib";
 
-import CardSection from "../../components/CardSection";
 import PageHeader from "../../components/PageHeader";
 import SeparatedSection from "../../components/SeparatedSection";
 
@@ -360,7 +368,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     color: string
   ) => {
     return (
-      <div className="card">
+      <Card>
         <CardSection>
           <h3>{headline}</h3>
         </CardSection>
@@ -383,20 +391,20 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             );
           })}
         </CardSection>
-      </div>
+      </Card>
     );
   };
 
   renderProsAndConsCard = (headline: string, prosCons: string[], type: "pros" | "cons") => {
     return (
-      <div className="card">
+      <Card>
         <CardSection>
           <h3>{headline}</h3>
         </CardSection>
         <CardSection>
           <ProsConsList points={prosCons} type={type} />
         </CardSection>
-      </div>
+      </Card>
     );
   };
 
@@ -412,7 +420,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
           <div className="marketplaceContent">
             <CardSection>
-              <div className="card serviceCard">
+              <Card className="serviceCard">
                 <CardSection className="cardHeader" style={{ padding: "24px 0" }}>
                   <div className="cardPic">
                     <ServiceLogo icon={DUMMY_APP.icon} size={136} className="smHide" />
@@ -466,18 +474,18 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                     Compare Service
                   </Checkbox>
                 </CardSection>
-              </div>
+              </Card>
             </CardSection>
 
             <CardSection className="previewSection">
               <h2>Preview</h2>
               <div className="grid3Cols">
                 {DUMMY_APP.pics.map((pic, i) => (
-                  <div key={i} className="card">
+                  <Card key={i}>
                     <div className="cardPicHolder">
                       <img src={pic} className="servicePreviewPic" />
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             </CardSection>
@@ -503,14 +511,14 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Quotes</h2>
                 <div className="grid3Cols smGrid1Col">
                   {DUMMY_APP.reviews.map((review, i) => (
-                    <div className="card" key={i}>
+                    <Card key={i}>
                       <CardSection>
                         <blockquote>{review.text}</blockquote>
                       </CardSection>
                       <CardSection>
                         {review.reviewer}, {review.industry}
                       </CardSection>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </CardSection>
@@ -549,7 +557,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Ratings</h2>
                 <div className="grid4Cols smGrid2Cols">
                   {DUMMY_APP.ratings.map((rating, i) => (
-                    <div className="card" key={i}>
+                    <Card key={i}>
                       <CardSection>
                         <h3>{rating.aspect}</h3>
                       </CardSection>
@@ -569,7 +577,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                           />
                         </div>
                       </CardSection>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </CardSection>
@@ -580,12 +588,9 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Plans</h2>
                 <div className="plans">
                   {DUMMY_APP.plans.map((plan, i) => (
-                    <div
-                      className="card clickable"
-                      key={i}
-                      onClick={() => this.goToCheckout(DUMMY_APP.id, plan.id)}>
+                    <Card key={i} onClick={() => this.goToCheckout(DUMMY_APP.id, plan.id)}>
                       <PlanSection plan={plan} />
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </CardSection>
@@ -596,7 +601,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Alternatives</h2>
                 <div className="grid3Cols smGrid2Cols">
                   {DUMMY_APP.alternatives.map(alternative => (
-                    <div className="card alternative" key={alternative.id}>
+                    <Card className="alternative" key={alternative.id}>
                       <div>
                         <ServiceLogo icon={DUMMY_APP.icon} />
                         {DUMMY_APP.name}
@@ -606,7 +611,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                         <ServiceLogo icon={alternative.icon} />
                         {alternative.name}
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </CardSection>
