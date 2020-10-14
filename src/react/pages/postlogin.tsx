@@ -1,13 +1,15 @@
 import * as React from "react";
 import { withApollo } from "@apollo/client/react/hoc";
 import { Query } from "@apollo/client/react/components";
+import moment from "moment";
+import { Card } from "@vipfy-private/vipfy-ui-lib";
+
 import { me } from "../queries/auth";
 import LoadingDiv from "../components/LoadingDiv";
 import Area from "./area";
 import PasswordChange from "../components/signin/PasswordChange";
 import FirstLogin from "../components/signin/FirstLogin";
 import GoogleAuth from "../popups/universalPopups/GoogleAuth";
-import moment from "moment";
 import { concatName } from "../common/functions";
 import { WorkAround, Expired_Plan } from "../interfaces";
 import { FETCH_VIPFY_PLAN } from "../queries/departments";
@@ -90,12 +92,12 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (data.me.firstlogin && !this.state.firstLogin && !isImpersonating) {
             return (
               <div className="loginHolder">
-                <div className="card loginCard">
+                <Card className="loginCard">
                   <FirstLogin
                     setFirstLogin={() => this.setState({ firstLogin: true })}
                     {...pureProps}
                   />
-                </div>
+                </Card>
               </div>
             );
           }
@@ -103,9 +105,9 @@ class PostLogin extends React.Component<PostLoginProps, State> {
           if (data.me.needspasswordchange && !this.reachedArea && !isImpersonating) {
             return (
               <div className="loginHolder">
-                <div className="card loginCard">
+                <Card className="loginCard">
                   <PasswordChange firstLogin={this.state.firstLogin} {...pureProps} />
-                </div>
+                </Card>
               </div>
             );
           }
