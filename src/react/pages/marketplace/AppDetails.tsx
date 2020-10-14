@@ -421,7 +421,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
           <div className="marketplaceContent">
             <CardSection>
               <Card className="serviceCard">
-                <CardSection className="cardHeader" style={{ padding: "24px 0" }}>
+                <CardSection className="cardHeader">
                   <div className="cardPic">
                     <ServiceLogo icon={DUMMY_APP.icon} size={136} className="smHide" />
                     <ServiceLogo icon={DUMMY_APP.icon} size={112} className="lgHide" />
