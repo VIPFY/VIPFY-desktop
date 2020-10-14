@@ -1,10 +1,9 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client/react/hooks";
-import { Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Card, CardSection, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import { Licence } from "../interfaces";
-import CardSection from "./CardSection";
 import ServiceLogo from "./services/ServiceLogo";
 
 interface Props {
@@ -46,21 +45,22 @@ export default (props: Props) => {
 
   const name = alias ? alias : planid.appid.name;
   const isFavorite = tags.indexOf("favorite") > -1;
-  const [addFavorite] = useMutation(ADD_FAVORITE);
-  const [removeFavorite] = useMutation(REMOVE_FAVORITE);
   const tagIcon = rightscount > 1 ? "fal fa-users" : "fal fa-user";
 
+  const [addFavorite] = useMutation(ADD_FAVORITE);
+  const [removeFavorite] = useMutation(REMOVE_FAVORITE);
+
   return (
-    <div
-      title={props.tileTitle || name}
-      className={"card clickable"}
-      onClick={() => props.setTeam && props.setTeam(id)}>
+    <Card title={props.tileTitle || name} onClick={() => props.setTeam && props.setTeam(id)}>
       <CardSection className="service-box-top">
         <ServiceLogo icon={planid.appid.icon} size={40} />
+
         <h2 className="service-box-top-text">{planid.appid.name}</h2>
+
         <i
           onClick={async e => {
             e.stopPropagation();
+
             if (isFavorite) {
               await removeFavorite({
                 variables: { id }
@@ -81,6 +81,6 @@ export default (props: Props) => {
           {name}
         </Tag>
       </CardSection>
-    </div>
+    </Card>
   );
 };
