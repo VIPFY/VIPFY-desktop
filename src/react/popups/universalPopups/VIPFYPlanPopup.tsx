@@ -1,18 +1,19 @@
 import * as React from "react";
 import { Query, Mutation } from "@apollo/client/react/components";
 import gql from "graphql-tag";
-import PopupBase from "./popupBase";
-import UniversalButton from "../../components/universalButtons/universalButton";
-import { Expired_Plan, WorkAround } from "../../interfaces";
-import LoadingDiv from "../../components/LoadingDiv";
+import { shell } from "electron";
+import moment from "moment";
+import { Checkbox, Link } from "@vipfy-private/vipfy-ui-lib";
+
 import { ErrorComp } from "../../common/functions";
 import VIPFYPlan from "../../common/VIPFYPlan";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
-import { shell } from "electron";
-import { FETCH_CARDS } from "../../queries/billing";
 import StripeForm from "../../components/billing/StripeForm";
+import LoadingDiv from "../../components/LoadingDiv";
+import UniversalButton from "../../components/universalButtons/universalButton";
+import { Expired_Plan, WorkAround } from "../../interfaces";
 import { SET_VAT_ID } from "../../mutations/department";
-import moment from "moment";
+import { FETCH_CARDS } from "../../queries/billing";
+import PopupBase from "./popupBase";
 
 const SELECT_VIPFY_PLAN = gql`
   mutation onSelectVIPFYPlan($planid: ID!, $tos: Boolean!) {
@@ -86,7 +87,7 @@ export default (props: Props) => {
 
           const PlanSelect = (
             <React.Fragment>
-              <p>Please select a new Plan</p>
+              <p>Please select a new plan</p>
               <form
                 onSubmit={e => {
                   e.preventDefault();
@@ -125,7 +126,7 @@ export default (props: Props) => {
             <Mutation<WorkAround, WorkAround> mutation={SET_VAT_ID} onCompleted={() => setStep(4)}>
               {(mutate, { loading: l3, error: e3 }) => (
                 <React.Fragment>
-                  <p>Please enter your vatnumber</p>
+                  <p>Please enter your VAT number</p>
                   <form
                     id="vat-form"
                     onSubmit={e => {
@@ -134,11 +135,11 @@ export default (props: Props) => {
                       mutate({ variables: { vatID } });
                     }}>
                     <input
-                      title="A vat number has this format FR2234234"
+                      title="A VAT number has this format: FR2234234"
                       className="universalTextInput"
                       pattern="(^[A-Z]{2})([A-Z0-9 ]{2,16})"
                       required
-                      placeholder="Your vatnumber"
+                      placeholder="Your VAT number"
                     />
                     <ErrorComp error={e3} />
                     <UniversalButton disabled={l3} type="high" label="Add" form="vat-form" />
@@ -163,8 +164,8 @@ export default (props: Props) => {
 
                   {!currentPlan.firstPlan && (
                     <div className="vipfy-plan-notice">
-                      Your new plan will start on <b>{calculateEndtime()}</b>. Until then, your
-                      current plan is active.
+                      Your new plan will start on <b>{calculateEndtime()}</b>. Until then your
+                      current plan will remain active.
                     </div>
                   )}
 
@@ -172,7 +173,7 @@ export default (props: Props) => {
                     <div className="vipfy-plan-notice">
                       {`Currently there ${company.employees > 1 ? "are" : "is"} ${
                         company.employees
-                      } User${
+                      } user${
                         company.employees > 1 ? "s" : ""
                       } in this company. You will pay a total of `}
                       <b>
@@ -186,18 +187,20 @@ export default (props: Props) => {
                     </div>
                   )}
 
-                  <UniversalCheckbox name="tos" disabled={l2} liveValue={value => toggleTos(value)}>
-                    <span style={{ lineHeight: "18px" }}>
-                      I agree to the{" "}
-                      <span
-                        style={{ color: "#20BAA9" }}
-                        className="fancy-link"
-                        onClick={() => shell.openExternal("https://vipfy.store/tos")}>
-                        Terms of Service
-                      </span>{" "}
-                      of VIPFY.
-                    </span>
-                  </UniversalCheckbox>
+                  <div className="tosAgreement">
+                    <Checkbox
+                      title="Terms of service agreement"
+                      name="tos"
+                      handleChange={value => toggleTos(value)}>
+                      <span className="agreementText">I agree to the</span>
+                    </Checkbox>
+                    <Link
+                      label="VIPFY Terms of Service"
+                      className="cta agreementText"
+                      onClick={() => shell.openExternal("https://vipfy.store/tos")}
+                    />
+                  </div>
+
                   <p className="legal-notice">{`By clicking the order button you agree to a contract between ${
                     company.name
                   } and VIPFY GmbH. The resulting subscription can be cancelled every ${
@@ -209,7 +212,7 @@ export default (props: Props) => {
                   <ErrorComp error={e2} />
 
                   {d2 && d2.selectVIPFYPlan && (
-                    <div className="success">Thank you for selecting a VIPFY Plan</div>
+                    <div className="success">Thank you for selecting a VIPFY plan</div>
                   )}
 
                   <UniversalButton
