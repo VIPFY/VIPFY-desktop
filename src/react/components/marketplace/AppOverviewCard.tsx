@@ -1,10 +1,16 @@
 import * as React from "react";
 import classNames from "classnames";
 import chroma from "chroma-js";
-import { Checkbox, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import {
+  Card,
+  CardSection,
+  Checkbox,
+  ProsConsList,
+  ServiceLogo,
+  StarRating,
+  Tag
+} from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
-
-import CardSection from "../CardSection";
 
 interface AppOverviewCardProps {
   app: App;
@@ -68,12 +74,12 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
     const color = chroma.mix(app.color, "white", 0.7).hex();
 
     return (
-      <div
+      <Card
         onClick={onClick}
-        className={classNames("card appOverviewCard clickable", { wide: isWideFormat })}
+        className={classNames("appOverviewCard", { wide: isWideFormat })}
         style={style}>
         {renderPic && (
-          <div className="cardSection picSection" style={{ backgroundColor: color }}>
+          <div className="vipuiCardSection picSection" style={{ backgroundColor: color }}>
             <div className="cardPicHolder">
               <img
                 src={app.pic}
@@ -90,7 +96,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
             {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </CardSection>
         ) : (
-          <div className="cardSection cardHeader" style={{ backgroundColor: color }}>
+          <div className="vipuiCardSection cardHeader" style={{ backgroundColor: color }}>
             {this.renderMainInfo(isWideFormat, hasFreeTrial, averageRating, showPriceTags)}
           </div>
         )}
@@ -130,7 +136,7 @@ class AppOverviewCard extends React.PureComponent<AppOverviewCardProps> {
             Compare Service
           </Checkbox>
         </CardSection>
-      </div>
+      </Card>
     );
   }
 }
