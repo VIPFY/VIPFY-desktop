@@ -1,14 +1,12 @@
 import * as React from "react";
 import Login from "../components/signin/login";
-import ChangeAccount from "../components/dataForms/ChangeAccount";
-import AddMachineUser from "../components/signin/addMachineUser";
 import Store from "electron-store";
+import { Card, CardSection } from "@vipfy-private/vipfy-ui-lib";
+
 import RegisterCompany from "../components/signin/companyRegister";
 import PasswordRecovery from "../components/signin/PasswordRecovery";
 import NewPassword from "../components/signin/NewPassword";
-import RecoveryKey from "../components/signin/RecoveryKey";
 import TwoFactor from "./TwoFactor";
-import CardSection from "../components/CardSection";
 
 interface Props {
   login: Function;
@@ -143,10 +141,10 @@ class SignIn extends React.Component<Props, State> {
   render() {
     return (
       <div className="loginHolder">
-        <div className="card loginCard">
+        <Card className="loginCard">
           <CardSection>{this.loginComponent()}</CardSection>
           {!this.props.twoFactor && <CardSection>{this.printNavLink()}</CardSection>}
-        </div>
+        </Card>
       </div>
     );
   }
