@@ -1,9 +1,9 @@
 import * as React from "react";
-import CardSection from "../CardSection";
+import { Card, CardSection } from "@vipfy-private/vipfy-ui-lib";
 
 export default ({ brand, exp_month, exp_year, last4, name, remove, droppedOn, id }) => (
-  <div
-    className="card paymentCard clickable"
+  <Card
+    className="paymentCard"
     draggable="true"
     onDragStart={e => e.dataTransfer.setData("dragid", id)}
     onDrop={e => {
@@ -30,6 +30,7 @@ export default ({ brand, exp_month, exp_year, last4, name, remove, droppedOn, id
         <i className="fal fa-trash-alt"></i>
       </div>
     </CardSection>
+
     <CardSection>
       <div className="cardName">{name}</div>
       <div className="creditCardNumber">
@@ -45,5 +46,5 @@ export default ({ brand, exp_month, exp_year, last4, name, remove, droppedOn, id
         {exp_month}/{exp_year}
       </div>
     </CardSection>
-  </div>
+  </Card>
 );
