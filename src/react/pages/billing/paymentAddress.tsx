@@ -3,22 +3,33 @@ import { Component } from "react";
 import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import CardSection from "../../components/CardSection";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalDropdownInput from "../../components/universalForms/universalDropdownInput";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
-import PageHeader from "../../components/PageHeader";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { EDIT_DEPARTMENT } from "../../mutations/department";
 import { CREATE_ADDRESS } from "../../mutations/contact";
+import { NavLink } from "react-router-dom";
+import { AppContext } from "../../common/functions";
 
-interface Props { }
+interface Props {
+  history: any;
+  client: any;
+}
 
-interface State { }
+interface State {
+  emaildelete: string[];
+  emailadd: string[];
+  error: object;
+  companyName: string;
+  phone: string;
+}
 class PaymentAddress extends Component<Props, State> {
-  state = { emaildelete: [], emailadd: [], error: {} };
+  state = { emaildelete: [], emailadd: [], error: {}, companyName: "", phone: "" };
 
   save = async ({ addressId, phoneId, companyId, stripeid }) => {
     const promises = [];
@@ -345,8 +356,16 @@ class PaymentAddress extends Component<Props, State> {
             return (
               <div className="pageContent">
                 <PageHeader
+                  appContext={AppContext}
                   title="Billing contacts"
-                  showBreadCrumbs={true}
+                  history={this.props.history}
+                  breadCrumbs={{
+                    navLink: NavLink,
+                    routes: [
+                      { label: "Payment Method", to: "/area/paymentdata" },
+                      { label: "Billing Contacts", to: "/area/paymentdata/paymentaddress" }
+                    ]
+                  }}
                   buttonConfig={{
                     label: "Save",
                     onClick: async () => {
@@ -561,18 +580,18 @@ class PaymentAddress extends Component<Props, State> {
                                   prefix={this.state.country}
                                 />
                               ) : (
-                                  <UniversalCheckbox
-                                    name="WithoutTaxes"
-                                    startingvalue={vatstatus?.selfCheck}
-                                    style={{ height: "48px", alignItems: "center", display: "flex" }}
-                                    liveValue={valid => {
-                                      this.setState({ vat: { valid, selfCheck: true } });
-                                    }}
-                                    errorhint="Unable to save vat"
-                                    errorEvaluation={this.state.error.vat}>
-                                    I am a company that can accept invoices without tax.
-                                  </UniversalCheckbox>
-                                )}
+                                <UniversalCheckbox
+                                  name="WithoutTaxes"
+                                  startingvalue={vatstatus?.selfCheck}
+                                  style={{ height: "48px", alignItems: "center", display: "flex" }}
+                                  liveValue={valid => {
+                                    this.setState({ vat: { valid, selfCheck: true } });
+                                  }}
+                                  errorhint="Unable to save vat"
+                                  errorEvaluation={this.state.error.vat}>
+                                  I am a company that can accept invoices without tax.
+                                </UniversalCheckbox>
+                              )}
                             </div>
                           )}
                         </div>
@@ -695,4 +714,5 @@ class PaymentAddress extends Component<Props, State> {
     );
   }
 }
+
 export default PaymentAddress;

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import newMethod from "../../../images/undraw_pay_online_b1hk.png";
 import gql from "graphql-tag";
@@ -10,10 +9,13 @@ import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import CardSection from "../../components/CardSection";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupAddress from "../../popups/popupAddress";
-import PageHeader from "../../components/PageHeader";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { AppContext } from "../../common/functions";
+import { NavLink } from "react-router-dom";
 
 interface Props {
   client: any;
+  history: any;
 }
 
 interface State {
@@ -22,18 +24,30 @@ interface State {
   sameAddress: boolean;
   remove: any;
 }
-class PaymentMethod extends Component<Props, State> {
+class PaymentMethod extends React.Component<Props, State> {
   state = {
     edit: false,
     secret: "",
     sameAddress: true,
     remove: null
   };
+
   render() {
     return (
       <div className="page">
         <div className="pageContent">
-          <PageHeader title="Credit Cards" showBreadCrumbs={true} />
+          <PageHeader
+            title="Credit Cards"
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label: "Payment Method", to: "/area/paymentdata" },
+                { label: "Credit Cards", to: "/area/paymentdata/paymentmethod" }
+              ]
+            }}
+            history={this.props.history}
+            appContext={AppContext}
+          />
           <Query query={FETCH_PAYMENT_DATA}>
             {({ data, loading, error = null, refetch }) => {
               if (loading) {
@@ -155,23 +169,23 @@ class PaymentMethod extends Component<Props, State> {
                           </CardSection>
                         </>
                       ) : (
-                          <CardSection
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "center"
-                            }}>
-                            <div>
-                              <img src={newMethod} height={88} />
-                            </div>
-                            <UniversalButton
-                              label="Add new Card"
-                              type="low"
-                              customStyles={{ marginTop: "28px" }}
-                              onClick={async () => {
-                                let secret = null;
-                                secret = await this.props.client.mutate({
-                                  mutation: gql`
+                        <CardSection
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center"
+                          }}>
+                          <div>
+                            <img src={newMethod} height={88} />
+                          </div>
+                          <UniversalButton
+                            label="Add new Card"
+                            type="low"
+                            customStyles={{ marginTop: "28px" }}
+                            onClick={async () => {
+                              let secret = null;
+                              secret = await this.props.client.mutate({
+                                mutation: gql`
                                   mutation startRecurringBillingIntent {
                                     startRecurringBillingIntent {
                                       secret
@@ -179,16 +193,16 @@ class PaymentMethod extends Component<Props, State> {
                                     }
                                   }
                                 `
-                                });
-                                this.setState({
-                                  edit: true,
-                                  secret: secret.data.startRecurringBillingIntent.secret,
-                                  setupid: secret.data.startRecurringBillingIntent.setupid
-                                });
-                              }}
-                            />
-                          </CardSection>
-                        )}
+                              });
+                              this.setState({
+                                edit: true,
+                                secret: secret.data.startRecurringBillingIntent.secret,
+                                setupid: secret.data.startRecurringBillingIntent.setupid
+                              });
+                            }}
+                          />
+                        </CardSection>
+                      )}
                     </div>
                   </div>
                   {this.state.missingAddress && (
