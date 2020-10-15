@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
-import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { PageHeader, IconButton } from "@vipfy-private/vipfy-ui-lib";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import CardSection from "../../components/CardSection";
 import noCreditCard from "../../../images/no_creditcard.png";
@@ -44,12 +44,14 @@ const PaymentData: React.FC<Props> = props => (
                     height: "21px"
                   }}>
                   <h3 style={{ fontFamily: "Roboto medium" }}>Billing Address</h3>
-                  <div
-                    className="cardButton"
-                    onClick={() => props.moveTo("paymentData/paymentAddress")}>
-                    <i className="fal fa-pencil"></i>
-                  </div>
+                  <IconButton
+                    fAIcon="fal fa-pencil"
+                    title="Edit"
+                    className="ghost"
+                    onClick={() => props.moveTo("paymentData/paymentAddress")}
+                  />
                 </CardSection>
+
                 {paymentData.address || paymentData.emails || paymentData.vatstatus ? (
                   <>
                     <CardSection>
@@ -97,6 +99,7 @@ const PaymentData: React.FC<Props> = props => (
                         )}
                       </div>
                     </CardSection>
+
                     <CardSection>
                       {paymentData.emails ? (
                         paymentData.emails.map((e, k) => (
@@ -113,6 +116,7 @@ const PaymentData: React.FC<Props> = props => (
                         <span style={{ color: "red" }}>No Emails!</span>
                       )}
                     </CardSection>
+
                     <CardSection>
                       {paymentData.phone && (
                         <div style={{ lineHeight: "19px", marginBottom: "7px" }}>
@@ -137,6 +141,7 @@ const PaymentData: React.FC<Props> = props => (
                         )}
                       </div>
                     </CardSection>
+
                     {!(
                       paymentData.address &&
                       paymentData.emails &&
@@ -145,7 +150,7 @@ const PaymentData: React.FC<Props> = props => (
                     ) && (
                       <CardSection>
                         <div style={{ lineHeight: "19px" }}>
-                          It looks like you haven't set up your billing address completly yet.
+                          It looks like you haven't set up your billing address completely yet.
                           Unfortunately, in order to take full advantage of VIPFY's potential (such
                           as subscribing to services with just one click, or using VIPFY in your
                           team with more than 5 people), you will need to provide the missing
@@ -166,7 +171,7 @@ const PaymentData: React.FC<Props> = props => (
                       It looks like you haven't set a billing address yet. Unfortunately, in order
                       to take full advantage of VIPFY's potential (such as subscribing to services
                       with just one click, or using VIPFY in your team with more than 5 people), you
-                      will need to provide this information.
+                      will need to provide information.
                     </div>
                     <div
                       style={{
@@ -185,23 +190,26 @@ const PaymentData: React.FC<Props> = props => (
                 <CardSection
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    height: "21px"
+                    justifyContent: "center",
+                    marginBottom: "32px",
+                    marginTop: "32px"
                   }}>
                   <h3>Credit Cards</h3>
                   {paymentData.stripeid ? (
-                    <div
-                      className="cardButton"
-                      onClick={() => props.moveTo("paymentData/paymentMethod")}>
-                      <i className="fal fa-pencil"></i>
-                    </div>
+                    <IconButton
+                      fAIcon="fa-pencil"
+                      title="Edit"
+                      className="ghost"
+                      onClick={() => props.moveTo("paymentData/paymentMethod")}
+                    />
                   ) : (
-                    <div
-                      className="cardButton"
-                      title="You need to have a billing address and verify your company status before you can add creditcards">
-                      <i className="fal fa-exclamation"></i>
-                    </div>
+                    <IconButton
+                      fAIcon="fa-exclamation"
+                      title="You need to have a billing address and verify your company status before you can add credit cards."
+                      className="ghost"
+                      style={{ cursor: "inherit" }}
+                      onClick={() => {}}
+                    />
                   )}
                 </CardSection>
                 {paymentData.cards && paymentData.cards.length > 0 ? (
@@ -236,7 +244,7 @@ const PaymentData: React.FC<Props> = props => (
                       minHeight: "242px"
                     }}>
                     <div style={{ lineHeight: "1.2em" }}>
-                      It looks like you haven't provide credit card information yet. Enter your
+                      It looks like you haven't provided credit card information yet. Enter your
                       credit card details quickly and there is nothing to stop you from making a
                       safe, fast and successful start into the future of your business.
                     </div>

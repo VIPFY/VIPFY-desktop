@@ -25,11 +25,11 @@
       padding: 16px 0;
     }
 
-    .header {
+    .cardHeader {
       display: flex;
       justify-content: space-between;
 
-      .pic {
+      .cardPic {
         margin-right: 24px;
       }
 
@@ -90,7 +90,7 @@
       padding: 16px;
     }
 
-    .picHolder {
+    .cardPicHolder {
       padding-top: 75%;
 
       .servicePreviewPic {

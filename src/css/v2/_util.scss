@@ -23,7 +23,7 @@
     @include grid;
     grid-template-columns: 1fr;
 
-    .picHolder {
+    .cardPicHolder {
       padding-top: 26%;
     }
   }
@@ -34,7 +34,7 @@
     @include grid;
     grid-template-columns: repeat(2, 1fr);
 
-    .picHolder {
+    .cardPicHolder {
       padding-top: 26%;
     }
   }
