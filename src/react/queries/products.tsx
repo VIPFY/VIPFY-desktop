@@ -10,6 +10,19 @@ export const fetchApps = gql`
       icon
       needssubdomain
       options
+      color
+      tags
+      images
+      ratings {
+        combinedCustomerSupportRating
+        combinedEaseOfUseRating
+        combinedFunctionalityRating
+        easeOfAdminRating
+        easeOfSetupRating
+        overallRating
+        recommendationRating
+        valueForMoneyRating
+      }
     }
   }
 `;
