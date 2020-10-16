@@ -535,9 +535,7 @@ class SelfSaving extends React.Component<Props, State> {
                                 <UniversalButton
                                   type="low"
                                   tabIndex={-1}
-                                  onClick={() => {
-                                    this.setState({ showall: true });
-                                  }}
+                                  onClick={() => this.setState({ showall: true })}
                                   label="show all"
                                   customStyles={{ lineHeight: "24px" }}
                                 />
