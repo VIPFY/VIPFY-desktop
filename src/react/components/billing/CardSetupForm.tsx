@@ -226,8 +226,8 @@ class CardSetupForm extends React.Component<Props, State> {
         </div>
 
         <Checkbox
-          title={"Use billing address as credit card address"}
-          name={"checkbox_billing_address_is_credit_card_address"}
+          title="Use billing address as credit card address"
+          name="checkbox_billing_address_is_credit_card_address"
           checked={this.state.sameAddress}
           small={true}
           handleChange={v =>
@@ -241,8 +241,8 @@ class CardSetupForm extends React.Component<Props, State> {
 
         {!this.state.sameAddress && (
           <Checkbox
-            title={"Use different address"}
-            name={"checkbox_use_different_address"}
+            title="Use different address"
+            name="checkbox_use_different_address"
             checked={!this.state.sameAddress}
             small={true}
             handleChange={v =>

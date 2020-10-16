@@ -216,8 +216,8 @@ class Table extends React.Component<Props, State> {
             <div className="table-rows">
               <div className="table-checkbox-column">
                 <Checkbox
-                  name={"checkOrUncheckAllRows"}
-                  title={"Check to select all rows"}
+                  name="checkOrUncheckAllRows"
+                  title="Check to select all rows"
                   handleChange={check => this.checkOrUncheckAllRows(check, "")}
                   checked={selectedRows.length === pageRows.length}
                   indeterminate={selectedRows.length > 0 && selectedRows.length !== pageRows.length}
@@ -253,12 +253,12 @@ class Table extends React.Component<Props, State> {
                   <div className="table-section-header-body">
                     <div className="table-col">
                       <span>{selectedRows.length}</span>
-                      <span className={"table-header-text"}>
+                      <span className="table-header-text">
                         {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
                       </span>
                       {selectedRows.length !== data.length && (
                         <span
-                          className={"table-header-text select-all-items"}
+                          className="table-header-text select-all-items"
                           onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
                           Select all {data.length} items
                         </span>
@@ -295,7 +295,7 @@ class Table extends React.Component<Props, State> {
                 <div className="table-checkbox-column" onClick={event => event.stopPropagation()}>
                   <Checkbox
                     name={`table-row-${i}`}
-                    title={"Select row"}
+                    title="Select row"
                     handleChange={checked => {
                       this.checkOrUncheckRow(row, checked);
                     }}

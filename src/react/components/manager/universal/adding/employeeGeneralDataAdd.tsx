@@ -99,7 +99,7 @@ class EmployeeGeneralDataAdd extends React.Component<Props, State> {
           minLength={PW_MIN_LENGTH}
           minScore={2}
           scoreWords={["too weak", "still too weak", "okay", "good", "strong"]}
-          tooShortWord={"too short"}
+          tooShortWord="too short"
           randomValue={true}
           showPassword={this.state.showPassword}
           inputProps={{

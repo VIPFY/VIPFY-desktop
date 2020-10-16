@@ -168,12 +168,12 @@ export default class PasswordInput extends Component {
             this.setState({ password: await randomPassword() }, this.handleChange)
           }
           style={{ position: "absolute", right: "20px" }}
-          title={"Generate Random Password"}
+          title="Generate Random Password"
         />
         <IconButton
           icon="paste"
           onClick={() => clipboard.writeText(this.state.password)}
-          title={"Copy to Clipboard"}
+          title="Copy to Clipboard"
         />
       </div>
     );
