@@ -2,7 +2,15 @@ import * as React from "react";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import {
+  Button,
+  ProsConsList,
+  ServiceLogo,
+  StarRating,
+  Tag,
+  PageHeader
+} from "@vipfy-private/vipfy-ui-lib";
+import { NavLink } from "react-router-dom";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -13,8 +21,8 @@ import onboarding from "../../../images/onboarding.png";
 
 import CardSection from "../../components/CardSection";
 import SeparatedSection from "../../components/SeparatedSection";
-import PageHeader from "../../components/PageHeader";
 import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
+import { AppContext } from "../../common/functions";
 
 const DUMMY_ID = 1;
 
@@ -237,6 +245,7 @@ interface Plan {
 
 interface PlanSectionProps {
   plan: Plan;
+  location: any;
 }
 
 interface PlanSectionState {
@@ -406,10 +415,28 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
+    let prevLocation = this.props.location.pathname.split("/");
+    prevLocation.pop();
+    const to = prevLocation.join("/");
+    // Yes, this is how I roll 🕺
+    const labelArray = prevLocation[prevLocation.length - 1].split("");
+    const label = labelArray.shift().toUpperCase() + labelArray.join("");
+
     return (
       <div className="marketplace page">
         <div className="pageContent appDetails">
-          <PageHeader title={DUMMY_APP.name} showBreadCrumbs={true} />
+          <PageHeader
+            title={DUMMY_APP.name}
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label, to },
+                { label: DUMMY_APP.name, to: `/area/marketplace/categories/${DUMMY_APP.id}` }
+              ]
+            }}
+            history={this.props.history}
+            appContext={AppContext}
+          />
 
           <div className="marketplaceContent">
             <CardSection>

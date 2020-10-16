@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
 import moment, { now } from "moment";
-import { Button, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
-
+import { Button, StarRating, Tag, PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import { fetchDepartmentsData, fetchUserLicences, fetchTeams } from "../../queries/departments";
 import AddEmployeePersonalData from "../../components/manager/addEmployeePersonalData";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -12,7 +11,6 @@ import { AppContext } from "../../common/functions";
 import DeleteUser from "../../components/manager/deleteUser";
 import { concatName } from "../../common/functions";
 import Table from "../../components/Table";
-import PageHeader from "../../components/PageHeader";
 import {
   ThingPicture,
   ThingState,
@@ -20,10 +18,13 @@ import {
   ThingType,
   UserPicture
 } from "../../components/ThingPicture";
+import { NavLink } from "react-router-dom";
+import routes from "../../routes";
 
 interface Props {
   moveTo: Function;
   isadmin?: boolean;
+  history: any;
 }
 
 interface State {
@@ -136,6 +137,8 @@ class EmployeeOverview extends React.Component<Props, State> {
     return (
       <div className="page">
         <PageHeader
+          appContext={AppContext}
+          history={this.props.history}
           title="Employee Manager"
           buttonConfig={{
             label: "Create Employee",
