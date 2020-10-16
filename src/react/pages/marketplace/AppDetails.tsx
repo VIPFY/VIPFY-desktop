@@ -1,12 +1,21 @@
 import * as React from "react";
+import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { Button, Checkbox, ProsConsList, ServiceLogo, StarRating, Tag } from "@vipfy-private/vipfy-ui-lib";
+import {
+  Button,
+  Checkbox,
+  ProsConsList,
+  ServiceLogo,
+  StarRating,
+  Tag,
+  PageHeader
+} from "@vipfy-private/vipfy-ui-lib";
 
 import CardSection from "../../components/CardSection";
-import PageHeader from "../../components/PageHeader";
 import SeparatedSection from "../../components/SeparatedSection";
+import { AppContext } from "../../common/functions";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -327,6 +336,7 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
 
 interface AppDetailsProps {
   history: any;
+  location: any;
 }
 
 interface AppDetailsState {
@@ -405,10 +415,28 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
+    let prevLocation = this.props.location.pathname.split("/");
+    prevLocation.pop();
+    const to = prevLocation.join("/");
+
+    const labelArray = prevLocation[prevLocation.length - 1].split("");
+    const label = labelArray.shift().toUpperCase() + labelArray.join("");
+
     return (
       <div className="marketplace page">
         <div className="pageContent appDetails">
-          <PageHeader title={DUMMY_APP.name} showBreadCrumbs={true} />
+          <PageHeader
+            title={DUMMY_APP.name}
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label, to },
+                { label: DUMMY_APP.name, to: `/area/marketplace/categories/${DUMMY_APP.id}` }
+              ]
+            }}
+            history={this.props.history}
+            appContext={AppContext}
+          />
 
           <div className="marketplaceContent">
             <CardSection>

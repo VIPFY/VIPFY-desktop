@@ -9,7 +9,7 @@ import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { sortApps } from "../../common/functions";
 import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
-import PageHeader from "../../components/PageHeader";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 
 interface MarketplaceProps {
   history: any;
