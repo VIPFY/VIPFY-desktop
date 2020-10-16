@@ -136,10 +136,9 @@ class EmployeeOverview extends React.Component<Props, State> {
 
     return (
       <div className="page">
-        {/* <PageHeader
+        <PageHeader
           appContext={AppContext}
           history={this.props.history}
-          breadCrumbsConfig={{ navLink: NavLink, routes }}
           title="Employee Manager"
           buttonConfig={{
             label: "Create Employee",
@@ -147,7 +146,7 @@ class EmployeeOverview extends React.Component<Props, State> {
             innerRef: "addEmp",
             fAIcon: "fa-user-plus"
           }}
-        /> */}
+        />
         <div className="section" style={{ boxShadow: "0px 0px 0px" }}>
           <Query query={fetchDepartmentsData} fetchPolicy="network-only">
             {({ loading, error = null, data, refetch }) => {

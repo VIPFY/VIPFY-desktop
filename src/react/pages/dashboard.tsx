@@ -71,7 +71,7 @@ const Dashboard: React.FC<Props> = props => {
         buttonConfig={{
           label: "Go to Marketplace",
           fAIcon: "fa-store",
-          onClick: () => props.moveTo("marketplace")
+          onClick: () => props.moveTo("integrations")
         }}
       />
 

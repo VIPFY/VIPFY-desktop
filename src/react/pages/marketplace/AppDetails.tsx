@@ -245,6 +245,7 @@ interface Plan {
 
 interface PlanSectionProps {
   plan: Plan;
+  location: any;
 }
 
 interface PlanSectionState {
@@ -414,6 +415,13 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
+    let prevLocation = this.props.location.pathname.split("/");
+    prevLocation.pop();
+    const to = prevLocation.join("/");
+    // Yes, this is how I roll 🕺
+    const labelArray = prevLocation[prevLocation.length - 1].split("");
+    const label = labelArray.shift().toUpperCase() + labelArray.join("");
+
     return (
       <div className="marketplace page">
         <div className="pageContent appDetails">
@@ -422,7 +430,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
             breadCrumbs={{
               navLink: NavLink,
               routes: [
-                { label: "Categories", to: "/area/marketplace/categories" },
+                { label, to },
                 { label: DUMMY_APP.name, to: `/area/marketplace/categories/${DUMMY_APP.id}` }
               ]
             }}
