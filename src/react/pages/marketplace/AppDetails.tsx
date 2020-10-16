@@ -1,16 +1,21 @@
 import * as React from "react";
+import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import {
   Button,
+  Checkbox,
   ProsConsList,
   ServiceLogo,
   StarRating,
   Tag,
   PageHeader
 } from "@vipfy-private/vipfy-ui-lib";
-import { NavLink } from "react-router-dom";
+
+import CardSection from "../../components/CardSection";
+import SeparatedSection from "../../components/SeparatedSection";
+import { AppContext } from "../../common/functions";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -18,11 +23,6 @@ import logo_hell from "../../../images/logo_hell.png";
 import login_new_user from "../../../images/login_new_user.png";
 import logo_dunkel from "../../../images/logo_dunkel.png";
 import onboarding from "../../../images/onboarding.png";
-
-import CardSection from "../../components/CardSection";
-import SeparatedSection from "../../components/SeparatedSection";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
-import { AppContext } from "../../common/functions";
 
 const DUMMY_ID = 1;
 
@@ -245,7 +245,6 @@ interface Plan {
 
 interface PlanSectionProps {
   plan: Plan;
-  location: any;
 }
 
 interface PlanSectionState {
@@ -337,6 +336,7 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
 
 interface AppDetailsProps {
   history: any;
+  location: any;
 }
 
 interface AppDetailsState {
@@ -418,7 +418,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     let prevLocation = this.props.location.pathname.split("/");
     prevLocation.pop();
     const to = prevLocation.join("/");
-    // Yes, this is how I roll 🕺
+
     const labelArray = prevLocation[prevLocation.length - 1].split("");
     const label = labelArray.shift().toUpperCase() + labelArray.join("");
 
@@ -487,8 +487,12 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 )}
 
                 <CardSection className="compareServiceCheckbox">
-                  <UniversalCheckbox startingvalue={false} liveValue={e => {}} />
-                  <span>Compare Service</span>
+                  <Checkbox
+                    title="Compare Service"
+                    name="checkbox_compare_service"
+                    handleChange={e => console.log("Not implemented yet: Compare Service")}>
+                    Compare Service
+                  </Checkbox>
                 </CardSection>
               </div>
             </CardSection>

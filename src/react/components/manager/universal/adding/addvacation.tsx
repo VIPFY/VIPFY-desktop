@@ -1,17 +1,18 @@
 import * as React from "react";
-import PopupBase from "../../../../popups/universalPopups/popupBase";
-import UniversalButton from "../../../../components/universalButtons/universalButton";
 import Calendar from "react-calendar";
 import moment, { now } from "moment";
 import { Query } from "@apollo/client/react/components";
 import { graphql } from "@apollo/client/react/hoc";
-import compose from "lodash.flowright";
-import { fetchUserLicences, fetchDepartmentsData } from "../../../../queries/departments";
-import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
-import { concatName } from "../../../../common/functions";
-import AssignVacation from "./assignVacation";
-import UniversalCheckbox from "../../../../components/universalForms/universalCheckbox";
 import gql from "graphql-tag";
+import compose from "lodash.flowright";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
+import { concatName } from "../../../../common/functions";
+import UniversalButton from "../../../../components/universalButtons/universalButton";
+import UniversalDropDownInput from "../../../../components/universalForms/universalDropdownInput";
+import PopupBase from "../../../../popups/universalPopups/popupBase";
+import { fetchUserLicences, fetchDepartmentsData } from "../../../../queries/departments";
+import AssignVacation from "./assignVacation";
 
 interface Props {
   employeeid: number;
@@ -108,32 +109,34 @@ class AddVacation extends React.Component<Props, State> {
           let appArray: JSX.Element[] = [];
           const assignments = [];
           if (data.fetchUserLicenceAssignments) {
-            [...data.fetchUserLicenceAssignments].sort(function (a, b) {
-              let nameA = a.boughtplanid.alias
-                ? a.boughtplanid.alias.toUpperCase()
-                : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-              let nameB = b.boughtplanid.alias
-                ? b.boughtplanid.alias.toUpperCase()
-                : b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
-              if (nameA < nameB) {
-                return -1;
-              }
-              if (nameA > nameB) {
-                return 1;
-              }
+            [...data.fetchUserLicenceAssignments]
+              .sort(function (a, b) {
+                let nameA = a.boughtplanid.alias
+                  ? a.boughtplanid.alias.toUpperCase()
+                  : a.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+                let nameB = b.boughtplanid.alias
+                  ? b.boughtplanid.alias.toUpperCase()
+                  : b.boughtplanid.planid.appid.name.toUpperCase(); // ignore upper and lowercase
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
 
-              // namen müssen gleich sein
-              return 0;
-            }).forEach(e => {
-              if (
-                !e.disabled &&
-                !e.boughtplanid.planid.appid.disabled &&
-                (moment(e.endtime).isAfter() || e.endtime == null) &&
-                !(e.tags && e.tags.includes("vacation"))
-              ) {
-                assignments.push(e);
-              }
-            });
+                // namen müssen gleich sein
+                return 0;
+              })
+              .forEach(e => {
+                if (
+                  !e.disabled &&
+                  !e.boughtplanid.planid.appid.disabled &&
+                  (moment(e.endtime).isAfter() || e.endtime == null) &&
+                  !(e.tags && e.tags.includes("vacation"))
+                ) {
+                  assignments.push(e);
+                }
+              });
             assignments.forEach((e, k) => {
               appArray.push(
                 <AssignVacation
@@ -149,15 +152,15 @@ class AddVacation extends React.Component<Props, State> {
                   forceValue={this.state.checked[k]}
                   forceUser={
                     this.props.editVacation &&
-                      this.props.editVacation.options.find(o => o.originalassignment == e.id)
+                    this.props.editVacation.options.find(o => o.originalassignment == e.id)
                       ? {
-                        id: this.props.editVacation.options.find(
-                          o => o.originalassignment == e.id
-                        ).userid
-                      }
+                          id: this.props.editVacation.options.find(
+                            o => o.originalassignment == e.id
+                          ).userid
+                        }
                       : this.state.users[k]
-                        ? { id: this.state.users[k] }
-                        : null
+                      ? { id: this.state.users[k] }
+                      : null
                   }
                 />
               );
@@ -189,11 +192,11 @@ class AddVacation extends React.Component<Props, State> {
                     {this.props.editVacation && this.state.fromdate <= now() ? (
                       ""
                     ) : (
-                        <i
-                          className="fal fa-pen editbutton"
-                          onClick={() => this.setState({ editfrom: true })}
-                        />
-                      )}
+                      <i
+                        className="fal fa-pen editbutton"
+                        onClick={() => this.setState({ editfrom: true })}
+                      />
+                    )}
                     {this.state.editfrom && (
                       <PopupBase
                         styles={{ maxWidth: "fit-content" }}
@@ -296,33 +299,17 @@ class AddVacation extends React.Component<Props, State> {
                           flexFlow: "column",
                           alignItems: "center"
                         }}>
-                        <UniversalCheckbox
-                          name="allselect"
-                          liveValue={v =>
+                        <Checkbox
+                          title="Select all"
+                          name="checkbox_select_all"
+                          checked={
+                            this.state.checked.filter(e => !!e).length === assignments.length
+                          }
+                          handleChange={v =>
                             this.setState({ assignAll: v, checked: assignments.map(e => v) })
-                          }
-                          startingvalue={
-                            this.state.checked.filter(e => !!e).length == assignments.length
-                          }
-                        />
-                      </div>
-                      <div
-                        style={{
-                          lineHeight: "24px",
-                          width: "74px",
-                          display: "flex",
-                          flexFlow: "column",
-                          alignItems: "center"
-                        }}>
-                        <span
-                          style={{
-                            fontSize: "10px",
-                            lineHeight: "12px",
-                            marginTop: "4px",
-                            textAlign: "center"
-                          }}>
+                          }>
                           Select all
-                        </span>
+                        </Checkbox>
                       </div>
                       <span style={{ lineHeight: "24px" }}></span>
                     </div>
@@ -358,12 +345,12 @@ class AddVacation extends React.Component<Props, State> {
                             vacationid: this.props.editVacation.id,
                             starttime:
                               moment(this.state.fromdate).toISOString() !=
-                                moment(this.props.editVacation.starttime).toISOString()
+                              moment(this.props.editVacation.starttime).toISOString()
                                 ? moment(this.state.fromdate).toDate()
                                 : moment(this.props.editVacation.starttime).toDate(),
                             endtime:
                               moment(this.state.todate).toISOString() !=
-                                moment(this.props.editVacation.endtime).toISOString()
+                              moment(this.props.editVacation.endtime).toISOString()
                                 ? moment(this.state.todate).toDate()
                                 : moment(this.props.editVacation.endtime).toDate(),
                             assignments: assignmentSending
@@ -540,13 +527,6 @@ class AddVacation extends React.Component<Props, State> {
                                       />
                                     </div>
                                   ))}
-                                  {/* <div className="listingDiv" key="new">
-                                  <UniversalButton
-                                    type="low"
-                                    label="Create new User"
-                                    onClick={() => this.setState({ showall: false })}
-                                  />
-                                    </div> */}
                                   <UniversalButton type="low" label="Cancel" closingPopup={true} />
                                 </PopupBase>
                               )}
@@ -591,20 +571,20 @@ class AddVacation extends React.Component<Props, State> {
                   <div
                     className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}>
+                    }`}>
                     <div
                       className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                         this.state.error ? "loadError" : ""
-                        }`}></div>
+                      }`}></div>
                   </div>
                   <div
                     className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                       this.state.error ? "loadError" : ""
-                      }`}>
+                    }`}>
                     <div
                       className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                         this.state.error ? "load-error" : ""
-                        }`}>
+                      }`}>
                       <div
                         className="checkmark draw"
                         style={this.state.saved ? { display: "block" } : {}}
@@ -634,6 +614,7 @@ class AddVacation extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(
   graphql(ADD_VACATION, {
     name: "createVacation"

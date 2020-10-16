@@ -3,11 +3,10 @@ import { Component } from "react";
 import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
-import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import CardSection from "../../components/CardSection";
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalDropdownInput from "../../components/universalForms/universalDropdownInput";
-import UniversalCheckbox from "../../components/universalForms/universalCheckbox";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -28,6 +27,7 @@ interface State {
   companyName: string;
   phone: string;
 }
+
 class PaymentAddress extends Component<Props, State> {
   state = { emaildelete: [], emailadd: [], error: {}, companyName: "", phone: "" };
 
@@ -580,17 +580,16 @@ class PaymentAddress extends Component<Props, State> {
                                   prefix={this.state.country}
                                 />
                               ) : (
-                                <UniversalCheckbox
-                                  name="WithoutTaxes"
-                                  startingvalue={vatstatus?.selfCheck}
-                                  style={{ height: "48px", alignItems: "center", display: "flex" }}
-                                  liveValue={valid => {
+                                <Checkbox
+                                  name="checkbox_company_without_taxes"
+                                  title="Company accepts invoices without tax"
+                                  checked={vatstatus?.selfCheck}
+                                  handleChange={valid => {
                                     this.setState({ vat: { valid, selfCheck: true } });
                                   }}
-                                  errorhint="Unable to save vat"
-                                  errorEvaluation={this.state.error.vat}>
-                                  I am a company that can accept invoices without tax.
-                                </UniversalCheckbox>
+                                  style={{ height: "48px", alignItems: "center", display: "flex" }}>
+                                  Company accepts invoices without tax
+                                </Checkbox>
                               )}
                             </div>
                           )}

@@ -1,11 +1,12 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { Query, Mutation } from "@apollo/client/react/components";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import LoadingDiv from "./LoadingDiv";
 import { ErrorComp } from "../common/functions";
 import UniversalButton from "./universalButtons/universalButton";
 import PopupBase from "../popups/universalPopups/popupBase";
-import UniversalCheckbox from "./universalForms/universalCheckbox";
 import UniversalTextInput from "./universalForms/universalTextInput";
 import { emailRegex } from "../common/constants";
 
@@ -44,7 +45,7 @@ export default (props: Props) => {
 
   return (
     <Query pollInterval={60 * 10 * 1000} query={FETCH_EMAILS}>
-      {({ data, loading, error }) => {
+      {({ data, loading, error = null }) => {
         if (loading) {
           return <LoadingDiv />;
         }
@@ -58,16 +59,10 @@ export default (props: Props) => {
         );
 
         const possibleEmails = data.fetchEmails.filter(({ tags }) => {
-          if (!tags || tags.length == 0) {
+          if (!tags || tags.length === 0) {
             return true;
           } else {
-            const found = tags.find(tag => tag == props.tag);
-
-            if (found) {
-              return false;
-            } else {
-              return true;
-            }
+            return !tags.find(tag => tag === props.tag);
           }
         });
 
@@ -152,7 +147,7 @@ export default (props: Props) => {
 
                   cache.writeQuery({ query: FETCH_EMAILS, data: { fetchEmails } });
                 }}>
-                {(mutate, { loading, error: e2 }) => (
+                {(mutate, { loading, error: e2 = null }) => (
                   <PopupBase
                     buttonStyles={{ justifyContent: "space-between" }}
                     close={() => setAddTag(false)}
@@ -163,10 +158,11 @@ export default (props: Props) => {
                       <form>
                         {possibleEmails.length > 0 ? (
                           possibleEmails.map(({ email }) => (
-                            <UniversalCheckbox
+                            <Checkbox
                               key={email}
                               name={email}
-                              liveValue={value => {
+                              title={email}
+                              handleChange={value => {
                                 setTags(prev => {
                                   let newTags;
 
@@ -175,23 +171,24 @@ export default (props: Props) => {
                                   } else {
                                     newTags = prev.filter(tag => tag != email);
                                   }
+
                                   return newTags;
                                 });
                               }}>
                               {email}
-                            </UniversalCheckbox>
+                            </Checkbox>
                           ))
                         ) : (
-                            <UniversalTextInput
-                              width="360px"
-                              errorEvaluation={!newEmail.match(emailRegex)}
-                              errorhint="This is not a valid email"
-                              style={{ margin: "20px 0" }}
-                              id="new-email"
-                              livevalue={v => setEmail(v)}
-                              label="New Billing Email"
-                            />
-                          )}
+                          <UniversalTextInput
+                            width="360px"
+                            errorEvaluation={!newEmail.match(emailRegex)}
+                            errorhint="This is not a valid email"
+                            style={{ margin: "20px 0" }}
+                            id="new-email"
+                            livevalue={v => setEmail(v)}
+                            label="New Billing Email"
+                          />
+                        )}
                       </form>
                       <ErrorComp error={e2} />
                     </section>

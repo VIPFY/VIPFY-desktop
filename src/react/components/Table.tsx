@@ -1,9 +1,10 @@
 import * as React from "react";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import DropDown from "../common/DropDown";
-import Pagination from "./Pagination";
-import DropDownWithIcon from "./DropDownWithIcon";
-import UniversalCheckbox from "./universalForms/universalCheckbox";
 import UniversalTextInput from "./universalForms/universalTextInput";
+import DropDownWithIcon from "./DropDownWithIcon";
+import Pagination from "./Pagination";
 
 interface TableCell {
   component: React.Component;
@@ -12,8 +13,8 @@ interface TableCell {
 
 interface TableRow {
   id: string;
-  onClick?: Function;
   cells: TableCell[];
+  onClick?: Function;
 }
 
 interface Props {
@@ -168,6 +169,7 @@ class Table extends React.Component<Props, State> {
 
     const allRowsSelected =
       selectedRows.length == pageRows.length || selectedRows.length == allRows.length;
+
     return (
       <section className="table-section">
         <div className="extended-header">
@@ -213,17 +215,13 @@ class Table extends React.Component<Props, State> {
           <div className="table-header">
             <div className="table-rows">
               <div className="table-checkbox-column">
-                <UniversalCheckbox
-                  name={"checkOrUncheckAllRows"}
-                  liveValue={check => this.checkOrUncheckAllRows(check, "")}
-                  startingvalue={
-                    selectedRows.length > 0
-                      ? selectedRows.length == pageRows.length
-                        ? true
-                        : "Some"
-                      : false
-                  }
-                  checkboxSmall={true}
+                <Checkbox
+                  name="checkOrUncheckAllRows"
+                  title="Check to select all rows"
+                  handleChange={check => this.checkOrUncheckAllRows(check, "")}
+                  checked={selectedRows.length === pageRows.length}
+                  indeterminate={selectedRows.length > 0 && selectedRows.length !== pageRows.length}
+                  small={true}
                 />
               </div>
 
@@ -255,12 +253,12 @@ class Table extends React.Component<Props, State> {
                   <div className="table-section-header-body">
                     <div className="table-col">
                       <span>{selectedRows.length}</span>
-                      <span className={"table-header-text"}>
+                      <span className="table-header-text">
                         {selectedRows.length === 1 ? " Item" : " Items"} on this page are selected
                       </span>
                       {selectedRows.length !== data.length && (
                         <span
-                          className={"table-header-text select-all-items"}
+                          className="table-header-text select-all-items"
                           onClick={() => this.checkOrUncheckAllRows(true, allRowsSelected)}>
                           Select all {data.length} items
                         </span>
@@ -282,7 +280,7 @@ class Table extends React.Component<Props, State> {
 
           <div className="table-body" style={{ flexDirection: "column" }}>
             {pageRows.map((row: TableRow, i: number) => (
-              /* I am using index as key as element is an array of objects */
+              /* using index as key since element is an array of objects */
               <div
                 className="table-rows"
                 key={i}
@@ -295,13 +293,14 @@ class Table extends React.Component<Props, State> {
                 }}
                 style={row.onClick ? { cursor: "pointer" } : {}}>
                 <div className="table-checkbox-column" onClick={event => event.stopPropagation()}>
-                  <UniversalCheckbox
-                    name={`table-${i}`}
-                    liveValue={newValue => {
-                      this.checkOrUncheckRow(row, newValue);
+                  <Checkbox
+                    name={`table-row-${i}`}
+                    title="Select row"
+                    handleChange={checked => {
+                      this.checkOrUncheckRow(row, checked);
                     }}
-                    startingvalue={selectedRows.includes(row)}
-                    checkboxSmall={true}
+                    checked={selectedRows.includes(row)}
+                    small={true}
                   />
                 </div>
 
@@ -329,4 +328,5 @@ class Table extends React.Component<Props, State> {
     );
   }
 }
+
 export default Table;

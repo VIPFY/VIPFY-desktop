@@ -1,4 +1,5 @@
 import React from "react";
+import gql from "graphql-tag";
 import {
   ElementsConsumer,
   CardNumberElement,
@@ -7,20 +8,36 @@ import {
   Elements
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import UniversalTextInput from "../universalForms/universalTextInput";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import UniversalButton from "../universalButtons/universalButton";
-import gql from "graphql-tag";
+import UniversalTextInput from "../universalForms/universalTextInput";
 
 const stripePromise = loadStripe("pk_test_W9VDDvYKZqcmbgaz7iAcUR9j");
+
+interface Props {
+  address: any;
+  sameAddress: any;
+  client: any;
+  secret: any;
+  stripe: any;
+  elements: any;
+  refetch: any;
+}
 
 interface State {
   sameAddress: boolean;
   name: string | null;
   postalCode: string | null;
   city: string | null;
+  error: any;
+  errorCvc: any;
+  errorNumber: any;
+  errorExpiry: boolean;
+  focus: any;
 }
-class CardSetupForm extends React.Component<State> {
+
+class CardSetupForm extends React.Component<Props, State> {
   state = {
     sameAddress: true,
     name: null,
@@ -28,8 +45,11 @@ class CardSetupForm extends React.Component<State> {
     city: null,
     errorNumber: false,
     errorExpiry: false,
-    errorCvc: false
+    errorCvc: false,
+    error: undefined,
+    focus: undefined
   };
+
   handleSubmit = async event => {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
@@ -204,27 +224,37 @@ class CardSetupForm extends React.Component<State> {
             }
           />
         </div>
-        <UniversalCheckbox
-          startingvalue={this.state.sameAddress}
-          liveValue={v =>
-            this.setState(oldstate => {
-              this.props.sameAddress(!oldstate.sameAddress);
-              return { ...oldstate, sameAddress: !oldstate.sameAddress };
-            })
-          }
-          style={{ marginTop: "7px" }}>
-          Billing address is credit card address
-        </UniversalCheckbox>
-        <UniversalCheckbox
-          startingvalue={!this.state.sameAddress}
-          liveValue={v =>
+
+        <Checkbox
+          title="Use billing address as credit card address"
+          name="checkbox_billing_address_is_credit_card_address"
+          checked={this.state.sameAddress}
+          small={true}
+          handleChange={v =>
             this.setState(oldstate => {
               this.props.sameAddress(!oldstate.sameAddress);
               return { ...oldstate, sameAddress: !oldstate.sameAddress };
             })
           }>
-          Use different address
-        </UniversalCheckbox>
+          Use billing address as credit card address
+        </Checkbox>
+
+        {!this.state.sameAddress && (
+          <Checkbox
+            title="Use different address"
+            name="checkbox_use_different_address"
+            checked={!this.state.sameAddress}
+            small={true}
+            handleChange={v =>
+              this.setState(oldstate => {
+                this.props.sameAddress(!oldstate.sameAddress);
+                return { ...oldstate, sameAddress: !oldstate.sameAddress };
+              })
+            }>
+            Use different address
+          </Checkbox>
+        )}
+
         {!this.state.sameAddress && (
           <div>
             <UniversalTextInput
@@ -232,6 +262,7 @@ class CardSetupForm extends React.Component<State> {
               label="Postal code"
               livevalue={postalCode => this.setState({ postalCode: postalCode })}
             />
+
             <UniversalTextInput
               id="city"
               label="City"
@@ -239,6 +270,7 @@ class CardSetupForm extends React.Component<State> {
             />
           </div>
         )}
+
         <div style={{ display: "flex", marginTop: "16px" }}>
           <UniversalButton
             label="Save"
@@ -247,6 +279,7 @@ class CardSetupForm extends React.Component<State> {
             onClick={e => this.handleSubmit(e)}
             customStyles={{ flexShrink: "0" }}
           />
+
           {this.state.error && <div className="addCardError">{this.state.error}</div>}
         </div>
       </div>

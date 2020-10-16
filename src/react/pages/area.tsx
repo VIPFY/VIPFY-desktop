@@ -567,7 +567,7 @@ class Area extends React.Component<AreaProps, AreaState> {
                           }}
                         />
                         <Route
-                          key={"ERRORELSE"}
+                          key="ERRORELSE"
                           render={() => {
                             console.error("You tried go to a non-existing route.");
                             return (

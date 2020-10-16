@@ -4,20 +4,19 @@ import Calendar from "react-calendar";
 import gql from "graphql-tag";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
-import { Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Checkbox, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import PopupBase from "../../../popups/universalPopups/popupBase";
-import UniversalTextInput from "../../universalForms/universalTextInput";
-import UniversalCheckbox from "../../universalForms/universalCheckbox";
-import UniversalButton from "../../universalButtons/universalButton";
-import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
-import ShowAndAddEmployee from "./showAndAddEmployee";
 import { fetchCompanyService } from "../../../queries/products";
 import { AppContext } from "../../../common/functions";
 import {
   createEncryptedLicenceKeyObject,
   reencryptLicenceKeyObject
 } from "../../../common/licences";
+import UniversalButton from "../../universalButtons/universalButton";
+import UniversalTextInput from "../../universalForms/universalTextInput";
+import ShowAndAddEmployee from "./showAndAddEmployee";
+import ShowAndDeleteEmployee from "./showAndDeleteEmployee";
 
 interface Props {
   account: any;
@@ -319,106 +318,111 @@ class ChangeAccount extends React.Component<Props, State> {
             )}
 
             {!newaccount && account.options && account.options.loginurl && (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "24px",
-                  marginTop: "28px",
-                  position: "relative"
-                }}>
-                <span style={{ lineHeight: "24px", width: "84px" }}>
-                  <span>Domain:</span>
-                  {this.props.app.options.selfhosting && (
-                    <div style={{ alignItems: "center", display: "flex" }}>
-                      <UniversalCheckbox
-                        startingvalue={account.options.selfhosting}
-                        liveValue={e => {
-                          if (e != account.options.selfhosting) {
-                            this.setState({ selfhosting: e, changedl: true });
-                          } else if (
-                            `${this.state.protocol}${this.state.loginurl}` !=
-                            account.options.loginurl
-                          ) {
-                            this.setState({ selfhosting: e, changedl: true });
-                          } else {
-                            this.setState({ selfhosting: e, changedl: false });
-                          }
-                        }}
-                        style={{ float: "left" }}
-                      />
-                      <span style={{ fontSize: "10px", lineHeight: "18px", marginLeft: "4px" }}>
-                        Selfhosting
-                      </span>
-                    </div>
-                  )}
-                </span>
-                <UniversalTextInput
-                  width="300px"
-                  id="domain"
-                  className="scrollable"
-                  inputStyles={{ minWidth: "100px" }}
-                  startvalue={this.state.loginurl}
-                  livevalue={value => {
-                    let domain = value;
-                    let protocol = undefined;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
-                      domain = value.substring(value.search(/:\/\/{1}/) + 3);
-                    } else {
-                      protocol = this.state.protocol;
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "24px",
+                    marginTop: "28px",
+                    position: "relative"
+                  }}>
+                  <span style={{ lineHeight: "24px", width: "84px" }}>
+                    <span>Domain:</span>
+                  </span>
+                  <UniversalTextInput
+                    width="300px"
+                    id="domain"
+                    className="scrollable"
+                    inputStyles={{ minWidth: "100px" }}
+                    startvalue={this.state.loginurl}
+                    livevalue={value => {
+                      let domain = value;
+                      let protocol = undefined;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        protocol = value.substring(0, value.search(/:\/\/{1}/) + 3);
+                        domain = value.substring(value.search(/:\/\/{1}/) + 3);
+                      } else {
+                        protocol = this.state.protocol;
+                      }
+                      if (
+                        account.options &&
+                        account.options.loginurl != `${this.state.protocol}${value}` &&
+                        value != this.state.loginurl &&
+                        value != ""
+                      ) {
+                        this.setState({ loginurl: domain, changedl: true, protocol });
+                      } else {
+                        this.setState({ loginurl: domain, changedl: false, protocol });
+                      }
+                    }}
+                    modifyValue={value => {
+                      let deletedPrefix = value;
+                      if (value.startsWith("https://") || value.startsWith("http://")) {
+                        deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
+                      }
+                      let deletedSuffix = deletedPrefix;
+                      if (
+                        this.props.orbit &&
+                        this.props.orbit.options &&
+                        this.props.orbit.options.afterdomain &&
+                        deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
+                      ) {
+                        deletedSuffix = deletedPrefix.substring(
+                          0,
+                          deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
+                        );
+                      }
+                      return deletedSuffix;
+                    }}
+                    prefix={
+                      this.state.selfhosting ? (
+                        <select
+                          className="universalTextInput"
+                          style={{ width: "75px" }}
+                          value={this.state.protocol}
+                          onChange={e =>
+                            this.setState({ protocol: e.target.value, changedl: true })
+                          }>
+                          <option value="http://" key="http://">
+                            http://
+                          </option>
+                          <option value="https://" key="https://">
+                            https://
+                          </option>
+                        </select>
+                      ) : (
+                        this.props.app.options.predomain
+                      )
                     }
-                    if (
-                      account.options &&
-                      account.options.loginurl != `${this.state.protocol}${value}` &&
-                      value != this.state.loginurl &&
-                      value != ""
-                    ) {
-                      this.setState({ loginurl: domain, changedl: true, protocol });
-                    } else {
-                      this.setState({ loginurl: domain, changedl: false, protocol });
-                    }
-                  }}
-                  modifyValue={value => {
-                    let deletedPrefix = value;
-                    if (value.startsWith("https://") || value.startsWith("http://")) {
-                      deletedPrefix = value.substring(value.search(/:\/\/{1}/) + 3);
-                    }
-                    let deletedSuffix = deletedPrefix;
-                    if (
-                      this.props.orbit &&
-                      this.props.orbit.options &&
-                      this.props.orbit.options.afterdomain &&
-                      deletedPrefix.endsWith(this.props.orbit.options.afterdomain)
-                    ) {
-                      deletedSuffix = deletedPrefix.substring(
-                        0,
-                        deletedPrefix.indexOf(this.props.orbit.options.afterdomain)
-                      );
-                    }
-                    return deletedSuffix;
-                  }}
-                  prefix={
-                    this.state.selfhosting ? (
-                      <select
-                        className="universalTextInput"
-                        style={{ width: "75px" }}
-                        value={this.state.protocol}
-                        onChange={e => this.setState({ protocol: e.target.value, changedl: true })}>
-                        <option value="http://" key="http://">
-                          http://
-                        </option>
-                        <option value="https://" key="https://">
-                          https://
-                        </option>
-                      </select>
-                    ) : (
-                      this.props.app.options.predomain
-                    )
-                  }
-                  suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
-                />
-              </div>
+                    suffix={this.state.selfhosting ? undefined : this.props.app.options.afterdomain}
+                  />
+                </div>
+                {this.props.app.options.selfhosting && (
+                  <div style={{ margin: "-12px 0 24px" }}>
+                    <Checkbox
+                      title="Select Selfhosting"
+                      name="checkbox_select_selfhosting"
+                      small={true}
+                      style={{ marginLeft: "84px" }}
+                      checked={account.options.selfhosting}
+                      handleChange={e => {
+                        if (e !== account.options.selfhosting) {
+                          this.setState({ selfhosting: e, changedl: true });
+                        } else {
+                          this.setState({
+                            selfhosting: e,
+                            changedl:
+                              `${this.state.protocol}${this.state.loginurl}` !==
+                              account.options.loginurl
+                          });
+                        }
+                      }}>
+                      Self-hosting
+                    </Checkbox>
+                  </div>
+                )}
+              </>
             )}
 
             {!newaccount && (

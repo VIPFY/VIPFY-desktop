@@ -53,7 +53,7 @@ export default (props: Props) => {
   return (
     <div
       title={props.tileTitle || name}
-      className={"card clickable"}
+      className="card clickable"
       onClick={() => props.setTeam && props.setTeam(id)}>
       <CardSection className="service-box-top">
         <ServiceLogo icon={planid.appid.icon} size={40} />

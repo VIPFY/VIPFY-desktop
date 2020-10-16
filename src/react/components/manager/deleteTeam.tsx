@@ -1,17 +1,17 @@
 import * as React from "react";
-import UniversalCheckbox from "../universalForms/universalCheckbox";
-import PopupBase from "../../popups/universalPopups/popupBase";
-import UniversalButton from "../universalButtons/universalButton";
 import { graphql } from "@apollo/client/react/hoc";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
-import moment, { now } from "moment";
-import Calendar from "react-calendar";
-import PrintServiceSquare from "./universal/squares/printServiceSquare";
-import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
-import EmployeePicture from "../EmployeePicture";
+import { now } from "moment";
+import { Checkbox } from "@vipfy-private/vipfy-ui-lib";
+
 import { concatName } from "../../common/functions";
+import PopupBase from "../../popups/universalPopups/popupBase";
+import { fetchTeam, fetchCompanyTeams } from "../../queries/departments";
 import { fetchCompanyServices } from "../../queries/products";
+import EmployeePicture from "../EmployeePicture";
+import UniversalButton from "../universalButtons/universalButton";
+import PrintServiceSquare from "./universal/squares/printServiceSquare";
 
 interface Props {
   team: any;
@@ -103,10 +103,11 @@ class DeleteTeam extends React.Component<Props, State> {
                       display: "flex",
                       justifyContent: "center"
                     }}>
-                    <UniversalCheckbox
+                    <Checkbox
                       name={`Assignments-${ek}-${k}`}
-                      liveValue={v => {
-                        console.log("CLICKED ASSIGNMENT", ek, k, this.state);
+                      title="Delete assignments"
+                      checked={this.state.deleteArray[ek].assignments[k].bool}
+                      handleChange={v => {
                         this.setState(
                           oldstate =>
                             (oldstate.deleteArray[ek] = {
@@ -118,14 +119,13 @@ class DeleteTeam extends React.Component<Props, State> {
                                 k != ik
                                   ? asa
                                   : {
-                                    id: asa.assignmentid,
-                                    bool: v
-                                  }
+                                      id: asa.assignmentid,
+                                      bool: v
+                                    }
                               )
                             })
                         );
                       }}
-                      startingvalue={this.state.deleteArray[ek].assignments[k].bool}
                     />
                   </span>
 
@@ -170,10 +170,11 @@ class DeleteTeam extends React.Component<Props, State> {
                   display: "flex",
                   justifyContent: "center"
                 }}>
-                <UniversalCheckbox
+                <Checkbox
                   name={`Employee-${ek}`}
-                  liveValue={v => {
-                    console.log("CLICKED", ek, this.state);
+                  title="Delete employee assignments"
+                  checked={this.state.deleteArray[ek].bool}
+                  handleChange={v => {
                     this.setState(
                       oldstate =>
                         (oldstate.deleteArray[ek] = {
@@ -186,7 +187,6 @@ class DeleteTeam extends React.Component<Props, State> {
                         })
                     );
                   }}
-                  startingvalue={this.state.deleteArray[ek].bool}
                 />
                 <span
                   style={{
@@ -228,8 +228,6 @@ class DeleteTeam extends React.Component<Props, State> {
   }
 
   render() {
-    console.log("DT", this.props, this.state);
-    const employee = this.props.employee;
     return (
       <PopupBase
         small={true}
@@ -323,12 +321,13 @@ class DeleteTeam extends React.Component<Props, State> {
               display: "flex",
               justifyContent: "center"
             }}>
-            <UniversalCheckbox
+            <Checkbox
               name="auto-delete"
-              liveValue={v => {
+              title="Automatic deletion"
+              checked={this.state.autodelete}
+              handleChange={v => {
                 this.setState({ autodelete: v });
               }}
-              startingvalue={this.state.autodelete}
             />
           </span>
 
@@ -379,20 +378,20 @@ class DeleteTeam extends React.Component<Props, State> {
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circeSave inner ${this.state.saved ? "loadComplete" : ""} ${
                   this.state.error ? "loadError" : ""
-                  }`}></div>
+                }`}></div>
             </div>
             <div
               className={`circeSave ${this.state.saved ? "loadComplete" : ""} ${
                 this.state.error ? "loadError" : ""
-                }`}>
+              }`}>
               <div
                 className={`circle-loader ${this.state.saved ? "load-complete" : ""} ${
                   this.state.error ? "load-error" : ""
-                  }`}>
+                }`}>
                 <div
                   className="checkmark draw"
                   style={this.state.saved ? { display: "block" } : {}}
@@ -416,4 +415,5 @@ class DeleteTeam extends React.Component<Props, State> {
     );
   }
 }
+
 export default compose(graphql(DELETE_TEAM, { name: "deleteTeam" }))(DeleteTeam);
