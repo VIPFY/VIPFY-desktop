@@ -1,11 +1,10 @@
 import * as React from "react";
-import { AppOverviewCard, ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+import { AppOverviewCard, ErrorPage, PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
-import { sortApps } from "../../common/functions";
+import { AppContext, sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
-import PageHeader from "../../components/PageHeader";
 import { fetchApps } from "../../queries/products";
 
 interface MarketplaceDiscoverProps {
@@ -36,8 +35,9 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
         <div className="pageContent">
           <PageHeader
             title="Discover"
-            showBreadCrumbs={true}
-            searchConfig={{ text: "Search an App in Marketplace" }}
+            history={this.props.history}
+            appContext={AppContext}
+            searchItems={[]}
           />
 
           <div className="marketplaceContent">

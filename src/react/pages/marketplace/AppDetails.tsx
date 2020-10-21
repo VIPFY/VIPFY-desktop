@@ -1,4 +1,5 @@
 import * as React from "react";
+import { NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
@@ -7,14 +8,15 @@ import {
   Card,
   CardSection,
   Checkbox,
+  PageHeader,
   ProsConsList,
+  SeparatedSection,
   ServiceLogo,
   StarRating,
   Tag
 } from "@vipfy-private/vipfy-ui-lib";
 
-import PageHeader from "../../components/PageHeader";
-import SeparatedSection from "../../components/SeparatedSection";
+import { AppContext } from "../../common/functions";
 
 import dashboard from "../../../images/dashboard.png";
 import forgot_password from "../../../images/forgot_password.png";
@@ -335,6 +337,7 @@ class PlanSection extends React.Component<PlanSectionProps, PlanSectionState> {
 
 interface AppDetailsProps {
   history: any;
+  location: any;
 }
 
 interface AppDetailsState {
@@ -413,10 +416,28 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
 
     const hasFeatures = DUMMY_APP.features && !!DUMMY_APP.features.length;
 
+    let prevLocation = this.props.location.pathname.split("/");
+    prevLocation.pop();
+    const to = prevLocation.join("/");
+    // Yes, this is how I roll 🕺
+    const labelArray = prevLocation[prevLocation.length - 1].split("");
+    const label = labelArray.shift().toUpperCase() + labelArray.join("");
+
     return (
       <div className="marketplace page">
         <div className="pageContent appDetails">
-          <PageHeader title={DUMMY_APP.name} showBreadCrumbs={true} />
+          <PageHeader
+            title={DUMMY_APP.name}
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label, to },
+                { label: DUMMY_APP.name, to: `/area/marketplace/categories/${DUMMY_APP.id}` }
+              ]
+            }}
+            history={this.props.history}
+            appContext={AppContext}
+          />
 
           <div className="marketplaceContent">
             <CardSection>
@@ -470,7 +491,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                   <Checkbox
                     title="Compare Service"
                     name="checkbox_compare_service"
-                    handleChange={e => console.log("Not implemented yet: Compare Service")}>
+                    handleChange={_ => console.log("Not implemented yet: Compare Service")}>
                     Compare Service
                   </Checkbox>
                 </CardSection>
@@ -588,7 +609,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
                 <h2>Plans</h2>
                 <div className="plans">
                   {DUMMY_APP.plans.map((plan, i) => (
-                    <Card key={i} onClick={() => this.goToCheckout(DUMMY_APP.id, plan.id)}>
+                    <Card key={i} onClick={() => this.goToCheckout(plan.id)}>
                       <PlanSection plan={plan} />
                     </Card>
                   ))}

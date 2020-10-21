@@ -7,12 +7,14 @@ import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import DeleteTeam from "../../components/manager/deleteTeam";
-import PageHeader from "../../components/PageHeader";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import Table from "../../components/Table";
-import { ThingPicture, ThingType, ThingState, ThingShape, TeamPicture } from "../../components/ThingPicture";
+import { ThingPicture, ThingType, ThingState, TeamPicture } from "../../components/ThingPicture";
+import { AppContext } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
+  history: any;
 }
 
 interface State {
@@ -50,7 +52,12 @@ class TeamOverview extends React.Component<Props, State> {
           {
             component: () => (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <ThingPicture type={ThingType.Team} state={ThingState.Loading} size={32} name="Loading" />
+                <ThingPicture
+                  type={ThingType.Team}
+                  state={ThingState.Loading}
+                  size={32}
+                  name="Loading"
+                />
                 <span className="name"></span>
               </div>
             )
@@ -96,6 +103,8 @@ class TeamOverview extends React.Component<Props, State> {
       <div className="page">
         <PageHeader
           title="Team Manager"
+          history={this.props.history}
+          appContext={AppContext}
           buttonConfig={{
             label: "Create Team",
             onClick: () => this.setState({ add: true }),

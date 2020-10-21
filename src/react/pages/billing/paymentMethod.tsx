@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Component } from "react";
 import gql from "graphql-tag";
 import { Query } from "@apollo/client/react/components";
 import { Card, CardSection } from "@vipfy-private/vipfy-ui-lib";
@@ -11,10 +10,13 @@ import CreditCardNew from "../../components/billing/CreditCardNew";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupAddress from "../../popups/popupAddress";
-import PageHeader from "../../components/PageHeader";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { AppContext } from "../../common/functions";
+import { NavLink } from "react-router-dom";
 
 interface Props {
   client: any;
+  history: any;
 }
 
 interface State {
@@ -23,18 +25,31 @@ interface State {
   sameAddress: boolean;
   remove: any;
 }
-class PaymentMethod extends Component<Props, State> {
+
+class PaymentMethod extends React.Component<Props, State> {
   state = {
     edit: false,
     secret: "",
     sameAddress: true,
     remove: null
   };
+
   render() {
     return (
       <div className="page">
         <div className="pageContent">
-          <PageHeader title="Credit Cards" showBreadCrumbs={true} />
+          <PageHeader
+            title="Credit Cards"
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label: "Payment Method", to: "/area/paymentdata" },
+                { label: "Credit Cards", to: "/area/paymentdata/paymentmethod" }
+              ]
+            }}
+            history={this.props.history}
+            appContext={AppContext}
+          />
           <Query query={FETCH_PAYMENT_DATA}>
             {({ data, loading, error = null, refetch }) => {
               if (loading) {
@@ -46,7 +61,7 @@ class PaymentMethod extends Component<Props, State> {
               }
 
               if (!data.fetchPaymentData) {
-                return <div>No Billing Data to find</div>;
+                return <div>No billing data found</div>;
               }
 
               const paymentData = data.fetchPaymentData.cards;
@@ -224,8 +239,9 @@ class PaymentMethod extends Component<Props, State> {
                               }
                             });
                           } catch (err) {
-                            console.log("ERROR", err);
+                            console.error("ERROR", err);
                           }
+
                           this.setState({ remove: null });
                           refetch();
                         }}

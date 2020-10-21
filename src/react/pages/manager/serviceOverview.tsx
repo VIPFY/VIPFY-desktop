@@ -1,9 +1,8 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { Query } from "@apollo/client/react/components";
-import { Button, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Button, ServiceLogo, Tag, PageHeader } from "@vipfy-private/vipfy-ui-lib";
 
-import PageHeader from "../../components/PageHeader";
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import ColumnTeams from "../../components/manager/universal/columns/columnTeams";
@@ -16,6 +15,7 @@ import Table from "../../components/Table";
 
 interface Props {
   moveTo: Function;
+  history: any;
 }
 
 interface State {
@@ -131,6 +131,8 @@ class ServiceOverview extends React.Component<Props, State> {
       <div className="page">
         <PageHeader
           title="Employee Manager"
+          history={this.props.history}
+          appContext={AppContext}
           buttonConfig={{
             label: "Add Service",
             onClick: () =>

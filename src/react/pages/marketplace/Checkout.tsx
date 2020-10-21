@@ -1,7 +1,8 @@
 import * as React from "react";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 
 import EmployeeCard from "../../components/marketplace/EmployeeCard";
-import PageHeader from "../../components/PageHeader";
+import { AppContext } from "../../common/functions";
 
 const DUMMY_USER = {
   id: "582a705d-d650-4727-8db6-28d231b465dd",
@@ -43,22 +44,10 @@ class Checkout extends React.Component<{}> {
       <div className="page">
         <div className="pageContent">
           <PageHeader
+            history={this.props.history}
+            appContext={AppContext}
             title="Checkout"
-            showBreadCrumbs={true}
             buttonConfig={{ label: "Test Button", onClick: () => alert("works") }}
-            wizardConfig={{
-              currentStep: 0,
-              steps: ["Select Employees", "Confirm Data"]
-            }}
-            searchConfig={{ text: "Search in Checkout" }}
-            filterConfig={{}}
-            pagination={{
-              currentRowsFrom: 1,
-              currentRowsTo: 12,
-              currentRowsPerPage: 12,
-              selectableRowsPerPage: [12, 24, 48],
-              overallRows: 20
-            }}
           />
 
           <div>

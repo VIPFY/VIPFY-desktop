@@ -1,12 +1,11 @@
 import * as React from "react";
 import classNames from "classnames";
-import { AppOverviewCard, ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+import { AppOverviewCard, ErrorPage , PageHeader} from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import { sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
-import PageHeader from "../../components/PageHeader";
 import { fetchApps } from "../../queries/products";
 
 interface MarketplaceProps {
@@ -44,7 +43,6 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
 
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options?.marketplace);
-    console.log(marketplaceApps);
 
     if (marketplaceApps.length === 0) {
       return (
@@ -62,7 +60,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace page">
         <div className="pageContent">
-          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
+          <PageHeader title="Categories" history={this.props.history} searchItems={[]}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>

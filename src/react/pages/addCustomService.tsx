@@ -1,22 +1,27 @@
 import * as React from "react";
 import { graphql } from "@apollo/client/react/hoc";
+import { NavLink } from "react-router-dom";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
+import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import UniversalButton from "../components/universalButtons/universalButton";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import SelfIntegrator from "../components/selfIntegrator";
-import PageHeader from "../components/PageHeader";
 import UniversalDropdown from "../components/universalForms/universalDropdown";
+import { AppContext } from "../common/functions";
 
 interface Props {
   requestIntegration: Function;
   manager: Boolean;
+  history: any;
   moveTo: Function;
+  match: any;
 }
 interface State {
   step: string;
   loginUrl: string | undefined;
   serviceName: string | undefined;
+  icon: string | undefined;
   serviceNameTouched: boolean;
   url: string | undefined;
   trackedPlan: string | undefined;
@@ -36,9 +41,11 @@ class AddCustomServicePage extends React.Component<Props, State> {
     loginUrl: undefined,
     serviceName: undefined,
     serviceNameTouched: false,
+    icon: undefined,
     url: undefined,
     trackedPlan: undefined,
     searchurl: undefined,
+    color: undefined,
     key: 0
   };
 
@@ -96,8 +103,8 @@ class AddCustomServicePage extends React.Component<Props, State> {
     const remainingFields = this.state.trackedPlan.filter(
       t => t.operation == "waitandfill" && t.args.fillkey != "password"
     );
-    // All remaining fields
 
+    // All remaining fields
     const possibleFields = [
       { value: "email", label: "Email Address" },
       { value: "username", label: "Username" },
@@ -187,11 +194,24 @@ class AddCustomServicePage extends React.Component<Props, State> {
 
     return fields;
   };
+
   render() {
     return (
       <div className="page">
         <div className="pageContent">
-          <PageHeader title="Add Custom Service" showBreadCrumbs={true} />
+          <PageHeader
+            title="Add Custom Service"
+            history={this.props.history}
+            appContext={AppContext}
+            breadCrumbs={{
+              navLink: NavLink,
+              routes: [
+                { label: "Service Integrator", to: "/area/integrations" },
+                { label: "Add Custom Service", to: "/area/addcustomservice" }
+              ]
+            }}
+          />
+
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ display: "flex" }}>
               {this.state.step == "integrate" && (

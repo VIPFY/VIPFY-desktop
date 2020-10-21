@@ -17,9 +17,11 @@ const PROCESS_APPS = gql`
 type Excluded = Pick<App, Exclude<keyof App, "description" | "ratings" | "tags" | "alternatives">>;
 
 interface ScrapedApp extends Excluded {
-  alternatives: { [id: number]: { name: string; rating: number; reviews: number } };
+  id: string;
+  alternatives: number[];
   ratings: {
     overallRating: number;
+    externalReviewCount: number;
     combinedCustomerSupportRating?: number;
     CombinedEaseOfUseRating?: number;
     CombinedFunctionalityRating?: number;
@@ -47,29 +49,29 @@ interface ScrapedApp extends Excluded {
   capid?: string;
 }
 
-const ServiceUpload: React.FunctionComponent = () => {
+const ServiceUpload: React.FC = () => {
   const [services, setServices] = React.useState<{ [appID: string]: ScrapedApp } | {}>({});
   const [service, setService] = React.useState<ScrapedApp | null>(null);
   const [jsonError, setError] = React.useState<string | null>(null);
   const [jsonLoading, setLoading] = React.useState<boolean>(false);
   const [success, setSuccess] = React.useState<boolean>(false);
-  const [progress, setProgress] = React.useState<number | null>(null);
+  const [progress, setProgress] = React.useState<number | null>(20);
   const [processApps, { loading, error }] = useMutation(PROCESS_APPS);
-  const PARTS = 10;
+  const [parts, setParts] = React.useState<number>(10);
 
   const handleSubmit = async () => {
     try {
       const fullList = Object.values(services);
-      const divideBY = Math.floor(fullList.length / PARTS);
+      const divideBY = Math.floor(fullList.length / parts);
 
       if (fullList.length < 4) {
         return;
       }
 
-      for (let i = 0; i < PARTS; i++) {
+      for (let i = 0; i < parts; i++) {
         const apps = fullList.slice(
           divideBY * i,
-          i == PARTS - 1 ? fullList.length + 1 : divideBY * (i + 1)
+          i == parts - 1 ? fullList.length + 1 : divideBY * (i + 1)
         );
 
         const normalizedApps = apps.map((app: ScrapedApp) => {
@@ -83,6 +85,7 @@ const ServiceUpload: React.FunctionComponent = () => {
             },
             ratings: {
               overallRating: app.ratings.overallRating,
+              externalReviewCount: app.ratings.externalReviewCount,
               combinedCustomerSupportRating: app.ratings.combinedCustomerSupportRating,
               combinedEaseOfUseRating: app.ratings.CombinedEaseOfUseRating,
               combinedFunctionalityRating: app.ratings.CombinedFunctionalityRating,
@@ -94,11 +97,11 @@ const ServiceUpload: React.FunctionComponent = () => {
             tags: Object.values(app.tags).map(tag => ({ name: tag[0], weight: tag[1] }))
           };
 
+          delete returnApp.id;
           // We don't want the scraped logo as their url links to unfavorable places
           delete returnApp.logo;
           delete returnApp.pricing;
           delete returnApp.categories;
-          delete returnApp.id;
           delete returnApp.JobDistribution;
           delete returnApp.industryDistribution;
           delete returnApp.companySizes;
@@ -109,14 +112,6 @@ const ServiceUpload: React.FunctionComponent = () => {
           } else if (app.description && typeof app.description == "object") {
             returnApp.description = app.description.capterraLong;
             returnApp.teaserdescription = app.description.capterraShort;
-          }
-
-          if (Object.keys(app.alternatives).length > 0) {
-            const normalizedAlternatives = Object.keys(app.alternatives).map(appID => {
-              return { externalid: appID, ...app.alternatives[appID] };
-            });
-
-            returnApp.alternatives = normalizedAlternatives;
           }
 
           // TODO: [VIP-1336] Add pros and cons when Conrad has the data
@@ -181,7 +176,7 @@ const ServiceUpload: React.FunctionComponent = () => {
     <section id="serviceCreation" className="admin">
       <h1>Integrate or update a Service in the Marketplace</h1>
 
-      <label className="inputLabel">Load a json file</label>
+      <h2 className="inputLabel">Load a json file</h2>
       <input type="file" disabled={loading} accept=".json" onChange={handleFileLoad} />
 
       {jsonLoading ? (
@@ -189,8 +184,17 @@ const ServiceUpload: React.FunctionComponent = () => {
       ) : jsonError ? (
         <ErrorComp error={jsonError} />
       ) : (
-        <React.Fragment>
-          {Object.values(services).length > 0 && (
+        Object.values(services).length > 0 && (
+          <React.Fragment>
+            <h2>Upload data in {parts} parts</h2>
+            <input
+              type="range"
+              disabled={loading}
+              min="1"
+              max="1000"
+              value={parts}
+              onChange={e => setParts(parseInt(e.target.value))}
+            />
             <select
               onChange={e => {
                 e.preventDefault();
@@ -203,75 +207,73 @@ const ServiceUpload: React.FunctionComponent = () => {
                 </option>
               ))}
             </select>
-          )}
 
-          {service && (
-            <React.Fragment>
-              <img src={service.logo} />
-              <ul className="list">
-                <li className="listHeadline">Service Name</li>
-                <li>{service.name}</li>
-              </ul>
+            {service && (
+              <React.Fragment>
+                <img src={service.logo} />
+                <ul className="list">
+                  <li className="listHeadline">Service Name</li>
+                  <li>{service.name}</li>
+                </ul>
 
-              <ul className="list">
-                <li className="listHeadline">Service Website</li>
-                <li>{service.website}</li>
-              </ul>
+                <ul className="list">
+                  <li className="listHeadline">Service Website</li>
+                  <li>{service.website}</li>
+                </ul>
 
-              {renderList("Descriptions", service.description)}
-              {renderList("Ratings", service.ratings)}
+                {renderList("Descriptions", service.description)}
+                {renderList("Ratings", service.ratings)}
 
-              <ul className="list">
-                <li className="listHeadline">Alternatives</li>
-                {service &&
-                  service.alternatives &&
-                  Object.keys(service.alternatives).map(id => (
-                    <li className="alternatives" key={id}>
-                      <span>Name: {service.alternatives[id].name}</span>
-                      <span>Rating: {service.alternatives[id].rating}</span>
-                      <span>Reviews: {service.alternatives[id].reviews}</span>
+                <ul className="list">
+                  <li className="listHeadline">Alternatives</li>
+                  {service &&
+                    service.alternatives &&
+                    service.alternatives.map(id => (
+                      <li className="alternatives" key={id}>
+                        id
+                      </li>
+                    ))}
+                </ul>
+
+                <ul className="list">
+                  <li className="listHeadline">Tags</li>
+                  {Object.values(service.tags).map((tag, key) => (
+                    <li key={key}>
+                      <span className="list-key">{tag[0]}:</span>
+                      <span>{tag[1]}</span>
                     </li>
                   ))}
-              </ul>
+                </ul>
 
-              <ul className="list">
-                <li className="listHeadline">Tags</li>
-                {Object.values(service.tags).map((tag, key) => (
-                  <li key={key}>
-                    <span className="list-key">{tag[0]}:</span>
-                    <span>{tag[1]}</span>
-                  </li>
-                ))}
-              </ul>
+                {renderList("Job Distribution", service.JobDistribution)}
+                {renderList("Company Sizes", service.companySizes)}
+                {renderList("Industry Distribution", service.industryDistribution)}
+              </React.Fragment>
+            )}
 
-              {renderList("Job Distribution", service.JobDistribution)}
-              {renderList("Company Sizes", service.companySizes)}
-              {renderList("Industry Distribution", service.industryDistribution)}
-            </React.Fragment>
-          )}
+            <ErrorComp error={error} />
 
-          <ErrorComp error={error} />
+            {loading && (
+              <div className="progress">
+                <label htmlFor="scrapedApps">{`Uploading part ${progress} of ${parts}`}</label>
+                <progress id="scrapedApps" max="10" value={progress} />
+              </div>
+            )}
 
-          {loading && (
-            <div className="progress">
-              <label htmlFor="scrapedApps">{`Uploading part ${progress} of ${PARTS}`}</label>
-              <progress id="scrapedApps" max="10" value={progress} />
-            </div>
-          )}
+            {success && (
+              <div className="success">{`Upload of ${
+                Object.keys(services).length
+              } Services was successful.`}</div>
+            )}
 
-          {success && (
-            <div className="success">{`Upload of ${
-              Object.keys(services).length
-            } Services was successful.`}</div>
-          )}
-
-          <UniversalButton
-            disabled={loading || Object.keys(services).length < 1}
-            type="high"
-            label="Create / Update Apps"
-            onClick={handleSubmit}
-          />
-        </React.Fragment>
+            <UniversalButton
+              disabled={loading || Object.keys(services).length < 1}
+              type="high"
+              label="Create / Update Apps"
+              onClick={handleSubmit}
+            />
+          </React.Fragment>
+        )
       )}
 
       <button className="button-nav">

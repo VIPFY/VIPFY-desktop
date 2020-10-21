@@ -1,13 +1,10 @@
 import * as React from "react";
 import moment from "moment";
-import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
-
-import { filterLicences } from "../common/functions";
+import { ErrorPage, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { filterLicences, AppContext } from "../common/functions";
 import { Licence } from "../interfaces";
 import AppList from "../components/profile/AppList";
-import PageHeader from "../components/PageHeader";
 import SeparatedSection from "../components/SeparatedSection";
-
 import dashboardImg from "../../images/dashboard.png";
 
 const favourites: { [key: number]: Licence | null } = {};
@@ -20,9 +17,10 @@ interface Props {
   isadmin: boolean;
   impersonation?: boolean;
   moveTo: Function;
+  history: any;
 }
 
-export default (props: Props) => {
+const Dashboard: React.FC<Props> = props => {
   const appLists: {
     "My Favorites": Licence[];
     "My Services": Licence[];
@@ -68,12 +66,12 @@ export default (props: Props) => {
     <div className="dashboard page">
       <PageHeader
         title="My Dashboard"
+        history={props.history}
+        appContext={AppContext}
         buttonConfig={{
           label: "Go to Marketplace",
           fAIcon: "fa-store",
-          onClick: () => {
-            props.moveTo("integrations");
-          }
+          onClick: () => props.moveTo("integrations")
         }}
       />
 
@@ -105,3 +103,5 @@ export default (props: Props) => {
     </div>
   );
 };
+
+export default Dashboard;
