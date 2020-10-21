@@ -419,7 +419,7 @@ class AppDetails extends React.Component<AppDetailsProps, AppDetailsState> {
     let prevLocation = this.props.location.pathname.split("/");
     prevLocation.pop();
     const to = prevLocation.join("/");
-    // Yes, this is how I roll 🕺
+
     const labelArray = prevLocation[prevLocation.length - 1].split("");
     const label = labelArray.shift().toUpperCase() + labelArray.join("");
 

@@ -19,8 +19,8 @@ class PrintServiceSquare extends React.Component<Props, State> {
     if (this.props.fake) {
       return (
         <div
-          key={"fake"}
-          title={"placeholder"}
+          key="fake"
+          title="placeholder"
           className={this.props.className || "managerSquare"}
           style={{
             color: "#253647",

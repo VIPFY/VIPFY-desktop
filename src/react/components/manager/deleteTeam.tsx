@@ -175,7 +175,6 @@ class DeleteTeam extends React.Component<Props, State> {
                   title="Delete employee assignments"
                   checked={this.state.deleteArray[ek].bool}
                   handleChange={v => {
-                    console.log("CLICKED", ek, this.state);
                     this.setState(
                       oldstate =>
                         (oldstate.deleteArray[ek] = {

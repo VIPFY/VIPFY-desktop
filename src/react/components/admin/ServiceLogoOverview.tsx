@@ -88,7 +88,7 @@ const TableRow = (props: { service; showBorder }) => {
           key={logo}
           isadmin={true}
           name={name}
-          className={"imagehoverable"}
+          className="imagehoverable"
           onDrop={async file => {
             await updateApp({
               context: { hasUpload: true },
@@ -120,7 +120,7 @@ const ServiceLogoEdit = (props: Props) => {
         <SearchBox searchFunction={(searchValue: string) => setSearch(searchValue)} />
         <Checkbox
           title="Show borders"
-          name={"checkbox_show_table_row_borders"}
+          name="checkbox_show_table_row_borders"
           handleChange={v => setBorder(v)}
           checked={true}
         />

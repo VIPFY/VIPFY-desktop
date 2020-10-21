@@ -116,7 +116,7 @@ class SidebarApps extends React.Component<Props, State> {
                 )
               }>
               <button
-                id={"browserbutton"}
+                id="browserbutton"
                 type="button"
                 onMouseDown={() => {
                   document.getElementById("browserbutton").className =
@@ -185,7 +185,7 @@ class SidebarApps extends React.Component<Props, State> {
                 )
               }>
               <button
-                id={"openServicebutton"}
+                id="openServicebutton"
                 type="button"
                 onMouseDown={() => {
                   document.getElementById("openServicebutton").className =

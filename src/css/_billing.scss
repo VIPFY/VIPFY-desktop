@@ -639,10 +639,7 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
 }
 
 @media (max-width: 1240px) {
-  .paymentMethodHolder {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .paymentMethodHolder,
   .paymentDataHolder {
     grid-template-columns: repeat(2, 1fr);
   }

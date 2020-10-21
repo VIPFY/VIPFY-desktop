@@ -515,7 +515,7 @@ export const UserPicture: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.User}
         state={ThingState.Loading}
-        name={"Loading"}
+        name="Loading"
       />
     );
   }
@@ -533,7 +533,7 @@ export const UserPicture: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.User}
         state={ThingState.Error}
-        name={"Error loading data"}
+        name="Error loading data"
       />
     );
   }
@@ -570,7 +570,7 @@ export const TeamPicture: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.Team}
         state={ThingState.Loading}
-        name={"Loading"}
+        name="Loading"
       />
     );
   }
@@ -588,7 +588,7 @@ export const TeamPicture: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.Team}
         state={ThingState.Error}
-        name={"Error loading data"}
+        name="Error loading data"
       />
     );
   }
@@ -626,7 +626,7 @@ export const CompanyPicture: React.FC<AutoPictureProps> = props => {
         editable={props.editable}
         type={ThingType.Company}
         state={ThingState.Loading}
-        name={"Loading"}
+        name="Loading"
       />
     );
   }
@@ -643,7 +643,7 @@ export const CompanyPicture: React.FC<AutoPictureProps> = props => {
         editable={props.editable}
         type={ThingType.Company}
         state={ThingState.Error}
-        name={"Error loading data"}
+        name="Error loading data"
       />
     );
   }
@@ -682,7 +682,7 @@ export const AppIcon: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.Service}
         state={ThingState.Loading}
-        name={"Loading"}
+        name="Loading"
       />
     );
   }
@@ -700,7 +700,7 @@ export const AppIcon: React.FC<AutoIdPictureProps> = props => {
         id={props.id}
         type={ThingType.Service}
         state={ThingState.Error}
-        name={"Error loading data"}
+        name="Error loading data"
       />
     );
   }
