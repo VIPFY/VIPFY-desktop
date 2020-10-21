@@ -1,49 +1,23 @@
 import * as React from "react";
-import { ErrorPage, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { AppOverviewCard, ErrorPage, PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
-import { fetchApps } from "../../queries/products";
+
+import { AppContext, sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
-import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
-import welcomeImage from "../../../images/onboarding.png";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
-import { AppContext } from "../../common/functions";
+import { fetchApps } from "../../queries/products";
 
 interface MarketplaceDiscoverProps {
   history: any;
 }
 
-const DUMMY_APP = {
-  name: "Dummy App",
-  id: 123,
-  icon: "Miro/logo.png",
-  color: "grey",
-  pic: welcomeImage,
-  options: { marketplace: true },
-  pros: [
-    "This is the first pro we provide, and it is a very complicated explanation.",
-    "This is the second pro",
-    "This is the last pro we provide"
-  ],
-  features: [
-    "Collaboration tools",
-    "Gantt charts",
-    "Cats",
-    "Dogs",
-    "Video chat",
-    "File sharing",
-    "Excel export",
-    "Brain wipe",
-    "And many, many, many, many, many, many, many, many, many, many, many, many, many, many, many more"
-  ]
-};
-
 class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/${appId}`);
+  goToApp = (appId: string) => this.props.history.push(`/area/marketplace/${appId}`);
 
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
-    if (!marketplaceApps.length) {
+    if (marketplaceApps.length === 0) {
       return (
         <ErrorPage>
           <p>
@@ -54,6 +28,8 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
       );
     }
 
+    const sortedApps = sortApps(marketplaceApps);
+
     return (
       <div className="marketplace page">
         <div className="pageContent">
@@ -61,43 +37,22 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             title="Discover"
             history={this.props.history}
             appContext={AppContext}
-            searchConfig={{ text: "Search an App in Marketplace" }}
+            searchItems={[]}
           />
 
           <div className="marketplaceContent">
-            <MarketplaceSection className="apps" hrStyle={{ display: "none" }}>
-              <AppOverviewCard
-                app={DUMMY_APP}
-                isWideFormat={true}
-                onClick={() => this.goToApp(DUMMY_APP.id)}
-              />
-              <div className="grid4Cols smGrid2Cols">
-                <AppOverviewCard
-                  app={DUMMY_APP}
-                  showPic={true}
-                  onClick={() => this.goToApp(DUMMY_APP.id)}
-                />
-                <AppOverviewCard
-                  app={DUMMY_APP}
-                  showPic={true}
-                  onClick={() => this.goToApp(DUMMY_APP.id)}
-                />
-                <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-              </div>
-            </MarketplaceSection>
-
             <MarketplaceSection>
-              <h2 className="headline">Headline</h2>
+              <h2 className="headline">All Apps</h2>
               <div className="apps">
-                <div className="grid3Cols smGrid1Col">
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    showPic={true}
-                    onClick={() => this.goToApp(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                <div className="grid4Cols smGrid2Cols">
+                  {sortedApps.map(app => (
+                    <AppOverviewCard
+                      app={app}
+                      showBackgroundImage={true}
+                      showPriceTags={true}
+                      onClick={() => this.goToApp(app.id)}
+                    />
+                  ))}
                 </div>
               </div>
             </MarketplaceSection>

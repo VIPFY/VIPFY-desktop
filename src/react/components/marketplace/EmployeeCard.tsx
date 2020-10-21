@@ -1,8 +1,7 @@
 import * as React from "react";
-import { Checkbox, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { Card, CardSection, Checkbox, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import { concatName } from "../../common/functions";
-import CardSection from "../CardSection";
 import EmployeePicture from "../EmployeePicture";
 
 interface EmployeeCardProps {
@@ -17,7 +16,7 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
     const { employee, hideDetails, hideServices, hideTeams } = this.props;
 
     return (
-      <div className="card employeeCard">
+      <Card className="employeeCard">
         <CardSection className="cardHeader">
           <EmployeePicture
             className="cardPic"
@@ -87,7 +86,7 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
             ))}
           </CardSection>
         )}
-      </div>
+      </Card>
     );
   }
 }

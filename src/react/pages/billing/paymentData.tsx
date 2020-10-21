@@ -1,8 +1,8 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
-import { PageHeader, IconButton } from "@vipfy-private/vipfy-ui-lib";
+import { Card, CardSection, IconButton, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
-import CardSection from "../../components/CardSection";
 import noCreditCard from "../../../images/no_creditcard.png";
 import noBillingAddress from "../../../images/no_billingaddress.png";
 import OverviewCreditCard from "../../components/billing/overviewCreditCard";
@@ -35,7 +35,7 @@ const PaymentData: React.FC<Props> = props => (
 
           return (
             <div className="paymentDataHolder">
-              <div className="card">
+              <Card>
                 <CardSection
                   style={{
                     display: "flex",
@@ -184,9 +184,9 @@ const PaymentData: React.FC<Props> = props => (
                     </div>
                   </CardSection>
                 )}
-              </div>
+              </Card>
 
-              <div className="card">
+              <Card>
                 <CardSection
                   style={{
                     display: "flex",
@@ -259,7 +259,7 @@ const PaymentData: React.FC<Props> = props => (
                     </div>
                   </CardSection>
                 )}
-              </div>
+              </Card>
             </div>
           );
         }}

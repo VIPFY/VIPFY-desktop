@@ -1,15 +1,12 @@
 import * as React from "react";
 import classNames from "classnames";
-import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+import { AppOverviewCard, ErrorPage , PageHeader} from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
-import { fetchApps } from "../../queries/products";
-import QueryWrapper from "../../common/QueryWrapper";
-import AppOverviewCard from "../../components/marketplace/AppOverviewCard";
 import { sortApps } from "../../common/functions";
-import welcomeImage from "../../../images/onboarding.png";
+import QueryWrapper from "../../common/QueryWrapper";
 import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
-import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import { fetchApps } from "../../queries/products";
 
 interface MarketplaceProps {
   history: any;
@@ -30,19 +27,8 @@ const CATEGORIES = [
   { name: "Backoffice", icon: "" }
 ];
 
-const DUMMY_APP = {
-  id: 1523,
-  name: "Dummy App",
-  icon: "Miro/logo.png",
-  color: "grey",
-  pic: welcomeImage,
-  options: { marketplace: true },
-  pros: ["Seamlessly integrated", "Organized in a centralized pool", "Available at all times"],
-  features: ["Collaboration tools", "Gantt charts", "Video chat", "File sharing", "Excel export"]
-};
-
 class MarketplaceCategories extends React.Component<MarketplaceProps> {
-  goToApp = (appId: number) => this.props.history.push(`/area/marketplace/categories/${appId}`);
+  goToApp = (appId: string) => this.props.history.push(`/area/marketplace/categories/${appId}`);
 
   renderCategory(categoryName: string, icon: string) {
     icon = "fa-moon";
@@ -58,11 +44,13 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
   renderApps(apps: App[]) {
     const marketplaceApps = apps.filter(app => app.options?.marketplace);
 
-    if (!marketplaceApps.length) {
+    if (marketplaceApps.length === 0) {
       return (
         <ErrorPage>
-          No apps available. Please check your permissions and verify that VIPFY is available in
-          your country.
+          <p>
+            No apps available. Please check your permissions and verify that VIPFY is available in
+            your country.
+          </p>
         </ErrorPage>
       );
     }
@@ -72,7 +60,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace page">
         <div className="pageContent">
-          <PageHeader title="Categories" searchConfig={{ text: "Search an App in Marketplace" }}>
+          <PageHeader title="Categories" history={this.props.history} searchItems={[]}>
             <div className="categories grid6Cols smGrid3Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
@@ -80,38 +68,18 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
 
           <div className="marketplaceContent">
             <MarketplaceSection>
-              <h2 className="headline">Headline</h2>
-              <div className="apps">
-                <div className="grid3Cols smGrid1Col">
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    showPic={true}
-                    onClick={() => this.goToApp(DUMMY_APP.id)}
-                  />
-                  <AppOverviewCard
-                    app={DUMMY_APP}
-                    showPic={true}
-                    onClick={() => this.goToApp(DUMMY_APP.id)}
-                  />
-                </div>
-              </div>
-            </MarketplaceSection>
-
-            <MarketplaceSection>
-              <h2 className="headline">Headline</h2>
+              <h2 className="headline">All Apps</h2>
               <div className="apps">
                 <div className="grid4Cols smGrid2Cols">
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
-                  <AppOverviewCard app={DUMMY_APP} onClick={() => this.goToApp(DUMMY_APP.id)} />
+                  {sortedApps.map(app => (
+                    <AppOverviewCard
+                      app={app}
+                      showBackgroundImage={true}
+                      showPriceTags={true}
+                      onClick={() => this.goToApp(app.id)}
+                    />
+                  ))}
                 </div>
-                <AppOverviewCard
-                  app={DUMMY_APP}
-                  isWideFormat={true}
-                  onClick={() => this.goToApp(DUMMY_APP.id)}
-                />
               </div>
             </MarketplaceSection>
           </div>

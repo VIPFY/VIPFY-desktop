@@ -1,25 +1,23 @@
-// these must be imported first
-@import "login";
+// These must be imported first
 @import "../../../node_modules/@vipfy-private/vipfy-ui-lib/src/css/importFirst/index";
 
 // Please add in alphabetical order
 @import "appDetails";
 @import "browser";
-@import "card";
 @import "checkout";
 @import "dashboard";
-@import "clickTrackingStudy";
 @import "dropDownWithIcon";
 @import "employeeCard";
 @import "formElements/index";
 @import "loading";
+@import "login";
 @import "marketplace";
 @import "marketplaceCategories";
 @import "page";
 @import "pagination";
-@import "table";
 @import "serviceCreation";
+@import "table";
 @import "vipfy";
 
-// last must be imported last
+// These must be imported last
 @import "~@vipfy-private/vipfy-ui-lib/src/css/importLast/index";

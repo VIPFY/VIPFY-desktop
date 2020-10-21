@@ -3,8 +3,8 @@ import { Component } from "react";
 import { Query } from "@apollo/client/react/components";
 import gql from "graphql-tag";
 import { v4 as uuid } from "uuid";
-import { Checkbox, PageHeader } from "@vipfy-private/vipfy-ui-lib";
-import CardSection from "../../components/CardSection";
+import { Card, CardSection, Checkbox, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+
 import UniversalTextInput from "../../components/universalForms/universalTextInput";
 import UniversalDropdownInput from "../../components/universalForms/universalDropdownInput";
 import UniversalButton from "../../components/universalButtons/universalButton";
@@ -382,7 +382,7 @@ class PaymentAddress extends Component<Props, State> {
                   }}
                 />
                 <div className="paymentAddressHolder">
-                  <div className="card">
+                  <Card>
                     <CardSection
                       style={{
                         display: "flex",
@@ -607,8 +607,9 @@ class PaymentAddress extends Component<Props, State> {
                         />
                       </div>
                     </CardSection>
-                  </div>
-                  <div className="card" style={{ minHeight: "100px" }}>
+                  </Card>
+
+                  <Card style={{ minHeight: "100px" }}>
                     <CardSection
                       style={{
                         display: "flex",
@@ -675,10 +676,12 @@ class PaymentAddress extends Component<Props, State> {
                         }
                       />
                     </CardSection>
-                  </div>
+                  </Card>
+
                   {this.state.unsavedChanges && (
                     <PopupBase small={true}>
-                      <div>You have not saved your changes yet! Do you want to save them?</div>
+                      <div>You have not saved your changes yet. Do you want to save them?</div>
+
                       <UniversalButton
                         type="low"
                         label="Discard"
@@ -687,6 +690,7 @@ class PaymentAddress extends Component<Props, State> {
                           this.props.moveTo(this.state.unsavedChanges.pathname.substring(6));
                         }}
                       />
+
                       <UniversalButton
                         type="high"
                         label="Save"

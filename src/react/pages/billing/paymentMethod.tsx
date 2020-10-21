@@ -1,12 +1,13 @@
 import * as React from "react";
+import gql from "graphql-tag";
+import { Query } from "@apollo/client/react/components";
+import { Card, CardSection } from "@vipfy-private/vipfy-ui-lib";
+
 import UniversalButton from "../../components/universalButtons/universalButton";
 import newMethod from "../../../images/undraw_pay_online_b1hk.png";
-import gql from "graphql-tag";
 import CardSetupFormContainer from "../../components/billing/CardSetupForm";
 import CreditCardNew from "../../components/billing/CreditCardNew";
-import { Query } from "@apollo/client/react/components";
 import { FETCH_PAYMENT_DATA } from "../../queries/billing";
-import CardSection from "../../components/CardSection";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupAddress from "../../popups/popupAddress";
 import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
@@ -24,6 +25,7 @@ interface State {
   sameAddress: boolean;
   remove: any;
 }
+
 class PaymentMethod extends React.Component<Props, State> {
   state = {
     edit: false,
@@ -59,7 +61,7 @@ class PaymentMethod extends React.Component<Props, State> {
               }
 
               if (!data.fetchPaymentData) {
-                return <div>No Billing Data to find</div>;
+                return <div>No billing data found</div>;
               }
 
               const paymentData = data.fetchPaymentData.cards;
@@ -112,8 +114,8 @@ class PaymentMethod extends React.Component<Props, State> {
                     ))}
                   <div className="paymentMethod">
                     <div className="number">{paymentData.length + 1}</div>
-                    <div
-                      className="card paymentCard"
+                    <Card
+                      className="paymentCard"
                       style={
                         !this.state.edit
                           ? { display: "flex", justifyContent: "center", alignItems: "center" }
@@ -203,7 +205,7 @@ class PaymentMethod extends React.Component<Props, State> {
                           />
                         </CardSection>
                       )}
-                    </div>
+                    </Card>
                   </div>
                   {this.state.missingAddress && (
                     <PopupAddress
@@ -237,8 +239,9 @@ class PaymentMethod extends React.Component<Props, State> {
                               }
                             });
                           } catch (err) {
-                            console.log("ERROR", err);
+                            console.error("ERROR", err);
                           }
+
                           this.setState({ remove: null });
                           refetch();
                         }}
