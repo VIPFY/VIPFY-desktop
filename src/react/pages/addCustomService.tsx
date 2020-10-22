@@ -155,7 +155,7 @@ class AddCustomServicePage extends React.Component<Props, State> {
     }
 
     remainingFields.forEach(rF => {
-      if (rF.arg.id === hasEmail) {
+      if (rF.args.id === hasEmail) {
         return;
       }
       fields.push(
