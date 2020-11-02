@@ -68,6 +68,7 @@ const Dashboard: React.FC<Props> = props => {
         title="My Dashboard"
         history={props.history}
         appContext={AppContext}
+        breadCrumbs={[{ label: "Dashboard", to: "/area" }]}
         buttonConfig={{
           label: "Go to Marketplace",
           fAIcon: "fa-store",

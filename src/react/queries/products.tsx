@@ -11,7 +11,10 @@ export const fetchApps = gql`
       needssubdomain
       options
       color
-      tags
+      tags {
+        name
+        weight
+      }
       images
       ratings {
         combinedCustomerSupportRating

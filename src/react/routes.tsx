@@ -1,4 +1,4 @@
-import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+import { AppDetails, ErrorPage } from "@vipfy-private/vipfy-ui-lib";
 import Billing from "./pages/billing";
 import Dashboard from "./pages/dashboard";
 import MarketplaceDiscover from "./pages/marketplace/MarketplaceDiscover";
@@ -33,7 +33,6 @@ import Workspace from "./pages/Workspace";
 import InboundEmails from "./components/admin/emails";
 import PendingIntegrations from "./components/admin/PendingIntegrations";
 import AddCustomServicePage from "./pages/addCustomService";
-import AppDetails from "./pages/marketplace/AppDetails";
 import Checkout from "./pages/marketplace/Checkout";
 import TestingBilling from "./components/admin/testingbilling";
 import PaymentMethod from "./pages/billing/paymentMethod";

@@ -577,12 +577,11 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
 }
 
 .paymentDataHolder {
+  @include grid;
   max-width: 1608px;
   margin-top: 12px;
   margin-bottom: 12px;
-  display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
   align-items: baseline;
 
   .vipuiCard {
@@ -618,12 +617,11 @@ $rccs-visaelectron-logo: "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBl
 }
 
 .paymentAddressHolder {
+  @include grid;
   max-width: 1608px;
   margin-top: 12px;
   margin-bottom: 12px;
-  display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
   align-items: baseline;
 
   .vipuiCard {

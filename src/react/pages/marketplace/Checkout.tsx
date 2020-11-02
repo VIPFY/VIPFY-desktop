@@ -43,12 +43,12 @@ class Checkout extends React.Component<{}> {
     return (
       <div className="page">
         <div className="pageContent">
-          <PageHeader
+          {/* <PageHeader
             history={this.props.history}
             appContext={AppContext}
             title="Checkout"
             buttonConfig={{ label: "Test Button", onClick: () => alert("works") }}
-          />
+          /> */}
 
           <div>
             <EmployeeCard employee={DUMMY_USER} />

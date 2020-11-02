@@ -1,14 +1,11 @@
 .checkout {
   .employeeHolder {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+    @include grid;
     align-items: baseline;
-  }
+    grid-template-columns: repeat(3, 1fr);
 
-  @include sm {
-    .employeeHolder {
-      grid-template-columns: repeat(3, 1fr);
+    @include lgApp {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 }

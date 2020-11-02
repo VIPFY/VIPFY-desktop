@@ -1,11 +1,15 @@
 import * as React from "react";
 import classNames from "classnames";
-import { AppOverviewCard, ErrorPage , PageHeader} from "@vipfy-private/vipfy-ui-lib";
+import {
+  AppOverviewCard,
+  ErrorPage,
+  MarketplaceSection,
+  PageHeader
+} from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import { sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
-import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import { fetchApps } from "../../queries/products";
 
 interface MarketplaceProps {
@@ -60,8 +64,14 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
     return (
       <div className="marketplace page">
         <div className="pageContent">
-          <PageHeader title="Categories" history={this.props.history} searchItems={[]}>
-            <div className="categories grid6Cols smGrid3Cols">
+          <PageHeader
+            title="Categories"
+            history={this.props.history}
+            breadCrumbs={[
+              { label: "Dashboard", to: "/area" },
+              { label: "Marketplace Categories", to: "/area/marketplace/categories" }
+            ]}>
+            <div className="categories grid3Cols lgGrid6Cols">
               {CATEGORIES.map(category => this.renderCategory(category.name, category.icon))}
             </div>
           </PageHeader>
@@ -70,7 +80,7 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
             <MarketplaceSection>
               <h2 className="headline">All Apps</h2>
               <div className="apps">
-                <div className="grid4Cols smGrid2Cols">
+                <div className="grid2Cols lgGrid4Cols">
                   {sortedApps.map(app => (
                     <AppOverviewCard
                       app={app}
