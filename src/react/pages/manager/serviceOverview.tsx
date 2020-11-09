@@ -133,6 +133,10 @@ class ServiceOverview extends React.Component<Props, State> {
           title="Employee Manager"
           history={this.props.history}
           appContext={AppContext}
+          breadCrumbs={[
+            { label: "Dashboard", to: "/area" },
+            { label: "Employee Manager", to: "/area/emanager" }
+          ]}
           buttonConfig={{
             label: "Add Service",
             onClick: () =>

@@ -1,10 +1,14 @@
 import * as React from "react";
-import { AppOverviewCard, ErrorPage, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import {
+  AppOverviewCard,
+  ErrorPage,
+  MarketplaceSection,
+  PageHeader
+} from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import { AppContext, sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
-import MarketplaceSection from "../../components/marketplace/MarketplaceSection";
 import { fetchApps } from "../../queries/products";
 
 interface MarketplaceDiscoverProps {
@@ -37,14 +41,17 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
             title="Discover"
             history={this.props.history}
             appContext={AppContext}
-            searchItems={[]}
+            breadCrumbs={[
+              { label: "Dashboard", to: "/area" },
+              { label: "Marketplace Discover", to: "/area/marketplace/discover" }
+            ]}
           />
 
           <div className="marketplaceContent">
             <MarketplaceSection>
               <h2 className="headline">All Apps</h2>
               <div className="apps">
-                <div className="grid4Cols smGrid2Cols">
+                <div className="grid2Cols lgGrid4Cols">
                   {sortedApps.map(app => (
                     <AppOverviewCard
                       app={app}

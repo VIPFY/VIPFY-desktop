@@ -72,7 +72,7 @@ export default (props: Props) => {
             }
           }}
           style={{ color: isFavorite && "red" }}
-          className={isFavorite ? "fa fa-heart heart-icon" : "fal fa-heart heart-icon"}
+          className={"fa-heart heart-icon " + (isFavorite ? "fa" : "fal")}
         />
       </CardSection>
 

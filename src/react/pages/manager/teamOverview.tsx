@@ -105,6 +105,10 @@ class TeamOverview extends React.Component<Props, State> {
           title="Team Manager"
           history={this.props.history}
           appContext={AppContext}
+          breadCrumbs={[
+            { label: "Dashboard", to: "/area" },
+            { label: "Team Manager", to: "/area/dmanager" }
+          ]}
           buttonConfig={{
             label: "Create Team",
             onClick: () => this.setState({ add: true }),

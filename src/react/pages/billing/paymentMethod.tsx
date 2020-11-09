@@ -40,13 +40,11 @@ class PaymentMethod extends React.Component<Props, State> {
         <div className="pageContent">
           <PageHeader
             title="Credit Cards"
-            breadCrumbs={{
-              navLink: NavLink,
-              routes: [
-                { label: "Payment Method", to: "/area/paymentdata" },
-                { label: "Credit Cards", to: "/area/paymentdata/paymentmethod" }
-              ]
-            }}
+            breadCrumbs={[
+              { label: "Dashboard", to: "/area" },
+              { label: "Payment Method", to: "/area/paymentdata" },
+              { label: "Credit Cards", to: "/area/paymentdata/paymentmethod" }
+            ]}
             history={this.props.history}
             appContext={AppContext}
           />

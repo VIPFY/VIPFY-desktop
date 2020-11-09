@@ -16,7 +16,15 @@ interface Props {
 const PaymentData: React.FC<Props> = props => (
   <div className="page">
     <div className="pageContent">
-      <PageHeader history={props.history} title="Payment Method" appContext={AppContext} />
+      <PageHeader
+        history={props.history}
+        title="Payment Method"
+        breadCrumbs={[
+          { label: "Dashboard", to: "/area" },
+          { label: "Payment Method", to: "/area/paymentdata" }
+        ]}
+        appContext={AppContext}
+      />
       <Query query={FETCH_PAYMENT_DATA}>
         {({ data, loading, error = null }) => {
           if (loading) {

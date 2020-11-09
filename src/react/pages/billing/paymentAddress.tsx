@@ -359,13 +359,11 @@ class PaymentAddress extends Component<Props, State> {
                   appContext={AppContext}
                   title="Billing contacts"
                   history={this.props.history}
-                  breadCrumbs={{
-                    navLink: NavLink,
-                    routes: [
-                      { label: "Payment Method", to: "/area/paymentdata" },
-                      { label: "Billing Contacts", to: "/area/paymentdata/paymentaddress" }
-                    ]
-                  }}
+                  breadCrumbs={[
+                    { label: "Dashboard", to: "/area" },
+                    { label: "Payment Method", to: "/area/paymentdata" },
+                    { label: "Billing Contacts", to: "/area/paymentdata/paymentaddress" }
+                  ]}
                   buttonConfig={{
                     label: "Save",
                     onClick: async () => {

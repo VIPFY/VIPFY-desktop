@@ -1,8 +1,6 @@
 import * as React from "react";
-import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 
 import EmployeeCard from "../../components/marketplace/EmployeeCard";
-import { AppContext } from "../../common/functions";
 
 const DUMMY_USER = {
   id: "582a705d-d650-4727-8db6-28d231b465dd",
@@ -43,13 +41,6 @@ class Checkout extends React.Component<{}> {
     return (
       <div className="page">
         <div className="pageContent">
-          <PageHeader
-            history={this.props.history}
-            appContext={AppContext}
-            title="Checkout"
-            buttonConfig={{ label: "Test Button", onClick: () => alert("works") }}
-          />
-
           <div>
             <EmployeeCard employee={DUMMY_USER} />
           </div>

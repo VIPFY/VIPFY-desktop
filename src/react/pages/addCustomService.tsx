@@ -203,13 +203,11 @@ class AddCustomServicePage extends React.Component<Props, State> {
             title="Add Custom Service"
             history={this.props.history}
             appContext={AppContext}
-            breadCrumbs={{
-              navLink: NavLink,
-              routes: [
-                { label: "Service Integrator", to: "/area/integrations" },
-                { label: "Add Custom Service", to: "/area/addcustomservice" }
-              ]
-            }}
+            breadCrumbs={[
+              { label: "Dashboard", to: "/area" },
+              { label: "Service Integrator", to: "/area/integrations" },
+              { label: "Add Custom Service", to: "/area/addcustomservice" }
+            ]}
           />
 
           <div style={{ display: "flex", justifyContent: "space-between" }}>

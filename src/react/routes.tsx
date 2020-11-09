@@ -1,6 +1,8 @@
 import { ErrorPage } from "@vipfy-private/vipfy-ui-lib";
+
 import Billing from "./pages/billing";
 import Dashboard from "./pages/dashboard";
+import { AppDetailsHolder } from "./pages/marketplace/AppDetailsHolder";
 import MarketplaceDiscover from "./pages/marketplace/MarketplaceDiscover";
 import MarketplaceCategories from "./pages/marketplace/MarketplaceCategories";
 import MessageCenter from "./pages/messagecenter";
@@ -33,7 +35,6 @@ import Workspace from "./pages/Workspace";
 import InboundEmails from "./components/admin/emails";
 import PendingIntegrations from "./components/admin/PendingIntegrations";
 import AddCustomServicePage from "./pages/addCustomService";
-import AppDetails from "./pages/marketplace/AppDetails";
 import Checkout from "./pages/marketplace/Checkout";
 import TestingBilling from "./components/admin/testingbilling";
 import PaymentMethod from "./pages/billing/paymentMethod";
@@ -88,9 +89,9 @@ const routes = [
   { path: "/area/messagecenter/:person", component: MessageCenter },
   { path: "/area/marketplace", component: MarketplaceDiscover, admin: true },
   { path: "/area/marketplace/categories", component: MarketplaceCategories, admin: true },
-  { path: "/area/marketplace/categories/:appid", component: AppDetails, admin: true },
+  { path: "/area/marketplace/categories/:appid", component: AppDetailsHolder, admin: true },
   { path: "/area/marketplace/categories/:appid/:planid", component: Checkout, admin: true },
-  { path: "/area/marketplace/:appid", component: AppDetails, admin: true },
+  { path: "/area/marketplace/:appid", component: AppDetailsHolder, admin: true },
   { path: "/area/marketplace/:appid/:planid", component: Checkout, admin: true },
   { path: "/area/profile/:userid", component: EmployeeDetails, addprops: { profile: true } },
   { path: "/area/security", component: Security, admin: true },
