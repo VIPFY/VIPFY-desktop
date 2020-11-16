@@ -13,6 +13,6 @@ module.exports = {
   },
   plugins: require("./webpack.plugins"),
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".node", ".json"]
+    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".node", ".json"]
   }
 };
