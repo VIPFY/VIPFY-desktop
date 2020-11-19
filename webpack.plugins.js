@@ -34,10 +34,9 @@ if (process.env.npm_lifecycle_event.includes("obfuscate")) {
   plugins.push(new CopyPlugin([{ from: "src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
 }
 
-plugins.push(new BundleAnalyzerPlugin());
-
 // env vars aren't passed to here, so check npm script name instead
 if (process.env.npm_lifecycle_event.includes("obfuscate")) {
+  plugins.push(new BundleAnalyzerPlugin());
   plugins.push(new JscramblerWebpack({ chunks: ["main_window", "components", "common"] }));
 }
 

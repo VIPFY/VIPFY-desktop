@@ -27,8 +27,8 @@ rules.push({
       }
     },
     {
-      loader: "image-webpack-loader"
-      //  options: { disable: fast }
+      loader: "image-webpack-loader",
+      options: { disable: fast }
     }
   ]
 });
