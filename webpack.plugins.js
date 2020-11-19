@@ -1,37 +1,25 @@
-//const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const JscramblerWebpack = require("jscrambler-webpack-plugin");
 const webpack = require("webpack");
+const { UnusedFilesWebpackPlugin } = require("unused-files-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HTMLWebpackPlugin = require("html-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
+const fast = process.env.npm_lifecycle_event.includes("fast");
 
 const plugins = [
-  // new ForkTsCheckerWebpackPlugin({
-  //   async: true
-  // }),
-  // new JavaScriptObfuscator(
-  //   {
-  //     compact: false,
-  //     controlFlowFlattening: false,
-  //     deadCodeInjection: false,
-  //     debugProtection: false,
-  //     debugProtectionInterval: false,
-  //     disableConsoleOutput: true,
-  //     identifierNamesGenerator: "hexadecimal",
-  //     log: false,
-  //     renameGlobals: false,
-  //     rotateStringArray: false,
-  //     selfDefending: false,
-  //     stringArray: false,
-  //     stringArrayEncoding: false,
-  //     stringArrayThreshold: 0.75,
-  //     unicodeEscapeSequence: false
-  //   },
-  //   []
-  // )
-  // new JscramblerWebpack({
-  //   enable: true, // optional, defaults to true
-  //   params: [],
-  //   applicationTypes: {}
-  //   // and other jscrambler configurations
-  // })
+  new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /en|de/),
+  new UnusedFilesWebpackPlugin(),
+  new MiniCssExtractPlugin(),
+  new HTMLWebpackPlugin({
+    template: "./src/index.html",
+    minify: {
+      removeAttributeQuotes: !fast,
+      collapseWhitespace: !fast,
+      removeComments: !fast
+    }
+  })
   // new webpack.BannerPlugin({
   //   banner:
   //     "hash:[hash], chunkhash:[chunkhash], name:[name], filebase:[filebase], query:[query], file:[file]"
@@ -40,21 +28,17 @@ const plugins = [
 
 // env vars aren't passed to here, so check npm script name instead
 if (process.env.npm_lifecycle_event.includes("obfuscate")) {
-  plugins.push(
-    new JscramblerWebpack({
-      enable: true, // optional, defaults to true
-      applicationTypes: {
-        webBrowserApp: false,
-        desktopApp: true,
-        serverApp: false,
-        hybridMobileApp: false,
-        javascriptNativeApp: false,
-        html5GameApp: false
-      },
-      applicationId: "5de0353689a38d0016778e47"
-      // and other jscrambler configurations
-    })
-  );
+  /* prettier-ignore */
+  plugins.push(new CopyPlugin([{ from: "obfuscated/src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
+} else {
+  plugins.push(new CopyPlugin([{ from: "src/ssoConfigPreload/", to: "ssoConfigPreload/" }]));
+}
+
+plugins.push(new BundleAnalyzerPlugin());
+
+// env vars aren't passed to here, so check npm script name instead
+if (process.env.npm_lifecycle_event.includes("obfuscate")) {
+  plugins.push(new JscramblerWebpack({ chunks: ["main_window", "components", "common"] }));
 }
 
 module.exports = plugins;

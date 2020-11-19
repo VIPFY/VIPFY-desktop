@@ -62,7 +62,6 @@
     "html5GameApp": false
   },
   "useRecommendedOrder": true,
-  "jscramblerVersion": "6.2",
-  "tolerateMinification": true,
-  "useProfilingData": false
+  "jscramblerVersion": "7.0",
+  "tolerateMinification": true
 }

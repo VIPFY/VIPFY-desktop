@@ -10,7 +10,7 @@ APPLE_APP_PASSWORD=$(cat .env | grep APPLE_APP_PASSWORD)
 APPLE_APP_PASSWORD=${APPLE_APP_PASSWORD##APPLE_APP_PASSWORD=}
 
 # Login to the Mac and execute the script
-ssh -t nilsvossebein@192.168.1.9 '
+ssh -t nilsvossebein@10.42.1.101 '
   set -e
   export BRANCH='"'$BRANCH'"';
   export NUCLEUS_PW='"'$NUCLEUS_PW'"'
@@ -24,6 +24,7 @@ ssh -t nilsvossebein@192.168.1.9 '
   git clone git@bitbucket.org:vipfymarketplace/vipfy-desktop.git
 
   cd vipfy-desktop
+  git fetch
   git checkout $BRANCH
   git pull
   npm i
@@ -31,7 +32,7 @@ ssh -t nilsvossebein@192.168.1.9 '
   echo "Unlock the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
-  DEBUG=electron-osx-sign* npm run publish-js-obfuscated
+  DEBUG='electron-forge:*' npm run publish-js-obfuscated
   echo "App successfully built. Uploading now..."
   chmod +x .circleci/release-nucleus.sh
   ./.circleci/release-nucleus.sh "$NUCLEUS_PW" 4e2105365ea5c7e823cb7af42450b29a
