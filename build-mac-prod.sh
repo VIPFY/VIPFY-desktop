@@ -32,7 +32,7 @@ ssh -t nilsvossebein@10.42.1.101 '
   echo "Unlock the default keychain"
   security unlock-keychain -p $MAC_PW /Users/nilsvossebein/Library/Keychains/login.keychain-db
 
-  DEBUG='electron-forge:*' npm run publish-js-obfuscated
+  DEBUG=electron-osx-sign* npm run publish-js-obfuscated
   echo "App successfully built. Uploading now..."
   chmod +x .circleci/release-nucleus.sh
   ./.circleci/release-nucleus.sh "$NUCLEUS_PW" 4e2105365ea5c7e823cb7af42450b29a
