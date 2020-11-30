@@ -6,7 +6,6 @@ import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import noCreditCard from "../../../images/no_creditcard.png";
 import noBillingAddress from "../../../images/no_billingaddress.png";
 import OverviewCreditCard from "../../components/billing/overviewCreditCard";
-import { AppContext } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -17,13 +16,11 @@ const PaymentData: React.FC<Props> = props => (
   <div className="page">
     <div className="pageContent">
       <PageHeader
-        history={props.history}
         title="Payment Method"
         breadCrumbs={[
           { label: "Dashboard", to: "/area" },
           { label: "Payment Method", to: "/area/paymentdata" }
         ]}
-        appContext={AppContext}
       />
       <Query query={FETCH_PAYMENT_DATA}>
         {({ data, loading, error = null }) => {

@@ -11,8 +11,6 @@ import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import PopupAddress from "../../popups/popupAddress";
 import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
-import { AppContext } from "../../common/functions";
-import { NavLink } from "react-router-dom";
 
 interface Props {
   client: any;
@@ -45,8 +43,6 @@ class PaymentMethod extends React.Component<Props, State> {
               { label: "Payment Method", to: "/area/paymentdata" },
               { label: "Credit Cards", to: "/area/paymentdata/paymentmethod" }
             ]}
-            history={this.props.history}
-            appContext={AppContext}
           />
           <Query query={FETCH_PAYMENT_DATA}>
             {({ data, loading, error = null, refetch }) => {

@@ -66,7 +66,6 @@ class MarketplaceCategories extends React.Component<MarketplaceProps> {
         <div className="pageContent">
           <PageHeader
             title="Categories"
-            history={this.props.history}
             breadCrumbs={[
               { label: "Dashboard", to: "/area" },
               { label: "Marketplace Categories", to: "/area/marketplace/categories" }

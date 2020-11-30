@@ -201,8 +201,6 @@ class AddCustomServicePage extends React.Component<Props, State> {
         <div className="pageContent">
           <PageHeader
             title="Add Custom Service"
-            history={this.props.history}
-            appContext={AppContext}
             breadCrumbs={[
               { label: "Dashboard", to: "/area" },
               { label: "Service Integrator", to: "/area/integrations" },

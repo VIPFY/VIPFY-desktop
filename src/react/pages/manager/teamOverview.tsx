@@ -10,7 +10,6 @@ import DeleteTeam from "../../components/manager/deleteTeam";
 import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import Table from "../../components/Table";
 import { ThingPicture, ThingType, ThingState, TeamPicture } from "../../components/ThingPicture";
-import { AppContext } from "../../common/functions";
 
 interface Props {
   moveTo: Function;
@@ -103,8 +102,6 @@ class TeamOverview extends React.Component<Props, State> {
       <div className="page">
         <PageHeader
           title="Team Manager"
-          history={this.props.history}
-          appContext={AppContext}
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
             { label: "Team Manager", to: "/area/dmanager" }

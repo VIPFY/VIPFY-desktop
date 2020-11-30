@@ -1,7 +1,9 @@
 import * as React from "react";
 import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
 import { Query } from "@apollo/client/react/components";
 import { graphql, withApollo } from "@apollo/client/react/hoc";
+import { Context as UILibContext } from "@vipfy-private/vipfy-ui-lib";
 
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
@@ -449,19 +451,30 @@ class App extends React.Component<AppProps, AppState> {
           references: this.references
         }}
         className="full-size">
-        <HeaderNotificationProvider>
-          {this.renderComponents()}
-          {popup.show && (
-            <Popup
-              popupHeader={popup.header}
-              popupBody={popup.body}
-              bodyProps={popup.props}
-              onClose={this.closePopup}
-              type={popup.type}
-              info={popup.info}
-            />
-          )}
-        </HeaderNotificationProvider>
+        <UILibContext.Provider
+          value={{
+            addRenderElement: e => this.addRenderElement(e),
+            router: this.props.history,
+            createLink: (to, children, moreProps = {}) => (
+              <Link to={to} {...moreProps}>
+                {children}
+              </Link>
+            )
+          }}>
+          <HeaderNotificationProvider>
+            {this.renderComponents()}
+            {popup.show && (
+              <Popup
+                popupHeader={popup.header}
+                popupBody={popup.body}
+                bodyProps={popup.props}
+                onClose={this.closePopup}
+                type={popup.type}
+                info={popup.info}
+              />
+            )}
+          </HeaderNotificationProvider>
+        </UILibContext.Provider>
         <DevToolsToolBar />
       </AppContext.Provider>
     );

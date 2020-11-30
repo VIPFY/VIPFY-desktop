@@ -137,8 +137,6 @@ class EmployeeOverview extends React.Component<Props, State> {
     return (
       <div className="page">
         <PageHeader
-          appContext={AppContext}
-          history={this.props.history}
           title="Employee Manager"
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
@@ -147,6 +145,7 @@ class EmployeeOverview extends React.Component<Props, State> {
           buttonConfig={{
             label: "Create Employee",
             onClick: () => this.setState({ add: true }),
+            buttonRef: "addEmp",
             innerRef: "addEmp",
             fAIcon: "fa-user-plus"
           }}
