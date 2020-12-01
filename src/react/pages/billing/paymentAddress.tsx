@@ -12,12 +12,11 @@ import { FETCH_PAYMENT_DATA } from "../../queries/billing";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import { EDIT_DEPARTMENT } from "../../mutations/department";
 import { CREATE_ADDRESS } from "../../mutations/contact";
-import { NavLink } from "react-router-dom";
-import { AppContext } from "../../common/functions";
 
 interface Props {
   history: any;
   client: any;
+  moveTo: (location: string) => void;
 }
 
 interface State {
@@ -356,9 +355,7 @@ class PaymentAddress extends Component<Props, State> {
             return (
               <div className="pageContent">
                 <PageHeader
-                  appContext={AppContext}
                   title="Billing contacts"
-                  history={this.props.history}
                   breadCrumbs={[
                     { label: "Dashboard", to: "/area" },
                     { label: "Payment Method", to: "/area/paymentdata" },

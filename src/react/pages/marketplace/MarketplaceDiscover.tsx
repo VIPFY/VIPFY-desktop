@@ -7,7 +7,7 @@ import {
 } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
-import { AppContext, sortApps } from "../../common/functions";
+import { sortApps } from "../../common/functions";
 import QueryWrapper from "../../common/QueryWrapper";
 import { fetchApps } from "../../queries/products";
 
@@ -39,8 +39,6 @@ class MarketplaceDiscover extends React.Component<MarketplaceDiscoverProps> {
         <div className="pageContent">
           <PageHeader
             title="Discover"
-            history={this.props.history}
-            appContext={AppContext}
             breadCrumbs={[
               { label: "Dashboard", to: "/area" },
               { label: "Marketplace Discover", to: "/area/marketplace/discover" }

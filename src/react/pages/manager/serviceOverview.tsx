@@ -131,8 +131,6 @@ class ServiceOverview extends React.Component<Props, State> {
       <div className="page">
         <PageHeader
           title="Employee Manager"
-          history={this.props.history}
-          appContext={AppContext}
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
             { label: "Employee Manager", to: "/area/emanager" }
@@ -143,6 +141,7 @@ class ServiceOverview extends React.Component<Props, State> {
               this.setState({
                 add: true
               }),
+            buttonRef: "addServiceInManager",
             innerRef: "addServiceInManager",
             fAIcon: "fa-plus"
           }}

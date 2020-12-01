@@ -2,7 +2,7 @@ import * as React from "react";
 import moment from "moment";
 import { ErrorPage, PageHeader, SeparatedSection } from "@vipfy-private/vipfy-ui-lib";
 
-import { filterLicences, AppContext } from "../common/functions";
+import { filterLicences } from "../common/functions";
 import { Licence } from "../interfaces";
 import AppList from "../components/profile/AppList";
 import dashboardImg from "../../images/dashboard.png";
@@ -66,8 +66,6 @@ const Dashboard: React.FC<Props> = props => {
     <div className="dashboard page">
       <PageHeader
         title="My Dashboard"
-        history={props.history}
-        appContext={AppContext}
         breadCrumbs={[{ label: "Dashboard", to: "/area" }]}
         buttonConfig={{
           label: "Go to Marketplace",

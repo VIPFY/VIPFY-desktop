@@ -1,6 +1,5 @@
 import * as React from "react";
 import { graphql } from "@apollo/client/react/hoc";
-import { NavLink } from "react-router-dom";
 import compose from "lodash.flowright";
 import gql from "graphql-tag";
 import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
@@ -8,7 +7,6 @@ import UniversalButton from "../components/universalButtons/universalButton";
 import UniversalTextInput from "../components/universalForms/universalTextInput";
 import SelfIntegrator from "../components/selfIntegrator";
 import UniversalDropdown from "../components/universalForms/universalDropdown";
-import { AppContext } from "../common/functions";
 
 interface Props {
   requestIntegration: Function;
@@ -201,8 +199,6 @@ class AddCustomServicePage extends React.Component<Props, State> {
         <div className="pageContent">
           <PageHeader
             title="Add Custom Service"
-            history={this.props.history}
-            appContext={AppContext}
             breadCrumbs={[
               { label: "Dashboard", to: "/area" },
               { label: "Service Integrator", to: "/area/integrations" },
