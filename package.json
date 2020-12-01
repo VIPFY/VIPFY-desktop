@@ -55,6 +55,7 @@
     "forge": "./forge.config.js"
   },
   "dependencies": {
+    "@apollo/client": "^3.2.9",
     "@babel/core": "^7.9.6",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/preset-env": "^7.9.6",
@@ -75,9 +76,9 @@
     "@types/react-dom": "^16.9.7",
     "@types/react-router": "^5.1.2",
     "@types/react-router-dom": "^5.1.2",
-    "@types/uuid": "^7.0.3",
+    "@types/uuid": "^8.3.0",
     "@types/zxcvbn": "^4.4.0",
-    "@vipfy-private/vipfy-ui-lib": "1.0.0",
+    "@vipfy-private/vipfy-ui-lib": "5.0.0",
     "apexcharts": "^3.19.0",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",
@@ -133,7 +134,7 @@
     "react-credit-cards": "^0.7.0",
     "react-dom": "^16.13.1",
     "react-draft-wysiwyg": "^1.14.5",
-    "react-dropzone": "^5.0.1",
+    "react-dropzone": "^11.1.0",
     "react-electron-web-view": "^2.0.1",
     "react-hot-loader": "^4.12.21",
     "react-onclickoutside": "^6.7.1",
@@ -151,7 +152,7 @@
     "streamroller": "^2.2.4",
     "subscriptions-transport-ws": "^0.9.15",
     "tslib": "^1.11.1",
-    "uuid": "^8.0.0",
+    "uuid": "^8.3.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
