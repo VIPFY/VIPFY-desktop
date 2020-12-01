@@ -18,8 +18,6 @@ import {
   ThingType,
   UserPicture
 } from "../../components/ThingPicture";
-import { NavLink } from "react-router-dom";
-import routes from "../../routes";
 
 interface Props {
   moveTo: Function;

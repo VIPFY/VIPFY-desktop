@@ -1,6 +1,6 @@
 import * as React from "react";
 import moment from "moment";
-import { Context, ErrorPage, PageHeader, SeparatedSection } from "@vipfy-private/vipfy-ui-lib";
+import { ErrorPage, PageHeader, SeparatedSection } from "@vipfy-private/vipfy-ui-lib";
 
 import { filterLicences } from "../common/functions";
 import { Licence } from "../interfaces";
