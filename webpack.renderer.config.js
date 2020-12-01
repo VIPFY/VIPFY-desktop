@@ -111,6 +111,6 @@ module.exports = {
     }
   },
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".node", ".json"]
+    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".css", ".scss", ".node", ".json"]
   }
 };
