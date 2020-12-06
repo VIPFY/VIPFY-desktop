@@ -152,7 +152,7 @@ class SidebarApps extends React.Component<Props, State> {
             {appservices.map(os => (
               <SidebarLink
                 disabled={false}
-                key={`ServiceLogo-${os}`}
+                key={`app-icon-${os}`}
                 licence={this.props.licences.find(l => l.id == os)}
                 openInstances={openInstances}
                 sidebarOpen={sidebarOpen}

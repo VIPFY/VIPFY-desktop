@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+import { AppIcon } from "@vipfy-private/vipfy-ui-lib";
 
 interface Props {
   checkFunction: Function;
@@ -35,9 +35,11 @@ class ColumnServices extends React.Component<Props, State> {
     }
   }
   render() {
-    const { appidFunction, checkFunction, overlayFunction } = this.props;
+    const { appidFunction, checkFunction } = this.props;
+
     let sortedservices: any[] = [];
     let serviceArray: JSX.Element[] = [];
+
     if (this.props.fake || !this.props.services) {
       let fakecounter = 0;
       const amount = Math.random() * 7 + 1;
@@ -83,9 +85,7 @@ class ColumnServices extends React.Component<Props, State> {
           );
           break;
         } else {
-          serviceArray.push(
-            <ServiceLogo key={service.id} icon={appidFunction(service).icon} size={32} />
-          );
+          serviceArray.push(<AppIcon key={service.id} id={appidFunction(service).id} size={32} />);
         }
       }
     }

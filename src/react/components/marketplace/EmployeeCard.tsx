@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Card, CardSection, Checkbox, ServiceLogo, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { AppIcon, Card, CardSection, Checkbox, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import { concatName } from "../../common/functions";
 import EmployeePicture from "../EmployeePicture";
@@ -80,9 +80,9 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
         )}
 
         {!hideServices && (
-          <CardSection className="serviceLogosRow">
+          <CardSection className="servicesRow">
             {employee.assignments.map((service, i) => (
-              <ServiceLogo icon={service.icon} size={24} key={i} />
+              <AppIcon key={service.id} id={service.id} size={24} />
             ))}
           </CardSection>
         )}
