@@ -1737,7 +1737,7 @@ table {
   border-radius: 4px;
 
   &-placeholder {
-    @extend .service-logo;
+    @extend .preview-app-icon;
     background: #f5f5f5;
     display: flex;
     justify-content: center;
