@@ -138,7 +138,7 @@ class EmployeeOverview extends React.Component<Props, State> {
           title="Employee Manager"
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
-            { label: "Employee Overview", to: "/area/emanager" }
+            { label: "Employee Manager", to: "/area/emanager" }
           ]}
           buttonConfig={{
             label: "Create Employee",

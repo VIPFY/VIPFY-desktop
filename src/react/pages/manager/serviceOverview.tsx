@@ -137,10 +137,10 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="page">
         <PageHeader
-          title="Employee Manager"
+          title="Service Manager"
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
-            { label: "Employee Manager", to: "/area/emanager" }
+            { label: "Service Manager", to: "/area/emanager" }
           ]}
           buttonConfig={{
             label: "Add Service",
