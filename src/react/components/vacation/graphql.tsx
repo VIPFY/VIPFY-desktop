@@ -39,9 +39,37 @@ export const REQUEST_VACATION = gql`
   ${fragment}
 `;
 
+export const REQUEST_VACATION_FOR_EMPLOYEE = gql`
+  mutation onRequestVacationForEmployee(
+    $startDate: Date!
+    $endDate: Date!
+    $days: Int!
+    $userid: ID!
+  ) {
+    requestVacationForEmployee(
+      startDate: $startDate
+      endDate: $endDate
+      days: $days
+      userid: $userid
+    ) {
+      ...VacationRequestParts
+    }
+  }
+  ${fragment}
+`;
+
 export const REQUEST_HALF_DAY = gql`
   mutation onRequestHalfVacationDay($day: Date!) {
     requestHalfVacationDay(day: $day) {
+      ...VacationRequestParts
+    }
+  }
+  ${fragment}
+`;
+
+export const REQUEST_HALF_DAY_FOR_EMPLOYEE = gql`
+  mutation onRequestHalfVacationDayForEmployee($day: Date!, $userid: ID!) {
+    requestHalfVacationDayForEmployee(day: $day, userid: $userid) {
       ...VacationRequestParts
     }
   }
