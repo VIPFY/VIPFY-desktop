@@ -85,7 +85,8 @@ class ColumnServices extends React.Component<Props, State> {
           );
           break;
         } else {
-          serviceArray.push(<AppIcon key={service.id} id={appidFunction(service).id} size={32} />);
+          const realService = appidFunction(service);
+          serviceArray.push(<AppIcon key={realService.id} id={realService.id} size={32} />);
         }
       }
     }
