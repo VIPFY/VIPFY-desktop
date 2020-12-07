@@ -1,13 +1,13 @@
 import * as React from "react";
 import { Query } from "@apollo/client/react/components";
-import { Button } from "@vipfy-private/vipfy-ui-lib";
+import { Button, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+
 import { fetchCompanyTeams } from "../../queries/departments";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import AddTeamGeneralData from "../../components/manager/addTeamGeneralData";
 import ColumnServices from "../../components/manager/universal/columns/columnServices";
 import ColumnEmployees from "../../components/manager/universal/columns/columnEmployee";
 import DeleteTeam from "../../components/manager/deleteTeam";
-import { PageHeader } from "@vipfy-private/vipfy-ui-lib";
 import Table from "../../components/Table";
 import { ThingPicture, ThingType, ThingState, TeamPicture } from "../../components/ThingPicture";
 
