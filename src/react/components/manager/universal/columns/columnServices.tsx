@@ -17,6 +17,7 @@ interface State {
 class ColumnServices extends React.Component<Props, State> {
   state = { numservices: 6 };
   ref = React.createRef();
+
   componentDidMount() {
     this.calculateNumber();
   }
@@ -86,7 +87,7 @@ class ColumnServices extends React.Component<Props, State> {
           break;
         } else {
           const realService = appidFunction(service);
-          serviceArray.push(<AppIcon key={realService.id} id={realService.id} size={32} />);
+          serviceArray.push(<AppIcon key={realService.appid} id={realService.appid} size={32} />);
         }
       }
     }
