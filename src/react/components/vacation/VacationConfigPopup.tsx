@@ -10,7 +10,7 @@ import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalTextInput from "../universalForms/universalTextInput";
 
 const SET_VACATION_DAYS = gql`
-  mutation onSetVacationDays($year: Int!, $days: Int!, $userid: ID!) {
+  mutation onSetVacationDays($year: Int!, $days: Float!, $userid: ID!) {
     setVacationDays(year: $year, days: $days, userid: $userid)
   }
 `;
@@ -27,7 +27,9 @@ export default (props: Props) => {
     <Mutation
       mutation={SET_VACATION_DAYS}
       update={proxy => {
-        const cachedData = proxy.readQuery({ query: FETCH_VACATION_REQUESTS });
+        const cachedData = JSON.parse(
+          JSON.stringify(proxy.readQuery({ query: FETCH_VACATION_REQUESTS }))
+        );
 
         const fetchVacationRequests = cachedData.fetchVacationRequests.map(emp => {
           if (props.id == emp.id) {
@@ -47,7 +49,7 @@ export default (props: Props) => {
         setYear(moment().get("year"));
         setDays(0);
       }}>
-      {(mutate, { loading, error }) => (
+      {(mutate, { loading, error = null }) => (
         <PopupBase
           buttonStyles={{ justifyContent: "space-between" }}
           close={() => {
@@ -69,10 +71,9 @@ export default (props: Props) => {
             onSubmit={() => mutate({ variables: { userid: props.id, year, days } })}>
             <UniversalTextInput
               id="days"
-              min={0}
               type="number"
               label="Days"
-              livevalue={v => setDays(parseInt(v))}
+              livevalue={v => setDays(parseFloat(v))}
             />
 
             <UniversalTextInput

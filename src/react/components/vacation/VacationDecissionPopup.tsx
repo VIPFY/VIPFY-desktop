@@ -22,7 +22,7 @@ const DECLINE_REQUEST = gql`
 
 interface Props {
   close: Function;
-  id: number;
+  id: string;
   decission: string;
   requestID: number;
 }
@@ -31,7 +31,9 @@ export default (props: Props) => (
   <Mutation
     mutation={props.decission == "confirm" ? APPROVE_REQUEST : DECLINE_REQUEST}
     update={proxy => {
-      const cachedData = proxy.readQuery({ query: FETCH_VACATION_REQUESTS });
+      const cachedData = JSON.parse(
+        JSON.stringify(proxy.readQuery({ query: FETCH_VACATION_REQUESTS }))
+      );
 
       const vacationRequests = cachedData.fetchVacationRequests
         .find(emp => emp.id == props.id)
@@ -50,7 +52,7 @@ export default (props: Props) => (
       proxy.writeQuery({ query: FETCH_VACATION_REQUESTS, data: { fetchVacationRequests } });
     }}
     onCompleted={() => props.close()}>
-    {(mutate, { loading, error }) => (
+    {(mutate, { loading, error = null }) => (
       <PopupBase
         buttonStyles={{ justifyContent: "space-between" }}
         close={() => props.close()}

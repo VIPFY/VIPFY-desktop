@@ -17,7 +17,8 @@ import UniversalButton from "../universalButtons/universalButton";
 import VacationConfigPopup from "./VacationConfigPopup";
 import IconButton from "../../common/IconButton";
 import VacationDecissionPopup from "./VacationDecissionPopup";
-import { vipfyAdmins } from "../../common/constants";
+import { vipfyAdmins, vipfyVacationAdmins } from "../../common/constants";
+import RequestForEmployeePopup from "./RequestForEmployeePopup";
 
 interface Props {
   id: string;
@@ -47,7 +48,7 @@ export default (props: Props) => {
         </div>
 
         <Query query={FETCH_VACATION_REQUESTS}>
-          {({ data, loading, error }) => {
+          {({ data, loading, error = null }) => {
             if (loading) {
               return <LoadingDiv />;
             }
@@ -57,7 +58,7 @@ export default (props: Props) => {
             }
 
             return data.fetchVacationRequests.map((employee, key) => (
-              <VacationRequestRow key={key} employee={employee} />
+              <VacationRequestRow id={props.id} key={key} employee={employee} />
             ));
           }}
         </Query>
@@ -66,12 +67,13 @@ export default (props: Props) => {
   );
 };
 
-const VacationRequestRow = ({ employee }) => {
+const VacationRequestRow = ({ employee, id }) => {
   const currentYear = moment().get("year");
   const [showConfigPopup, setShowConfig] = React.useState(false);
   const [decission, setDecission] = React.useState("");
   const [showDecissionPopup, setIDPopup] = React.useState(0);
   const [showInfo, setShowInfo] = React.useState(false);
+  const [showRequestPopup, setRequest] = React.useState(false);
 
   const renderRequestAmounts = vacationRequests => {
     const requests = { open: 0, approved: 0, rejected: 0 };
@@ -125,6 +127,17 @@ const VacationRequestRow = ({ employee }) => {
             <span key={status}>{vacationStatus[status]}</span>
           ))}
           <span className="button-holder">
+            {vipfyVacationAdmins.find(adminID => adminID == id) && (
+              <IconButton
+                title="Enter vacation"
+                icon="user-clock"
+                onClick={e => {
+                  e.stopPropagation();
+                  setRequest(true);
+                }}
+              />
+            )}
+
             <IconButton
               title="Update Vacation days"
               icon="cog"
@@ -133,6 +146,7 @@ const VacationRequestRow = ({ employee }) => {
                 setShowConfig(true);
               }}
             />
+
             <IconButton
               title="Show more info"
               icon="angle-double-down"
@@ -144,20 +158,20 @@ const VacationRequestRow = ({ employee }) => {
           </span>
         </React.Fragment>
       ) : (
-          <React.Fragment>
-            <div>User not set up yet for this year</div>
-            <div>
-              <UniversalButton
-                onClick={e => {
-                  e.stopPropagation();
-                  setShowConfig(true);
-                }}
-                label="set up"
-                type="high"
-              />
-            </div>
-          </React.Fragment>
-        )}
+        <React.Fragment>
+          <div>User not set up yet for this year</div>
+          <div>
+            <UniversalButton
+              onClick={e => {
+                e.stopPropagation();
+                setShowConfig(true);
+              }}
+              label="set up"
+              type="high"
+            />
+          </div>
+        </React.Fragment>
+      )}
 
       <div className={`add-info${showInfo ? "-show" : ""}`}>
         <div className="headline">Start Date</div>
@@ -188,8 +202,8 @@ const VacationRequestRow = ({ employee }) => {
                 type="high"
               />
             ) : (
-                  <div></div>
-                )}
+              <div></div>
+            )}
 
             {request.status == "REJECTED" ? (
               moment(request.decided).format("LL")
@@ -204,8 +218,8 @@ const VacationRequestRow = ({ employee }) => {
                 type="high"
               />
             ) : (
-                  <div></div>
-                )}
+              <div></div>
+            )}
 
             {showDecissionPopup == request.id && (
               <VacationDecissionPopup
@@ -224,6 +238,10 @@ const VacationRequestRow = ({ employee }) => {
 
       {showConfigPopup && (
         <VacationConfigPopup id={employee.id} close={() => setShowConfig(false)} />
+      )}
+
+      {showRequestPopup && (
+        <RequestForEmployeePopup id={employee.id} close={() => setRequest(false)} />
       )}
     </div>
   );

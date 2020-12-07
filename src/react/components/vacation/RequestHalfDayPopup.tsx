@@ -7,7 +7,7 @@ import { ErrorComp } from "../../common/functions";
 import LoadingDiv from "../LoadingDiv";
 import { FETCH_VACATION_REQUESTS, REQUEST_HALF_DAY } from "./graphql";
 
-export default ({ close, userid }: { close: Function; userid: number }) => {
+export default ({ close, userid }: { close: Function; userid: string }) => {
   const [day, setDay] = React.useState(moment().format("YYYY-MM-DD"));
 
   return (
@@ -34,7 +34,7 @@ export default ({ close, userid }: { close: Function; userid: number }) => {
 
         close();
       }}>
-      {(mutate, { loading, error }) => (
+      {(mutate, { loading, error = null }) => (
         <PopupBase small={true} close={close}>
           <h1>Request half a day</h1>
           <div>Please select the half day</div>

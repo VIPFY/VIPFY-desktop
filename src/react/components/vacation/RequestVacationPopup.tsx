@@ -9,7 +9,7 @@ import { ErrorComp } from "../../common/functions";
 import { FETCH_VACATION_REQUESTS, REQUEST_VACATION } from "./graphql";
 
 interface Props {
-  userid: number;
+  userid: string;
   requests: any[];
   close: Function;
 }
@@ -120,7 +120,7 @@ export default (props: Props) => {
                   <i style={{ margin: "0 20px" }} className="fal fa-minus" />
                   <span>{`${computeVacationDays(startDate, duration)} day${
                     duration == 1 ? "" : "s"
-                    }`}</span>
+                  }`}</span>
                 </li>
               );
             })}

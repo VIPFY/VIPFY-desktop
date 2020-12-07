@@ -116,7 +116,7 @@ export default (props: Props) => {
               )} more days.`}</div>
 
               <UniversalButton
-                className="vacation-days"
+                className="half-day-button"
                 label="Request half a day"
                 type="high"
                 onClick={() => setShowHalfDay(true)}

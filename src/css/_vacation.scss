@@ -13,6 +13,18 @@
       margin-bottom: 20px;
     }
 
+    .vacation-toggle {
+      margin: 10px 0 0;
+      color: $vipfy-buttondarkgreen;
+      cursor: pointer;
+    }
+
+    #request-vacation-form {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
     .success {
       color: $primarygreen;
       font-size: 1rem;
@@ -23,7 +35,7 @@
     padding: 20px;
     height: 600px;
 
-    .vacation-days {
+    .half-day-button {
       margin-bottom: 20px;
     }
 
