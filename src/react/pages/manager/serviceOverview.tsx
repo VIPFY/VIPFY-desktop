@@ -148,7 +148,6 @@ class ServiceOverview extends React.Component<Props, State> {
               this.setState({
                 add: true
               }),
-            buttonRef: "addServiceInManager",
             innerRef: "addServiceInManager",
             fAIcon: "fa-plus"
           }}
