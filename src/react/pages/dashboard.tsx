@@ -66,7 +66,7 @@ const Dashboard: React.FC<Props> = props => {
     <div className="dashboard page">
       <PageHeader
         title="My Dashboard"
-        breadCrumbs={[{ label: "Dashboard", to: "/area" }]}
+        breadCrumbs={[]}
         buttonConfig={{
           label: "Go to Marketplace",
           fAIcon: "fa-store",
