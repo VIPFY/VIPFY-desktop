@@ -81,7 +81,7 @@ class EmployeeCard extends React.Component<EmployeeCardProps> {
 
         {!hideServices && (
           <CardSection className="servicesRow">
-            {employee.assignments.map((service, i) => (
+            {employee.assignments.map(service => (
               <AppIcon key={service.id} id={service.id} size={24} />
             ))}
           </CardSection>
