@@ -83,19 +83,14 @@ class ColumnTeams extends React.Component<Props, State> {
         } else {
           const id = this.props.onlyids ? team : team.unitid.id;
           teamsArray.push(
-            <TeamPicture
-              id={id}
-              shape={ThingShape.Square}
-              size={32}
-              key={`team-${id}`}
-            />
+            <TeamPicture id={id} shape={ThingShape.Square} size={32} key={`team-${id}`} />
           );
         }
       }
     }
 
     return (
-      <div className="iconCollectionHolder" style={this.props.style || {}} ref={this.ref}>
+      <div className="avatarsRow" style={this.props.style || {}} ref={this.ref}>
         {teamsArray}
       </div>
     );

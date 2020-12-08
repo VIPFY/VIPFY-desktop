@@ -2,20 +2,21 @@ import * as React from "react";
 import { AppIcon } from "@vipfy-private/vipfy-ui-lib";
 
 interface Props {
-  checkFunction: Function;
   appidFunction: Function;
-  overlayFunction?: Function;
+  checkFunction: Function;
   services: any[];
-  fake?: Boolean;
+
+  fake?: boolean;
+  overlayFunction?: Function;
   style?: Object;
 }
 
 interface State {
-  numservices: number;
+  servicesCount: number;
 }
 
 class ColumnServices extends React.Component<Props, State> {
-  state = { numservices: 6 };
+  state = { servicesCount: 6 };
   ref = React.createRef();
 
   componentDidMount() {
@@ -28,26 +29,31 @@ class ColumnServices extends React.Component<Props, State> {
 
   calculateNumber() {
     if (
-      this.ref &&
-      this.ref.current &&
-      Math.floor(this.ref.current.offsetWidth / 40) != this.state.numservices
+      this.ref?.current &&
+      Math.floor(this.ref.current.offsetWidth / 40) != this.state.servicesCount
     ) {
-      this.setState({ numservices: Math.floor(this.ref.current.offsetWidth / 40) });
+      this.setState({ servicesCount: Math.floor(this.ref.current.offsetWidth / 40) });
     }
   }
+
   render() {
     const { appidFunction, checkFunction } = this.props;
 
-    let sortedservices: any[] = [];
-    let serviceArray: JSX.Element[] = [];
+    let sortedServices: any[] = [];
+    let serviceElements: JSX.Element[] = [];
 
     if (this.props.fake || !this.props.services) {
-      let fakecounter = 0;
+      let fakeCounter = 0;
       const amount = Math.random() * 7 + 1;
-      for (fakecounter = 0; fakecounter < Math.min(amount, this.state.numservices); fakecounter++) {
-        serviceArray.push(
+
+      for (
+        fakeCounter = 0;
+        fakeCounter < Math.min(amount, this.state.servicesCount);
+        fakeCounter++
+      ) {
+        serviceElements.push(
           <div
-            key={`key-${fakecounter}`}
+            key={`key-${fakeCounter}`}
             className="managerSquare animateLoading"
             style={{
               color: "#253647",
@@ -59,19 +65,17 @@ class ColumnServices extends React.Component<Props, State> {
         );
       }
     } else {
-      this.props.services.forEach(element => {
-        if (checkFunction(element)) {
-          sortedservices.push(element);
+      this.props.services.forEach(service => {
+        if (checkFunction(service)) {
+          sortedServices.push(service);
         }
       });
-      let counter = 0;
-      for (counter = 0; counter < sortedservices.length; counter++) {
-        const service = sortedservices[counter];
-        if (
-          sortedservices.length > this.state.numservices &&
-          counter > this.state.numservices - 2
-        ) {
-          serviceArray.push(
+
+      for (let i = 0; i < sortedServices.length; i++) {
+        const service = sortedServices[i];
+
+        if (sortedServices.length > this.state.servicesCount && i > this.state.servicesCount - 2) {
+          serviceElements.push(
             <div
               key="moreSerivces"
               className="managerSquare"
@@ -81,19 +85,21 @@ class ColumnServices extends React.Component<Props, State> {
                 fontSize: "12px",
                 fontWeight: 400
               }}>
-              +{sortedservices.length - this.state.numservices + 1}
+              +{sortedServices.length - this.state.servicesCount + 1}
             </div>
           );
+
           break;
         } else {
-          const realService = appidFunction(service);
-          serviceArray.push(<AppIcon key={realService.appid} id={realService.appid} size={32} />);
+          const serviceWithID = appidFunction(service);
+          serviceElements.push(<AppIcon key={serviceWithID.id} id={serviceWithID.id} size={32} />);
         }
       }
     }
+
     return (
-      <div className="iconCollectionHolder" style={this.props.style || {}} ref={this.ref}>
-        {serviceArray}
+      <div className="avatarsRow" style={this.props.style} ref={this.ref}>
+        {serviceElements}
       </div>
     );
   }
