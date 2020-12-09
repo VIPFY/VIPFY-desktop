@@ -66,7 +66,7 @@ const Dashboard: React.FC<Props> = props => {
     <div className="dashboard page">
       <PageHeader
         title="My Dashboard"
-        breadCrumbs={[{ label: "Dashboard", to: "/area" }]}
+        breadCrumbs={[]}
         buttonConfig={{
           label: "Go to Marketplace",
           fAIcon: "fa-store",
@@ -82,13 +82,13 @@ const Dashboard: React.FC<Props> = props => {
           </p>
         </ErrorPage>
       ) : (
-        Object.keys(appLists).map(list => {
+        Object.keys(appLists).map((list, i) => {
           if (!appLists[list].length) {
             return null;
           }
 
           return (
-            <SeparatedSection>
+            <SeparatedSection key={i}>
               <AppList
                 key={list}
                 header={list}

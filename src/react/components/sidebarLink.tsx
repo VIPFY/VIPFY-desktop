@@ -1,6 +1,7 @@
 import * as React from "react";
 import Tooltip from "react-tooltip-lite";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+import { AppIcon } from "@vipfy-private/vipfy-ui-lib";
+
 import { Licence } from "../interfaces";
 
 interface Props {
@@ -161,7 +162,7 @@ class SidebarLink extends React.Component<Props, State> {
             <div className="naked-button sidebarButton">
               <div className="service-hover">
                 <span className="white-background" />
-                <ServiceLogo icon={licence.boughtplanid.planid.appid.icon} size={32}>
+                <AppIcon id={licence.boughtplanid.planid.appid.id} size={32}>
                   {openInstances[licence.id] && <i className="fa fa-circle active-app" />}
                   {multipleOrbits && (
                     <span className="active-user">
@@ -172,7 +173,7 @@ class SidebarLink extends React.Component<Props, State> {
                       </div>
                     </span>
                   )}
-                </ServiceLogo>
+                </AppIcon>
               </div>
             </div>
           </Tooltip>

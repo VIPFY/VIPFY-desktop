@@ -1,7 +1,14 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { Query } from "@apollo/client/react/components";
-import { Button, ServiceLogo, Tag, PageHeader } from "@vipfy-private/vipfy-ui-lib";
+import {
+  AppIcon,
+  AvatarType,
+  BaseAvatar,
+  Button,
+  Tag,
+  PageHeader
+} from "@vipfy-private/vipfy-ui-lib";
 
 import UniversalButton from "../../components/universalButtons/universalButton";
 import PopupBase from "../../popups/universalPopups/popupBase";
@@ -103,7 +110,7 @@ class ServiceOverview extends React.Component<Props, State> {
           {
             component: () => (
               <div style={{ display: "flex", alignItems: "center" }}>
-                <ServiceLogo key={`fake-${index}`} size={32} />
+                <BaseAvatar key={`fake-${index}`} size={32} type={AvatarType.Service} name="" />
                 <span className="name"></span>
               </div>
             )
@@ -130,10 +137,10 @@ class ServiceOverview extends React.Component<Props, State> {
     return (
       <div className="page">
         <PageHeader
-          title="Employee Manager"
+          title="Service Manager"
           breadCrumbs={[
             { label: "Dashboard", to: "/area" },
-            { label: "Employee Manager", to: "/area/emanager" }
+            { label: "Service Manager", to: "/area/emanager" }
           ]}
           buttonConfig={{
             label: "Add Service",
@@ -141,7 +148,6 @@ class ServiceOverview extends React.Component<Props, State> {
               this.setState({
                 add: true
               }),
-            buttonRef: "addServiceInManager",
             innerRef: "addServiceInManager",
             fAIcon: "fa-plus"
           }}
@@ -260,7 +266,7 @@ class ServiceOverview extends React.Component<Props, State> {
                     {
                       component: () => (
                         <div style={{ display: "flex", alignItems: "center" }}>
-                          <ServiceLogo key={service.app.id} icon={service.app.icon} size={32} />
+                          <AppIcon key={service.app.id} id={service.app.id} size={32} />
                           <span className="name">{service.app.name}</span>
                         </div>
                       ),

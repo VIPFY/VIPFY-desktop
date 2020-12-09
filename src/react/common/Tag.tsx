@@ -1,7 +1,8 @@
 import React from "react";
 import type { ReactChildren, ReactChild, FunctionComponent } from "react";
 import classNames from "classnames";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+
+import { AppIcon } from "@vipfy-private/vipfy-ui-lib";
 import type { App } from "@vipfy-private/vipfy-ui-lib";
 
 import { concatName } from "../common/functions";
@@ -74,7 +75,7 @@ interface ServiceTagProps {
 
 const ServiceTag: FunctionComponent<ServiceTagProps> = props => {
   const iconSize = props.large ? 22 : 16;
-  const icon = <ServiceLogo icon={props.service.icon} size={iconSize} className="tagIcon" />;
+  const icon = <AppIcon id={props.service.id} size={iconSize} className="tagIcon" />;
 
   return (
     <Tag {...props} icon={icon}>

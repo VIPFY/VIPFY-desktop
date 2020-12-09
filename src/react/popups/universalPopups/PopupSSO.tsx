@@ -116,7 +116,7 @@ class PopupSSO extends React.Component<Props, State> {
           </h2>
         </div>
         <div className="service-grid">
-          <div className="service-logo-placeholder">
+          <div className="preview-app-icon-placeholder">
             <Dropzone
               style={{
                 width: "unset",
@@ -128,7 +128,7 @@ class PopupSSO extends React.Component<Props, State> {
               multiple={false}
               onDrop={([file]) => this.setState({ logo: file })}>
               {logo ? (
-                <img className="service-logo" src={logo.preview} />
+                <img className="preview-app-icon" src={logo.preview} />
               ) : (
                 <i className="fal fa-pen" />
               )}

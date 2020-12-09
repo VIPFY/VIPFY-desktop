@@ -7,7 +7,8 @@ import { parse } from "url";
 import psl from "psl";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { ServiceLogo } from "@vipfy-private/vipfy-ui-lib";
+import { AppIcon } from "@vipfy-private/vipfy-ui-lib";
+
 import BrowserNavigationButton from "../components/universalButtons/browserNavigationButton";
 import BrowserTab from "../components/browserTab";
 import BrowserOverflowTab from "../components/browserOverflowTab";
@@ -411,7 +412,7 @@ class Browser extends React.Component<Props, State> {
       this.state.tabs.find(t => t.active) &&
       this.state.tabs.find(t => t.active).history.length > 1 &&
       this.state.tabs.find(t => t.active).history.length !=
-      this.state.tabs.find(t => t.active).historyMarker + 1;
+        this.state.tabs.find(t => t.active).historyMarker + 1;
     if (hasForwardHistoryInTab) {
       this.setState(oldstate => {
         const updatedTabs = oldstate.tabs.map(a => {
@@ -649,7 +650,7 @@ class Browser extends React.Component<Props, State> {
                 ...this.props.config.bookmarks,
                 [this.props.assignmentId || "browser"]: [
                   ...(this.props.config.bookmarks &&
-                    this.props.config.bookmarks[this.props.assignmentId || "browser"]
+                  this.props.config.bookmarks[this.props.assignmentId || "browser"]
                     ? this.props.config.bookmarks[this.props.assignmentId || "browser"]
                     : []),
                   { url, title }
@@ -790,40 +791,40 @@ class Browser extends React.Component<Props, State> {
                   />
                 </div>
               ) : (
+                <div
+                  style={{
+                    width: "500px",
+                    height: "500px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexFlow: "column"
+                  }}>
                   <div
                     style={{
-                      width: "500px",
-                      height: "500px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexFlow: "column"
+                      width: "96px",
+                      height: "96px"
                     }}>
-                    <div
-                      style={{
-                        width: "96px",
-                        height: "96px"
+                    <CircularProgressbarWithChildren
+                      value={this.state.progress * 100}
+                      strokeWidth={4}
+                      styles={{
+                        path: {
+                          stroke: "#96A7BA"
+                        },
+                        trail: {
+                          stroke: "#E3E7EC"
+                        }
                       }}>
-                      <CircularProgressbarWithChildren
-                        value={this.state.progress * 100}
-                        strokeWidth={4}
-                        styles={{
-                          path: {
-                            stroke: "#96A7BA"
-                          },
-                          trail: {
-                            stroke: "#E3E7EC"
-                          }
-                        }}>
-                        <ServiceLogo icon={t.logo} size={56} className="loadingShadow" />
-                      </CircularProgressbarWithChildren>
-                    </div>
-                    <div style={{ color: "#3B4C5D", fontSize: "14px", marginTop: "16px" }}>
-                      <span>{Math.floor(this.state.progress * 100)} </span>
-                      <i className="fal fa-percentage"></i>
-                    </div>
+                      <AppIcon id={t.id} size={56} className="loadingShadow" />
+                    </CircularProgressbarWithChildren>
                   </div>
-                )}
+                  <div style={{ color: "#3B4C5D", fontSize: "14px", marginTop: "16px" }}>
+                    <span>{Math.floor(this.state.progress * 100)} </span>
+                    <i className="fal fa-percentage"></i>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <UniversalLoginExecutor
@@ -1104,7 +1105,7 @@ class Browser extends React.Component<Props, State> {
                 this.state.tabs.find(t => t.active) &&
                 this.state.tabs.find(t => t.active).history.length > 1 &&
                 this.state.tabs.find(t => t.active).history.length !=
-                this.state.tabs.find(t => t.active).historyMarker + 1
+                  this.state.tabs.find(t => t.active).historyMarker + 1
               )
             }
             onClick={() => this.goBack()}
@@ -1146,8 +1147,8 @@ class Browser extends React.Component<Props, State> {
               rightOrientation={true}
             />
           ) : (
-              <div></div>
-            )}
+            <div></div>
+          )}
           {/*<BrowserNavigationButton icon="user" />
           <BrowserNavigationButton icon="cog" />*/}
         </div>

@@ -1,10 +1,9 @@
 import * as React from "react";
 import gql from "graphql-tag";
 import { useMutation } from "@apollo/client/react/hooks";
-import { Card, CardSection, Tag } from "@vipfy-private/vipfy-ui-lib";
+import { AppIcon, Card, CardSection, Tag } from "@vipfy-private/vipfy-ui-lib";
 
 import { Licence } from "../interfaces";
-import ServiceLogo from "./services/ServiceLogo";
 
 interface Props {
   licence: Licence;
@@ -53,7 +52,7 @@ export default (props: Props) => {
   return (
     <Card title={props.tileTitle || name} onClick={() => props.setTeam && props.setTeam(id)}>
       <CardSection className="service-box-top">
-        <ServiceLogo icon={planid.appid.icon} size={40} />
+        <AppIcon id={planid.appid.id} size={40} />
 
         <h2 className="service-box-top-text">{planid.appid.name}</h2>
 

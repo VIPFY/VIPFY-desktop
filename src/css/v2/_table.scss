@@ -115,17 +115,20 @@
             margin-left: 8px;
             background: $lightgrey-light 0% 0% no-repeat padding-box;
           }
-          .iconCollectionHolder {
+
+          .avatarsRow {
             display: flex;
             align-items: center;
             height: 48px;
             overflow: hidden;
+
             & > * {
               &:not(:last-child) {
                 margin-right: 8px;
               }
             }
           }
+
           .fa-star {
             color: $lightgrey-darker;
           }

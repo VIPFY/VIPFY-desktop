@@ -1710,24 +1710,7 @@ table {
   object-fit: contain;
 }
 
-.service-logo-circle {
-  height: 48px;
-  min-width: 48px;
-  padding: 0rem !important;
-  border-radius: 50%;
-  background-size: contain;
-  background-repeat: no-repeat;
-  -webkit-font-smoothing: antialiased;
-  display: flex;
-  font-style: normal;
-  font-variant: normal;
-  text-rendering: auto;
-  line-height: 1;
-  background-position: center;
-  position: relative;
-}
-
-.service-logo {
+.preview-app-icon {
   cursor: pointer;
   grid-column: 1;
   grid-row: 1 / auto;
@@ -1737,7 +1720,7 @@ table {
   border-radius: 4px;
 
   &-placeholder {
-    @extend .service-logo;
+    @extend .preview-app-icon;
     background: #f5f5f5;
     display: flex;
     justify-content: center;
