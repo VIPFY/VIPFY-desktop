@@ -31,7 +31,7 @@ export const FETCH_VACATION_REQUESTS = gql`
 `;
 
 export const REQUEST_VACATION = gql`
-  mutation onRequestVacation($startDate: Date!, $endDate: Date!, $days: Int!) {
+  mutation onRequestVacation($startDate: Date!, $endDate: Date!, $days: Float!) {
     requestVacation(startDate: $startDate, endDate: $endDate, days: $days) {
       ...VacationRequestParts
     }
@@ -43,7 +43,7 @@ export const REQUEST_VACATION_FOR_EMPLOYEE = gql`
   mutation onRequestVacationForEmployee(
     $startDate: Date!
     $endDate: Date!
-    $days: Int!
+    $days: Float!
     $userid: ID!
   ) {
     requestVacationForEmployee(

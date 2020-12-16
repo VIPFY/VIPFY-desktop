@@ -1,9 +1,8 @@
 import * as React from "react";
 import { Mutation } from "@apollo/client/react/components";
-import "moment-feiertage";
+import * as moment from "moment-feiertage";
 import PopupBase from "../../popups/universalPopups/popupBase";
 import UniversalButton from "../universalButtons/universalButton";
-import moment from "moment";
 import LoadingDiv from "../LoadingDiv";
 import { ErrorComp } from "../../common/functions";
 import { FETCH_VACATION_REQUESTS, REQUEST_VACATION } from "./graphql";
@@ -15,9 +14,9 @@ interface Props {
 }
 
 export default (props: Props) => {
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState(null);
-  const [success, setSuccess] = React.useState(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<null | any>(null);
+  const [success, setSuccess] = React.useState<boolean>(false);
 
   const computeDuration = (startDate, endDate) => {
     if (startDate.format("LL") == endDate.format("LL")) {
@@ -41,8 +40,14 @@ export default (props: Props) => {
     for (let i = 0; i < days; i++) {
       clonedDate.add(i < 2 ? i : 1, "days");
 
-      if (clonedDate.isoWeekday() == 6 || clonedDate.isoWeekday() == 7) {
+      if (clonedDate.isoWeekday() >= 6) {
         offDays++;
+      } else {
+        if (clonedDate.format("DD.MM") == "24.12" || clonedDate.format("DD.MM") == "31.12") {
+          offDays += 0.5;
+        } else if (clonedDate.isHoliday("SL")) {
+          offDays++;
+        }
       }
     }
 
